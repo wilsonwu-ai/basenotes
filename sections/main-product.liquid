@@ -51,19 +51,6 @@
           {{ product.title }}
         </h1>
 
-        <div class="product__price" style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-xl);">
-          {%- if current_variant.compare_at_price > current_variant.price -%}
-            <span style="text-decoration: line-through; color: var(--color-text-muted); margin-right: var(--spacing-sm);">
-              {{ current_variant.compare_at_price | money }}
-            </span>
-          {%- endif -%}
-          <span id="productPrice">{{ current_variant.price | money }}</span>
-
-          {%- if product.price == 0 -%}
-            <span class="badge badge--gold" style="margin-left: var(--spacing-sm);">Included in Subscription</span>
-          {%- endif -%}
-        </div>
-
         {%- if product.description != blank -%}
           <div class="product__description" style="margin-bottom: var(--spacing-xl); color: var(--color-text-light); line-height: 1.8;">
             {{ product.description }}
@@ -72,83 +59,171 @@
 
         {% comment %} Fragrance Notes {% endcomment %}
         {%- if product.metafields.custom.top_notes != blank or product.metafields.custom.heart_notes != blank or product.metafields.custom.base_notes != blank -%}
-          <div class="fragrance-pyramid" style="margin-bottom: var(--spacing-xl); padding: var(--spacing-xl); background: var(--color-background-secondary);">
-            <h3 style="font-size: var(--font-size-sm); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-lg);">Fragrance Notes</h3>
+          <div class="fragrance-pyramid" style="margin-bottom: var(--spacing-xl); padding: var(--spacing-xl); background: var(--color-background-secondary); border-radius: var(--radius-md);">
+            <h3 style="font-size: var(--font-size-sm); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-lg); font-weight: 600;">Fragrance Notes</h3>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-lg); text-align: center;">
               {%- if product.metafields.custom.top_notes != blank -%}
                 <div>
                   <span style="display: block; font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-light); margin-bottom: var(--spacing-xs);">Top</span>
-                  <span style="font-family: var(--font-heading); font-size: var(--font-size-lg);">{{ product.metafields.custom.top_notes }}</span>
+                  <span style="font-weight: 500; font-size: var(--font-size-base);">{{ product.metafields.custom.top_notes }}</span>
                 </div>
               {%- endif -%}
               {%- if product.metafields.custom.heart_notes != blank -%}
                 <div>
                   <span style="display: block; font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-light); margin-bottom: var(--spacing-xs);">Heart</span>
-                  <span style="font-family: var(--font-heading); font-size: var(--font-size-lg);">{{ product.metafields.custom.heart_notes }}</span>
+                  <span style="font-weight: 500; font-size: var(--font-size-base);">{{ product.metafields.custom.heart_notes }}</span>
                 </div>
               {%- endif -%}
               {%- if product.metafields.custom.base_notes != blank -%}
                 <div>
                   <span style="display: block; font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-light); margin-bottom: var(--spacing-xs);">Base</span>
-                  <span style="font-family: var(--font-heading); font-size: var(--font-size-lg);">{{ product.metafields.custom.base_notes }}</span>
+                  <span style="font-weight: 500; font-size: var(--font-size-base);">{{ product.metafields.custom.base_notes }}</span>
                 </div>
               {%- endif -%}
             </div>
           </div>
         {%- endif -%}
 
-        {% comment %} Add to Cart Form {% endcomment %}
-        {%- form 'product', product, id: 'productForm', class: 'product__form' -%}
-          <input type="hidden" name="id" value="{{ current_variant.id }}" id="variantId">
+        {% comment %} Subscription Atomizer Card {% endcomment %}
+        <div class="subscription-card" style="border: 2px solid var(--color-primary); border-radius: var(--radius-md); padding: var(--spacing-xl); margin-bottom: var(--spacing-xl);">
 
-          {%- if product.variants.size > 1 -%}
-            <div class="product__variants" style="margin-bottom: var(--spacing-xl);">
-              {%- for option in product.options_with_values -%}
-                <div class="form-group">
-                  <label class="form-label" for="option-{{ option.name | handle }}">{{ option.name }}</label>
-                  <select
-                    id="option-{{ option.name | handle }}"
-                    class="form-select"
-                    data-option-index="{{ forloop.index0 }}"
-                  >
-                    {%- for value in option.values -%}
-                      <option value="{{ value }}"{% if option.selected_value == value %} selected{% endif %}>
-                        {{ value }}
-                      </option>
-                    {%- endfor -%}
-                  </select>
-                </div>
-              {%- endfor -%}
+          <div style="display: flex; gap: var(--spacing-xl); align-items: center;">
+
+            {% comment %} Atomizer Visual {% endcomment %}
+            <div class="atomizer-visual" style="flex-shrink: 0; width: 100px; text-align: center;">
+              <div style="background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); border-radius: var(--radius-sm); padding: var(--spacing-lg) var(--spacing-md); position: relative;">
+                <svg width="50" height="80" viewBox="0 0 50 80" fill="none" style="display: block; margin: 0 auto;">
+                  {% comment %} Spray top {% endcomment %}
+                  <rect x="18" y="0" width="14" height="8" rx="2" fill="#c9a86c"/>
+                  <rect x="20" y="8" width="10" height="6" fill="#888"/>
+                  {% comment %} Bottle body {% endcomment %}
+                  <rect x="10" y="14" width="30" height="60" rx="4" fill="#1a1a1a" stroke="#c9a86c" stroke-width="1"/>
+                  {% comment %} Label area {% endcomment %}
+                  <rect x="14" y="30" width="22" height="30" rx="2" fill="#222"/>
+                  <text x="25" y="48" text-anchor="middle" fill="#c9a86c" font-size="8" font-weight="600">BN</text>
+                  {% comment %} Volume indicator {% endcomment %}
+                  <text x="25" y="56" text-anchor="middle" fill="#888" font-size="5">5ml</text>
+                </svg>
+              </div>
+              <span style="display: block; margin-top: var(--spacing-sm); font-size: var(--font-size-xs); color: var(--color-text-light); font-weight: 500;">5ml Atomizer</span>
             </div>
-          {%- endif -%}
 
-          <div class="product__actions" style="display: flex; gap: var(--spacing-md); margin-bottom: var(--spacing-xl);">
-            <button
-              type="submit"
-              class="btn btn--primary btn--large"
-              style="flex: 1; min-height: 60px;"
-              {% unless current_variant.available %}disabled{% endunless %}
-            >
-              {%- if current_variant.available -%}
-                Add to Queue
-              {%- else -%}
-                Sold Out
-              {%- endif -%}
-            </button>
+            {% comment %} Subscription Details {% endcomment %}
+            <div class="subscription-details" style="flex: 1;">
+              <div style="display: flex; align-items: baseline; gap: var(--spacing-sm); margin-bottom: var(--spacing-xs);">
+                <span style="font-size: var(--font-size-3xl); font-weight: 700;">$20</span>
+                <span style="font-size: var(--font-size-base); color: var(--color-text-light);">/ month</span>
+              </div>
 
-            <button type="button" class="btn btn--outline btn--large" data-wishlist-add style="min-width: 60px; min-height: 60px; padding: 0;">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
-            </button>
+              <p style="font-size: var(--font-size-sm); color: var(--color-text-light); margin-bottom: var(--spacing-md);">
+                Month-to-month subscription. Cancel anytime.
+              </p>
+
+              <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-md);">
+                <div style="display: flex; align-items: center; gap: var(--spacing-xs);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                  <span style="font-size: var(--font-size-sm);">5ml / ~30 sprays</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--spacing-xs);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                  <span style="font-size: var(--font-size-sm);">Free shipping</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--spacing-xs);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                  <span style="font-size: var(--font-size-sm);">Swap anytime</span>
+                </div>
+              </div>
+            </div>
+
           </div>
-        {%- endform -%}
+
+          {% comment %} Add to Cart Form {% endcomment %}
+          {%- form 'product', product, id: 'productForm', class: 'product__form' -%}
+            <input type="hidden" name="id" value="{{ current_variant.id }}" id="variantId">
+
+            {%- if product.variants.size > 1 -%}
+              <div class="product__variants" style="margin-top: var(--spacing-lg); margin-bottom: var(--spacing-md);">
+                {%- for option in product.options_with_values -%}
+                  <div class="form-group" style="margin-bottom: var(--spacing-sm);">
+                    <label class="form-label" for="option-{{ option.name | handle }}">{{ option.name }}</label>
+                    <select
+                      id="option-{{ option.name | handle }}"
+                      class="form-select"
+                      data-option-index="{{ forloop.index0 }}"
+                    >
+                      {%- for value in option.values -%}
+                        <option value="{{ value }}"{% if option.selected_value == value %} selected{% endif %}>
+                          {{ value }}
+                        </option>
+                      {%- endfor -%}
+                    </select>
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+
+            <div class="product__actions" style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+              <button
+                type="submit"
+                class="btn btn--primary btn--large"
+                style="flex: 1; min-height: 60px;"
+                {% unless current_variant.available %}disabled{% endunless %}
+              >
+                {%- if current_variant.available -%}
+                  Add to Queue
+                {%- else -%}
+                  Sold Out
+                {%- endif -%}
+              </button>
+
+              <button type="button" class="btn btn--outline btn--large" data-wishlist-add style="min-width: 60px; min-height: 60px; padding: 0;" aria-label="Add to Wishlist">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+              </button>
+            </div>
+          {%- endform -%}
+
+        </div>
+
+        {% comment %} Trust Badges {% endcomment %}
+        <div class="trust-badges" style="display: flex; justify-content: center; gap: var(--spacing-xl); padding: var(--spacing-lg) 0; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); margin-bottom: var(--spacing-xl);">
+          <div style="text-align: center;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="1.5" style="margin: 0 auto var(--spacing-xs);">
+              <rect x="1" y="3" width="15" height="13" rx="2"/>
+              <path d="m16 8 5 3-5 3V8z"/>
+            </svg>
+            <span style="font-size: var(--font-size-xs); color: var(--color-text-light); display: block;">TSA Ready</span>
+          </div>
+          <div style="text-align: center;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="1.5" style="margin: 0 auto var(--spacing-xs);">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span style="font-size: var(--font-size-xs); color: var(--color-text-light); display: block;">Authentic</span>
+          </div>
+          <div style="text-align: center;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="1.5" style="margin: 0 auto var(--spacing-xs);">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+            <span style="font-size: var(--font-size-xs); color: var(--color-text-light); display: block;">Satisfaction Guaranteed</span>
+          </div>
+        </div>
 
         {% comment %} Product Details Accordion {% endcomment %}
-        <div class="product__details" style="border-top: 1px solid var(--color-border);">
+        <div class="product__details">
           {%- for block in section.blocks -%}
             <details class="product__accordion" style="border-bottom: 1px solid var(--color-border);" {{ block.shopify_attributes }}>
-              <summary style="padding: var(--spacing-lg) 0; cursor: pointer; font-weight: 500; display: flex; justify-content: space-between; align-items: center;">
+              <summary style="padding: var(--spacing-lg) 0; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
                 {{ block.settings.heading }}
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M6 9l6 6 6-6"/>
@@ -193,6 +268,19 @@
       grid-template-columns: 1fr !important;
     }
 
+    .subscription-card > div:first-child {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .subscription-details {
+      text-align: center;
+    }
+
+    .subscription-details > div:last-child {
+      justify-content: center;
+    }
+
     .product__actions {
       flex-direction: column;
     }
@@ -211,6 +299,11 @@
     .product__actions .btn[data-wishlist-add]::after {
       content: 'Add to Wishlist';
     }
+
+    .trust-badges {
+      flex-wrap: wrap;
+      gap: var(--spacing-lg) !important;
+    }
   }
 
   details summary::-webkit-details-marker {
@@ -224,6 +317,14 @@
   .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .subscription-card {
+    transition: border-color var(--transition-fast);
+  }
+
+  .subscription-card:hover {
+    border-color: var(--color-secondary);
   }
 </style>
 
@@ -266,15 +367,15 @@
         {
           "type": "accordion",
           "settings": {
-            "heading": "Size Guide",
-            "content": "<p>Each atomizer contains 8ml of fragrance, approximately 120 sprays — a month's supply with daily use.</p>"
+            "heading": "What You Get",
+            "content": "<p>Each atomizer contains 5ml of fragrance, approximately 30 sprays — perfect for a month of daily use. The sleek, travel-ready design fits in your pocket or bag.</p>"
           }
         },
         {
           "type": "accordion",
           "settings": {
             "heading": "Subscription Benefits",
-            "content": "<p>As a subscriber, you get access to our full collection of 10 exclusive fragrances. Swap, skip, or cancel anytime.</p>"
+            "content": "<p>As a subscriber, you get access to our full collection of 10 exclusive fragrances. Swap, skip, or cancel anytime — no commitments.</p>"
           }
         }
       ]

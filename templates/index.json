@@ -5,7 +5,7 @@
       "settings": {
         "eyebrow": "Refined. Not Loud.",
         "heading": "Class, Distilled.",
-        "description": "Luxury fragrances in perfectly portioned 8ml atomizers. Discover a new signature scent every month—no commitment to full bottles.",
+        "description": "Luxury fragrances in perfectly portioned 5ml atomizers. Discover a new signature scent every month—no commitment to full bottles.",
         "button_label": "Start Your Journey",
         "button_link": "#subscribe",
         "secondary_button_label": "Find Your Scent",
@@ -18,12 +18,12 @@
       "settings": {
         "eyebrow": "The Basenotes Experience",
         "heading": "Full Luxury. Pocket Size.",
-        "description": "Experience the same premium fragrance found in $300 bottles—delivered in a sleek 8ml Basenotes atomizer that fits in your pocket.",
+        "description": "Experience the same premium fragrance found in $300 bottles—delivered in a sleek 5ml Basenotes atomizer that fits in your pocket.",
         "full_bottle_title": "The Full Bottle",
         "full_bottle_subtitle": "100ml · Retail Price",
         "full_bottle_price": "$295",
         "atomizer_title": "Your Monthly Vial",
-        "atomizer_subtitle": "8ml · 120 Sprays · 30 Days",
+        "atomizer_subtitle": "5ml · ~30 Sprays · 30 Days",
         "atomizer_price": "$20/month",
         "atomizer_badge": "What You Get",
         "button_label": "Start Your Subscription",
@@ -70,7 +70,7 @@
       "settings": {
         "eyebrow": "Presence Without Noise",
         "heading": "10 Exclusive Fragrances",
-        "description": "Each 8ml atomizer holds approximately 120 sprays—a full month of quiet confidence. Sample the extraordinary before committing.",
+        "description": "Each 5ml atomizer holds approximately 30 sprays—a full month of quiet confidence. Sample the extraordinary before committing.",
         "products_to_show": 10,
         "show_view_all": true
       }
@@ -103,7 +103,7 @@
           "type": "step",
           "settings": {
             "title": "Receive Your Atomizer",
-            "description": "A sleek 8ml vial arrives at your door—120 sprays of pure luxury."
+            "description": "A sleek 5ml vial arrives at your door—approximately 30 sprays of pure luxury."
           }
         },
         "step-4": {
@@ -121,7 +121,7 @@
       "settings": {
         "eyebrow": "For Men of Standards",
         "heading": "Choose Your Plan",
-        "description": "One 8ml atomizer per month. 120 sprays of curated luxury. No full bottles, no waste, no regrets.",
+        "description": "One 5ml atomizer per month. ~30 sprays of curated luxury. No full bottles, no waste, no regrets.",
         "note": "Cancel anytime. Free shipping on all orders."
       },
       "blocks": {
@@ -132,7 +132,7 @@
             "price": "$20",
             "period": "month",
             "billing_note": "Billed monthly",
-            "features": "8ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Cancel anytime",
+            "features": "5ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Cancel anytime",
             "button_label": "Subscribe Now"
           }
         },
@@ -143,7 +143,7 @@
             "price": "$48",
             "period": "quarter",
             "billing_note": "Billed every 3 months — Save 20%",
-            "features": "8ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Priority selection|Save 20%|Free travel case",
+            "features": "5ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Priority selection|Save 20%|Free travel case",
             "featured": true,
             "badge": "Best Value",
             "button_label": "Subscribe Now"
@@ -156,7 +156,7 @@
             "price": "$168",
             "period": "year",
             "billing_note": "Billed annually — 2 months free",
-            "features": "8ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Priority selection|2 months free|Exclusive member gifts|Early access to new scents",
+            "features": "5ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Priority selection|2 months free|Exclusive member gifts|Early access to new scents",
             "button_label": "Subscribe Now"
           }
         }
