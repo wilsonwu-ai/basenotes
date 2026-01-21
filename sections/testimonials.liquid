@@ -1,4 +1,4 @@
-<section class="section section--cream">
+<section class="section section--cream testimonials-section">
   <div class="container">
     <div class="section__header">
       {%- if section.settings.eyebrow != blank -%}
@@ -10,13 +10,20 @@
     <div class="testimonials-slider" data-testimonials>
       {%- for block in section.blocks -%}
         <div class="testimonial{% unless forloop.first %} is-hidden{% endunless %}" data-testimonial="{{ forloop.index }}" {{ block.shopify_attributes }}>
+          <div class="testimonial__stars">
+            {%- for i in (1..5) -%}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            {%- endfor -%}
+          </div>
           <blockquote class="testimonial__quote">
             "{{ block.settings.quote }}"
           </blockquote>
           <cite class="testimonial__author">
             {{ block.settings.author }}
             {%- if block.settings.location != blank -%}
-              <span> — {{ block.settings.location }}</span>
+              <span class="testimonial__location"> — {{ block.settings.location }}</span>
             {%- endif -%}
           </cite>
         </div>
@@ -24,13 +31,12 @@
     </div>
 
     {%- if section.blocks.size > 1 -%}
-      <div class="testimonials-dots" style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem;">
+      <div class="testimonials-dots">
         {%- for block in section.blocks -%}
           <button
             class="testimonial-dot{% if forloop.first %} is-active{% endif %}"
             data-dot="{{ forloop.index }}"
             aria-label="Go to testimonial {{ forloop.index }}"
-            style="width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--color-primary); background: {% if forloop.first %}var(--color-primary){% else %}transparent{% endif %}; cursor: pointer;"
           ></button>
         {%- endfor -%}
       </div>
@@ -39,8 +45,75 @@
 </section>
 
 <style>
+  .testimonials-section {
+    background: var(--color-background);
+  }
+
+  .testimonials-slider {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
   .testimonial.is-hidden {
     display: none;
+  }
+
+  .testimonial__stars {
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-secondary);
+  }
+
+  .testimonial__quote {
+    font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--color-text);
+    margin: 0 0 var(--spacing-xl);
+    padding: 0;
+    border: none;
+  }
+
+  .testimonial__author {
+    display: block;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    font-style: normal;
+    color: var(--color-primary);
+  }
+
+  .testimonial__location {
+    font-weight: 400;
+    color: var(--color-text-light);
+  }
+
+  .testimonials-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: var(--spacing-2xl);
+  }
+
+  .testimonial-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--color-primary);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+  }
+
+  .testimonial-dot:hover {
+    background: rgba(26, 26, 26, 0.2);
+  }
+
+  .testimonial-dot.is-active {
+    background: var(--color-primary);
   }
 </style>
 

@@ -1,8 +1,8 @@
-<section class="section section--dark">
+<section class="section section--dark newsletter-section">
   <div class="container">
     <div class="newsletter">
-      <h2 class="section__title">{{ section.settings.heading }}</h2>
-      <p class="section__description" style="color: rgba(255,255,255,0.7);">{{ section.settings.description }}</p>
+      <h2 class="newsletter__title">{{ section.settings.heading }}</h2>
+      <p class="newsletter__description">{{ section.settings.description }}</p>
 
       {%- form 'customer', class: 'newsletter__form' -%}
         <input type="hidden" name="contact[tags]" value="newsletter">
@@ -20,13 +20,80 @@
       {%- endform -%}
 
       {%- if section.settings.privacy_note != blank -%}
-        <p style="margin-top: 1rem; font-size: var(--font-size-xs); opacity: 0.5;">
+        <p class="newsletter__note">
           {{ section.settings.privacy_note }}
         </p>
       {%- endif -%}
     </div>
   </div>
 </section>
+
+<style>
+  .newsletter-section {
+    padding: var(--spacing-4xl) 0;
+  }
+
+  .newsletter {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .newsletter__title {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .newsletter__description {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .newsletter__form {
+    display: flex;
+    gap: var(--spacing-sm);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .newsletter__input {
+    flex: 1;
+    padding: 1rem 1.25rem;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    background: white;
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    transition: border-color 0.2s;
+  }
+
+  .newsletter__input:focus {
+    outline: none;
+    border-color: var(--color-secondary);
+  }
+
+  .newsletter__input::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  .newsletter__note {
+    margin-top: var(--spacing-lg);
+    font-size: var(--font-size-xs);
+    opacity: 0.5;
+  }
+
+  @media (max-width: 576px) {
+    .newsletter__form {
+      flex-direction: column;
+    }
+
+    .newsletter__form .btn {
+      width: 100%;
+    }
+  }
+</style>
 
 {% schema %}
 {

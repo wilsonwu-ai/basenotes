@@ -1,4 +1,4 @@
-<section class="section section--dark" id="subscribe">
+<section class="section section--dark subscription-section" id="subscribe">
   <div class="container">
     <div class="section__header">
       {%- if section.settings.eyebrow != blank -%}
@@ -6,7 +6,7 @@
       {%- endif -%}
       <h2 class="section__title">{{ section.settings.heading }}</h2>
       {%- if section.settings.description != blank -%}
-        <p class="section__description" style="color: rgba(255,255,255,0.7);">{{ section.settings.description }}</p>
+        <p class="section__description subscription-section__description">{{ section.settings.description }}</p>
       {%- endif -%}
     </div>
 
@@ -26,7 +26,12 @@
           <ul class="plan__features">
             {%- assign features = block.settings.features | split: '|' -%}
             {%- for feature in features -%}
-              <li class="plan__feature">{{ feature }}</li>
+              <li class="plan__feature">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                {{ feature }}
+              </li>
             {%- endfor -%}
           </ul>
 
@@ -38,12 +43,144 @@
     </div>
 
     {%- if section.settings.note != blank -%}
-      <p class="text-center mt-4" style="font-size: var(--font-size-sm); opacity: 0.6;">
+      <p class="subscription-section__note">
         {{ section.settings.note }}
       </p>
     {%- endif -%}
   </div>
 </section>
+
+<style>
+  .subscription-section__description {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .subscription-section__note {
+    text-align: center;
+    margin-top: var(--spacing-2xl);
+    font-size: var(--font-size-sm);
+    opacity: 0.6;
+  }
+
+  .plans {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .plan {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl);
+    text-align: center;
+    position: relative;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .plan:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .plan--featured {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-secondary);
+    transform: scale(1.05);
+  }
+
+  .plan--featured:hover {
+    transform: scale(1.05) translateY(-4px);
+    border-color: var(--color-secondary);
+  }
+
+  .plan__badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-secondary);
+    color: var(--color-primary);
+    padding: 0.375rem 1rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+  }
+
+  .plan__name {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .plan__price {
+    font-size: var(--font-size-4xl);
+    font-weight: 700;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .plan__price span {
+    font-size: var(--font-size-lg);
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .plan__period {
+    font-size: var(--font-size-sm);
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .plan__features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--spacing-xl);
+    text-align: left;
+  }
+
+  .plan__feature {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) 0;
+    font-size: var(--font-size-sm);
+    color: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .plan__feature:last-child {
+    border-bottom: none;
+  }
+
+  .plan__feature svg {
+    flex-shrink: 0;
+    color: var(--color-secondary);
+  }
+
+  @media (max-width: 992px) {
+    .plans {
+      grid-template-columns: 1fr;
+      max-width: 400px;
+    }
+
+    .plan--featured {
+      transform: none;
+      order: -1;
+    }
+
+    .plan--featured:hover {
+      transform: translateY(-4px);
+    }
+  }
+</style>
 
 {% schema %}
 {
