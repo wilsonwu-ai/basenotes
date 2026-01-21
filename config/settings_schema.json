@@ -126,6 +126,65 @@
     ]
   },
   {
+    "name": "Contact Information",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Email"
+      },
+      {
+        "type": "text",
+        "id": "contact_email",
+        "label": "Contact email",
+        "default": "hello@basenotes.com"
+      },
+      {
+        "type": "header",
+        "content": "Phone"
+      },
+      {
+        "type": "text",
+        "id": "contact_phone",
+        "label": "Phone number",
+        "default": "1-888-555-1234"
+      },
+      {
+        "type": "text",
+        "id": "contact_phone_hours",
+        "label": "Phone hours",
+        "default": "Mon - Fri, 9am - 6pm EST"
+      },
+      {
+        "type": "header",
+        "content": "Address"
+      },
+      {
+        "type": "text",
+        "id": "contact_company_name",
+        "label": "Company name",
+        "default": "Basenotes Inc."
+      },
+      {
+        "type": "text",
+        "id": "contact_address_line1",
+        "label": "Address line 1",
+        "default": "123 Fragrance Avenue, Suite 400"
+      },
+      {
+        "type": "text",
+        "id": "contact_address_line2",
+        "label": "Address line 2",
+        "default": "New York, NY 10013"
+      },
+      {
+        "type": "text",
+        "id": "contact_country",
+        "label": "Country",
+        "default": "United States"
+      }
+    ]
+  },
+  {
     "name": "Social Media",
     "settings": [
       {
@@ -136,12 +195,14 @@
         "type": "text",
         "id": "social_instagram",
         "label": "Instagram URL",
+        "default": "https://instagram.com/basenotes",
         "info": "Full URL including https://"
       },
       {
         "type": "text",
         "id": "social_facebook",
-        "label": "Facebook URL"
+        "label": "Facebook URL",
+        "default": "https://facebook.com/basenotes"
       },
       {
         "type": "text",
@@ -151,7 +212,8 @@
       {
         "type": "text",
         "id": "social_tiktok",
-        "label": "TikTok URL"
+        "label": "TikTok URL",
+        "default": "https://tiktok.com/@basenotes"
       },
       {
         "type": "text",
@@ -161,7 +223,8 @@
       {
         "type": "text",
         "id": "social_youtube",
-        "label": "YouTube URL"
+        "label": "YouTube URL",
+        "default": "https://youtube.com/@basenotes"
       }
     ]
   },

@@ -85,42 +85,69 @@
 
         {% comment %} Subscription Status Card {% endcomment %}
         <section id="subscription" class="account-card account-card--featured">
-          <div class="subscription-header">
-            <div class="subscription-info">
-              <span class="subscription-badge">Active Subscription</span>
-              <h2 class="subscription-plan">Monthly Plan</h2>
-              <p class="subscription-next">Next fragrance ships <strong>February 1, 2026</strong></p>
-            </div>
-            <div class="subscription-price">
-              <span class="subscription-price__amount">$20</span>
-              <span class="subscription-price__period">/month</span>
-            </div>
-          </div>
-
-          <div class="subscription-actions">
-            <a href="#" class="btn btn--outline-light btn--small">Manage Plan</a>
-            <a href="#" class="btn btn--outline-light btn--small">Skip Next Month</a>
-            <a href="/collections/all" class="btn btn--gold btn--small">Change Next Scent</a>
-          </div>
-
-          <div class="subscription-next-scent">
-            <p class="subscription-next-scent__label">Your next fragrance:</p>
-            <div class="subscription-next-scent__product">
-              <div class="subscription-next-scent__image">
-                <svg viewBox="0 0 60 100" fill="none" stroke="currentColor" stroke-width="1">
-                  <rect x="15" y="25" width="30" height="65" rx="3"/>
-                  <rect x="20" y="10" width="20" height="15"/>
-                  <rect x="25" y="2" width="10" height="8" rx="2"/>
-                  <text x="30" y="62" text-anchor="middle" font-size="8" fill="currentColor" stroke="none">BN</text>
-                </svg>
+          {%- if customer.tags contains 'subscriber' or customer.tags contains 'active_subscriber' -%}
+            {%- comment -%} Active Subscriber View {%- endcomment -%}
+            <div class="subscription-header">
+              <div class="subscription-info">
+                <span class="subscription-badge">Active Subscription</span>
+                <h2 class="subscription-plan">Monthly Plan</h2>
+                <p class="subscription-next">Manage your subscription below</p>
               </div>
-              <div class="subscription-next-scent__details">
-                <h4>Noir Absolu</h4>
-                <p>Dark chocolate, Oud, Leather</p>
-                <a href="#" class="text-link">View Details</a>
+              <div class="subscription-price">
+                <span class="subscription-price__amount">{{ settings.subscription_price | default: '$20' }}</span>
+                <span class="subscription-price__period">/month</span>
               </div>
             </div>
-          </div>
+
+            <div class="subscription-actions">
+              {%- if settings.subscription_manage_url != blank -%}
+                <a href="{{ settings.subscription_manage_url }}" class="btn btn--outline-light btn--small">Manage Plan</a>
+              {%- else -%}
+                <a href="/pages/contact" class="btn btn--outline-light btn--small">Contact Support</a>
+              {%- endif -%}
+              <a href="/collections/all" class="btn btn--gold btn--small">Browse Fragrances</a>
+            </div>
+
+            <div class="subscription-next-scent">
+              <p class="subscription-next-scent__label">Questions about your subscription?</p>
+              <p style="font-size: var(--font-size-sm); opacity: 0.8;">
+                Contact us at <a href="mailto:hello@basenotes.com" style="color: var(--color-secondary);">hello@basenotes.com</a> or visit our <a href="/pages/faq" style="color: var(--color-secondary);">FAQ page</a>.
+              </p>
+            </div>
+          {%- else -%}
+            {%- comment -%} Non-Subscriber View {%- endcomment -%}
+            <div class="subscription-header">
+              <div class="subscription-info">
+                <span class="subscription-badge" style="background: rgba(255,255,255,0.2); color: white;">Start Your Journey</span>
+                <h2 class="subscription-plan">Join Basenotes</h2>
+                <p class="subscription-next">Get a new luxury fragrance every month</p>
+              </div>
+              <div class="subscription-price">
+                <span class="subscription-price__amount">{{ settings.subscription_price | default: '$20' }}</span>
+                <span class="subscription-price__period">/month</span>
+              </div>
+            </div>
+
+            <ul class="subscription-benefits" style="list-style: none; padding: 0; margin: 0 0 var(--spacing-xl); opacity: 0.9;">
+              <li style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm); font-size: var(--font-size-sm);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                5ml atomizer of premium fragrance
+              </li>
+              <li style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm); font-size: var(--font-size-sm);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Free shipping on all orders
+              </li>
+              <li style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm); font-size: var(--font-size-sm);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Pause or cancel anytime
+              </li>
+            </ul>
+
+            <div class="subscription-actions">
+              <a href="/pages/subscription" class="btn btn--gold btn--large">Start Your Subscription</a>
+              <a href="/pages/quiz" class="btn btn--outline-light btn--small" style="margin-left: var(--spacing-sm);">Take the Quiz</a>
+            </div>
+          {%- endif -%}
         </section>
 
         {% comment %} Quick Stats {% endcomment %}
@@ -130,16 +157,21 @@
             <span class="account-stat__label">Orders</span>
           </div>
           <div class="account-stat">
-            <span class="account-stat__number">3</span>
+            <span class="account-stat__number" id="queueCountStat">0</span>
             <span class="account-stat__label">In Queue</span>
           </div>
           <div class="account-stat">
-            <span class="account-stat__number">6</span>
+            {%- assign member_since = customer.created_at | date: '%s' -%}
+            {%- assign now = 'now' | date: '%s' -%}
+            {%- assign diff_seconds = now | minus: member_since -%}
+            {%- assign months_active = diff_seconds | divided_by: 2592000 -%}
+            {%- if months_active < 1 -%}{%- assign months_active = 1 -%}{%- endif -%}
+            <span class="account-stat__number">{{ months_active }}</span>
             <span class="account-stat__label">Months Active</span>
           </div>
           <div class="account-stat">
-            <span class="account-stat__number">{{ customer.tags.size | default: 0 }}</span>
-            <span class="account-stat__label">Favorites</span>
+            <span class="account-stat__number" id="wishlistCountStat">0</span>
+            <span class="account-stat__label">Wishlist</span>
           </div>
         </div>
 
@@ -150,89 +182,25 @@
             <a href="/collections/all" class="text-link">Add More</a>
           </div>
 
-          <div class="queue-list">
-            <div class="queue-item">
-              <div class="queue-item__position">1</div>
-              <div class="queue-item__image">
-                <svg viewBox="0 0 60 100" fill="none" stroke="currentColor" stroke-width="1">
-                  <rect x="15" y="25" width="30" height="65" rx="3"/>
-                  <rect x="20" y="10" width="20" height="15"/>
-                  <rect x="25" y="2" width="10" height="8" rx="2"/>
-                </svg>
-              </div>
-              <div class="queue-item__details">
-                <h4>Amber Elixir</h4>
-                <p>Amber, Vanilla, Benzoin</p>
-              </div>
-              <div class="queue-item__actions">
-                <button class="queue-item__move" title="Move up">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="18 15 12 9 6 15"/>
-                  </svg>
-                </button>
-                <button class="queue-item__remove" title="Remove">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
+          <div class="queue-list" id="queueList">
+            {%- comment -%} Queue items will be populated by JavaScript from localStorage {%- endcomment -%}
+          </div>
 
-            <div class="queue-item">
-              <div class="queue-item__position">2</div>
-              <div class="queue-item__image">
-                <svg viewBox="0 0 60 100" fill="none" stroke="currentColor" stroke-width="1">
-                  <rect x="15" y="25" width="30" height="65" rx="3"/>
-                  <rect x="20" y="10" width="20" height="15"/>
-                  <rect x="25" y="2" width="10" height="8" rx="2"/>
-                </svg>
-              </div>
-              <div class="queue-item__details">
-                <h4>Rose Oud</h4>
-                <p>Bulgarian Rose, Oud, Saffron</p>
-              </div>
-              <div class="queue-item__actions">
-                <button class="queue-item__move" title="Move up">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="18 15 12 9 6 15"/>
-                  </svg>
-                </button>
-                <button class="queue-item__remove" title="Remove">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            <div class="queue-item">
-              <div class="queue-item__position">3</div>
-              <div class="queue-item__image">
-                <svg viewBox="0 0 60 100" fill="none" stroke="currentColor" stroke-width="1">
-                  <rect x="15" y="25" width="30" height="65" rx="3"/>
-                  <rect x="20" y="10" width="20" height="15"/>
-                  <rect x="25" y="2" width="10" height="8" rx="2"/>
-                </svg>
-              </div>
-              <div class="queue-item__details">
-                <h4>Bergamot Mist</h4>
-                <p>Bergamot, White Tea, Musk</p>
-              </div>
-              <div class="queue-item__actions">
-                <button class="queue-item__move" title="Move up">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="18 15 12 9 6 15"/>
-                  </svg>
-                </button>
-                <button class="queue-item__remove" title="Remove">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                </button>
-              </div>
+          <div class="queue-empty" id="queueEmpty" style="display: none;">
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <line x1="8" y1="6" x2="21" y2="6"/>
+                <line x1="8" y1="12" x2="21" y2="12"/>
+                <line x1="8" y1="18" x2="21" y2="18"/>
+                <line x1="3" y1="6" x2="3.01" y2="6"/>
+                <line x1="3" y1="12" x2="3.01" y2="12"/>
+                <line x1="3" y1="18" x2="3.01" y2="18"/>
+              </svg>
+              <p>Your fragrance queue is empty</p>
+              <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--spacing-lg);">
+                Browse our collection and add fragrances to build your queue
+              </p>
+              <a href="/collections/all" class="btn btn--primary">Browse Fragrances</a>
             </div>
           </div>
         </section>
@@ -821,5 +789,140 @@
         }
       });
     });
+
+    // Queue Management
+    const queueList = document.getElementById('queueList');
+    const queueEmpty = document.getElementById('queueEmpty');
+    const queueCountStat = document.getElementById('queueCountStat');
+    const wishlistCountStat = document.getElementById('wishlistCountStat');
+
+    function getQueue() {
+      try {
+        return JSON.parse(localStorage.getItem('basenotes_queue') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveQueue(queue) {
+      localStorage.setItem('basenotes_queue', JSON.stringify(queue));
+      renderQueue();
+    }
+
+    function getWishlist() {
+      try {
+        return JSON.parse(localStorage.getItem('basenotes_wishlist') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function renderQueue() {
+      const queue = getQueue();
+
+      // Update stats
+      if (queueCountStat) {
+        queueCountStat.textContent = queue.length;
+      }
+
+      if (wishlistCountStat) {
+        wishlistCountStat.textContent = getWishlist().length;
+      }
+
+      if (queue.length === 0) {
+        queueList.style.display = 'none';
+        queueEmpty.style.display = 'block';
+        return;
+      }
+
+      queueList.style.display = 'flex';
+      queueEmpty.style.display = 'none';
+
+      queueList.innerHTML = queue.map((item, index) => `
+        <div class="queue-item" data-index="${index}">
+          <div class="queue-item__position">${index + 1}</div>
+          <div class="queue-item__image">
+            ${item.image ? `<img src="${item.image}" alt="${item.title}" style="width: 100%; height: 100%; object-fit: cover;">` : `
+              <svg viewBox="0 0 60 100" fill="none" stroke="currentColor" stroke-width="1">
+                <rect x="15" y="25" width="30" height="65" rx="3"/>
+                <rect x="20" y="10" width="20" height="15"/>
+                <rect x="25" y="2" width="10" height="8" rx="2"/>
+              </svg>
+            `}
+          </div>
+          <div class="queue-item__details">
+            <h4><a href="${item.url || '#'}" style="color: inherit; text-decoration: none;">${item.title}</a></h4>
+            <p>${item.vendor || ''}</p>
+          </div>
+          <div class="queue-item__actions">
+            ${index > 0 ? `
+              <button class="queue-item__move" title="Move up" data-action="move-up" data-index="${index}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="18 15 12 9 6 15"/>
+                </svg>
+              </button>
+            ` : ''}
+            <button class="queue-item__remove" title="Remove" data-action="remove" data-index="${index}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      // Attach event listeners
+      queueList.querySelectorAll('[data-action="move-up"]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const index = parseInt(this.dataset.index);
+          moveQueueItem(index, index - 1);
+        });
+      });
+
+      queueList.querySelectorAll('[data-action="remove"]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const index = parseInt(this.dataset.index);
+          removeFromQueue(index);
+        });
+      });
+    }
+
+    function moveQueueItem(fromIndex, toIndex) {
+      const queue = getQueue();
+      if (toIndex < 0 || toIndex >= queue.length) return;
+
+      const item = queue.splice(fromIndex, 1)[0];
+      queue.splice(toIndex, 0, item);
+      saveQueue(queue);
+    }
+
+    function removeFromQueue(index) {
+      const queue = getQueue();
+      queue.splice(index, 1);
+      saveQueue(queue);
+    }
+
+    // Initialize queue
+    renderQueue();
+
+    // Make addToQueue available globally for product pages
+    window.addToQueue = function(product) {
+      const queue = getQueue();
+      // Check if already in queue
+      if (!queue.find(item => item.id === product.id)) {
+        queue.push({
+          id: product.id,
+          title: product.title,
+          vendor: product.vendor || '',
+          url: product.url || `/products/${product.handle}`,
+          image: product.image || ''
+        });
+        saveQueue(queue);
+        alert('Added to your queue!');
+      } else {
+        alert('This fragrance is already in your queue.');
+      }
+    };
   });
 </script>

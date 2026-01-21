@@ -1,0 +1,291 @@
+{%- layout 'theme' -%}
+
+<section class="section" style="padding-top: calc(var(--header-height) + var(--spacing-2xl)); min-height: 70vh;">
+  <div class="container">
+    <div class="search-page">
+      <header class="search-page__header">
+        <h1 class="search-page__title">Search Results</h1>
+
+        <form action="{{ routes.search_url }}" method="get" class="search-page__form">
+          <div class="search-page__input-wrapper">
+            <input
+              type="search"
+              name="q"
+              value="{{ search.terms | escape }}"
+              placeholder="Search for fragrances..."
+              class="search-page__input"
+              aria-label="Search"
+            >
+            <button type="submit" class="search-page__submit" aria-label="Search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+            </button>
+          </div>
+          <input type="hidden" name="type" value="product">
+        </form>
+      </header>
+
+      {%- if search.performed -%}
+        {%- if search.results_count > 0 -%}
+          <p class="search-page__count">
+            Found {{ search.results_count }} result{% if search.results_count != 1 %}s{% endif %} for "{{ search.terms }}"
+          </p>
+
+          <div class="search-page__results">
+            {%- for item in search.results -%}
+              {%- if item.object_type == 'product' -%}
+                {% render 'product-card', product: item %}
+              {%- elsif item.object_type == 'page' -%}
+                <div class="search-page__result-item">
+                  <span class="search-page__result-type">Page</span>
+                  <h3 class="search-page__result-title">
+                    <a href="{{ item.url }}">{{ item.title }}</a>
+                  </h3>
+                  {%- if item.content != blank -%}
+                    <p class="search-page__result-excerpt">{{ item.content | strip_html | truncate: 150 }}</p>
+                  {%- endif -%}
+                </div>
+              {%- elsif item.object_type == 'article' -%}
+                <div class="search-page__result-item">
+                  <span class="search-page__result-type">Article</span>
+                  <h3 class="search-page__result-title">
+                    <a href="{{ item.url }}">{{ item.title }}</a>
+                  </h3>
+                  {%- if item.excerpt != blank -%}
+                    <p class="search-page__result-excerpt">{{ item.excerpt | strip_html | truncate: 150 }}</p>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+
+          {%- if search.results_count > 20 -%}
+            {% comment %} Pagination {% endcomment %}
+            <div class="search-page__pagination">
+              {%- if paginate.previous -%}
+                <a href="{{ paginate.previous.url }}" class="btn btn--outline">Previous</a>
+              {%- endif -%}
+              {%- if paginate.next -%}
+                <a href="{{ paginate.next.url }}" class="btn btn--outline">Next</a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- else -%}
+          <div class="search-page__empty">
+            <div class="search-page__empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+            </div>
+            <h2>No results found</h2>
+            <p>We couldn't find anything matching "{{ search.terms }}"</p>
+            <div class="search-page__suggestions">
+              <p>Try:</p>
+              <ul>
+                <li>Using different keywords</li>
+                <li>Searching for a fragrance note (e.g., "woody", "floral")</li>
+                <li>Browsing our <a href="/collections/all">full collection</a></li>
+              </ul>
+            </div>
+          </div>
+        {%- endif -%}
+      {%- else -%}
+        <div class="search-page__empty">
+          <div class="search-page__empty-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+          </div>
+          <h2>Search Our Collection</h2>
+          <p>Discover your next signature scent by searching for fragrances, notes, or brands.</p>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<style>
+  .search-page {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .search-page__header {
+    text-align: center;
+    margin-bottom: var(--spacing-3xl);
+  }
+
+  .search-page__title {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .search-page__form {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .search-page__input-wrapper {
+    display: flex;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .search-page__input-wrapper:focus-within {
+    border-color: var(--color-secondary);
+  }
+
+  .search-page__input {
+    flex: 1;
+    padding: 1rem 1.25rem;
+    font-size: var(--font-size-base);
+    border: none;
+    outline: none;
+    background: transparent;
+  }
+
+  .search-page__submit {
+    padding: 1rem 1.25rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .search-page__submit:hover {
+    background: #2a2a2a;
+  }
+
+  .search-page__submit svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .search-page__count {
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .search-page__results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--spacing-xl);
+  }
+
+  .search-page__result-item {
+    padding: var(--spacing-lg);
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  .search-page__result-type {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--color-background-secondary);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .search-page__result-title {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .search-page__result-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .search-page__result-title a:hover {
+    color: var(--color-secondary);
+  }
+
+  .search-page__result-excerpt {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    line-height: 1.6;
+  }
+
+  .search-page__empty {
+    text-align: center;
+    padding: var(--spacing-4xl) 0;
+  }
+
+  .search-page__empty-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-background-secondary);
+    border-radius: 50%;
+    color: var(--color-text-muted);
+  }
+
+  .search-page__empty-icon svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .search-page__empty h2 {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .search-page__empty > p {
+    color: var(--color-text-light);
+    max-width: 400px;
+    margin: 0 auto var(--spacing-xl);
+  }
+
+  .search-page__suggestions {
+    text-align: left;
+    display: inline-block;
+    background: var(--color-background-secondary);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+  }
+
+  .search-page__suggestions p {
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .search-page__suggestions ul {
+    padding-left: var(--spacing-lg);
+    color: var(--color-text-light);
+  }
+
+  .search-page__suggestions li {
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .search-page__suggestions a {
+    color: var(--color-secondary);
+  }
+
+  .search-page__pagination {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-3xl);
+  }
+
+  @media (max-width: 576px) {
+    .search-page__results {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

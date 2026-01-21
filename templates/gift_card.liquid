@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ shop.name }} - Gift Card</title>
+
+  {{ 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap' | stylesheet_tag }}
+
+  <style>
+    :root {
+      --color-primary: #1a1a1a;
+      --color-secondary: #c9a86c;
+      --color-text: #1a1a1a;
+      --color-text-light: #666;
+      --color-border: #e5e5e5;
+      --color-success: #4caf50;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .gift-card-page {
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .gift-card {
+      background: linear-gradient(135deg, var(--color-primary) 0%, #2a2a2a 100%);
+      border-radius: 20px;
+      padding: 2.5rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .gift-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(201, 168, 108, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .gift-card__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2rem;
+    }
+
+    .gift-card__logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .gift-card__logo svg {
+      width: 40px;
+      height: auto;
+    }
+
+    .gift-card__brand {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    .gift-card__badge {
+      padding: 0.25rem 0.75rem;
+      background: var(--color-secondary);
+      color: var(--color-primary);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-radius: 20px;
+    }
+
+    .gift-card__amount {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--color-secondary);
+    }
+
+    .gift-card__label {
+      font-size: 0.875rem;
+      opacity: 0.7;
+      margin-bottom: 2rem;
+    }
+
+    .gift-card__code-wrapper {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+    }
+
+    .gift-card__code-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+    }
+
+    .gift-card__code {
+      font-family: 'Courier New', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      word-break: break-all;
+    }
+
+    .gift-card__qr {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .gift-card__qr img {
+      width: 120px;
+      height: 120px;
+      background: white;
+      padding: 0.5rem;
+      border-radius: 8px;
+    }
+
+    .gift-card__actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .gift-card__btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 1rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .gift-card__btn--primary {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .gift-card__btn--primary:hover {
+      background: #2a2a2a;
+    }
+
+    .gift-card__btn--secondary {
+      background: white;
+      color: var(--color-primary);
+      border: 2px solid var(--color-border);
+    }
+
+    .gift-card__btn--secondary:hover {
+      border-color: var(--color-secondary);
+    }
+
+    .gift-card__btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .gift-card__btn--copied {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .gift-card__expiry {
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--color-text-light);
+      margin-bottom: 1.5rem;
+    }
+
+    .gift-card__expiry strong {
+      color: var(--color-text);
+    }
+
+    .gift-card__shop-link {
+      text-align: center;
+    }
+
+    .gift-card__shop-link a {
+      color: var(--color-secondary);
+      font-size: 0.875rem;
+      text-decoration: none;
+    }
+
+    .gift-card__shop-link a:hover {
+      text-decoration: underline;
+    }
+
+    .gift-card__balance-note {
+      text-align: center;
+      padding: 1rem;
+      background: rgba(76, 175, 80, 0.1);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      color: var(--color-success);
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      .gift-card {
+        padding: 1.5rem;
+      }
+
+      .gift-card__amount {
+        font-size: 2.5rem;
+      }
+
+      .gift-card__code {
+        font-size: 1.125rem;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .gift-card__actions {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="gift-card-page">
+    <div class="gift-card">
+      <div class="gift-card__header">
+        <div class="gift-card__logo">
+          <svg viewBox="0 0 80 120" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="20" y="30" width="40" height="80" rx="4"/>
+            <rect x="30" y="10" width="20" height="20"/>
+            <rect x="35" y="0" width="10" height="10" rx="2"/>
+            <text x="40" y="78" text-anchor="middle" font-size="12" fill="currentColor" stroke="none">BN</text>
+          </svg>
+          <span class="gift-card__brand">{{ shop.name | upcase }}</span>
+        </div>
+        <span class="gift-card__badge">Gift Card</span>
+      </div>
+
+      <div class="gift-card__amount">{{ gift_card.initial_value | money }}</div>
+      <p class="gift-card__label">
+        {%- if gift_card.balance != gift_card.initial_value -%}
+          Remaining balance: {{ gift_card.balance | money }}
+        {%- else -%}
+          Gift Card Value
+        {%- endif -%}
+      </p>
+
+      <div class="gift-card__code-wrapper">
+        <p class="gift-card__code-label">Redemption Code</p>
+        <p class="gift-card__code" id="giftCardCode">{{ gift_card.code | format_code }}</p>
+      </div>
+    </div>
+
+    <div class="gift-card__qr">
+      <img src="{{ gift_card.qr_code_identifier | qr_code }}" alt="QR code for gift card">
+    </div>
+
+    <div class="gift-card__actions">
+      <button class="gift-card__btn gift-card__btn--primary" id="copyCodeBtn" onclick="copyCode()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        <span>Copy Code</span>
+      </button>
+
+      <button class="gift-card__btn gift-card__btn--secondary" onclick="window.print()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 6 2 18 2 18 9"/>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+          <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        <span>Print Gift Card</span>
+      </button>
+
+      <a href="{{ shop.url }}" class="gift-card__btn gift-card__btn--secondary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span>Start Shopping</span>
+      </a>
+    </div>
+
+    {%- if gift_card.expires_on -%}
+      <p class="gift-card__expiry">
+        Valid until <strong>{{ gift_card.expires_on | date: '%B %d, %Y' }}</strong>
+      </p>
+    {%- endif -%}
+
+    {%- if gift_card.enabled == false or gift_card.expired -%}
+      <div class="gift-card__balance-note" style="background: rgba(244, 67, 54, 0.1); color: #f44336;">
+        This gift card is no longer valid.
+      </div>
+    {%- elsif gift_card.balance != gift_card.initial_value -%}
+      <div class="gift-card__balance-note">
+        {{ gift_card.balance | money }} remaining on this gift card
+      </div>
+    {%- endif -%}
+
+    <div class="gift-card__shop-link">
+      <a href="{{ shop.url }}">Visit {{ shop.name }}</a>
+    </div>
+  </div>
+
+  <script>
+    function copyCode() {
+      const code = document.getElementById('giftCardCode').textContent.replace(/\s/g, '');
+      const btn = document.getElementById('copyCodeBtn');
+
+      navigator.clipboard.writeText(code).then(function() {
+        btn.classList.add('gift-card__btn--copied');
+        btn.querySelector('span').textContent = 'Copied!';
+
+        setTimeout(function() {
+          btn.classList.remove('gift-card__btn--copied');
+          btn.querySelector('span').textContent = 'Copy Code';
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

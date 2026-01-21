@@ -157,9 +157,12 @@
               {% comment %} Recommendations will be populated by JavaScript {% endcomment %}
             </div>
 
-            <a href="#subscribe" class="btn btn--primary btn--large">
-              Start Your Subscription
+            <a href="/collections/all" class="btn btn--primary btn--large">
+              Browse Your Matches
             </a>
+            <p style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--color-text-light);">
+              or <a href="/pages/subscription" style="color: var(--color-secondary);">start a subscription</a> to get monthly recommendations
+            </p>
           </div>
         </div>
       </div>
@@ -172,6 +175,93 @@
     </div>
   </div>
 </section>
+
+<style>
+  .quiz-product-card {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .quiz-product-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+  }
+
+  .quiz-product-card__image {
+    display: block;
+    aspect-ratio: 1;
+    background: var(--color-background-secondary);
+    overflow: hidden;
+  }
+
+  .quiz-product-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+
+  .quiz-product-card:hover .quiz-product-card__image img {
+    transform: scale(1.05);
+  }
+
+  .quiz-product-card__placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--color-background-secondary);
+  }
+
+  .quiz-product-card__details {
+    padding: var(--spacing-md);
+    text-align: left;
+  }
+
+  .quiz-product-card__vendor {
+    display: block;
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .quiz-product-card__title {
+    font-size: var(--font-size-sm);
+    font-family: var(--font-heading);
+    margin: 0 0 var(--spacing-xs);
+    line-height: 1.3;
+  }
+
+  .quiz-product-card__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .quiz-product-card__title a:hover {
+    color: var(--color-secondary);
+  }
+
+  .quiz-product-card__price {
+    font-weight: 600;
+    color: var(--color-secondary);
+  }
+
+  .quiz-product-card__form {
+    padding: 0 var(--spacing-md) var(--spacing-md);
+  }
+
+  @media (max-width: 768px) {
+    #quizRecommendations {
+      grid-template-columns: 1fr !important;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+</style>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -187,6 +277,67 @@
     const prevBtn = document.getElementById('quizPrev');
     const nextBtn = document.getElementById('quizNext');
     const actionsDiv = document.getElementById('quizActions');
+
+    // Scoring matrix: each answer contributes points to profiles
+    const scoringMatrix = {
+      // Question 1: Scent personality
+      bold: { pioneer: 3, explorer: 1, minimalist: 0, romantic: 0 },
+      sophisticated: { pioneer: 1, explorer: 3, minimalist: 1, romantic: 1 },
+      fresh: { pioneer: 0, explorer: 1, minimalist: 3, romantic: 0 },
+      romantic: { pioneer: 0, explorer: 1, minimalist: 0, romantic: 3 },
+
+      // Question 2: When worn
+      everyday: { pioneer: 0, explorer: 1, minimalist: 3, romantic: 1 },
+      evening: { pioneer: 2, explorer: 2, minimalist: 0, romantic: 2 },
+      special: { pioneer: 3, explorer: 2, minimalist: 0, romantic: 3 },
+      all: { pioneer: 1, explorer: 2, minimalist: 1, romantic: 1 },
+
+      // Question 3: Scent family
+      woody: { pioneer: 2, explorer: 3, minimalist: 1, romantic: 0 },
+      oriental: { pioneer: 3, explorer: 2, minimalist: 0, romantic: 2 },
+      floral: { pioneer: 0, explorer: 1, minimalist: 1, romantic: 3 },
+      citrus: { pioneer: 0, explorer: 0, minimalist: 3, romantic: 1 },
+
+      // Question 4: Longevity
+      light: { pioneer: 0, explorer: 0, minimalist: 3, romantic: 1 },
+      moderate: { pioneer: 1, explorer: 2, minimalist: 2, romantic: 2 },
+      strong: { pioneer: 2, explorer: 3, minimalist: 0, romantic: 2 },
+      powerful: { pioneer: 3, explorer: 2, minimalist: 0, romantic: 1 },
+
+      // Question 5: Ingredients
+      oud: { pioneer: 3, explorer: 2, minimalist: 0, romantic: 1 },
+      leather: { pioneer: 3, explorer: 2, minimalist: 0, romantic: 0 },
+      rose: { pioneer: 0, explorer: 1, minimalist: 1, romantic: 3 },
+      vetiver: { pioneer: 1, explorer: 2, minimalist: 2, romantic: 1 }
+    };
+
+    // Profile definitions
+    const profiles = {
+      pioneer: {
+        name: 'The Bold Pioneer',
+        description: 'You embrace powerful, statement-making fragrances. Oud, leather, and spices are your allies. You\'re not afraid to leave a lasting impression.',
+        tags: ['oud', 'leather', 'spicy', 'intense', 'bold'],
+        keywords: ['oud', 'leather', 'tobacco', 'amber', 'spice']
+      },
+      explorer: {
+        name: 'The Sophisticated Explorer',
+        description: 'You appreciate depth and complexity. Rich, luxurious scents that evolve throughout the day appeal to you. You seek fragrances that tell a story.',
+        tags: ['woody', 'complex', 'rich', 'sophisticated'],
+        keywords: ['sandalwood', 'cedar', 'vetiver', 'woody', 'complex']
+      },
+      minimalist: {
+        name: 'The Modern Minimalist',
+        description: 'You prefer clean, fresh scents that are refined yet understated. Quality over quantity defines your approach. Effortless elegance is your signature.',
+        tags: ['fresh', 'clean', 'light', 'citrus', 'aquatic'],
+        keywords: ['citrus', 'fresh', 'clean', 'bergamot', 'marine']
+      },
+      romantic: {
+        name: 'The Romantic Dreamer',
+        description: 'Sensual, enveloping fragrances speak to your soul. Florals and orientals are your playground. You believe fragrance should evoke emotion and memory.',
+        tags: ['floral', 'romantic', 'sensual', 'oriental'],
+        keywords: ['rose', 'jasmine', 'vanilla', 'musk', 'floral']
+      }
+    };
 
     function showQuestion(num) {
       slides.forEach(slide => {
@@ -239,22 +390,131 @@
       }, 300);
     }
 
+    function calculateProfile() {
+      // Initialize scores
+      const scores = { pioneer: 0, explorer: 0, minimalist: 0, romantic: 0 };
+
+      // Calculate scores based on answers
+      Object.values(answers).forEach(answer => {
+        if (scoringMatrix[answer]) {
+          Object.keys(scores).forEach(profile => {
+            scores[profile] += scoringMatrix[answer][profile] || 0;
+          });
+        }
+      });
+
+      // Find the winning profile
+      let maxScore = 0;
+      let winningProfile = 'explorer'; // default
+
+      Object.keys(scores).forEach(profile => {
+        if (scores[profile] > maxScore) {
+          maxScore = scores[profile];
+          winningProfile = profile;
+        }
+      });
+
+      return winningProfile;
+    }
+
     function showResults() {
       showQuestion('results');
 
-      // Simple profile determination based on answers
-      const profiles = {
-        'The Bold Pioneer': 'You embrace powerful, statement-making fragrances. Oud, leather, and spices are your allies.',
-        'The Sophisticated Explorer': 'You appreciate depth and complexity. Rich, luxurious scents that evolve throughout the day appeal to you.',
-        'The Modern Minimalist': 'You prefer clean, fresh scents that are refined yet understated. Quality over quantity.',
-        'The Romantic Dreamer': 'Sensual, enveloping fragrances speak to your soul. Florals and orientals are your playground.'
-      };
+      // Calculate the profile based on actual answers
+      const profileKey = calculateProfile();
+      const profile = profiles[profileKey];
 
-      const profileKeys = Object.keys(profiles);
-      const randomProfile = profileKeys[Math.floor(Math.random() * profileKeys.length)];
+      document.getElementById('quizResultTitle').textContent = profile.name;
+      document.getElementById('quizResultDescription').textContent = profile.description;
 
-      document.getElementById('quizResultTitle').textContent = randomProfile;
-      document.getElementById('quizResultDescription').textContent = profiles[randomProfile];
+      // Store profile for personalization
+      localStorage.setItem('basenotes_scent_profile', profileKey);
+      localStorage.setItem('basenotes_quiz_answers', JSON.stringify(answers));
+
+      // Load product recommendations
+      loadRecommendations(profile);
+    }
+
+    function loadRecommendations(profile) {
+      const recommendationsContainer = document.getElementById('quizRecommendations');
+
+      // Show loading state
+      recommendationsContainer.innerHTML = '<p style="grid-column: span 3; text-align: center; color: var(--color-text-light);">Finding your perfect matches...</p>';
+
+      // Fetch products from the collection
+      fetch('/collections/all/products.json?limit=20')
+        .then(response => response.json())
+        .then(data => {
+          let products = data.products || [];
+
+          // Score products based on profile keywords in title, tags, or description
+          products = products.map(product => {
+            let matchScore = 0;
+            const searchText = (product.title + ' ' + (product.tags || []).join(' ') + ' ' + (product.body_html || '')).toLowerCase();
+
+            profile.keywords.forEach(keyword => {
+              if (searchText.includes(keyword.toLowerCase())) {
+                matchScore += 2;
+              }
+            });
+
+            // Bonus for tag matches
+            if (product.tags) {
+              profile.tags.forEach(tag => {
+                if (product.tags.some(t => t.toLowerCase().includes(tag.toLowerCase()))) {
+                  matchScore += 3;
+                }
+              });
+            }
+
+            return { ...product, matchScore };
+          });
+
+          // Sort by match score (highest first), then take top 3
+          products.sort((a, b) => b.matchScore - a.matchScore);
+          const recommended = products.slice(0, 3);
+
+          // If we don't have enough matches, fill with random products
+          if (recommended.length < 3) {
+            const remaining = products.filter(p => !recommended.includes(p)).slice(0, 3 - recommended.length);
+            recommended.push(...remaining);
+          }
+
+          // Render recommendations
+          if (recommended.length === 0) {
+            recommendationsContainer.innerHTML = '<p style="grid-column: span 3; text-align: center; color: var(--color-text-light);">Browse our collection to find your perfect match.</p>';
+            return;
+          }
+
+          recommendationsContainer.innerHTML = recommended.map(product => {
+            const image = product.images && product.images[0] ? product.images[0].src : '';
+            const price = product.variants && product.variants[0] ? (product.variants[0].price / 100).toFixed(2) : '0.00';
+            const variantId = product.variants && product.variants[0] ? product.variants[0].id : '';
+
+            return `
+              <div class="quiz-product-card">
+                <a href="/products/${product.handle}" class="quiz-product-card__image">
+                  ${image ? `<img src="${image}" alt="${product.title}" loading="lazy">` : '<div class="quiz-product-card__placeholder"></div>'}
+                </a>
+                <div class="quiz-product-card__details">
+                  ${product.vendor ? `<span class="quiz-product-card__vendor">${product.vendor}</span>` : ''}
+                  <h4 class="quiz-product-card__title">
+                    <a href="/products/${product.handle}">${product.title}</a>
+                  </h4>
+                  <span class="quiz-product-card__price">$${price}</span>
+                </div>
+                <form action="/cart/add" method="post" class="quiz-product-card__form">
+                  <input type="hidden" name="id" value="${variantId}">
+                  <button type="submit" class="btn btn--outline btn--small btn--full">Add to Queue</button>
+                </form>
+              </div>
+            `;
+          }).join('');
+        })
+        .catch(error => {
+          console.error('Error loading recommendations:', error);
+          recommendationsContainer.innerHTML = '<p style="grid-column: span 3; text-align: center; color: var(--color-text-light);">Unable to load recommendations. <a href="/collections/all">Browse all fragrances</a></p>';
+        });
     }
 
     // Event listeners

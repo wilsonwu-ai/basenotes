@@ -1,0 +1,195 @@
+{%- layout 'theme' -%}
+
+<section class="section" style="padding-top: calc(var(--header-height) + var(--spacing-2xl));">
+  <div class="container">
+    <header class="collections-header">
+      <h1 class="collections-header__title">Our Collections</h1>
+      <p class="collections-header__description">
+        Explore our curated collections of luxury fragrances, each telling its own unique story.
+      </p>
+    </header>
+
+    <div class="collections-grid">
+      {%- for collection in collections -%}
+        {%- unless collection.handle == 'all' -%}
+          <a href="{{ collection.url }}" class="collection-card">
+            <div class="collection-card__image">
+              {%- if collection.image != blank -%}
+                <img
+                  src="{{ collection.image | image_url: width: 800 }}"
+                  alt="{{ collection.image.alt | default: collection.title }}"
+                  loading="lazy"
+                >
+              {%- elsif collection.products.first.featured_image != blank -%}
+                <img
+                  src="{{ collection.products.first.featured_image | image_url: width: 800 }}"
+                  alt="{{ collection.title }}"
+                  loading="lazy"
+                >
+              {%- else -%}
+                <div class="collection-card__placeholder">
+                  <svg viewBox="0 0 80 120" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="20" y="30" width="40" height="80" rx="4"/>
+                    <rect x="30" y="10" width="20" height="20"/>
+                    <rect x="35" y="0" width="10" height="10" rx="2"/>
+                  </svg>
+                </div>
+              {%- endif -%}
+              <div class="collection-card__overlay"></div>
+            </div>
+
+            <div class="collection-card__content">
+              <h2 class="collection-card__title">{{ collection.title }}</h2>
+              {%- if collection.description != blank -%}
+                <p class="collection-card__description">{{ collection.description | strip_html | truncate: 100 }}</p>
+              {%- endif -%}
+              <span class="collection-card__count">{{ collection.products_count }} fragrance{% if collection.products_count != 1 %}s{% endif %}</span>
+            </div>
+          </a>
+        {%- endunless -%}
+      {%- else -%}
+        <div class="collections-empty">
+          <p>No collections available at this time.</p>
+          <a href="/" class="btn btn--primary">Return Home</a>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<style>
+  .collections-header {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto var(--spacing-4xl);
+  }
+
+  .collections-header__title {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .collections-header__description {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-light);
+    line-height: 1.6;
+  }
+
+  .collections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--spacing-xl);
+  }
+
+  .collection-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .collection-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .collection-card__image {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+
+  .collection-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .collection-card:hover .collection-card__image img {
+    transform: scale(1.05);
+  }
+
+  .collection-card__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .collection-card:hover .collection-card__overlay {
+    opacity: 1;
+  }
+
+  .collection-card__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-background-secondary);
+    color: var(--color-text-muted);
+  }
+
+  .collection-card__placeholder svg {
+    width: 60px;
+    height: auto;
+    opacity: 0.4;
+  }
+
+  .collection-card__content {
+    padding: var(--spacing-lg);
+  }
+
+  .collection-card__title {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-xs);
+    transition: color 0.2s;
+  }
+
+  .collection-card:hover .collection-card__title {
+    color: var(--color-secondary);
+  }
+
+  .collection-card__description {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    line-height: 1.5;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .collection-card__count {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--color-background-secondary);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    border-radius: var(--radius-full);
+  }
+
+  .collections-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: var(--spacing-4xl);
+  }
+
+  .collections-empty p {
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  @media (max-width: 768px) {
+    .collections-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .collections-header__title {
+      font-size: var(--font-size-3xl);
+    }
+  }
+</style>

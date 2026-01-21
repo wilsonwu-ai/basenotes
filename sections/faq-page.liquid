@@ -1,0 +1,492 @@
+<section class="faq-page">
+  <div class="container">
+
+    {% comment %} Header {% endcomment %}
+    <div class="faq-header">
+      <span class="faq-header__eyebrow">Help Center</span>
+      <h1 class="faq-header__title">Frequently Asked Questions</h1>
+      <p class="faq-header__description">Find answers to common questions about subscriptions, shipping, fragrances, and more.</p>
+    </div>
+
+    {% comment %} Search {% endcomment %}
+    <div class="faq-search">
+      <input type="text" id="faqSearch" class="faq-search__input" placeholder="Search for answers...">
+      <svg class="faq-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    </div>
+
+    {% comment %} Category Tabs {% endcomment %}
+    <div class="faq-categories">
+      <button class="faq-category is-active" data-category="all">All</button>
+      <button class="faq-category" data-category="subscription">Subscription</button>
+      <button class="faq-category" data-category="shipping">Shipping</button>
+      <button class="faq-category" data-category="products">Products</button>
+      <button class="faq-category" data-category="account">Account</button>
+      <button class="faq-category" data-category="returns">Returns</button>
+    </div>
+
+    {% comment %} FAQ List {% endcomment %}
+    <div class="faq-list" id="faqList">
+
+      {% comment %} Subscription FAQs {% endcomment %}
+      <details class="faq-item" data-category="subscription">
+        <summary>How much does the subscription cost?</summary>
+        <div class="faq-item__content">
+          <p>Our subscription is {{ settings.subscription_price | default: '$20' }} per month. This includes a 5ml atomizer of premium fragrance and free shipping on every order. There are no hidden fees or commitments.</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="subscription">
+        <summary>How do I choose my fragrances?</summary>
+        <div class="faq-item__content">
+          <p>After subscribing, you can browse our entire collection and add fragrances to your queue. We'll send them to you in order each month. You can also let us choose based on your scent profile from our quiz.</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="subscription">
+        <summary>Can I skip a month?</summary>
+        <div class="faq-item__content">
+          <p>Yes! You can skip any month from your account dashboard. Just make sure to skip before the 25th of the month to avoid being charged for the next month. There's no limit to how many times you can skip.</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="subscription">
+        <summary>How do I cancel my subscription?</summary>
+        <div class="faq-item__content">
+          <p>You can cancel anytime with no fees or penalties. Go to your account dashboard, click "Manage Subscription," and select cancel. You'll keep access until the end of your current billing period. We'd love to know why you're leaving so we can improve!</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="subscription">
+        <summary>Can I pause my subscription instead of canceling?</summary>
+        <div class="faq-item__content">
+          <p>Absolutely! Pausing is a great option if you just need a break. You can pause for up to 3 months at a time, and your queue and preferences will be saved for when you return.</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="subscription">
+        <summary>When will I be charged each month?</summary>
+        <div class="faq-item__content">
+          <p>Your subscription renews on the same date you originally signed up. For example, if you subscribed on the 15th, you'll be charged on the 15th each month. You can view your billing date in your account dashboard.</p>
+        </div>
+      </details>
+
+      {% comment %} Shipping FAQs {% endcomment %}
+      <details class="faq-item" data-category="shipping">
+        <summary>How long does shipping take?</summary>
+        <div class="faq-item__content">
+          <p>Orders typically arrive within 3-5 business days after shipping. Subscription orders ship on the 1st of each month. You'll receive tracking information via email once your order ships.</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="shipping">
+        <summary>Is shipping really free?</summary>
+        <div class="faq-item__content">
+          <p>Yes! All subscription orders ship free within the continental United States. One-time purchases qualify for free shipping on orders over $50.</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="shipping">
+        <summary>Do you ship internationally?</summary>
+        <div class="faq-item__content">
+          <p>Currently, we only ship within the United States. We're working on expanding internationally and hope to offer shipping to Canada, UK, and Australia soon. Sign up for our newsletter to be notified!</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="shipping">
+        <summary>Can I change my shipping address?</summary>
+        <div class="faq-item__content">
+          <p>Yes, you can update your shipping address anytime from your account under "Addresses." Make sure to update before the 25th of the month if you want your next subscription shipment sent to a new address.</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="shipping">
+        <summary>My package shows delivered but I didn't receive it</summary>
+        <div class="faq-item__content">
+          <p>First, check with neighbors and around your property. Sometimes packages are left in hidden spots. If you still can't find it after 24 hours, contact us and we'll help resolve the issue. We may reship at no charge.</p>
+        </div>
+      </details>
+
+      {% comment %} Products FAQs {% endcomment %}
+      <details class="faq-item" data-category="products">
+        <summary>Are your fragrances authentic?</summary>
+        <div class="faq-item__content">
+          <p>100% yes! We source all fragrances directly from brands and authorized distributors. Every product is guaranteed authentic. We never sell knockoffs, imitations, or "inspired by" fragrances.</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="products">
+        <summary>How much fragrance is in each atomizer?</summary>
+        <div class="faq-item__content">
+          <p>Each atomizer contains 5ml of fragrance, which equals approximately 60-80 sprays. With normal daily use (2-3 sprays), this lasts about 30 days - perfect for your monthly subscription.</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="products">
+        <summary>Can I buy a full-size bottle?</summary>
+        <div class="faq-item__content">
+          <p>Yes! If you fall in love with a fragrance, you can purchase the full bottle through our shop. Subscribers receive exclusive discounts on full-size bottles. Look for the "Buy Full Size" button on any product you've tried.</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="products">
+        <summary>How should I store my fragrances?</summary>
+        <div class="faq-item__content">
+          <p>Store your atomizers in a cool, dry place away from direct sunlight and heat. Avoid storing in bathrooms where humidity and temperature fluctuate. Proper storage helps maintain the fragrance's quality and longevity.</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="products">
+        <summary>Do you offer samples before I commit?</summary>
+        <div class="faq-item__content">
+          <p>Our subscription model IS the sample experience! For just $20/month, you get a generous 5ml to truly experience the fragrance over time. This is much better than a tiny sample that only lasts a day or two.</p>
+        </div>
+      </details>
+
+      {% comment %} Account FAQs {% endcomment %}
+      <details class="faq-item" data-category="account">
+        <summary>How do I reset my password?</summary>
+        <div class="faq-item__content">
+          <p>Click "Forgot Password" on the login page and enter your email. We'll send you a link to reset your password. If you don't see the email, check your spam folder or contact support.</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="account">
+        <summary>How do I update my payment method?</summary>
+        <div class="faq-item__content">
+          <p>Go to your account dashboard and click "Manage Subscription." From there, you can update your credit card or payment information. Changes take effect immediately for future charges.</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="account">
+        <summary>Can I have multiple shipping addresses?</summary>
+        <div class="faq-item__content">
+          <p>Yes! You can save multiple addresses in your account. This is great for sending to home, work, or gifting to friends and family. Just set your preferred default address for subscriptions.</p>
+        </div>
+      </details>
+
+      {% comment %} Returns FAQs {% endcomment %}
+      <details class="faq-item" data-category="returns">
+        <summary>What if I don't like a fragrance?</summary>
+        <div class="faq-item__content">
+          <p>Fragrance is personal, and we understand not every scent will be a perfect match. If you're unhappy with a fragrance, contact us within 7 days of receiving it. We'll work with you to find a solution, whether that's a credit or recommendations for your next selection.</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="returns">
+        <summary>What's your return policy?</summary>
+        <div class="faq-item__content">
+          <p>Due to the nature of fragrances, we cannot accept returns on opened products. However, if your order arrives damaged or you received the wrong item, contact us immediately and we'll make it right with a replacement or full refund.</p>
+        </div>
+      </details>
+
+      <details class="faq-item" data-category="returns">
+        <summary>My order arrived damaged, what do I do?</summary>
+        <div class="faq-item__content">
+          <p>We're so sorry! Please contact us within 48 hours of receiving your order with photos of the damage. We'll send a replacement right away at no additional cost to you.</p>
+        </div>
+      </details>
+
+    </div>
+
+    {% comment %} Still Have Questions {% endcomment %}
+    <div class="faq-contact">
+      <h2 class="faq-contact__title">Still Have Questions?</h2>
+      <p class="faq-contact__description">Our customer support team is here to help you Monday through Friday, 9am - 6pm EST.</p>
+      <div class="faq-contact__options">
+        <a href="/pages/contact" class="faq-contact__option">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          <span>Email Us</span>
+          <small>hello@basenotes.com</small>
+        </a>
+        <a href="tel:+18885551234" class="faq-contact__option">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          <span>Call Us</span>
+          <small>1-888-555-1234</small>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .faq-page {
+    padding-top: calc(var(--header-height) + var(--spacing-3xl));
+    padding-bottom: var(--spacing-4xl);
+  }
+
+  /* Header */
+  .faq-header {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto var(--spacing-3xl);
+  }
+
+  .faq-header__eyebrow {
+    display: inline-block;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-secondary);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .faq-header__title {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .faq-header__description {
+    color: var(--color-text-light);
+    font-size: var(--font-size-lg);
+  }
+
+  /* Search */
+  .faq-search {
+    max-width: 500px;
+    margin: 0 auto var(--spacing-2xl);
+    position: relative;
+  }
+
+  .faq-search__input {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-xl);
+    padding-left: 48px;
+    font-size: var(--font-size-base);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    transition: border-color 0.2s;
+  }
+
+  .faq-search__input:focus {
+    outline: none;
+    border-color: var(--color-secondary);
+  }
+
+  .faq-search__icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: var(--color-text-muted);
+  }
+
+  /* Categories */
+  .faq-categories {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .faq-category {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .faq-category:hover {
+    border-color: var(--color-secondary);
+  }
+
+  .faq-category.is-active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+  }
+
+  /* FAQ List */
+  .faq-list {
+    max-width: 800px;
+    margin: 0 auto var(--spacing-4xl);
+  }
+
+  .faq-item {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .faq-item[hidden] {
+    display: none;
+  }
+
+  .faq-item summary {
+    padding: var(--spacing-lg) 0;
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+
+  .faq-item summary::after {
+    content: '+';
+    font-size: var(--font-size-2xl);
+    color: var(--color-secondary);
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+
+  .faq-item[open] summary::after {
+    content: '−';
+  }
+
+  .faq-item__content {
+    padding: 0 0 var(--spacing-lg);
+  }
+
+  .faq-item__content p {
+    color: var(--color-text-light);
+    line-height: 1.7;
+  }
+
+  /* Contact */
+  .faq-contact {
+    text-align: center;
+    padding: var(--spacing-3xl);
+    background: var(--color-background-secondary);
+    border-radius: var(--radius-lg);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .faq-contact__title {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .faq-contact__description {
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .faq-contact__options {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-xl);
+  }
+
+  .faq-contact__option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xl);
+    background: white;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: inherit;
+    min-width: 200px;
+    transition: box-shadow 0.2s;
+  }
+
+  .faq-contact__option:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .faq-contact__option svg {
+    width: 32px;
+    height: 32px;
+    color: var(--color-secondary);
+  }
+
+  .faq-contact__option span {
+    font-weight: 600;
+  }
+
+  .faq-contact__option small {
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+  }
+
+  /* Responsive */
+  @media (max-width: 576px) {
+    .faq-header__title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .faq-contact__options {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .faq-contact__option {
+      width: 100%;
+      max-width: 280px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('faqSearch');
+    const faqItems = document.querySelectorAll('.faq-item');
+    const categoryBtns = document.querySelectorAll('.faq-category');
+
+    let activeCategory = 'all';
+
+    // Search functionality
+    searchInput.addEventListener('input', function() {
+      const query = this.value.toLowerCase().trim();
+      filterFAQs(query, activeCategory);
+    });
+
+    // Category filtering
+    categoryBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        categoryBtns.forEach(b => b.classList.remove('is-active'));
+        this.classList.add('is-active');
+        activeCategory = this.dataset.category;
+        filterFAQs(searchInput.value.toLowerCase().trim(), activeCategory);
+      });
+    });
+
+    function filterFAQs(query, category) {
+      faqItems.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        const itemCategory = item.dataset.category;
+
+        const matchesSearch = !query || text.includes(query);
+        const matchesCategory = category === 'all' || itemCategory === category;
+
+        if (matchesSearch && matchesCategory) {
+          item.hidden = false;
+        } else {
+          item.hidden = true;
+        }
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "FAQ Page",
+  "tag": "section",
+  "class": "faq-page-section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "FAQ Page"
+    }
+  ]
+}
+{% endschema %}
