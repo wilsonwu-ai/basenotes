@@ -1,0 +1,129 @@
+<section class="hero">
+  <div class="hero__background">
+    {%- if section.settings.video != blank -%}
+      <video autoplay muted loop playsinline>
+        <source src="{{ section.settings.video }}" type="video/mp4">
+      </video>
+    {%- elsif section.settings.image != blank -%}
+      <img
+        src="{{ section.settings.image | image_url: width: 2000 }}"
+        alt="{{ section.settings.image.alt | default: section.settings.heading }}"
+        loading="eager"
+        fetchpriority="high"
+      >
+    {%- else -%}
+      <img
+        src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=2000&q=80"
+        alt="Luxury fragrance"
+        loading="eager"
+      >
+    {%- endif -%}
+    <div class="hero__overlay"></div>
+  </div>
+
+  <div class="hero__content">
+    {%- if section.settings.eyebrow != blank -%}
+      <span class="hero__eyebrow">{{ section.settings.eyebrow }}</span>
+    {%- endif -%}
+
+    <h1 class="hero__title">{{ section.settings.heading }}</h1>
+
+    {%- if section.settings.description != blank -%}
+      <p class="hero__description">{{ section.settings.description }}</p>
+    {%- endif -%}
+
+    <div class="hero__cta">
+      {%- if section.settings.button_label != blank -%}
+        <a href="{{ section.settings.button_link }}" class="btn btn--gold btn--large">
+          {{ section.settings.button_label }}
+        </a>
+      {%- endif -%}
+
+      {%- if section.settings.secondary_button_label != blank -%}
+        <a href="{{ section.settings.secondary_button_link }}" class="btn btn--outline-light btn--large">
+          {{ section.settings.secondary_button_label }}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- if section.settings.show_scroll_indicator -%}
+    <div class="hero__scroll">
+      <span>Scroll</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 5v14M19 12l-7 7-7-7"/>
+      </svg>
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Hero Banner",
+  "tag": "section",
+  "class": "hero-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background image"
+    },
+    {
+      "type": "url",
+      "id": "video",
+      "label": "Background video URL (MP4)"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Exclusive Collection"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Discover Your Signature Scent"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Experience rare, high-end fragrances from the world's most exclusive houses. Delivered monthly to your door."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Primary button label",
+      "default": "Start Your Journey"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Primary button link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_label",
+      "label": "Secondary button label",
+      "default": "Take The Quiz"
+    },
+    {
+      "type": "url",
+      "id": "secondary_button_link",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scroll_indicator",
+      "label": "Show scroll indicator",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Banner"
+    }
+  ]
+}
+{% endschema %}

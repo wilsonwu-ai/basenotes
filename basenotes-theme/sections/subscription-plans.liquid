@@ -1,0 +1,179 @@
+<section class="section section--dark" id="subscribe">
+  <div class="container">
+    <div class="section__header">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="section__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      <h2 class="section__title">{{ section.settings.heading }}</h2>
+      {%- if section.settings.description != blank -%}
+        <p class="section__description" style="color: rgba(255,255,255,0.7);">{{ section.settings.description }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="plans">
+      {%- for block in section.blocks -%}
+        <div class="plan{% if block.settings.featured %} plan--featured{% endif %}" {{ block.shopify_attributes }}>
+          {%- if block.settings.badge != blank -%}
+            <div class="plan__badge">{{ block.settings.badge }}</div>
+          {%- endif -%}
+
+          <div class="plan__name">{{ block.settings.name }}</div>
+          <div class="plan__price">
+            {{ block.settings.price }}<span>/{{ block.settings.period }}</span>
+          </div>
+          <div class="plan__period">{{ block.settings.billing_note }}</div>
+
+          <ul class="plan__features">
+            {%- assign features = block.settings.features | split: '|' -%}
+            {%- for feature in features -%}
+              <li class="plan__feature">{{ feature }}</li>
+            {%- endfor -%}
+          </ul>
+
+          <a href="{{ block.settings.button_link }}" class="btn {% if block.settings.featured %}btn--gold{% else %}btn--outline-light{% endif %} btn--full">
+            {{ block.settings.button_label | default: 'Subscribe Now' }}
+          </a>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.note != blank -%}
+      <p class="text-center mt-4" style="font-size: var(--font-size-sm); opacity: 0.6;">
+        {{ section.settings.note }}
+      </p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Subscription Plans",
+  "tag": "section",
+  "class": "subscription-plans-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Membership"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Choose Your Plan"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Unlock access to the world's most exclusive fragrances with a Basenotes subscription."
+    },
+    {
+      "type": "text",
+      "id": "note",
+      "label": "Footer note",
+      "default": "Cancel anytime. Free shipping on all orders."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "plan",
+      "name": "Plan",
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Plan name",
+          "default": "Monthly"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Price",
+          "default": "$29"
+        },
+        {
+          "type": "text",
+          "id": "period",
+          "label": "Period",
+          "default": "month"
+        },
+        {
+          "type": "text",
+          "id": "billing_note",
+          "label": "Billing note",
+          "default": "Billed monthly"
+        },
+        {
+          "type": "textarea",
+          "id": "features",
+          "label": "Features (separate with |)",
+          "default": "8ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Cancel anytime"
+        },
+        {
+          "type": "checkbox",
+          "id": "featured",
+          "label": "Featured plan",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge text"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "Subscribe Now"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Subscription Plans",
+      "blocks": [
+        {
+          "type": "plan",
+          "settings": {
+            "name": "Monthly",
+            "price": "$29",
+            "period": "month",
+            "billing_note": "Billed monthly",
+            "features": "8ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Cancel anytime"
+          }
+        },
+        {
+          "type": "plan",
+          "settings": {
+            "name": "Quarterly",
+            "price": "$79",
+            "period": "quarter",
+            "billing_note": "Billed every 3 months",
+            "features": "8ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Priority selection|Save 10%",
+            "featured": true,
+            "badge": "Most Popular"
+          }
+        },
+        {
+          "type": "plan",
+          "settings": {
+            "name": "Annual",
+            "price": "$299",
+            "period": "year",
+            "billing_note": "Billed annually",
+            "features": "8ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Priority selection|Exclusive gifts|Save 15%"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

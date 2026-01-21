@@ -1,0 +1,135 @@
+<section class="section" style="padding-top: calc(var(--header-height) + var(--spacing-3xl));">
+  <div class="container">
+    {% comment %} Collection Header {% endcomment %}
+    <div class="section__header" style="margin-bottom: var(--spacing-3xl);">
+      {%- if section.settings.show_collection_image and collection.image -%}
+        <div style="max-width: 150px; margin: 0 auto var(--spacing-xl);">
+          <img
+            src="{{ collection.image | image_url: width: 300 }}"
+            alt="{{ collection.title }}"
+            style="width: 100%; border-radius: 50%;"
+          >
+        </div>
+      {%- endif -%}
+
+      <span class="section__eyebrow">{{ section.settings.eyebrow | default: 'The Collection' }}</span>
+      <h1 class="section__title">{{ collection.title }}</h1>
+
+      {%- if collection.description != blank -%}
+        <div class="section__description">{{ collection.description }}</div>
+      {%- endif -%}
+    </div>
+
+    {% comment %} Filters & Sort {% endcomment %}
+    {%- if section.settings.show_filters -%}
+      <div class="collection__toolbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xl); padding-bottom: var(--spacing-lg); border-bottom: 1px solid var(--color-border);">
+        <span style="font-size: var(--font-size-sm); color: var(--color-text-light);">
+          {{ collection.products_count }} {% if collection.products_count == 1 %}fragrance{% else %}fragrances{% endif %}
+        </span>
+
+        <div style="display: flex; gap: var(--spacing-lg); align-items: center;">
+          <label for="sortBy" class="visually-hidden">Sort by</label>
+          <select id="sortBy" class="form-select" style="width: auto; padding: 0.5rem 2rem 0.5rem 1rem;">
+            {%- for option in collection.sort_options -%}
+              <option value="{{ option.value }}"{% if collection.sort_by == option.value %} selected{% endif %}>
+                {{ option.name }}
+              </option>
+            {%- endfor -%}
+          </select>
+        </div>
+      </div>
+    {%- endif -%}
+
+    {% comment %} Product Grid {% endcomment %}
+    {%- if collection.products.size > 0 -%}
+      <div class="grid grid--{{ section.settings.columns }}">
+        {%- for product in collection.products -%}
+          {% render 'product-card', product: product %}
+        {%- endfor -%}
+      </div>
+
+      {% comment %} Pagination {% endcomment %}
+      {%- if paginate.pages > 1 -%}
+        <nav class="pagination" style="display: flex; justify-content: center; gap: var(--spacing-sm); margin-top: var(--spacing-3xl);">
+          {%- if paginate.previous -%}
+            <a href="{{ paginate.previous.url }}" class="btn btn--outline btn--small">&larr; Previous</a>
+          {%- endif -%}
+
+          {%- for part in paginate.parts -%}
+            {%- if part.is_link -%}
+              <a href="{{ part.url }}" class="btn btn--outline btn--small">{{ part.title }}</a>
+            {%- else -%}
+              {%- if part.title == paginate.current_page -%}
+                <span class="btn btn--primary btn--small">{{ part.title }}</span>
+              {%- else -%}
+                <span class="btn btn--outline btn--small" style="opacity: 0.5;">{{ part.title }}</span>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+
+          {%- if paginate.next -%}
+            <a href="{{ paginate.next.url }}" class="btn btn--outline btn--small">Next &rarr;</a>
+          {%- endif -%}
+        </nav>
+      {%- endif -%}
+    {%- else -%}
+      <div class="text-center" style="padding: var(--spacing-4xl);">
+        <p style="color: var(--color-text-light);">No fragrances found in this collection.</p>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+  document.getElementById('sortBy')?.addEventListener('change', function() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('sort_by', this.value);
+    window.location.href = url.toString();
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Collection Page",
+  "tag": "section",
+  "class": "collection-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "The Collection"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_image",
+      "label": "Show collection image",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "Show filters and sort",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Products per row",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 8,
+      "max": 24,
+      "step": 4,
+      "default": 12
+    }
+  ]
+}
+{% endschema %}

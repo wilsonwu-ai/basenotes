@@ -1,0 +1,125 @@
+{%- liquid
+  assign transparent_header = false
+  if template.name == 'index'
+    assign transparent_header = section.settings.transparent_on_homepage
+  endif
+-%}
+
+<header class="header{% if transparent_header %} is-transparent{% endif %}" data-header>
+  <div class="header__inner">
+    <button class="header__menu-toggle" data-mobile-toggle aria-label="Open menu">
+      <span></span>
+    </button>
+
+    <div class="header__logo">
+      <a href="{{ routes.root_url }}">
+        {%- if section.settings.logo != blank -%}
+          <img src="{{ section.settings.logo | image_url: width: 200 }}" alt="{{ shop.name }}" width="150" height="40" loading="lazy">
+        {%- else -%}
+          {{ shop.name }}
+        {%- endif -%}
+      </a>
+    </div>
+
+    <nav class="header__nav">
+      <ul class="header__nav-list">
+        {%- for link in section.settings.menu.links -%}
+          <li>
+            <a href="{{ link.url }}" class="header__nav-link{% if link.active %} is-active{% endif %}">
+              {{ link.title }}
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    <div class="header__actions">
+      {%- if section.settings.show_search -%}
+        <button class="header__action-btn" data-search-toggle aria-label="Search">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.3-4.3"/>
+          </svg>
+        </button>
+      {%- endif -%}
+
+      <a href="{{ routes.account_url }}" class="header__action-btn" aria-label="Account">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </a>
+
+      <button class="header__action-btn" data-cart-toggle aria-label="Cart">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+          <path d="M3 6h18"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        {%- if cart.item_count > 0 -%}
+          <span class="header__cart-count">{{ cart.item_count }}</span>
+        {%- endif -%}
+      </button>
+    </div>
+  </div>
+</header>
+
+{% comment %} Mobile Navigation {% endcomment %}
+<nav class="mobile-nav" data-mobile-nav>
+  <div class="mobile-nav__header">
+    <div class="header__logo">
+      <a href="{{ routes.root_url }}">{{ shop.name }}</a>
+    </div>
+    <button class="mobile-nav__close" data-mobile-close aria-label="Close menu">&times;</button>
+  </div>
+
+  <ul class="mobile-nav__list">
+    {%- for link in section.settings.menu.links -%}
+      <li class="mobile-nav__item">
+        <a href="{{ link.url }}" class="mobile-nav__link">{{ link.title }}</a>
+      </li>
+    {%- endfor -%}
+  </ul>
+
+  <div class="mobile-nav__footer">
+    <a href="{{ routes.account_url }}" class="btn btn--outline btn--full">
+      {%- if customer -%}
+        My Account
+      {%- else -%}
+        Sign In / Create Account
+      {%- endif -%}
+    </a>
+  </div>
+</nav>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "header-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_on_homepage",
+      "label": "Transparent header on homepage",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search icon",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

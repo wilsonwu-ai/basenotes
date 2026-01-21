@@ -1,0 +1,108 @@
+{%- liquid
+  assign collection = section.settings.collection
+  if collection == blank
+    assign products_to_show = 10
+  else
+    assign products_to_show = section.settings.products_to_show
+  endif
+-%}
+
+<section class="section section--cream" id="collection">
+  <div class="container">
+    <div class="section__header">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="section__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      <h2 class="section__title">{{ section.settings.heading }}</h2>
+      {%- if section.settings.description != blank -%}
+        <p class="section__description">{{ section.settings.description }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="grid grid--5">
+      {%- if collection != blank -%}
+        {%- for product in collection.products limit: products_to_show -%}
+          {% render 'product-card', product: product %}
+        {%- endfor -%}
+      {%- else -%}
+        {% comment %} Placeholder products for preview {% endcomment %}
+        {%- for i in (1..10) -%}
+          <div class="product-card">
+            <div class="product-card__image">
+              {{ 'product-' | append: i | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+            <div class="product-card__content">
+              <span class="product-card__brand">Maison Exclusive</span>
+              <h3 class="product-card__title">Signature Scent {{ i }}</h3>
+              <p class="product-card__notes">Oud, Amber, Rose</p>
+              <div class="product-card__price">
+                <span class="product-card__price--subscription">Included in subscription</span>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.show_view_all and collection != blank -%}
+      <div class="text-center mt-5">
+        <a href="{{ collection.url }}" class="btn btn--outline">
+          View All Fragrances
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured Collection",
+  "tag": "section",
+  "class": "featured-collection-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "The Collection"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "10 Exclusive Fragrances"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Curated from the world's most prestigious perfume houses. Each scent tells a story of luxury and craftsmanship."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products to show",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View All' button",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collection"
+    }
+  ]
+}
+{% endschema %}

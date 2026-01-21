@@ -1,0 +1,102 @@
+{%- layout 'theme' -%}
+
+<section class="section" style="padding-top: calc(var(--header-height) + var(--spacing-4xl)); min-height: 80vh; display: flex; align-items: center;">
+  <div class="container container--narrow">
+    <div style="max-width: 450px; margin: 0 auto;">
+
+      <div class="text-center" style="margin-bottom: var(--spacing-3xl);">
+        <h1 style="font-size: var(--font-size-4xl); margin-bottom: var(--spacing-sm);">Join Basenotes</h1>
+        <p style="color: var(--color-text-light);">Create an account to start your fragrance journey.</p>
+      </div>
+
+      {%- form 'create_customer' -%}
+        {{ form.errors | default_errors }}
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+          <div class="form-group">
+            <label class="form-label" for="FirstName">First Name</label>
+            <input
+              type="text"
+              name="customer[first_name]"
+              id="FirstName"
+              class="form-input"
+              autocomplete="given-name"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="LastName">Last Name</label>
+            <input
+              type="text"
+              name="customer[last_name]"
+              id="LastName"
+              class="form-input"
+              autocomplete="family-name"
+              required
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="Email">Email</label>
+          <input
+            type="email"
+            name="customer[email]"
+            id="Email"
+            class="form-input"
+            autocomplete="email"
+            autocapitalize="off"
+            autocorrect="off"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="Password">Password</label>
+          <input
+            type="password"
+            name="customer[password]"
+            id="Password"
+            class="form-input"
+            autocomplete="new-password"
+            required
+            minlength="8"
+          >
+          <span style="font-size: var(--font-size-xs); color: var(--color-text-muted); display: block; margin-top: var(--spacing-xs);">
+            Must be at least 8 characters
+          </span>
+        </div>
+
+        <div class="form-group" style="margin-bottom: var(--spacing-xl);">
+          <label style="display: flex; align-items: flex-start; gap: var(--spacing-sm); font-size: var(--font-size-sm); color: var(--color-text-light);">
+            <input type="checkbox" name="customer[accepts_marketing]" style="margin-top: 4px;">
+            <span>
+              I'd like to receive exclusive offers, new arrivals, and fragrance recommendations from Basenotes.
+            </span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full btn--large">
+          Create Account
+        </button>
+
+        <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); text-align: center; margin-top: var(--spacing-lg);">
+          By creating an account, you agree to our
+          <a href="/pages/terms" style="color: var(--color-secondary);">Terms of Service</a>
+          and
+          <a href="/pages/privacy" style="color: var(--color-secondary);">Privacy Policy</a>.
+        </p>
+      {%- endform -%}
+
+      <div class="divider"></div>
+
+      <p class="text-center" style="color: var(--color-text-light);">
+        Already have an account?
+        <a href="{{ routes.account_login_url }}" style="color: var(--color-secondary); font-weight: 500;">
+          Sign in
+        </a>
+      </p>
+    </div>
+  </div>
+</section>

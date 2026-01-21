@@ -1,0 +1,52 @@
+{%- comment -%}
+  Cart Drawer Component
+{%- endcomment -%}
+
+<div class="cart-drawer" id="cartDrawer" data-cart-drawer>
+  <div class="cart-drawer__header">
+    <h2 class="cart-drawer__title">Your Queue ({{ cart.item_count }})</h2>
+    <button class="cart-drawer__close" data-cart-close aria-label="Close cart">&times;</button>
+  </div>
+
+  <div class="cart-drawer__items">
+    {%- if cart.item_count > 0 -%}
+      {%- for item in cart.items -%}
+        <div class="cart-item" data-cart-item="{{ item.key }}">
+          <div class="cart-item__image">
+            {%- if item.image != blank -%}
+              <img
+                src="{{ item.image | image_url: width: 200 }}"
+                alt="{{ item.title }}"
+                loading="lazy"
+              >
+            {%- endif -%}
+          </div>
+          <div class="cart-item__details">
+            <h4 class="cart-item__title">{{ item.product.title }}</h4>
+            {%- if item.variant.title != 'Default Title' -%}
+              <p class="cart-item__variant">{{ item.variant.title }}</p>
+            {%- endif -%}
+            <p class="cart-item__price">{{ item.final_line_price | money }}</p>
+            <button class="cart-item__remove" data-remove-item="{{ item.key }}">Remove</button>
+          </div>
+        </div>
+      {%- endfor -%}
+    {%- else -%}
+      <div class="cart-drawer__empty">
+        <p>Your queue is empty</p>
+        <p style="margin-top: 1rem; font-size: var(--font-size-sm);">Add fragrances to start your subscription journey.</p>
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- if cart.item_count > 0 -%}
+    <div class="cart-drawer__footer">
+      <div class="cart-drawer__subtotal">
+        <span>Subtotal</span>
+        <span>{{ cart.total_price | money }}</span>
+      </div>
+      <a href="{{ routes.cart_url }}" class="btn btn--outline btn--full mb-2">View Cart</a>
+      <a href="/checkout" class="btn btn--primary btn--full">Checkout</a>
+    </div>
+  {%- endif -%}
+</div>

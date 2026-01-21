@@ -1,0 +1,64 @@
+{%- comment -%}
+  Meta Tags for SEO and Social Sharing
+{%- endcomment -%}
+
+{%- liquid
+  assign og_title = page_title | default: shop.name
+  assign og_description = page_description | default: shop.description
+  assign og_type = 'website'
+
+  if template.name == 'product'
+    assign og_type = 'product'
+  elsif template.name == 'article'
+    assign og_type = 'article'
+  endif
+-%}
+
+<meta property="og:site_name" content="{{ shop.name }}">
+<meta property="og:type" content="{{ og_type }}">
+<meta property="og:title" content="{{ og_title | escape }}">
+<meta property="og:description" content="{{ og_description | escape }}">
+<meta property="og:url" content="{{ canonical_url }}">
+
+{%- if template.name == 'product' -%}
+  <meta property="og:price:amount" content="{{ product.price | money_without_currency }}">
+  <meta property="og:price:currency" content="{{ cart.currency.iso_code }}">
+  {%- if product.featured_image -%}
+    <meta property="og:image" content="https:{{ product.featured_image | image_url: width: 1200 }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="1200">
+  {%- endif -%}
+{%- elsif template.name == 'collection' and collection.image -%}
+  <meta property="og:image" content="https:{{ collection.image | image_url: width: 1200 }}">
+{%- elsif template.name == 'article' and article.image -%}
+  <meta property="og:image" content="https:{{ article.image | image_url: width: 1200 }}">
+{%- elsif settings.share_image -%}
+  <meta property="og:image" content="https:{{ settings.share_image | image_url: width: 1200 }}">
+{%- endif -%}
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ og_title | escape }}">
+<meta name="twitter:description" content="{{ og_description | escape }}">
+
+{%- if template.name == 'product' -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": {{ product.title | json }},
+      "description": {{ product.description | strip_html | json }},
+      "image": {{ product.featured_image | image_url: width: 1200 | prepend: 'https:' | json }},
+      "brand": {
+        "@type": "Brand",
+        "name": {{ product.vendor | json }}
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": {{ product.url | prepend: shop.url | json }},
+        "priceCurrency": {{ cart.currency.iso_code | json }},
+        "price": {{ product.price | money_without_currency | json }},
+        "availability": {% if product.available %}"https://schema.org/InStock"{% else %}"https://schema.org/OutOfStock"{% endif %}
+      }
+    }
+  </script>
+{%- endif -%}

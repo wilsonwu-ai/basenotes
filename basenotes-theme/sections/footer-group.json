@@ -1,0 +1,35 @@
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "settings": {
+        "tagline": "Curating the world's most exclusive fragrances for the discerning collector.",
+        "show_social": true
+      },
+      "blocks": {
+        "menu-1": {
+          "type": "menu",
+          "settings": {
+            "heading": "Shop"
+          }
+        },
+        "menu-2": {
+          "type": "menu",
+          "settings": {
+            "heading": "Support"
+          }
+        },
+        "menu-3": {
+          "type": "menu",
+          "settings": {
+            "heading": "Company"
+          }
+        }
+      },
+      "block_order": ["menu-1", "menu-2", "menu-3"]
+    }
+  },
+  "order": ["footer"]
+}

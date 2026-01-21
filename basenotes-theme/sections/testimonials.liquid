@@ -1,0 +1,173 @@
+<section class="section section--cream">
+  <div class="container">
+    <div class="section__header">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="section__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      <h2 class="section__title">{{ section.settings.heading }}</h2>
+    </div>
+
+    <div class="testimonials-slider" data-testimonials>
+      {%- for block in section.blocks -%}
+        <div class="testimonial{% unless forloop.first %} is-hidden{% endunless %}" data-testimonial="{{ forloop.index }}" {{ block.shopify_attributes }}>
+          <blockquote class="testimonial__quote">
+            "{{ block.settings.quote }}"
+          </blockquote>
+          <cite class="testimonial__author">
+            {{ block.settings.author }}
+            {%- if block.settings.location != blank -%}
+              <span> — {{ block.settings.location }}</span>
+            {%- endif -%}
+          </cite>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.blocks.size > 1 -%}
+      <div class="testimonials-dots" style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem;">
+        {%- for block in section.blocks -%}
+          <button
+            class="testimonial-dot{% if forloop.first %} is-active{% endif %}"
+            data-dot="{{ forloop.index }}"
+            aria-label="Go to testimonial {{ forloop.index }}"
+            style="width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--color-primary); background: {% if forloop.first %}var(--color-primary){% else %}transparent{% endif %}; cursor: pointer;"
+          ></button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+<style>
+  .testimonial.is-hidden {
+    display: none;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.querySelector('[data-testimonials]');
+    if (!slider) return;
+
+    const testimonials = slider.querySelectorAll('[data-testimonial]');
+    const dots = document.querySelectorAll('[data-dot]');
+    let current = 1;
+    let interval;
+
+    function showTestimonial(index) {
+      testimonials.forEach(t => t.classList.add('is-hidden'));
+      dots.forEach(d => {
+        d.classList.remove('is-active');
+        d.style.background = 'transparent';
+      });
+
+      const activeTestimonial = slider.querySelector(`[data-testimonial="${index}"]`);
+      const activeDot = document.querySelector(`[data-dot="${index}"]`);
+
+      if (activeTestimonial) {
+        activeTestimonial.classList.remove('is-hidden');
+      }
+      if (activeDot) {
+        activeDot.classList.add('is-active');
+        activeDot.style.background = 'var(--color-primary)';
+      }
+    }
+
+    function nextTestimonial() {
+      current = current >= testimonials.length ? 1 : current + 1;
+      showTestimonial(current);
+    }
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', function() {
+        current = parseInt(this.dataset.dot);
+        showTestimonial(current);
+        clearInterval(interval);
+        interval = setInterval(nextTestimonial, 5000);
+      });
+    });
+
+    if (testimonials.length > 1) {
+      interval = setInterval(nextTestimonial, 5000);
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "tag": "section",
+  "class": "testimonials-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Reviews"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What Our Members Say"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote",
+          "default": "Basenotes has completely changed how I experience fragrance. The quality is unmatched."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author name",
+          "default": "Sarah M."
+        },
+        {
+          "type": "text",
+          "id": "location",
+          "label": "Location",
+          "default": "New York, NY"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "Basenotes introduced me to fragrances I never knew existed. Each month feels like unwrapping a luxury gift.",
+            "author": "Sarah M.",
+            "location": "New York, NY"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "The attention to detail and curation is impeccable. These are truly exclusive scents you won't find anywhere else.",
+            "author": "James L.",
+            "location": "Los Angeles, CA"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "I've tried other subscription services, but Basenotes is in a league of its own. Worth every penny.",
+            "author": "Michelle K.",
+            "location": "Miami, FL"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
