@@ -11,23 +11,23 @@
 }
 
 :root {
-  /* Colors - Updated for WCAG AA contrast compliance */
-  --color-primary: #1a1a1a;
-  --color-secondary: #b8963d; /* Darker gold for better contrast */
-  --color-accent: #c9a227; /* Adjusted for contrast */
-  --color-background: #ffffff;
-  --color-background-secondary: #f8f7f5;
-  --color-text: #1a1a1a;
-  --color-text-light: #545454; /* Darkened from #666 for 4.5:1 contrast ratio */
-  --color-text-muted: #717171; /* Darkened from #999 for 4.5:1 contrast ratio */
-  --color-border: #e5e5e5;
-  --color-border-dark: #d0d0d0;
-  --color-success: #2e7d32; /* Darkened for better contrast */
-  --color-error: #c62828; /* Darkened for better contrast */
+  /* Colors - Per Brand Spec with WCAG AA compliance */
+  --color-primary: #1A1A2E; /* Deep Navy */
+  --color-secondary: #C9A962; /* Warm Gold */
+  --color-accent: #B8860B; /* Rich Amber for CTAs */
+  --color-background: #FAF8F5; /* Warm Cream */
+  --color-background-secondary: #F5F3F0;
+  --color-text: #2D2D2D; /* Charcoal */
+  --color-text-light: #5A5A5A; /* Warm Gray - WCAG AA compliant */
+  --color-text-muted: #6B6B6B; /* Lighter warm gray */
+  --color-border: #E8E6E3;
+  --color-border-dark: #D5D3D0;
+  --color-success: #2e7d32;
+  --color-error: #c62828;
 
-  /* Typography */
-  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Typography - Elegant serif for headings, clean sans for body */
+  --font-heading: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-body: 'Lato', 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-size-xs: 0.8125rem;
   --font-size-sm: 0.9375rem;
   --font-size-base: 1rem;
