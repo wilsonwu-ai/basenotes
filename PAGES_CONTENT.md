@@ -69,14 +69,14 @@ Copy this content into Shopify: **Online Store → Pages → Add page**
 
   <details>
     <summary><strong>How does Basenotes work?</strong></summary>
-    <p>It's simple: Choose your plan, take our scent quiz, and we'll send you an 8ml atomizer of premium fragrance each month. You can swap scents anytime, skip a month, or cancel whenever you want. No commitments, no hassle.</p>
+    <p>It's simple: Choose your plan, take our scent quiz, and we'll send you an 5ml atomizer of premium fragrance each month. You can swap scents anytime, skip a month, or cancel whenever you want. No commitments, no hassle.</p>
   </details>
 
   <details>
     <summary><strong>What's included in my subscription?</strong></summary>
     <p>Every month you receive:</p>
     <ul>
-      <li>An 8ml atomizer (approximately 120 sprays — a full month's supply)</li>
+      <li>An 5ml atomizer (approximately ~30 sprays — a full month's supply)</li>
       <li>Free shipping to your door</li>
       <li>Access to rate and review fragrances</li>
       <li>The ability to swap your upcoming scent anytime</li>
@@ -116,8 +116,8 @@ Copy this content into Shopify: **Online Store → Pages → Add page**
   </details>
 
   <details>
-    <summary><strong>How long does 8ml last?</strong></summary>
-    <p>Each 8ml atomizer contains approximately 120 sprays. If you use 3-4 sprays daily, one bottle lasts about a month. Our fragrances are highly concentrated, so a little goes a long way.</p>
+    <summary><strong>How long does 5ml last?</strong></summary>
+    <p>Each 5ml atomizer contains approximately ~30 sprays. If you use 3-4 sprays daily, one bottle lasts about a month. Our fragrances are highly concentrated, so a little goes a long way.</p>
   </details>
 
   <details>
