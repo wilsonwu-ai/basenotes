@@ -1,0 +1,475 @@
+<section class="subscription-page">
+  <div class="container">
+
+    {% comment %} Hero Section {% endcomment %}
+    <div class="subscription-hero">
+      <span class="subscription-hero__eyebrow">{{ section.settings.eyebrow | default: 'Monthly Fragrance Subscription' }}</span>
+      <h1 class="subscription-hero__title">{{ section.settings.title | default: 'Discover Your Signature Scent' }}</h1>
+      <p class="subscription-hero__description">{{ section.settings.description | default: 'Get a new luxury fragrance delivered to your door every month. Just $20/month for a 5ml atomizer of premium fragrance.' }}</p>
+    </div>
+
+    {% comment %} Pricing Card {% endcomment %}
+    <div class="subscription-pricing">
+      <div class="subscription-pricing__card">
+        <div class="subscription-pricing__badge">Most Popular</div>
+        <h2 class="subscription-pricing__name">Monthly Plan</h2>
+        <div class="subscription-pricing__price">
+          <span class="subscription-pricing__amount">{{ settings.subscription_price | default: '$20' }}</span>
+          <span class="subscription-pricing__period">/month</span>
+        </div>
+
+        <ul class="subscription-pricing__features">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            5ml atomizer of luxury fragrance
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Free shipping on every order
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Access to 500+ premium fragrances
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Swap your selection anytime
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Skip a month or cancel anytime
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Personalized recommendations
+          </li>
+        </ul>
+
+        <a href="/pages/quiz" class="btn btn--primary btn--large btn--full">
+          Take the Quiz & Subscribe
+        </a>
+        <p class="subscription-pricing__note">No commitment. Cancel anytime.</p>
+      </div>
+    </div>
+
+    {% comment %} How It Works {% endcomment %}
+    <div class="subscription-steps">
+      <h2 class="subscription-steps__title">How It Works</h2>
+
+      <div class="subscription-steps__grid">
+        <div class="subscription-step">
+          <div class="subscription-step__number">1</div>
+          <div class="subscription-step__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <h3 class="subscription-step__title">Take the Quiz</h3>
+          <p class="subscription-step__description">Answer a few questions about your scent preferences and we'll create your personalized profile.</p>
+        </div>
+
+        <div class="subscription-step">
+          <div class="subscription-step__number">2</div>
+          <div class="subscription-step__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <line x1="8" y1="6" x2="21" y2="6"/>
+              <line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/>
+              <line x1="3" y1="12" x2="3.01" y2="12"/>
+              <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+          </div>
+          <h3 class="subscription-step__title">Build Your Queue</h3>
+          <p class="subscription-step__description">Browse our collection and add fragrances to your queue. We'll send them in order each month.</p>
+        </div>
+
+        <div class="subscription-step">
+          <div class="subscription-step__number">3</div>
+          <div class="subscription-step__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="1" y="3" width="15" height="13"/>
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+              <circle cx="5.5" cy="18.5" r="2.5"/>
+              <circle cx="18.5" cy="18.5" r="2.5"/>
+            </svg>
+          </div>
+          <h3 class="subscription-step__title">Receive Monthly</h3>
+          <p class="subscription-step__description">Your fragrance ships on the 1st of each month. Free shipping, always.</p>
+        </div>
+
+        <div class="subscription-step">
+          <div class="subscription-step__number">4</div>
+          <div class="subscription-step__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </div>
+          <h3 class="subscription-step__title">Discover & Enjoy</h3>
+          <p class="subscription-step__description">Fall in love with new scents. Found your signature? Buy the full bottle at a subscriber discount.</p>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} FAQ Preview {% endcomment %}
+    <div class="subscription-faq">
+      <h2 class="subscription-faq__title">Common Questions</h2>
+
+      <div class="subscription-faq__list">
+        <details class="subscription-faq__item">
+          <summary>How much fragrance is in each atomizer?</summary>
+          <p>Each atomizer contains 5ml of fragrance, which is approximately 60-80 sprays. This is enough for about 30 days of daily use.</p>
+        </details>
+
+        <details class="subscription-faq__item">
+          <summary>Can I skip a month or pause my subscription?</summary>
+          <p>Absolutely! You can skip any month or pause your subscription at any time from your account dashboard. Just make sure to do so before the 25th of the month to skip the next shipment.</p>
+        </details>
+
+        <details class="subscription-faq__item">
+          <summary>How do I cancel my subscription?</summary>
+          <p>You can cancel anytime with no fees. Simply go to your account, click on "Manage Subscription," and select cancel. You'll retain access until the end of your billing period.</p>
+        </details>
+
+        <details class="subscription-faq__item">
+          <summary>Are these authentic designer fragrances?</summary>
+          <p>Yes! We only carry 100% authentic fragrances sourced directly from brands and authorized distributors. Every fragrance is guaranteed genuine.</p>
+        </details>
+
+        <details class="subscription-faq__item">
+          <summary>What if I don't like a fragrance?</summary>
+          <p>We're confident you'll love your selections based on your profile, but if you're not satisfied, contact us within 7 days of receiving your fragrance and we'll work with you to make it right.</p>
+        </details>
+      </div>
+
+      <div class="subscription-faq__more">
+        <a href="/pages/faq" class="btn btn--outline">View All FAQs</a>
+      </div>
+    </div>
+
+    {% comment %} Final CTA {% endcomment %}
+    <div class="subscription-cta">
+      <h2 class="subscription-cta__title">Ready to Find Your Signature Scent?</h2>
+      <p class="subscription-cta__description">Join thousands of fragrance enthusiasts who discover new favorites every month.</p>
+      <a href="/pages/quiz" class="btn btn--primary btn--large">Get Started</a>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .subscription-page {
+    padding-top: calc(var(--header-height) + var(--spacing-3xl));
+    padding-bottom: var(--spacing-4xl);
+  }
+
+  /* Hero */
+  .subscription-hero {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto var(--spacing-4xl);
+  }
+
+  .subscription-hero__eyebrow {
+    display: inline-block;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-secondary);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .subscription-hero__title {
+    font-size: var(--font-size-5xl);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .subscription-hero__description {
+    font-size: var(--font-size-xl);
+    color: var(--color-text-light);
+    line-height: 1.6;
+  }
+
+  /* Pricing */
+  .subscription-pricing {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--spacing-4xl);
+  }
+
+  .subscription-pricing__card {
+    background: white;
+    border: 2px solid var(--color-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-3xl);
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+  }
+
+  .subscription-pricing__badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-secondary);
+    color: var(--color-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: var(--spacing-xs) var(--spacing-lg);
+    border-radius: var(--radius-full);
+  }
+
+  .subscription-pricing__name {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .subscription-pricing__price {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .subscription-pricing__amount {
+    font-size: var(--font-size-5xl);
+    font-weight: 700;
+  }
+
+  .subscription-pricing__period {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-light);
+  }
+
+  .subscription-pricing__features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--spacing-2xl);
+    text-align: left;
+  }
+
+  .subscription-pricing__features li {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) 0;
+    font-size: var(--font-size-base);
+  }
+
+  .subscription-pricing__features svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: var(--color-success);
+  }
+
+  .subscription-pricing__note {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-top: var(--spacing-md);
+  }
+
+  /* Steps */
+  .subscription-steps {
+    margin-bottom: var(--spacing-4xl);
+    padding: var(--spacing-4xl);
+    background: var(--color-background-secondary);
+    border-radius: var(--radius-lg);
+  }
+
+  .subscription-steps__title {
+    text-align: center;
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--spacing-3xl);
+  }
+
+  .subscription-steps__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-xl);
+  }
+
+  .subscription-step {
+    text-align: center;
+    position: relative;
+  }
+
+  .subscription-step__number {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 24px;
+    background: var(--color-secondary);
+    color: var(--color-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .subscription-step__icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-lg);
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .subscription-step__icon svg {
+    width: 36px;
+    height: 36px;
+    color: var(--color-secondary);
+  }
+
+  .subscription-step__title {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .subscription-step__description {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    line-height: 1.6;
+  }
+
+  /* FAQ */
+  .subscription-faq {
+    max-width: 700px;
+    margin: 0 auto var(--spacing-4xl);
+  }
+
+  .subscription-faq__title {
+    text-align: center;
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .subscription-faq__list {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .subscription-faq__item {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .subscription-faq__item summary {
+    padding: var(--spacing-lg) 0;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .subscription-faq__item summary::after {
+    content: '+';
+    font-size: var(--font-size-xl);
+    color: var(--color-secondary);
+  }
+
+  .subscription-faq__item[open] summary::after {
+    content: '−';
+  }
+
+  .subscription-faq__item p {
+    padding: 0 0 var(--spacing-lg);
+    color: var(--color-text-light);
+    line-height: 1.7;
+  }
+
+  .subscription-faq__more {
+    text-align: center;
+  }
+
+  /* CTA */
+  .subscription-cta {
+    text-align: center;
+    padding: var(--spacing-4xl);
+    background: linear-gradient(135deg, var(--color-primary) 0%, #2a2a2a 100%);
+    border-radius: var(--radius-lg);
+    color: white;
+  }
+
+  .subscription-cta__title {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .subscription-cta__description {
+    font-size: var(--font-size-lg);
+    opacity: 0.8;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  /* Responsive */
+  @media (max-width: 992px) {
+    .subscription-steps__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 576px) {
+    .subscription-hero__title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .subscription-steps__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .subscription-pricing__card {
+      padding: var(--spacing-xl);
+    }
+
+    .subscription-steps {
+      padding: var(--spacing-2xl);
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Subscription Landing",
+  "tag": "section",
+  "class": "subscription-landing-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Monthly Fragrance Subscription"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Discover Your Signature Scent"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Get a new luxury fragrance delivered to your door every month. Just $20/month for a 5ml atomizer of premium fragrance."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Subscription Landing"
+    }
+  ]
+}
+{% endschema %}

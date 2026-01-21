@@ -60,7 +60,19 @@
           </div>
 
           {%- form 'create_customer', class: 'auth-form' -%}
-            {{ form.errors | default_errors }}
+            {%- if form.errors -%}
+              <div class="alert alert--error">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <div class="alert__content">
+                  <strong>Please fix the following:</strong>
+                  {{ form.errors | default_errors }}
+                </div>
+              </div>
+            {%- endif -%}
 
             <div class="form-row">
               <div class="form-group">
@@ -480,6 +492,35 @@
   .auth-link {
     color: var(--color-secondary);
     font-weight: 600;
+  }
+
+  /* Alert Messages */
+  .alert {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--font-size-sm);
+  }
+
+  .alert--error {
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid var(--color-error);
+    color: var(--color-error);
+  }
+
+  .alert svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .alert__content ul {
+    margin: var(--spacing-xs) 0 0;
+    padding-left: var(--spacing-lg);
   }
 
   /* Responsive */

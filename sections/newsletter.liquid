@@ -4,7 +4,7 @@
       <h2 class="newsletter__title">{{ section.settings.heading }}</h2>
       <p class="newsletter__description">{{ section.settings.description }}</p>
 
-      {%- form 'customer', class: 'newsletter__form' -%}
+      {%- form 'customer', class: 'newsletter__form', id: 'newsletter-form' -%}
         <input type="hidden" name="contact[tags]" value="newsletter">
         <input
           type="email"
@@ -18,6 +18,26 @@
           {{ section.settings.button_label }}
         </button>
       {%- endform -%}
+
+      {%- if form.posted_successfully? -%}
+        <div class="newsletter__message newsletter__message--success">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Thanks for subscribing! Check your inbox for a welcome message.</span>
+        </div>
+      {%- endif -%}
+
+      {%- if form.errors -%}
+        <div class="newsletter__message newsletter__message--error">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span>{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}</span>
+        </div>
+      {%- endif -%}
 
       {%- if section.settings.privacy_note != blank -%}
         <p class="newsletter__note">
@@ -82,6 +102,33 @@
     margin-top: var(--spacing-lg);
     font-size: var(--font-size-xs);
     opacity: 0.5;
+  }
+
+  .newsletter__message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .newsletter__message svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .newsletter__message--success {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+  }
+
+  .newsletter__message--error {
+    background: rgba(244, 67, 54, 0.2);
+    color: #f44336;
   }
 
   @media (max-width: 576px) {

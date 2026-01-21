@@ -212,9 +212,10 @@
                   </svg>
                 </button>
                 <div class="cart-promo__form" style="display: none;">
-                  <input type="text" name="discount" class="cart-promo__input" placeholder="Enter code">
-                  <button type="button" class="btn btn--small">Apply</button>
+                  <input type="text" id="promoCodeInput" class="cart-promo__input" placeholder="Enter code">
+                  <button type="button" class="btn btn--small" id="applyPromoBtn">Apply</button>
                 </div>
+                <div class="cart-promo__message" id="promoMessage" style="display: none;"></div>
               </div>
 
               <button type="submit" name="checkout" class="btn btn--primary btn--full btn--large">
@@ -770,6 +771,31 @@
     font-size: var(--font-size-sm);
   }
 
+  .cart-promo__message {
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+  }
+
+  .cart-promo__message--success {
+    background: rgba(76, 175, 80, 0.1);
+    color: var(--color-success);
+    border: 1px solid var(--color-success);
+  }
+
+  .cart-promo__message--error {
+    background: rgba(244, 67, 54, 0.1);
+    color: var(--color-error);
+    border: 1px solid var(--color-error);
+  }
+
+  .cart-promo__message--info {
+    background: rgba(201, 168, 108, 0.1);
+    color: var(--color-secondary);
+    border: 1px solid var(--color-secondary);
+  }
+
   /* Trust Badges */
   .cart-trust {
     display: grid;
@@ -1156,6 +1182,74 @@
         const form = this.nextElementSibling;
         form.style.display = form.style.display === 'none' ? 'flex' : 'none';
       });
+    }
+
+    // Promo code apply functionality
+    const promoInput = document.getElementById('promoCodeInput');
+    const applyPromoBtn = document.getElementById('applyPromoBtn');
+    const promoMessage = document.getElementById('promoMessage');
+
+    if (applyPromoBtn && promoInput) {
+      applyPromoBtn.addEventListener('click', function() {
+        const code = promoInput.value.trim().toUpperCase();
+
+        if (!code) {
+          showPromoMessage('Please enter a promo code', 'error');
+          return;
+        }
+
+        // Store the discount code in localStorage to apply at checkout
+        localStorage.setItem('basenotes_discount_code', code);
+        showPromoMessage('Code "' + code + '" will be applied at checkout!', 'success');
+
+        // Update the checkout button to include discount code
+        updateCheckoutUrl(code);
+      });
+
+      // Allow Enter key to apply code
+      promoInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          applyPromoBtn.click();
+        }
+      });
+
+      // Check for previously stored code
+      const storedCode = localStorage.getItem('basenotes_discount_code');
+      if (storedCode) {
+        promoInput.value = storedCode;
+        showPromoMessage('Code "' + storedCode + '" will be applied at checkout', 'info');
+        updateCheckoutUrl(storedCode);
+        // Show the promo form
+        if (promoToggle) {
+          promoToggle.classList.add('is-active');
+          promoToggle.nextElementSibling.style.display = 'flex';
+        }
+      }
+    }
+
+    function showPromoMessage(message, type) {
+      if (promoMessage) {
+        promoMessage.textContent = message;
+        promoMessage.className = 'cart-promo__message cart-promo__message--' + type;
+        promoMessage.style.display = 'block';
+      }
+    }
+
+    function updateCheckoutUrl(code) {
+      // Find the checkout button and update its form action
+      const cartForm = document.querySelector('.cart-form');
+      if (cartForm) {
+        // Add hidden input for discount code that Shopify will recognize
+        let discountInput = cartForm.querySelector('input[name="discount"]');
+        if (!discountInput) {
+          discountInput = document.createElement('input');
+          discountInput.type = 'hidden';
+          discountInput.name = 'discount';
+          cartForm.appendChild(discountInput);
+        }
+        discountInput.value = code;
+      }
     }
 
     // Auto-update on quantity change (debounced)

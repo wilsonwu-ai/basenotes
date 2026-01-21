@@ -1,0 +1,139 @@
+{%- comment -%}
+  Legal Page Section
+  Used for Terms of Service, Privacy Policy, and other legal pages.
+  Content is pulled from the page.content in Shopify admin.
+{%- endcomment -%}
+
+<section class="legal-page">
+  <div class="container">
+    <div class="legal-page__header">
+      <h1 class="legal-page__title">{{ page.title }}</h1>
+      <p class="legal-page__updated">Last Updated: {{ page.updated_at | date: '%B %d, %Y' }}</p>
+    </div>
+
+    <div class="legal-page__content">
+      {%- if page.content != blank -%}
+        {{ page.content }}
+      {%- else -%}
+        {%- comment -%} Default content if page content is empty {%- endcomment -%}
+        {%- if page.title contains 'Terms' -%}
+          {% render 'legal-terms-default' %}
+        {%- elsif page.title contains 'Privacy' -%}
+          {% render 'legal-privacy-default' %}
+        {%- else -%}
+          <p>Content for this page is being prepared. Please check back soon.</p>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+
+    <div class="legal-page__footer">
+      <p>If you have any questions about this policy, please <a href="/pages/contact">contact us</a>.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .legal-page {
+    padding-top: calc(var(--header-height) + var(--spacing-3xl));
+    padding-bottom: var(--spacing-4xl);
+  }
+
+  .legal-page__header {
+    text-align: center;
+    margin-bottom: var(--spacing-3xl);
+    padding-bottom: var(--spacing-2xl);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .legal-page__title {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .legal-page__updated {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  .legal-page__content {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.8;
+    color: var(--color-text-light);
+  }
+
+  .legal-page__content h2 {
+    font-size: var(--font-size-2xl);
+    color: var(--color-text);
+    margin-top: var(--spacing-3xl);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .legal-page__content h3 {
+    font-size: var(--font-size-xl);
+    color: var(--color-text);
+    margin-top: var(--spacing-2xl);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .legal-page__content p {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .legal-page__content ul,
+  .legal-page__content ol {
+    margin-bottom: var(--spacing-lg);
+    padding-left: var(--spacing-xl);
+  }
+
+  .legal-page__content li {
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .legal-page__content a {
+    color: var(--color-secondary);
+  }
+
+  .legal-page__content a:hover {
+    text-decoration: underline;
+  }
+
+  .legal-page__content strong {
+    color: var(--color-text);
+  }
+
+  .legal-page__footer {
+    max-width: 800px;
+    margin: var(--spacing-4xl) auto 0;
+    padding-top: var(--spacing-2xl);
+    border-top: 1px solid var(--color-border);
+    text-align: center;
+    color: var(--color-text-muted);
+  }
+
+  .legal-page__footer a {
+    color: var(--color-secondary);
+  }
+
+  @media (max-width: 576px) {
+    .legal-page__title {
+      font-size: var(--font-size-3xl);
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Legal Page",
+  "tag": "section",
+  "class": "legal-page-section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Legal Page"
+    }
+  ]
+}
+{% endschema %}
