@@ -1,0 +1,243 @@
+{%- layout 'theme' -%}
+
+<section class="section" style="padding-top: calc(var(--header-height) + var(--spacing-4xl));">
+  <div class="container">
+
+    <div class="section__header">
+      <span class="section__eyebrow">We're Here to Help</span>
+      <h1 class="section__title">Contact Us</h1>
+      <p class="section__description">Have a question about your subscription, need fragrance advice, or just want to say hello? We'd love to hear from you.</p>
+    </div>
+
+    <div class="contact-grid" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: var(--spacing-4xl); max-width: 1100px; margin: 0 auto;">
+
+      {% comment %} Contact Information {% endcomment %}
+      <div class="contact-info">
+
+        <div class="contact-block" style="margin-bottom: var(--spacing-2xl);">
+          <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+            <div style="width: 48px; height: 48px; background: var(--color-background-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="1.5">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </div>
+            <h3 style="font-size: var(--font-size-lg); font-weight: 600;">Email Us</h3>
+          </div>
+          <p style="color: var(--color-text-light); margin-bottom: var(--spacing-sm);">For general inquiries and support</p>
+          <a href="mailto:hello@basenotes.com" style="color: var(--color-secondary); font-weight: 500; font-size: var(--font-size-lg);">hello@basenotes.com</a>
+        </div>
+
+        <div class="contact-block" style="margin-bottom: var(--spacing-2xl);">
+          <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+            <div style="width: 48px; height: 48px; background: var(--color-background-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="1.5">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+            <h3 style="font-size: var(--font-size-lg); font-weight: 600;">Call Us</h3>
+          </div>
+          <p style="color: var(--color-text-light); margin-bottom: var(--spacing-sm);">Mon - Fri, 9am - 6pm EST</p>
+          <a href="tel:+18885551234" style="color: var(--color-secondary); font-weight: 500; font-size: var(--font-size-lg);">1-888-555-1234</a>
+        </div>
+
+        <div class="contact-block" style="margin-bottom: var(--spacing-2xl);">
+          <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+            <div style="width: 48px; height: 48px; background: var(--color-background-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="1.5">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <h3 style="font-size: var(--font-size-lg); font-weight: 600;">Visit Us</h3>
+          </div>
+          <p style="color: var(--color-text-light); line-height: 1.7;">
+            Basenotes Inc.<br>
+            123 Fragrance Avenue, Suite 400<br>
+            New York, NY 10013<br>
+            United States
+          </p>
+        </div>
+
+        <div class="contact-block" style="margin-bottom: var(--spacing-2xl);">
+          <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+            <div style="width: 48px; height: 48px; background: var(--color-background-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <h3 style="font-size: var(--font-size-lg); font-weight: 600;">Response Time</h3>
+          </div>
+          <p style="color: var(--color-text-light); line-height: 1.7;">
+            We typically respond within 24 hours.<br>
+            For urgent matters, please call us directly.
+          </p>
+        </div>
+
+        <div class="contact-social" style="padding-top: var(--spacing-xl); border-top: 1px solid var(--color-border);">
+          <h3 style="font-size: var(--font-size-sm); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-md);">Follow Us</h3>
+          <div style="display: flex; gap: var(--spacing-md);">
+            <a href="https://instagram.com/basenotes" target="_blank" rel="noopener" style="width: 44px; height: 44px; border: 1px solid var(--color-border); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all var(--transition-fast);" aria-label="Instagram">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+              </svg>
+            </a>
+            <a href="https://tiktok.com/@basenotes" target="_blank" rel="noopener" style="width: 44px; height: 44px; border: 1px solid var(--color-border); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all var(--transition-fast);" aria-label="TikTok">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+              </svg>
+            </a>
+            <a href="https://youtube.com/@basenotes" target="_blank" rel="noopener" style="width: 44px; height: 44px; border: 1px solid var(--color-border); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all var(--transition-fast);" aria-label="YouTube">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
+                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      {% comment %} Contact Form {% endcomment %}
+      <div class="contact-form-wrapper" style="background: var(--color-background-secondary); padding: var(--spacing-2xl); border-radius: var(--radius-md);">
+        <h2 style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">Send Us a Message</h2>
+        <p style="color: var(--color-text-light); margin-bottom: var(--spacing-xl);">Fill out the form below and we'll get back to you shortly.</p>
+
+        {%- form 'contact', class: 'contact-form' -%}
+          {%- if form.posted_successfully? -%}
+            <div style="padding: var(--spacing-lg); background: rgba(76, 175, 80, 0.1); border: 1px solid var(--color-success); margin-bottom: var(--spacing-lg); text-align: center; border-radius: var(--radius-sm);">
+              <strong>Thank you for your message!</strong><br>
+              We'll get back to you within 24 hours.
+            </div>
+          {%- endif -%}
+
+          {{ form.errors | default_errors }}
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+            <div class="form-group">
+              <label class="form-label" for="ContactFormName">Name *</label>
+              <input
+                type="text"
+                name="contact[name]"
+                id="ContactFormName"
+                class="form-input"
+                placeholder="Your name"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="ContactFormEmail">Email *</label>
+              <input
+                type="email"
+                name="contact[email]"
+                id="ContactFormEmail"
+                class="form-input"
+                placeholder="your@email.com"
+                autocapitalize="off"
+                autocorrect="off"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="ContactFormPhone">Phone (Optional)</label>
+            <input
+              type="tel"
+              name="contact[phone]"
+              id="ContactFormPhone"
+              class="form-input"
+              placeholder="(555) 123-4567"
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="ContactFormSubject">Subject *</label>
+            <select name="contact[subject]" id="ContactFormSubject" class="form-select" required>
+              <option value="">Select a topic...</option>
+              <option value="General Inquiry">General Inquiry</option>
+              <option value="Subscription Help">Subscription Help</option>
+              <option value="Shipping Question">Shipping Question</option>
+              <option value="Product Feedback">Product Feedback</option>
+              <option value="Returns & Refunds">Returns & Refunds</option>
+              <option value="Partnership Inquiry">Partnership Inquiry</option>
+              <option value="Press & Media">Press & Media</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="ContactFormOrderNumber">Order Number (if applicable)</label>
+            <input
+              type="text"
+              name="contact[order_number]"
+              id="ContactFormOrderNumber"
+              class="form-input"
+              placeholder="#BN-12345"
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="ContactFormMessage">Message *</label>
+            <textarea
+              name="contact[body]"
+              id="ContactFormMessage"
+              class="form-textarea"
+              placeholder="How can we help you today?"
+              required
+              style="min-height: 150px;"
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn btn--primary btn--large btn--full">
+            Send Message
+          </button>
+
+          <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); text-align: center; margin-top: var(--spacing-md);">
+            By submitting this form, you agree to our <a href="/pages/privacy" style="color: var(--color-secondary);">Privacy Policy</a>.
+          </p>
+        {%- endform -%}
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+{% comment %} FAQ Teaser Section {% endcomment %}
+<section class="section section--cream">
+  <div class="container">
+    <div style="text-align: center; max-width: 700px; margin: 0 auto;">
+      <h2 style="font-size: var(--font-size-3xl); margin-bottom: var(--spacing-md);">Looking for Quick Answers?</h2>
+      <p style="color: var(--color-text-light); margin-bottom: var(--spacing-xl);">Check out our frequently asked questions for instant answers about subscriptions, shipping, fragrances, and more.</p>
+      <a href="/pages/faq" class="btn btn--primary btn--large">View FAQ</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  @media (max-width: 768px) {
+    .contact-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    .contact-form-wrapper {
+      order: -1;
+    }
+  }
+
+  .contact-social a:hover {
+    background-color: var(--color-secondary);
+    border-color: var(--color-secondary);
+    color: var(--color-background);
+  }
+
+  .contact-social a:hover svg {
+    stroke: var(--color-background);
+    fill: var(--color-background);
+  }
+</style>
