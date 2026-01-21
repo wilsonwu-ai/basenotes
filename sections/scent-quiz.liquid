@@ -1,182 +1,687 @@
-<section class="section" style="padding-top: calc(var(--header-height) + var(--spacing-3xl));">
-  <div class="container">
-    <div class="quiz" id="scentQuiz">
-      {% comment %} Progress Bar {% endcomment %}
-      <div class="quiz__progress">
-        {%- for i in (1..5) -%}
-          <div class="quiz__progress-step" data-step="{{ i }}"></div>
-        {%- endfor -%}
+<section class="quiz-section">
+  {% comment %} Quiz Hero/Intro {% endcomment %}
+  <div class="quiz-intro" id="quizIntro">
+    <div class="container">
+      <div class="quiz-intro__content">
+        <span class="quiz-intro__eyebrow">Personalized Recommendations</span>
+        <h1 class="quiz-intro__title">Find Your Signature Scent</h1>
+        <p class="quiz-intro__description">
+          Answer 5 quick questions and we'll match you with fragrances that fit your style,
+          lifestyle, and preferences. Our algorithm analyzes your responses to find your
+          perfect scent profile from our curated collection.
+        </p>
+        <div class="quiz-intro__features">
+          <div class="quiz-intro__feature">
+            <span class="quiz-intro__feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </span>
+            <span>Takes 2 minutes</span>
+          </div>
+          <div class="quiz-intro__feature">
+            <span class="quiz-intro__feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
+            <span>Science-backed matching</span>
+          </div>
+          <div class="quiz-intro__feature">
+            <span class="quiz-intro__feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </span>
+            <span>Personalized results</span>
+          </div>
+        </div>
+        <button class="btn btn--primary btn--large" id="startQuizBtn">
+          Start the Quiz
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; margin-left: 8px;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <p class="quiz-intro__note">No account required. Your results are saved locally.</p>
       </div>
+    </div>
+  </div>
 
-      {% comment %} Quiz Questions {% endcomment %}
-      <div class="quiz__questions">
-
-        {% comment %} Question 1 {% endcomment %}
-        <div class="quiz__slide" data-question="1">
-          <div class="quiz__question">
-            <span class="quiz__question-number">Question 1 of 5</span>
-            <h2 class="quiz__question-text">What best describes your scent personality?</h2>
+  {% comment %} Quiz Container {% endcomment %}
+  <div class="quiz-container" id="quizContainer" style="display: none;">
+    <div class="container">
+      <div class="quiz" id="scentQuiz">
+        {% comment %} Progress Bar {% endcomment %}
+        <div class="quiz__progress">
+          <div class="quiz__progress-bar">
+            <div class="quiz__progress-fill" id="progressFill"></div>
           </div>
-          <div class="quiz__options">
-            <button class="quiz__option" data-value="bold">
-              <span class="quiz__option-icon">&#9733;</span>
-              <span class="quiz__option-label">Bold & Daring</span>
-            </button>
-            <button class="quiz__option" data-value="sophisticated">
-              <span class="quiz__option-icon">&#9830;</span>
-              <span class="quiz__option-label">Sophisticated & Classic</span>
-            </button>
-            <button class="quiz__option" data-value="fresh">
-              <span class="quiz__option-icon">&#10047;</span>
-              <span class="quiz__option-label">Fresh & Clean</span>
-            </button>
-            <button class="quiz__option" data-value="romantic">
-              <span class="quiz__option-icon">&#10084;</span>
-              <span class="quiz__option-label">Romantic & Sensual</span>
-            </button>
-          </div>
+          <span class="quiz__progress-text" id="progressText">Question 1 of 5</span>
         </div>
 
-        {% comment %} Question 2 {% endcomment %}
-        <div class="quiz__slide" data-question="2" style="display: none;">
-          <div class="quiz__question">
-            <span class="quiz__question-number">Question 2 of 5</span>
-            <h2 class="quiz__question-text">When do you typically wear fragrance?</h2>
-          </div>
-          <div class="quiz__options">
-            <button class="quiz__option" data-value="everyday">
-              <span class="quiz__option-icon">&#9728;</span>
-              <span class="quiz__option-label">Everyday / Work</span>
-            </button>
-            <button class="quiz__option" data-value="evening">
-              <span class="quiz__option-icon">&#9790;</span>
-              <span class="quiz__option-label">Evening / Night Out</span>
-            </button>
-            <button class="quiz__option" data-value="special">
-              <span class="quiz__option-icon">&#10024;</span>
-              <span class="quiz__option-label">Special Occasions</span>
-            </button>
-            <button class="quiz__option" data-value="all">
-              <span class="quiz__option-icon">&#8734;</span>
-              <span class="quiz__option-label">All of the Above</span>
-            </button>
-          </div>
-        </div>
+        {% comment %} Quiz Questions {% endcomment %}
+        <div class="quiz__questions">
 
-        {% comment %} Question 3 {% endcomment %}
-        <div class="quiz__slide" data-question="3" style="display: none;">
-          <div class="quiz__question">
-            <span class="quiz__question-number">Question 3 of 5</span>
-            <h2 class="quiz__question-text">Which scent family appeals to you most?</h2>
-          </div>
-          <div class="quiz__options">
-            <button class="quiz__option" data-value="woody">
-              <span class="quiz__option-icon">&#127794;</span>
-              <span class="quiz__option-label">Woody & Earthy</span>
-            </button>
-            <button class="quiz__option" data-value="oriental">
-              <span class="quiz__option-icon">&#10022;</span>
-              <span class="quiz__option-label">Oriental & Spicy</span>
-            </button>
-            <button class="quiz__option" data-value="floral">
-              <span class="quiz__option-icon">&#127800;</span>
-              <span class="quiz__option-label">Floral & Powdery</span>
-            </button>
-            <button class="quiz__option" data-value="citrus">
-              <span class="quiz__option-icon">&#127819;</span>
-              <span class="quiz__option-label">Fresh & Citrus</span>
-            </button>
-          </div>
-        </div>
-
-        {% comment %} Question 4 {% endcomment %}
-        <div class="quiz__slide" data-question="4" style="display: none;">
-          <div class="quiz__question">
-            <span class="quiz__question-number">Question 4 of 5</span>
-            <h2 class="quiz__question-text">How long do you want your scent to last?</h2>
-          </div>
-          <div class="quiz__options">
-            <button class="quiz__option" data-value="light">
-              <span class="quiz__option-icon">&#9729;</span>
-              <span class="quiz__option-label">Light & Subtle</span>
-            </button>
-            <button class="quiz__option" data-value="moderate">
-              <span class="quiz__option-icon">&#9730;</span>
-              <span class="quiz__option-label">Moderate Presence</span>
-            </button>
-            <button class="quiz__option" data-value="strong">
-              <span class="quiz__option-icon">&#9731;</span>
-              <span class="quiz__option-label">Strong & Long-lasting</span>
-            </button>
-            <button class="quiz__option" data-value="powerful">
-              <span class="quiz__option-icon">&#9889;</span>
-              <span class="quiz__option-label">Powerhouse / Beast Mode</span>
-            </button>
-          </div>
-        </div>
-
-        {% comment %} Question 5 {% endcomment %}
-        <div class="quiz__slide" data-question="5" style="display: none;">
-          <div class="quiz__question">
-            <span class="quiz__question-number">Question 5 of 5</span>
-            <h2 class="quiz__question-text">Which ingredient intrigues you most?</h2>
-          </div>
-          <div class="quiz__options">
-            <button class="quiz__option" data-value="oud">
-              <span class="quiz__option-icon">&#127795;</span>
-              <span class="quiz__option-label">Oud & Amber</span>
-            </button>
-            <button class="quiz__option" data-value="leather">
-              <span class="quiz__option-icon">&#128092;</span>
-              <span class="quiz__option-label">Leather & Tobacco</span>
-            </button>
-            <button class="quiz__option" data-value="rose">
-              <span class="quiz__option-icon">&#127801;</span>
-              <span class="quiz__option-label">Rose & Jasmine</span>
-            </button>
-            <button class="quiz__option" data-value="vetiver">
-              <span class="quiz__option-icon">&#127807;</span>
-              <span class="quiz__option-label">Vetiver & Sandalwood</span>
-            </button>
-          </div>
-        </div>
-
-        {% comment %} Results {% endcomment %}
-        <div class="quiz__slide quiz__results" data-question="results" style="display: none;">
-          <div class="text-center" style="padding: var(--spacing-2xl) 0;">
-            <span class="section__eyebrow">Your Scent Profile</span>
-            <h2 class="section__title" id="quizResultTitle">The Sophisticated Explorer</h2>
-            <p class="section__description" id="quizResultDescription">
-              You appreciate depth and complexity in your fragrances. You're drawn to rich, luxurious scents that make a statement without being overwhelming.
-            </p>
-
-            <div class="divider"></div>
-
-            <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-xl);">Recommended For You</h3>
-            <div id="quizRecommendations" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-lg); margin-bottom: var(--spacing-2xl);">
-              {% comment %} Recommendations will be populated by JavaScript {% endcomment %}
+          {% comment %} Question 1: Lifestyle/Occasion {% endcomment %}
+          <div class="quiz__slide" data-question="1">
+            <div class="quiz__question">
+              <h2 class="quiz__question-text">Where will you wear this fragrance most?</h2>
+              <p class="quiz__question-hint">Select the primary setting for your signature scent</p>
             </div>
+            <div class="quiz__options quiz__options--grid">
+              <button class="quiz__option" data-value="office">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                </span>
+                <span class="quiz__option-label">Office & Business</span>
+                <span class="quiz__option-desc">Professional settings, meetings, networking</span>
+              </button>
+              <button class="quiz__option" data-value="casual">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                </span>
+                <span class="quiz__option-label">Casual & Everyday</span>
+                <span class="quiz__option-desc">Weekend errands, coffee runs, daily wear</span>
+              </button>
+              <button class="quiz__option" data-value="evening">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </span>
+                <span class="quiz__option-label">Evening & Dating</span>
+                <span class="quiz__option-desc">Dinner dates, bars, nightlife, romantic settings</span>
+              </button>
+              <button class="quiz__option" data-value="special">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </span>
+                <span class="quiz__option-label">Special Occasions</span>
+                <span class="quiz__option-desc">Weddings, galas, milestone events</span>
+              </button>
+            </div>
+          </div>
 
-            <a href="/collections/all" class="btn btn--primary btn--large">
-              Browse Your Matches
-            </a>
-            <p style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--color-text-light);">
-              or <a href="/pages/subscription" style="color: var(--color-secondary);">start a subscription</a> to get monthly recommendations
-            </p>
+          {% comment %} Question 2: Season/Climate {% endcomment %}
+          <div class="quiz__slide" data-question="2" style="display: none;">
+            <div class="quiz__question">
+              <h2 class="quiz__question-text">What's your preferred season or climate?</h2>
+              <p class="quiz__question-hint">Different notes perform better in different temperatures</p>
+            </div>
+            <div class="quiz__options quiz__options--grid">
+              <button class="quiz__option" data-value="warm">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                </span>
+                <span class="quiz__option-label">Spring & Summer</span>
+                <span class="quiz__option-desc">Light, fresh scents that won't overwhelm in heat</span>
+              </button>
+              <button class="quiz__option" data-value="cold">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2v20M20 16l-4-4 4-4M4 8l4 4-4 4M16 4l-4 4-4-4M8 20l4-4 4 4"/></svg>
+                </span>
+                <span class="quiz__option-label">Fall & Winter</span>
+                <span class="quiz__option-desc">Rich, warming scents that project in cool air</span>
+              </button>
+              <button class="quiz__option" data-value="versatile">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </span>
+                <span class="quiz__option-label">Year-Round</span>
+                <span class="quiz__option-desc">Versatile scents that work in any season</span>
+              </button>
+              <button class="quiz__option" data-value="tropical">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 8c.7-1 1-2.2 1-3.5A5.5 5.5 0 0 0 12.5 0 5.5 5.5 0 0 0 7 4.5c0 1.3.3 2.5 1 3.5"/><path d="M12 22V10"/><path d="M7 12l5-2 5 2"/><path d="M7 16l5-2 5 2"/><path d="M7 20l5-2 5 2"/></svg>
+                </span>
+                <span class="quiz__option-label">Hot & Humid</span>
+                <span class="quiz__option-desc">Live in a tropical climate year-round</span>
+              </button>
+            </div>
+          </div>
+
+          {% comment %} Question 3: Scent Family {% endcomment %}
+          <div class="quiz__slide" data-question="3" style="display: none;">
+            <div class="quiz__question">
+              <h2 class="quiz__question-text">Which scent profile speaks to you?</h2>
+              <p class="quiz__question-hint">Trust your instincts - there's no wrong answer</p>
+            </div>
+            <div class="quiz__options quiz__options--grid">
+              <button class="quiz__option" data-value="woody">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22V8"/><path d="M5 12l7-4 7 4"/><path d="M5 16l7-4 7 4"/><path d="M5 20l7-4 7 4"/></svg>
+                </span>
+                <span class="quiz__option-label">Woody & Earthy</span>
+                <span class="quiz__option-desc">Sandalwood, cedar, vetiver, patchouli</span>
+              </button>
+              <button class="quiz__option" data-value="fresh">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                </span>
+                <span class="quiz__option-label">Fresh & Aquatic</span>
+                <span class="quiz__option-desc">Citrus, marine, green tea, cucumber</span>
+              </button>
+              <button class="quiz__option" data-value="oriental">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/><circle cx="12" cy="12" r="4"/></svg>
+                </span>
+                <span class="quiz__option-label">Oriental & Spicy</span>
+                <span class="quiz__option-desc">Amber, oud, cardamom, cinnamon, incense</span>
+              </button>
+              <button class="quiz__option" data-value="aromatic">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>
+                </span>
+                <span class="quiz__option-label">Aromatic & Herbal</span>
+                <span class="quiz__option-desc">Lavender, sage, rosemary, mint</span>
+              </button>
+            </div>
+          </div>
+
+          {% comment %} Question 4: Projection/Intensity {% endcomment %}
+          <div class="quiz__slide" data-question="4" style="display: none;">
+            <div class="quiz__question">
+              <h2 class="quiz__question-text">How do you want to be noticed?</h2>
+              <p class="quiz__question-hint">This determines projection and sillage</p>
+            </div>
+            <div class="quiz__options quiz__options--list">
+              <button class="quiz__option" data-value="intimate">
+                <div class="quiz__option-content">
+                  <span class="quiz__option-label">Intimate & Personal</span>
+                  <span class="quiz__option-desc">Only noticed when close - whisper distance</span>
+                </div>
+                <span class="quiz__option-indicator"></span>
+              </button>
+              <button class="quiz__option" data-value="moderate">
+                <div class="quiz__option-content">
+                  <span class="quiz__option-label">Moderate & Balanced</span>
+                  <span class="quiz__option-desc">Noticeable within arm's reach - professional</span>
+                </div>
+                <span class="quiz__option-indicator"></span>
+              </button>
+              <button class="quiz__option" data-value="confident">
+                <div class="quiz__option-content">
+                  <span class="quiz__option-label">Confident & Present</span>
+                  <span class="quiz__option-desc">Leaves a trail - enters the room with you</span>
+                </div>
+                <span class="quiz__option-indicator"></span>
+              </button>
+              <button class="quiz__option" data-value="powerful">
+                <div class="quiz__option-content">
+                  <span class="quiz__option-label">Powerful & Commanding</span>
+                  <span class="quiz__option-desc">Beast mode - announces your arrival</span>
+                </div>
+                <span class="quiz__option-indicator"></span>
+              </button>
+            </div>
+          </div>
+
+          {% comment %} Question 5: Key Notes {% endcomment %}
+          <div class="quiz__slide" data-question="5" style="display: none;">
+            <div class="quiz__question">
+              <h2 class="quiz__question-text">Which note combination draws you in?</h2>
+              <p class="quiz__question-hint">Imagine smelling these in a high-end boutique</p>
+            </div>
+            <div class="quiz__options quiz__options--grid">
+              <button class="quiz__option" data-value="oud-leather">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </span>
+                <span class="quiz__option-label">Oud & Leather</span>
+                <span class="quiz__option-desc">Luxurious, bold, Middle Eastern influence</span>
+              </button>
+              <button class="quiz__option" data-value="bergamot-vetiver">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                </span>
+                <span class="quiz__option-label">Bergamot & Vetiver</span>
+                <span class="quiz__option-desc">Fresh opening, earthy dry-down, sophisticated</span>
+              </button>
+              <button class="quiz__option" data-value="tobacco-vanilla">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                </span>
+                <span class="quiz__option-label">Tobacco & Vanilla</span>
+                <span class="quiz__option-desc">Warm, sweet, cozy, evening-oriented</span>
+              </button>
+              <button class="quiz__option" data-value="cedar-musk">
+                <span class="quiz__option-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><line x1="12" y1="22" x2="12" y2="15.5"/><polyline points="22 8.5 12 15.5 2 8.5"/></svg>
+                </span>
+                <span class="quiz__option-label">Cedar & Clean Musk</span>
+                <span class="quiz__option-desc">Modern, clean, versatile, crowd-pleaser</span>
+              </button>
+            </div>
+          </div>
+
+          {% comment %} Results {% endcomment %}
+          <div class="quiz__slide quiz__results" data-question="results" style="display: none;">
+            <div class="quiz__results-content">
+              <div class="quiz__results-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+              </div>
+              <span class="quiz__results-eyebrow">Your Scent Profile</span>
+              <h2 class="quiz__results-title" id="quizResultTitle">The Sophisticated Explorer</h2>
+              <p class="quiz__results-description" id="quizResultDescription">
+                You appreciate depth and complexity in your fragrances. You're drawn to rich, luxurious scents that make a statement without being overwhelming.
+              </p>
+
+              <div class="quiz__results-traits" id="quizResultTraits">
+                <div class="quiz__results-trait">
+                  <span class="quiz__results-trait-label">Best For</span>
+                  <span class="quiz__results-trait-value" id="traitOccasion">Evening & Special Events</span>
+                </div>
+                <div class="quiz__results-trait">
+                  <span class="quiz__results-trait-label">Season</span>
+                  <span class="quiz__results-trait-value" id="traitSeason">Fall & Winter</span>
+                </div>
+                <div class="quiz__results-trait">
+                  <span class="quiz__results-trait-label">Projection</span>
+                  <span class="quiz__results-trait-value" id="traitProjection">Confident</span>
+                </div>
+              </div>
+
+              <div class="quiz__results-divider"></div>
+
+              <h3 class="quiz__results-subtitle">Your Top Matches</h3>
+              <div id="quizRecommendations" class="quiz__recommendations">
+                {% comment %} Recommendations populated by JavaScript {% endcomment %}
+              </div>
+
+              <div class="quiz__results-actions">
+                <a href="/collections/all" class="btn btn--primary btn--large">
+                  Browse All Fragrances
+                </a>
+                <button class="btn btn--outline" id="retakeQuizBtn">
+                  Retake Quiz
+                </button>
+              </div>
+
+              <p class="quiz__results-cta">
+                Ready to explore? <a href="/pages/subscription">Subscribe for $20/month</a> and get your first match delivered.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {% comment %} Navigation {% endcomment %}
-      <div class="quiz__actions" id="quizActions">
-        <button class="btn btn--outline" id="quizPrev" style="visibility: hidden;">Back</button>
-        <button class="btn btn--primary" id="quizNext" style="visibility: hidden;">Next</button>
+        {% comment %} Back Button {% endcomment %}
+        <button class="quiz__back" id="quizBack" style="display: none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back
+        </button>
       </div>
     </div>
   </div>
 </section>
 
 <style>
+  .quiz-section {
+    min-height: 100vh;
+    background: linear-gradient(180deg, var(--color-background) 0%, var(--color-background-secondary) 100%);
+  }
+
+  /* Quiz Intro */
+  .quiz-intro {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: calc(var(--header-height) + var(--spacing-3xl)) 0 var(--spacing-3xl);
+  }
+
+  .quiz-intro__content {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .quiz-intro__eyebrow {
+    display: inline-block;
+    padding: 6px 16px;
+    background: var(--color-secondary);
+    color: var(--color-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: var(--radius-full);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .quiz-intro__title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    line-height: 1.2;
+  }
+
+  .quiz-intro__description {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-light);
+    line-height: 1.7;
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .quiz-intro__features {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-2xl);
+    flex-wrap: wrap;
+  }
+
+  .quiz-intro__feature {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+  }
+
+  .quiz-intro__feature-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--color-secondary);
+  }
+
+  .quiz-intro__feature-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .quiz-intro__note {
+    margin-top: var(--spacing-lg);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  /* Quiz Container */
+  .quiz-container {
+    min-height: 100vh;
+    padding: calc(var(--header-height) + var(--spacing-2xl)) 0 var(--spacing-3xl);
+  }
+
+  .quiz {
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* Progress */
+  .quiz__progress {
+    margin-bottom: var(--spacing-2xl);
+    text-align: center;
+  }
+
+  .quiz__progress-bar {
+    height: 4px;
+    background: var(--color-border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .quiz__progress-fill {
+    height: 100%;
+    background: var(--color-secondary);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    width: 20%;
+  }
+
+  .quiz__progress-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  /* Questions */
+  .quiz__question {
+    text-align: center;
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .quiz__question-text {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    line-height: 1.3;
+  }
+
+  .quiz__question-hint {
+    font-size: var(--font-size-base);
+    color: var(--color-text-light);
+  }
+
+  /* Options Grid */
+  .quiz__options--grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+  }
+
+  .quiz__options--grid .quiz__option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--spacing-xl);
+    background: white;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .quiz__options--grid .quiz__option:hover {
+    border-color: var(--color-secondary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .quiz__options--grid .quiz__option.is-selected {
+    border-color: var(--color-secondary);
+    background: rgba(184, 150, 61, 0.08);
+  }
+
+  .quiz__option-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-secondary);
+  }
+
+  .quiz__option-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .quiz__option-label {
+    display: block;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-text);
+  }
+
+  .quiz__option-desc {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    line-height: 1.4;
+  }
+
+  /* Options List */
+  .quiz__options--list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .quiz__options--list .quiz__option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-lg);
+    background: white;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+  }
+
+  .quiz__options--list .quiz__option:hover {
+    border-color: var(--color-secondary);
+  }
+
+  .quiz__options--list .quiz__option.is-selected {
+    border-color: var(--color-secondary);
+    background: rgba(184, 150, 61, 0.08);
+  }
+
+  .quiz__option-content {
+    flex: 1;
+  }
+
+  .quiz__options--list .quiz__option-label {
+    margin-bottom: 2px;
+  }
+
+  .quiz__option-indicator {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--color-border);
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+    margin-left: var(--spacing-md);
+    transition: all 0.2s;
+  }
+
+  .quiz__options--list .quiz__option.is-selected .quiz__option-indicator {
+    border-color: var(--color-secondary);
+    background: var(--color-secondary);
+  }
+
+  .quiz__options--list .quiz__option.is-selected .quiz__option-indicator::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+  }
+
+  /* Back Button */
+  .quiz__back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .quiz__back:hover {
+    color: var(--color-text);
+  }
+
+  .quiz__back svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Results */
+  .quiz__results-content {
+    text-align: center;
+    padding: var(--spacing-xl) 0;
+  }
+
+  .quiz__results-badge {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-secondary) 0%, #d4b88a 100%);
+    border-radius: 50%;
+    color: white;
+  }
+
+  .quiz__results-badge svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .quiz__results-eyebrow {
+    display: block;
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-secondary);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .quiz__results-title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .quiz__results-description {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-light);
+    line-height: 1.7;
+    max-width: 500px;
+    margin: 0 auto var(--spacing-xl);
+  }
+
+  .quiz__results-traits {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-2xl);
+    margin-bottom: var(--spacing-xl);
+    flex-wrap: wrap;
+  }
+
+  .quiz__results-trait {
+    text-align: center;
+  }
+
+  .quiz__results-trait-label {
+    display: block;
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .quiz__results-trait-value {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .quiz__results-divider {
+    width: 60px;
+    height: 2px;
+    background: var(--color-border);
+    margin: var(--spacing-2xl) auto;
+  }
+
+  .quiz__results-subtitle {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  /* Recommendations */
+  .quiz__recommendations {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
+  }
+
   .quiz-product-card {
     background: white;
     border: 1px solid var(--color-border);
@@ -211,7 +716,11 @@
   .quiz-product-card__placeholder {
     width: 100%;
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: var(--color-background-secondary);
+    color: var(--color-text-muted);
   }
 
   .quiz-product-card__details {
@@ -253,297 +762,357 @@
     padding: 0 var(--spacing-md) var(--spacing-md);
   }
 
+  .quiz__results-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .quiz__results-cta {
+    margin-top: var(--spacing-xl);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+  }
+
+  .quiz__results-cta a {
+    color: var(--color-secondary);
+    font-weight: 600;
+  }
+
+  /* Loading State */
+  .quiz__recommendations--loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: var(--spacing-2xl);
+    color: var(--color-text-light);
+  }
+
+  /* Mobile Responsive */
   @media (max-width: 768px) {
-    #quizRecommendations {
-      grid-template-columns: 1fr !important;
+    .quiz-intro__features {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .quiz__options--grid {
+      grid-template-columns: 1fr;
+    }
+
+    .quiz__recommendations {
+      grid-template-columns: 1fr;
       max-width: 300px;
       margin-left: auto;
       margin-right: auto;
+    }
+
+    .quiz__results-traits {
+      gap: var(--spacing-lg);
+    }
+
+    .quiz__results-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .quiz__results-actions .btn {
+      width: 100%;
+      max-width: 280px;
     }
   }
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const quiz = document.getElementById('scentQuiz');
-    if (!quiz) return;
+document.addEventListener('DOMContentLoaded', function() {
+  const quizIntro = document.getElementById('quizIntro');
+  const quizContainer = document.getElementById('quizContainer');
+  const startBtn = document.getElementById('startQuizBtn');
+  const backBtn = document.getElementById('quizBack');
+  const retakeBtn = document.getElementById('retakeQuizBtn');
+  const progressFill = document.getElementById('progressFill');
+  const progressText = document.getElementById('progressText');
 
-    let currentQuestion = 1;
-    const totalQuestions = 5;
-    const answers = {};
+  const quiz = document.getElementById('scentQuiz');
+  if (!quiz) return;
 
-    const slides = quiz.querySelectorAll('.quiz__slide');
-    const progressSteps = quiz.querySelectorAll('.quiz__progress-step');
-    const prevBtn = document.getElementById('quizPrev');
-    const nextBtn = document.getElementById('quizNext');
-    const actionsDiv = document.getElementById('quizActions');
+  let currentQuestion = 1;
+  const totalQuestions = 5;
+  const answers = {};
 
-    // Scoring matrix: each answer contributes points to profiles
-    const scoringMatrix = {
-      // Question 1: Scent personality
-      bold: { pioneer: 3, explorer: 1, minimalist: 0, romantic: 0 },
-      sophisticated: { pioneer: 1, explorer: 3, minimalist: 1, romantic: 1 },
-      fresh: { pioneer: 0, explorer: 1, minimalist: 3, romantic: 0 },
-      romantic: { pioneer: 0, explorer: 1, minimalist: 0, romantic: 3 },
+  const slides = quiz.querySelectorAll('.quiz__slide');
 
-      // Question 2: When worn
-      everyday: { pioneer: 0, explorer: 1, minimalist: 3, romantic: 1 },
-      evening: { pioneer: 2, explorer: 2, minimalist: 0, romantic: 2 },
-      special: { pioneer: 3, explorer: 2, minimalist: 0, romantic: 3 },
-      all: { pioneer: 1, explorer: 2, minimalist: 1, romantic: 1 },
+  // Scoring matrix based on fragrance market research
+  const scoringMatrix = {
+    // Q1: Occasion
+    office: { classic: 3, fresh: 2, sophisticated: 2, bold: 0 },
+    casual: { classic: 1, fresh: 3, sophisticated: 1, bold: 0 },
+    evening: { classic: 1, fresh: 0, sophisticated: 2, bold: 3 },
+    special: { classic: 2, fresh: 0, sophisticated: 3, bold: 2 },
 
-      // Question 3: Scent family
-      woody: { pioneer: 2, explorer: 3, minimalist: 1, romantic: 0 },
-      oriental: { pioneer: 3, explorer: 2, minimalist: 0, romantic: 2 },
-      floral: { pioneer: 0, explorer: 1, minimalist: 1, romantic: 3 },
-      citrus: { pioneer: 0, explorer: 0, minimalist: 3, romantic: 1 },
+    // Q2: Season
+    warm: { classic: 1, fresh: 3, sophisticated: 1, bold: 0 },
+    cold: { classic: 2, fresh: 0, sophisticated: 2, bold: 3 },
+    versatile: { classic: 3, fresh: 2, sophisticated: 2, bold: 1 },
+    tropical: { classic: 0, fresh: 3, sophisticated: 1, bold: 0 },
 
-      // Question 4: Longevity
-      light: { pioneer: 0, explorer: 0, minimalist: 3, romantic: 1 },
-      moderate: { pioneer: 1, explorer: 2, minimalist: 2, romantic: 2 },
-      strong: { pioneer: 2, explorer: 3, minimalist: 0, romantic: 2 },
-      powerful: { pioneer: 3, explorer: 2, minimalist: 0, romantic: 1 },
+    // Q3: Scent family
+    woody: { classic: 2, fresh: 1, sophisticated: 3, bold: 2 },
+    fresh: { classic: 2, fresh: 3, sophisticated: 1, bold: 0 },
+    oriental: { classic: 1, fresh: 0, sophisticated: 2, bold: 3 },
+    aromatic: { classic: 3, fresh: 2, sophisticated: 1, bold: 0 },
 
-      // Question 5: Ingredients
-      oud: { pioneer: 3, explorer: 2, minimalist: 0, romantic: 1 },
-      leather: { pioneer: 3, explorer: 2, minimalist: 0, romantic: 0 },
-      rose: { pioneer: 0, explorer: 1, minimalist: 1, romantic: 3 },
-      vetiver: { pioneer: 1, explorer: 2, minimalist: 2, romantic: 1 }
-    };
+    // Q4: Projection
+    intimate: { classic: 2, fresh: 3, sophisticated: 2, bold: 0 },
+    moderate: { classic: 3, fresh: 2, sophisticated: 2, bold: 1 },
+    confident: { classic: 1, fresh: 0, sophisticated: 3, bold: 2 },
+    powerful: { classic: 0, fresh: 0, sophisticated: 1, bold: 3 },
 
-    // Profile definitions
-    const profiles = {
-      pioneer: {
-        name: 'The Bold Pioneer',
-        description: 'You embrace powerful, statement-making fragrances. Oud, leather, and spices are your allies. You\'re not afraid to leave a lasting impression.',
-        tags: ['oud', 'leather', 'spicy', 'intense', 'bold'],
-        keywords: ['oud', 'leather', 'tobacco', 'amber', 'spice']
-      },
-      explorer: {
-        name: 'The Sophisticated Explorer',
-        description: 'You appreciate depth and complexity. Rich, luxurious scents that evolve throughout the day appeal to you. You seek fragrances that tell a story.',
-        tags: ['woody', 'complex', 'rich', 'sophisticated'],
-        keywords: ['sandalwood', 'cedar', 'vetiver', 'woody', 'complex']
-      },
-      minimalist: {
-        name: 'The Modern Minimalist',
-        description: 'You prefer clean, fresh scents that are refined yet understated. Quality over quantity defines your approach. Effortless elegance is your signature.',
-        tags: ['fresh', 'clean', 'light', 'citrus', 'aquatic'],
-        keywords: ['citrus', 'fresh', 'clean', 'bergamot', 'marine']
-      },
-      romantic: {
-        name: 'The Romantic Dreamer',
-        description: 'Sensual, enveloping fragrances speak to your soul. Florals and orientals are your playground. You believe fragrance should evoke emotion and memory.',
-        tags: ['floral', 'romantic', 'sensual', 'oriental'],
-        keywords: ['rose', 'jasmine', 'vanilla', 'musk', 'floral']
-      }
-    };
+    // Q5: Notes
+    'oud-leather': { classic: 0, fresh: 0, sophisticated: 2, bold: 3 },
+    'bergamot-vetiver': { classic: 2, fresh: 2, sophisticated: 3, bold: 0 },
+    'tobacco-vanilla': { classic: 1, fresh: 0, sophisticated: 2, bold: 2 },
+    'cedar-musk': { classic: 3, fresh: 2, sophisticated: 2, bold: 0 }
+  };
 
-    function showQuestion(num) {
-      slides.forEach(slide => {
-        slide.style.display = 'none';
-      });
-
-      const currentSlide = quiz.querySelector(`[data-question="${num}"]`);
-      if (currentSlide) {
-        currentSlide.style.display = 'block';
-      }
-
-      // Update progress
-      progressSteps.forEach((step, index) => {
-        step.classList.remove('is-active', 'is-complete');
-        if (index + 1 < num) {
-          step.classList.add('is-complete');
-        } else if (index + 1 === num) {
-          step.classList.add('is-active');
-        }
-      });
-
-      // Update navigation
-      prevBtn.style.visibility = num > 1 ? 'visible' : 'hidden';
-      nextBtn.style.visibility = answers[num] ? 'visible' : 'hidden';
-
-      if (num === 'results') {
-        actionsDiv.style.display = 'none';
-        progressSteps.forEach(step => step.classList.add('is-complete'));
-      }
+  // Profile definitions with market-research backed descriptions
+  const profiles = {
+    classic: {
+      name: 'The Refined Gentleman',
+      description: 'You gravitate toward timeless, crowd-pleasing fragrances that exude quiet confidence. Clean, professional, and universally appealing scents are your foundation. You believe a fragrance should complement, not overpower.',
+      occasion: 'Office & Daily Wear',
+      season: 'Year-Round',
+      projection: 'Moderate',
+      keywords: ['clean', 'fresh', 'citrus', 'bergamot', 'cedar', 'musk', 'professional'],
+      tags: ['clean', 'versatile', 'professional', 'classic']
+    },
+    fresh: {
+      name: 'The Modern Minimalist',
+      description: 'You prefer light, refreshing scents that feel like a second skin. Aquatic, citrus, and green notes energize you. You want a fragrance that\'s noticeable up close but never announces your presence from across the room.',
+      occasion: 'Casual & Active',
+      season: 'Spring & Summer',
+      projection: 'Intimate',
+      keywords: ['fresh', 'aquatic', 'citrus', 'marine', 'green', 'light', 'clean'],
+      tags: ['fresh', 'light', 'aquatic', 'citrus']
+    },
+    sophisticated: {
+      name: 'The Sophisticated Explorer',
+      description: 'Complexity and evolution intrigue you. You appreciate fragrances that tell a story, with distinct opening, heart, and base notes. Woody, amber, and niche ingredients appeal to your refined palate.',
+      occasion: 'Evening & Special',
+      season: 'Fall & Winter',
+      projection: 'Confident',
+      keywords: ['woody', 'amber', 'sandalwood', 'vetiver', 'sophisticated', 'complex', 'niche'],
+      tags: ['woody', 'sophisticated', 'complex', 'refined']
+    },
+    bold: {
+      name: 'The Bold Pioneer',
+      description: 'You make statements. Oud, leather, tobacco, and spices are your playground. You want fragrances that leave a lasting impression and spark conversation. Subtlety is not in your vocabulary.',
+      occasion: 'Night Out & Events',
+      season: 'Cold Weather',
+      projection: 'Powerful',
+      keywords: ['oud', 'leather', 'tobacco', 'spicy', 'intense', 'bold', 'oriental'],
+      tags: ['bold', 'intense', 'oriental', 'statement']
     }
+  };
 
-    function selectOption(questionNum, value) {
-      answers[questionNum] = value;
+  // Start quiz
+  startBtn?.addEventListener('click', function() {
+    quizIntro.style.display = 'none';
+    quizContainer.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
-      // Update UI
-      const currentSlide = quiz.querySelector(`[data-question="${questionNum}"]`);
-      currentSlide.querySelectorAll('.quiz__option').forEach(opt => {
-        opt.classList.remove('is-selected');
-      });
-      event.target.closest('.quiz__option').classList.add('is-selected');
+  // Check for saved progress
+  const savedProfile = localStorage.getItem('basenotes_scent_profile');
+  if (savedProfile && profiles[savedProfile]) {
+    // Could show "Continue where you left off" but for now, start fresh
+  }
 
-      // Auto-advance after short delay
-      setTimeout(() => {
-        if (questionNum < totalQuestions) {
-          currentQuestion++;
-          showQuestion(currentQuestion);
-        } else {
-          showResults();
-        }
-      }, 300);
-    }
-
-    function calculateProfile() {
-      // Initialize scores
-      const scores = { pioneer: 0, explorer: 0, minimalist: 0, romantic: 0 };
-
-      // Calculate scores based on answers
-      Object.values(answers).forEach(answer => {
-        if (scoringMatrix[answer]) {
-          Object.keys(scores).forEach(profile => {
-            scores[profile] += scoringMatrix[answer][profile] || 0;
-          });
-        }
-      });
-
-      // Find the winning profile
-      let maxScore = 0;
-      let winningProfile = 'explorer'; // default
-
-      Object.keys(scores).forEach(profile => {
-        if (scores[profile] > maxScore) {
-          maxScore = scores[profile];
-          winningProfile = profile;
-        }
-      });
-
-      return winningProfile;
-    }
-
-    function showResults() {
-      showQuestion('results');
-
-      // Calculate the profile based on actual answers
-      const profileKey = calculateProfile();
-      const profile = profiles[profileKey];
-
-      document.getElementById('quizResultTitle').textContent = profile.name;
-      document.getElementById('quizResultDescription').textContent = profile.description;
-
-      // Store profile for personalization
-      localStorage.setItem('basenotes_scent_profile', profileKey);
-      localStorage.setItem('basenotes_quiz_answers', JSON.stringify(answers));
-
-      // Load product recommendations
-      loadRecommendations(profile);
-    }
-
-    function loadRecommendations(profile) {
-      const recommendationsContainer = document.getElementById('quizRecommendations');
-
-      // Show loading state
-      recommendationsContainer.innerHTML = '<p style="grid-column: span 3; text-align: center; color: var(--color-text-light);">Finding your perfect matches...</p>';
-
-      // Fetch products from the collection
-      fetch('/collections/all/products.json?limit=20')
-        .then(response => response.json())
-        .then(data => {
-          let products = data.products || [];
-
-          // Score products based on profile keywords in title, tags, or description
-          products = products.map(product => {
-            let matchScore = 0;
-            const searchText = (product.title + ' ' + (product.tags || []).join(' ') + ' ' + (product.body_html || '')).toLowerCase();
-
-            profile.keywords.forEach(keyword => {
-              if (searchText.includes(keyword.toLowerCase())) {
-                matchScore += 2;
-              }
-            });
-
-            // Bonus for tag matches
-            if (product.tags) {
-              profile.tags.forEach(tag => {
-                if (product.tags.some(t => t.toLowerCase().includes(tag.toLowerCase()))) {
-                  matchScore += 3;
-                }
-              });
-            }
-
-            return { ...product, matchScore };
-          });
-
-          // Sort by match score (highest first), then take top 3
-          products.sort((a, b) => b.matchScore - a.matchScore);
-          const recommended = products.slice(0, 3);
-
-          // If we don't have enough matches, fill with random products
-          if (recommended.length < 3) {
-            const remaining = products.filter(p => !recommended.includes(p)).slice(0, 3 - recommended.length);
-            recommended.push(...remaining);
-          }
-
-          // Render recommendations
-          if (recommended.length === 0) {
-            recommendationsContainer.innerHTML = '<p style="grid-column: span 3; text-align: center; color: var(--color-text-light);">Browse our collection to find your perfect match.</p>';
-            return;
-          }
-
-          recommendationsContainer.innerHTML = recommended.map(product => {
-            const image = product.images && product.images[0] ? product.images[0].src : '';
-            const price = product.variants && product.variants[0] ? (product.variants[0].price / 100).toFixed(2) : '0.00';
-            const variantId = product.variants && product.variants[0] ? product.variants[0].id : '';
-
-            return `
-              <div class="quiz-product-card">
-                <a href="/products/${product.handle}" class="quiz-product-card__image">
-                  ${image ? `<img src="${image}" alt="${product.title}" loading="lazy">` : '<div class="quiz-product-card__placeholder"></div>'}
-                </a>
-                <div class="quiz-product-card__details">
-                  ${product.vendor ? `<span class="quiz-product-card__vendor">${product.vendor}</span>` : ''}
-                  <h4 class="quiz-product-card__title">
-                    <a href="/products/${product.handle}">${product.title}</a>
-                  </h4>
-                  <span class="quiz-product-card__price">$${price}</span>
-                </div>
-                <form action="/cart/add" method="post" class="quiz-product-card__form">
-                  <input type="hidden" name="id" value="${variantId}">
-                  <button type="submit" class="btn btn--outline btn--small btn--full">Add to Queue</button>
-                </form>
-              </div>
-            `;
-          }).join('');
-        })
-        .catch(error => {
-          console.error('Error loading recommendations:', error);
-          recommendationsContainer.innerHTML = '<p style="grid-column: span 3; text-align: center; color: var(--color-text-light);">Unable to load recommendations. <a href="/collections/all">Browse all fragrances</a></p>';
-        });
-    }
-
-    // Event listeners
-    quiz.querySelectorAll('.quiz__option').forEach(option => {
-      option.addEventListener('click', function(e) {
-        const questionNum = parseInt(this.closest('.quiz__slide').dataset.question);
-        selectOption(questionNum, this.dataset.value);
-      });
+  function showQuestion(num) {
+    slides.forEach(slide => {
+      slide.style.display = 'none';
     });
 
-    prevBtn.addEventListener('click', () => {
-      if (currentQuestion > 1) {
-        currentQuestion--;
-        showQuestion(currentQuestion);
-      }
-    });
+    const currentSlide = quiz.querySelector(`[data-question="${num}"]`);
+    if (currentSlide) {
+      currentSlide.style.display = 'block';
+    }
 
-    nextBtn.addEventListener('click', () => {
-      if (currentQuestion < totalQuestions) {
+    // Update progress
+    if (num !== 'results') {
+      const progress = (num / totalQuestions) * 100;
+      progressFill.style.width = progress + '%';
+      progressText.textContent = `Question ${num} of ${totalQuestions}`;
+      backBtn.style.display = num > 1 ? 'flex' : 'none';
+    } else {
+      progressFill.style.width = '100%';
+      progressText.textContent = 'Complete!';
+      backBtn.style.display = 'none';
+    }
+  }
+
+  function selectOption(questionNum, value) {
+    answers[questionNum] = value;
+
+    // Update UI
+    const currentSlide = quiz.querySelector(`[data-question="${questionNum}"]`);
+    currentSlide.querySelectorAll('.quiz__option').forEach(opt => {
+      opt.classList.remove('is-selected');
+    });
+    event.target.closest('.quiz__option').classList.add('is-selected');
+
+    // Auto-advance after animation
+    setTimeout(() => {
+      if (questionNum < totalQuestions) {
         currentQuestion++;
         showQuestion(currentQuestion);
       } else {
         showResults();
       }
+    }, 400);
+  }
+
+  function calculateProfile() {
+    const scores = { classic: 0, fresh: 0, sophisticated: 0, bold: 0 };
+
+    Object.values(answers).forEach(answer => {
+      if (scoringMatrix[answer]) {
+        Object.keys(scores).forEach(profile => {
+          scores[profile] += scoringMatrix[answer][profile] || 0;
+        });
+      }
     });
 
-    // Initialize
-    showQuestion(1);
+    let maxScore = 0;
+    let winningProfile = 'sophisticated';
+
+    Object.keys(scores).forEach(profile => {
+      if (scores[profile] > maxScore) {
+        maxScore = scores[profile];
+        winningProfile = profile;
+      }
+    });
+
+    return winningProfile;
+  }
+
+  function showResults() {
+    showQuestion('results');
+
+    const profileKey = calculateProfile();
+    const profile = profiles[profileKey];
+
+    document.getElementById('quizResultTitle').textContent = profile.name;
+    document.getElementById('quizResultDescription').textContent = profile.description;
+    document.getElementById('traitOccasion').textContent = profile.occasion;
+    document.getElementById('traitSeason').textContent = profile.season;
+    document.getElementById('traitProjection').textContent = profile.projection;
+
+    // Save to localStorage
+    localStorage.setItem('basenotes_scent_profile', profileKey);
+    localStorage.setItem('basenotes_quiz_answers', JSON.stringify(answers));
+
+    loadRecommendations(profile);
+  }
+
+  function loadRecommendations(profile) {
+    const container = document.getElementById('quizRecommendations');
+    container.innerHTML = '<div class="quiz__recommendations--loading">Finding your perfect matches...</div>';
+
+    fetch('/collections/all/products.json?limit=20')
+      .then(response => response.json())
+      .then(data => {
+        let products = data.products || [];
+
+        // Score products based on profile
+        products = products.map(product => {
+          let matchScore = 0;
+          const searchText = (product.title + ' ' + (product.tags || []).join(' ') + ' ' + (product.body_html || '')).toLowerCase();
+
+          profile.keywords.forEach(keyword => {
+            if (searchText.includes(keyword.toLowerCase())) {
+              matchScore += 2;
+            }
+          });
+
+          if (product.tags) {
+            profile.tags.forEach(tag => {
+              if (product.tags.some(t => t.toLowerCase().includes(tag.toLowerCase()))) {
+                matchScore += 3;
+              }
+            });
+          }
+
+          return { ...product, matchScore };
+        });
+
+        products.sort((a, b) => b.matchScore - a.matchScore);
+        const recommended = products.slice(0, 3);
+
+        if (recommended.length === 0) {
+          container.innerHTML = '<p style="grid-column: span 3; text-align: center; color: var(--color-text-light);">Browse our collection to find your perfect match.</p>';
+          return;
+        }
+
+        container.innerHTML = recommended.map(product => {
+          const image = product.images?.[0]?.src || '';
+          const variantId = product.variants?.[0]?.id || '';
+
+          return `
+            <div class="quiz-product-card">
+              <a href="/products/${product.handle}" class="quiz-product-card__image">
+                ${image
+                  ? `<img src="${image}" alt="${product.title}" loading="lazy" width="300" height="300">`
+                  : `<div class="quiz-product-card__placeholder"><svg viewBox="0 0 60 100" fill="none" stroke="currentColor" stroke-width="1"><rect x="15" y="25" width="30" height="65" rx="3"/><rect x="20" y="10" width="20" height="15"/><rect x="25" y="2" width="10" height="8" rx="2"/></svg></div>`
+                }
+              </a>
+              <div class="quiz-product-card__details">
+                ${product.vendor ? `<span class="quiz-product-card__vendor">${product.vendor}</span>` : ''}
+                <h4 class="quiz-product-card__title">
+                  <a href="/products/${product.handle}">${product.title}</a>
+                </h4>
+                <span class="quiz-product-card__price">$20/mo</span>
+              </div>
+              <form action="/cart/add" method="post" class="quiz-product-card__form">
+                <input type="hidden" name="id" value="${variantId}">
+                <button type="submit" class="btn btn--outline btn--small btn--full">Add to Queue</button>
+              </form>
+            </div>
+          `;
+        }).join('');
+      })
+      .catch(error => {
+        console.error('Error loading recommendations:', error);
+        container.innerHTML = '<p style="grid-column: span 3; text-align: center;">Unable to load recommendations. <a href="/collections/all">Browse all fragrances</a></p>';
+      });
+  }
+
+  // Event listeners
+  quiz.querySelectorAll('.quiz__option').forEach(option => {
+    option.addEventListener('click', function(e) {
+      const questionNum = parseInt(this.closest('.quiz__slide').dataset.question);
+      selectOption(questionNum, this.dataset.value);
+    });
   });
+
+  backBtn?.addEventListener('click', () => {
+    if (currentQuestion > 1) {
+      currentQuestion--;
+      showQuestion(currentQuestion);
+    }
+  });
+
+  retakeBtn?.addEventListener('click', () => {
+    currentQuestion = 1;
+    Object.keys(answers).forEach(key => delete answers[key]);
+    quiz.querySelectorAll('.quiz__option').forEach(opt => opt.classList.remove('is-selected'));
+    showQuestion(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Initialize
+  showQuestion(1);
+});
 </script>
 
 {% schema %}
