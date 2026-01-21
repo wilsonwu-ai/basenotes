@@ -48,7 +48,10 @@
             srcset="{{ featured_image | image_url: width: 300 }} 300w, {{ featured_image | image_url: width: 450 }} 450w, {{ featured_image | image_url: width: 600 }} 600w"
             sizes="(max-width: 480px) 50vw, (max-width: 768px) 33vw, 25vw"
             alt="{{ featured_image.alt | default: product.title }}"
+            width="600"
+            height="800"
             loading="lazy"
+            decoding="async"
             class="product-card__image product-card__image--primary"
           >
           {%- if secondary_image != blank -%}
@@ -57,7 +60,10 @@
               srcset="{{ secondary_image | image_url: width: 300 }} 300w, {{ secondary_image | image_url: width: 450 }} 450w, {{ secondary_image | image_url: width: 600 }} 600w"
               sizes="(max-width: 480px) 50vw, (max-width: 768px) 33vw, 25vw"
               alt="{{ secondary_image.alt | default: product.title }}"
+              width="600"
+              height="800"
               loading="lazy"
+              decoding="async"
               class="product-card__image product-card__image--secondary"
             >
           {%- endif -%}

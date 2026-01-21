@@ -11,19 +11,19 @@
 }
 
 :root {
-  /* Colors */
+  /* Colors - Updated for WCAG AA contrast compliance */
   --color-primary: #1a1a1a;
-  --color-secondary: #c9a86c;
-  --color-accent: #d4af37;
+  --color-secondary: #b8963d; /* Darker gold for better contrast */
+  --color-accent: #c9a227; /* Adjusted for contrast */
   --color-background: #ffffff;
   --color-background-secondary: #f8f7f5;
   --color-text: #1a1a1a;
-  --color-text-light: #666666;
-  --color-text-muted: #999999;
+  --color-text-light: #545454; /* Darkened from #666 for 4.5:1 contrast ratio */
+  --color-text-muted: #717171; /* Darkened from #999 for 4.5:1 contrast ratio */
   --color-border: #e5e5e5;
   --color-border-dark: #d0d0d0;
-  --color-success: #4caf50;
-  --color-error: #e74c3c;
+  --color-success: #2e7d32; /* Darkened for better contrast */
+  --color-error: #c62828; /* Darkened for better contrast */
 
   /* Typography */
   --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
