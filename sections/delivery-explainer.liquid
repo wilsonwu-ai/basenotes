@@ -1,0 +1,275 @@
+<section class="section">
+  <div class="container">
+    <div class="section__header">
+      <span class="section__eyebrow">{{ section.settings.eyebrow }}</span>
+      <h2 class="section__title">{{ section.settings.heading }}</h2>
+      <p class="section__description">{{ section.settings.description }}</p>
+    </div>
+
+    <div class="delivery-comparison" style="display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--spacing-2xl); align-items: center; max-width: 900px; margin: 0 auto;">
+
+      {% comment %} Full Size Bottle {% endcomment %}
+      <div class="delivery-item" style="text-align: center;">
+        <div style="aspect-ratio: 3/4; background: var(--color-background-secondary); display: flex; align-items: center; justify-content: center; margin-bottom: var(--spacing-lg); overflow: hidden;">
+          {%- if section.settings.full_bottle_image != blank -%}
+            <img
+              src="{{ section.settings.full_bottle_image | image_url: width: 400 }}"
+              alt="Full size fragrance bottle"
+              style="max-height: 100%; width: auto;"
+            >
+          {%- else -%}
+            <div style="text-align: center; padding: var(--spacing-xl); color: var(--color-text-light);">
+              <svg width="80" height="120" viewBox="0 0 80 120" fill="none" stroke="currentColor" stroke-width="1">
+                <rect x="20" y="30" width="40" height="80" rx="4"/>
+                <rect x="30" y="10" width="20" height="20"/>
+                <rect x="35" y="0" width="10" height="10"/>
+              </svg>
+              <p style="margin-top: var(--spacing-sm); font-size: var(--font-size-xs);">Full Bottle Image</p>
+            </div>
+          {%- endif -%}
+        </div>
+        <h3 style="font-family: var(--font-heading); font-size: var(--font-size-xl); margin-bottom: var(--spacing-xs);">{{ section.settings.full_bottle_title }}</h3>
+        <p style="color: var(--color-text-light); font-size: var(--font-size-sm);">{{ section.settings.full_bottle_subtitle }}</p>
+        <p style="font-size: var(--font-size-2xl); font-weight: 600; color: var(--color-text-muted); margin-top: var(--spacing-md);">{{ section.settings.full_bottle_price }}</p>
+      </div>
+
+      {% comment %} Arrow {% endcomment %}
+      <div style="text-align: center;">
+        <div style="background: var(--color-secondary); color: var(--color-background); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+        <p style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;">You Get</p>
+      </div>
+
+      {% comment %} Atomizer Vial {% endcomment %}
+      <div class="delivery-item" style="text-align: center;">
+        <div style="aspect-ratio: 3/4; background: linear-gradient(135deg, var(--color-primary) 0%, #333 100%); display: flex; align-items: center; justify-content: center; margin-bottom: var(--spacing-lg); overflow: hidden; position: relative;">
+          {%- if section.settings.atomizer_image != blank -%}
+            <img
+              src="{{ section.settings.atomizer_image | image_url: width: 400 }}"
+              alt="Basenotes 8ml atomizer"
+              style="max-height: 100%; width: auto;"
+            >
+          {%- else -%}
+            <div style="text-align: center; padding: var(--spacing-xl); color: var(--color-background);">
+              <svg width="40" height="100" viewBox="0 0 40 100" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="8" y="25" width="24" height="70" rx="4"/>
+                <rect x="12" y="10" width="16" height="15"/>
+                <rect x="15" y="0" width="10" height="10" rx="2"/>
+                <text x="20" y="65" text-anchor="middle" font-size="8" fill="currentColor" stroke="none">BN</text>
+              </svg>
+              <p style="margin-top: var(--spacing-sm); font-size: var(--font-size-xs);">8ml Atomizer</p>
+            </div>
+          {%- endif -%}
+          <div style="position: absolute; top: var(--spacing-md); right: var(--spacing-md);">
+            <span class="badge badge--gold">{{ section.settings.atomizer_badge }}</span>
+          </div>
+        </div>
+        <h3 style="font-family: var(--font-heading); font-size: var(--font-size-xl); margin-bottom: var(--spacing-xs);">{{ section.settings.atomizer_title }}</h3>
+        <p style="color: var(--color-text-light); font-size: var(--font-size-sm);">{{ section.settings.atomizer_subtitle }}</p>
+        <p style="font-size: var(--font-size-2xl); font-weight: 600; color: var(--color-secondary); margin-top: var(--spacing-md);">{{ section.settings.atomizer_price }}</p>
+      </div>
+    </div>
+
+    {% comment %} Benefits {% endcomment %}
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-xl); margin-top: var(--spacing-4xl); text-align: center;">
+      {%- for block in section.blocks -%}
+        <div {{ block.shopify_attributes }}>
+          <div style="font-size: 2rem; margin-bottom: var(--spacing-sm);">{{ block.settings.icon }}</div>
+          <h4 style="font-size: var(--font-size-sm); font-weight: 600; margin-bottom: var(--spacing-xs);">{{ block.settings.title }}</h4>
+          <p style="font-size: var(--font-size-sm); color: var(--color-text-light);">{{ block.settings.description }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.button_label != blank -%}
+      <div class="text-center" style="margin-top: var(--spacing-3xl);">
+        <a href="{{ section.settings.button_link }}" class="btn btn--primary btn--large">
+          {{ section.settings.button_label }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+<style>
+  @media (max-width: 768px) {
+    .delivery-comparison {
+      grid-template-columns: 1fr !important;
+      gap: var(--spacing-xl) !important;
+    }
+    .delivery-comparison > div:nth-child(2) {
+      transform: rotate(90deg);
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Delivery Explainer",
+  "tag": "section",
+  "class": "delivery-explainer-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "The Basenotes Experience"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Full Luxury. Pocket Size."
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Experience the same premium fragrance found in $300 bottles—delivered in a sleek 8ml atomizer that fits in your pocket."
+    },
+    {
+      "type": "header",
+      "content": "Full Bottle"
+    },
+    {
+      "type": "image_picker",
+      "id": "full_bottle_image",
+      "label": "Full bottle image"
+    },
+    {
+      "type": "text",
+      "id": "full_bottle_title",
+      "label": "Title",
+      "default": "The Full Bottle"
+    },
+    {
+      "type": "text",
+      "id": "full_bottle_subtitle",
+      "label": "Subtitle",
+      "default": "100ml · Retail Price"
+    },
+    {
+      "type": "text",
+      "id": "full_bottle_price",
+      "label": "Price",
+      "default": "$295"
+    },
+    {
+      "type": "header",
+      "content": "Atomizer"
+    },
+    {
+      "type": "image_picker",
+      "id": "atomizer_image",
+      "label": "Atomizer image"
+    },
+    {
+      "type": "text",
+      "id": "atomizer_title",
+      "label": "Title",
+      "default": "Your Monthly Vial"
+    },
+    {
+      "type": "text",
+      "id": "atomizer_subtitle",
+      "label": "Subtitle",
+      "default": "8ml · 120 Sprays · 30 Days"
+    },
+    {
+      "type": "text",
+      "id": "atomizer_price",
+      "label": "Price",
+      "default": "$20/month"
+    },
+    {
+      "type": "text",
+      "id": "atomizer_badge",
+      "label": "Badge text",
+      "default": "What You Get"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Start Your Subscription"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon (emoji)",
+          "default": "✨"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Benefit"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description",
+          "default": "Description of this benefit"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Delivery Explainer",
+      "blocks": [
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "✈️",
+            "title": "Travel Ready",
+            "description": "TSA-approved size fits in any bag"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "💰",
+            "title": "93% Savings",
+            "description": "Sample luxury without the full price"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "🔄",
+            "title": "No Waste",
+            "description": "Finish it before your next scent arrives"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "📦",
+            "title": "Free Shipping",
+            "description": "Delivered to your door monthly"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
