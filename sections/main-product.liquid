@@ -3,37 +3,37 @@
   assign featured_image = current_variant.featured_image | default: product.featured_image
 -%}
 
-<section class="section" style="padding-top: calc(var(--header-height) + var(--spacing-3xl));">
+<section class="product-page">
   <div class="container">
-    <div class="product" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-4xl); align-items: start;">
+    <div class="product-layout">
 
-      {% comment %} Product Gallery {% endcomment %}
-      <div class="product__gallery">
-        <div class="product__main-image" style="aspect-ratio: 3/4; background: var(--color-background-secondary); overflow: hidden;">
+      {% comment %} Product Gallery - Left Side {% endcomment %}
+      <div class="product-gallery">
+        <div class="product-gallery__main">
           {%- if featured_image != blank -%}
             <img
-              src="{{ featured_image | image_url: width: 1000 }}"
+              src="{{ featured_image | image_url: width: 800 }}"
               alt="{{ featured_image.alt | default: product.title }}"
-              style="width: 100%; height: 100%; object-fit: cover;"
               id="mainProductImage"
             >
           {%- else -%}
-            {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+            <div class="product-gallery__placeholder">
+              {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
           {%- endif -%}
         </div>
 
         {%- if product.images.size > 1 -%}
-          <div class="product__thumbnails" style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-md); overflow-x: auto;">
+          <div class="product-gallery__thumbs">
             {%- for image in product.images -%}
               <button
-                class="product__thumbnail{% if image == featured_image %} is-active{% endif %}"
-                data-image-url="{{ image | image_url: width: 1000 }}"
-                style="width: 80px; height: 100px; flex-shrink: 0; border: 2px solid {% if image == featured_image %}var(--color-secondary){% else %}transparent{% endif %}; padding: 0; background: var(--color-background-secondary); cursor: pointer;"
+                class="product-gallery__thumb {% if image == featured_image %}is-active{% endif %}"
+                data-image-url="{{ image | image_url: width: 800 }}"
+                type="button"
               >
                 <img
-                  src="{{ image | image_url: width: 200 }}"
+                  src="{{ image | image_url: width: 150 }}"
                   alt="{{ image.alt | default: product.title }}"
-                  style="width: 100%; height: 100%; object-fit: cover;"
                 >
               </button>
             {%- endfor -%}
@@ -41,125 +41,71 @@
         {%- endif -%}
       </div>
 
-      {% comment %} Product Info {% endcomment %}
-      <div class="product__info">
-        <span class="product__vendor text-uppercase" style="font-size: var(--font-size-xs); letter-spacing: 0.15em; color: var(--color-secondary);">
-          {{ product.vendor }}
-        </span>
+      {% comment %} Product Info - Right Side {% endcomment %}
+      <div class="product-info">
 
-        <h1 class="product__title" style="font-size: var(--font-size-4xl); margin: var(--spacing-sm) 0 var(--spacing-lg);">
-          {{ product.title }}
-        </h1>
+        {% comment %} Brand & Title {% endcomment %}
+        <div class="product-info__header">
+          <span class="product-info__brand">{{ product.vendor }}</span>
+          <h1 class="product-info__title">{{ product.title }}</h1>
+        </div>
 
-        {%- if product.description != blank -%}
-          <div class="product__description" style="margin-bottom: var(--spacing-xl); color: var(--color-text-light); line-height: 1.8;">
-            {{ product.description }}
-          </div>
-        {%- endif -%}
-
-        {% comment %} Fragrance Notes {% endcomment %}
-        {%- if product.metafields.custom.top_notes != blank or product.metafields.custom.heart_notes != blank or product.metafields.custom.base_notes != blank -%}
-          <div class="fragrance-pyramid" style="margin-bottom: var(--spacing-xl); padding: var(--spacing-xl); background: var(--color-background-secondary); border-radius: var(--radius-md);">
-            <h3 style="font-size: var(--font-size-sm); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-lg); font-weight: 600;">Fragrance Notes</h3>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-lg); text-align: center;">
-              {%- if product.metafields.custom.top_notes != blank -%}
-                <div>
-                  <span style="display: block; font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-light); margin-bottom: var(--spacing-xs);">Top</span>
-                  <span style="font-weight: 500; font-size: var(--font-size-base);">{{ product.metafields.custom.top_notes }}</span>
-                </div>
-              {%- endif -%}
-              {%- if product.metafields.custom.heart_notes != blank -%}
-                <div>
-                  <span style="display: block; font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-light); margin-bottom: var(--spacing-xs);">Heart</span>
-                  <span style="font-weight: 500; font-size: var(--font-size-base);">{{ product.metafields.custom.heart_notes }}</span>
-                </div>
-              {%- endif -%}
-              {%- if product.metafields.custom.base_notes != blank -%}
-                <div>
-                  <span style="display: block; font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-light); margin-bottom: var(--spacing-xs);">Base</span>
-                  <span style="font-weight: 500; font-size: var(--font-size-base);">{{ product.metafields.custom.base_notes }}</span>
-                </div>
-              {%- endif -%}
-            </div>
-          </div>
-        {%- endif -%}
-
-        {% comment %} Subscription Atomizer Card {% endcomment %}
-        <div class="subscription-card" style="border: 2px solid var(--color-primary); border-radius: var(--radius-md); padding: var(--spacing-xl); margin-bottom: var(--spacing-xl);">
-
-          <div style="display: flex; gap: var(--spacing-xl); align-items: center;">
-
-            {% comment %} Atomizer Visual {% endcomment %}
-            <div class="atomizer-visual" style="flex-shrink: 0; width: 100px; text-align: center;">
-              <div style="background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); border-radius: var(--radius-sm); padding: var(--spacing-lg) var(--spacing-md); position: relative;">
-                <svg width="50" height="80" viewBox="0 0 50 80" fill="none" style="display: block; margin: 0 auto;">
-                  {% comment %} Spray top {% endcomment %}
-                  <rect x="18" y="0" width="14" height="8" rx="2" fill="#c9a86c"/>
-                  <rect x="20" y="8" width="10" height="6" fill="#888"/>
-                  {% comment %} Bottle body {% endcomment %}
-                  <rect x="10" y="14" width="30" height="60" rx="4" fill="#1a1a1a" stroke="#c9a86c" stroke-width="1"/>
-                  {% comment %} Label area {% endcomment %}
-                  <rect x="14" y="30" width="22" height="30" rx="2" fill="#222"/>
-                  <text x="25" y="48" text-anchor="middle" fill="#c9a86c" font-size="8" font-weight="600">BN</text>
-                  {% comment %} Volume indicator {% endcomment %}
-                  <text x="25" y="56" text-anchor="middle" fill="#888" font-size="5">5ml</text>
+        {% comment %} Subscription Box {% endcomment %}
+        <div class="subscription-box">
+          <div class="subscription-box__header">
+            <div class="subscription-box__bottle">
+              <div class="bottle-icon">
+                <svg viewBox="0 0 40 70" fill="none">
+                  <rect x="14" y="0" width="12" height="6" rx="1" fill="#c9a86c"/>
+                  <rect x="16" y="6" width="8" height="4" fill="#666"/>
+                  <rect x="8" y="10" width="24" height="55" rx="3" fill="#1a1a1a" stroke="#c9a86c" stroke-width="0.5"/>
+                  <rect x="12" y="22" width="16" height="24" rx="1" fill="#222"/>
+                  <text x="20" y="36" text-anchor="middle" fill="#c9a86c" font-size="7" font-weight="600">BN</text>
+                  <text x="20" y="43" text-anchor="middle" fill="#888" font-size="4">5ml</text>
                 </svg>
               </div>
-              <span style="display: block; margin-top: var(--spacing-sm); font-size: var(--font-size-xs); color: var(--color-text-light); font-weight: 500;">5ml Atomizer</span>
+              <span class="bottle-label">5ml Spray</span>
             </div>
 
-            {% comment %} Subscription Details {% endcomment %}
-            <div class="subscription-details" style="flex: 1;">
-              <div style="display: flex; align-items: baseline; gap: var(--spacing-sm); margin-bottom: var(--spacing-xs);">
-                <span style="font-size: var(--font-size-3xl); font-weight: 700;">$20</span>
-                <span style="font-size: var(--font-size-base); color: var(--color-text-light);">/ month</span>
+            <div class="subscription-box__pricing">
+              <div class="price-main">
+                <span class="price-amount">$20</span>
+                <span class="price-period">/ month</span>
               </div>
-
-              <p style="font-size: var(--font-size-sm); color: var(--color-text-light); margin-bottom: var(--spacing-md);">
-                Month-to-month subscription. Cancel anytime.
-              </p>
-
-              <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-md);">
-                <div style="display: flex; align-items: center; gap: var(--spacing-xs);">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="2">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                  </svg>
-                  <span style="font-size: var(--font-size-sm);">5ml / ~30 sprays</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: var(--spacing-xs);">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="2">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                  </svg>
-                  <span style="font-size: var(--font-size-sm);">Free shipping</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: var(--spacing-xs);">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="2">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                  </svg>
-                  <span style="font-size: var(--font-size-sm);">Swap anytime</span>
-                </div>
-              </div>
+              <p class="price-note">Month-to-month. Cancel anytime.</p>
             </div>
-
           </div>
 
-          {% comment %} Add to Cart Form {% endcomment %}
-          {%- form 'product', product, id: 'productForm', class: 'product__form' -%}
+          <ul class="subscription-box__benefits">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span>5ml atomizer (~30 sprays)</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span>Free shipping every month</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span>Swap scents anytime</span>
+            </li>
+          </ul>
+
+          {%- form 'product', product, id: 'productForm', class: 'subscription-box__form' -%}
             <input type="hidden" name="id" value="{{ current_variant.id }}" id="variantId">
 
             {%- if product.variants.size > 1 -%}
-              <div class="product__variants" style="margin-top: var(--spacing-lg); margin-bottom: var(--spacing-md);">
+              <div class="product-variants">
                 {%- for option in product.options_with_values -%}
-                  <div class="form-group" style="margin-bottom: var(--spacing-sm);">
-                    <label class="form-label" for="option-{{ option.name | handle }}">{{ option.name }}</label>
-                    <select
-                      id="option-{{ option.name | handle }}"
-                      class="form-select"
-                      data-option-index="{{ forloop.index0 }}"
-                    >
+                  <div class="variant-selector">
+                    <label for="option-{{ option.name | handle }}">{{ option.name }}</label>
+                    <select id="option-{{ option.name | handle }}" data-option-index="{{ forloop.index0 }}">
                       {%- for value in option.values -%}
                         <option value="{{ value }}"{% if option.selected_value == value %} selected{% endif %}>
                           {{ value }}
@@ -171,89 +117,512 @@
               </div>
             {%- endif -%}
 
-            <div class="product__actions" style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
-              <button
-                type="submit"
-                class="btn btn--primary btn--large"
-                style="flex: 1; min-height: 60px;"
-                {% unless current_variant.available %}disabled{% endunless %}
-              >
-                {%- if current_variant.available -%}
-                  Add to Queue
-                {%- else -%}
-                  Sold Out
-                {%- endif -%}
-              </button>
-
-              <button type="button" class="btn btn--outline btn--large" data-wishlist-add style="min-width: 60px; min-height: 60px; padding: 0;" aria-label="Add to Wishlist">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            <button
+              type="submit"
+              class="add-to-queue-btn"
+              {% unless current_variant.available %}disabled{% endunless %}
+            >
+              {%- if current_variant.available -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12h14"/>
                 </svg>
-              </button>
-            </div>
+                Add to Queue
+              {%- else -%}
+                Sold Out
+              {%- endif -%}
+            </button>
           {%- endform -%}
-
         </div>
 
-        {% comment %} Trust Badges {% endcomment %}
-        <div class="trust-badges" style="display: flex; justify-content: center; gap: var(--spacing-xl); padding: var(--spacing-lg) 0; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); margin-bottom: var(--spacing-xl);">
-          <div style="text-align: center;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="1.5" style="margin: 0 auto var(--spacing-xs);">
-              <rect x="1" y="3" width="15" height="13" rx="2"/>
-              <path d="m16 8 5 3-5 3V8z"/>
-            </svg>
-            <span style="font-size: var(--font-size-xs); color: var(--color-text-light); display: block;">TSA Ready</span>
+        {% comment %} Description {% endcomment %}
+        {%- if product.description != blank -%}
+          <div class="product-info__description">
+            {{ product.description }}
           </div>
-          <div style="text-align: center;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="1.5" style="margin: 0 auto var(--spacing-xs);">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-            <span style="font-size: var(--font-size-xs); color: var(--color-text-light); display: block;">Authentic</span>
+        {%- endif -%}
+
+        {% comment %} Fragrance Notes {% endcomment %}
+        {%- if product.metafields.custom.top_notes != blank or product.metafields.custom.heart_notes != blank or product.metafields.custom.base_notes != blank -%}
+          <div class="fragrance-notes">
+            <h3 class="fragrance-notes__title">Fragrance Notes</h3>
+            <div class="fragrance-notes__grid">
+              {%- if product.metafields.custom.top_notes != blank -%}
+                <div class="fragrance-note">
+                  <span class="fragrance-note__label">Top</span>
+                  <span class="fragrance-note__value">{{ product.metafields.custom.top_notes }}</span>
+                </div>
+              {%- endif -%}
+              {%- if product.metafields.custom.heart_notes != blank -%}
+                <div class="fragrance-note">
+                  <span class="fragrance-note__label">Heart</span>
+                  <span class="fragrance-note__value">{{ product.metafields.custom.heart_notes }}</span>
+                </div>
+              {%- endif -%}
+              {%- if product.metafields.custom.base_notes != blank -%}
+                <div class="fragrance-note">
+                  <span class="fragrance-note__label">Base</span>
+                  <span class="fragrance-note__value">{{ product.metafields.custom.base_notes }}</span>
+                </div>
+              {%- endif -%}
+            </div>
           </div>
-          <div style="text-align: center;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="1.5" style="margin: 0 auto var(--spacing-xs);">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="m9 12 2 2 4-4"/>
-            </svg>
-            <span style="font-size: var(--font-size-xs); color: var(--color-text-light); display: block;">Satisfaction Guaranteed</span>
-          </div>
-        </div>
+        {%- endif -%}
 
         {% comment %} Product Details Accordion {% endcomment %}
-        <div class="product__details">
+        <div class="product-accordion">
           {%- for block in section.blocks -%}
-            <details class="product__accordion" style="border-bottom: 1px solid var(--color-border);" {{ block.shopify_attributes }}>
-              <summary style="padding: var(--spacing-lg) 0; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+            <details class="accordion-item" {{ block.shopify_attributes }}>
+              <summary class="accordion-header">
                 {{ block.settings.heading }}
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M6 9l6 6 6-6"/>
                 </svg>
               </summary>
-              <div style="padding-bottom: var(--spacing-lg); color: var(--color-text-light); line-height: 1.7;">
+              <div class="accordion-content">
                 {{ block.settings.content }}
               </div>
             </details>
           {%- endfor -%}
         </div>
+
       </div>
     </div>
   </div>
 </section>
 
+<style>
+  .product-page {
+    padding: calc(var(--header-height) + 2rem) 0 4rem;
+  }
+
+  .product-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Gallery Styles */
+  .product-gallery__main {
+    background: var(--color-background-secondary);
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .product-gallery__main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-gallery__thumbs {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .product-gallery__thumb {
+    width: 70px;
+    height: 70px;
+    flex-shrink: 0;
+    padding: 0;
+    border: 2px solid transparent;
+    background: var(--color-background-secondary);
+    cursor: pointer;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .product-gallery__thumb.is-active,
+  .product-gallery__thumb:hover {
+    border-color: var(--color-secondary);
+  }
+
+  .product-gallery__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Product Info Styles */
+  .product-info {
+    position: sticky;
+    top: calc(var(--header-height) + 2rem);
+  }
+
+  .product-info__header {
+    margin-bottom: 1.5rem;
+  }
+
+  .product-info__brand {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-secondary);
+    margin-bottom: 0.5rem;
+  }
+
+  .product-info__title {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  /* Subscription Box */
+  .subscription-box {
+    background: #fafafa;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .subscription-box__header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 1.25rem;
+  }
+
+  .subscription-box__bottle {
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .bottle-icon {
+    width: 60px;
+    height: 90px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    border-radius: 8px;
+    padding: 10px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bottle-icon svg {
+    width: 40px;
+    height: 70px;
+  }
+
+  .bottle-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-text-light);
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .subscription-box__pricing {
+    flex: 1;
+  }
+
+  .price-main {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+  }
+
+  .price-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  .price-period {
+    font-size: 1rem;
+    color: var(--color-text-light);
+  }
+
+  .price-note {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin: 0.25rem 0 0;
+  }
+
+  .subscription-box__benefits {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .subscription-box__benefits li {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.9375rem;
+    color: var(--color-text);
+  }
+
+  .subscription-box__benefits svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--color-secondary);
+    flex-shrink: 0;
+  }
+
+  .subscription-box__form {
+    margin: 0;
+  }
+
+  .product-variants {
+    margin-bottom: 1rem;
+  }
+
+  .variant-selector {
+    margin-bottom: 0.75rem;
+  }
+
+  .variant-selector label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+  }
+
+  .variant-selector select {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+  }
+
+  .add-to-queue-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 1.125rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.075em;
+    color: white;
+    background: var(--color-primary);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+  }
+
+  .add-to-queue-btn:hover {
+    background: #333;
+  }
+
+  .add-to-queue-btn:active {
+    transform: scale(0.98);
+  }
+
+  .add-to-queue-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+
+  .add-to-queue-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Description */
+  .product-info__description {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+  }
+
+  .product-info__description p {
+    margin-bottom: 1rem;
+  }
+
+  .product-info__description p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Fragrance Notes */
+  .fragrance-notes {
+    background: var(--color-background-secondary);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .fragrance-notes__title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0 0 1rem;
+    color: var(--color-text);
+  }
+
+  .fragrance-notes__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .fragrance-note__label {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    margin-bottom: 0.375rem;
+  }
+
+  .fragrance-note__value {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  /* Accordion */
+  .product-accordion {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .accordion-item {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 1.125rem 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .accordion-header::-webkit-details-marker {
+    display: none;
+  }
+
+  .accordion-header svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s;
+  }
+
+  .accordion-item[open] .accordion-header svg {
+    transform: rotate(180deg);
+  }
+
+  .accordion-content {
+    padding-bottom: 1.125rem;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--color-text-light);
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 900px) {
+    .product-layout {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .product-info {
+      position: static;
+    }
+
+    .product-gallery__main {
+      aspect-ratio: 1;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .product-page {
+      padding: calc(var(--header-height) + 1rem) 0 2rem;
+    }
+
+    .product-info__title {
+      font-size: 1.625rem;
+    }
+
+    .subscription-box {
+      padding: 1.25rem;
+    }
+
+    .subscription-box__header {
+      flex-direction: column;
+      text-align: center;
+      gap: 1rem;
+    }
+
+    .subscription-box__pricing {
+      text-align: center;
+    }
+
+    .price-main {
+      justify-content: center;
+    }
+
+    .fragrance-notes__grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .fragrance-note {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .fragrance-note:last-child {
+      border-bottom: none;
+    }
+
+    .fragrance-note__label {
+      margin-bottom: 0;
+    }
+  }
+</style>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Thumbnail gallery
-    const thumbnails = document.querySelectorAll('.product__thumbnail');
+    const thumbnails = document.querySelectorAll('.product-gallery__thumb');
     const mainImage = document.getElementById('mainProductImage');
 
     thumbnails.forEach(thumb => {
       thumb.addEventListener('click', function() {
-        thumbnails.forEach(t => {
-          t.classList.remove('is-active');
-          t.style.borderColor = 'transparent';
-        });
+        thumbnails.forEach(t => t.classList.remove('is-active'));
         this.classList.add('is-active');
-        this.style.borderColor = 'var(--color-secondary)';
         if (mainImage) {
           mainImage.src = this.dataset.imageUrl;
         }
@@ -261,72 +630,6 @@
     });
   });
 </script>
-
-<style>
-  @media (max-width: 768px) {
-    .product {
-      grid-template-columns: 1fr !important;
-    }
-
-    .subscription-card > div:first-child {
-      flex-direction: column;
-      text-align: center;
-    }
-
-    .subscription-details {
-      text-align: center;
-    }
-
-    .subscription-details > div:last-child {
-      justify-content: center;
-    }
-
-    .product__actions {
-      flex-direction: column;
-    }
-
-    .product__actions .btn {
-      width: 100%;
-      min-height: 56px;
-    }
-
-    .product__actions .btn[data-wishlist-add] {
-      flex-direction: row;
-      justify-content: center;
-      gap: var(--spacing-sm);
-    }
-
-    .product__actions .btn[data-wishlist-add]::after {
-      content: 'Add to Wishlist';
-    }
-
-    .trust-badges {
-      flex-wrap: wrap;
-      gap: var(--spacing-lg) !important;
-    }
-  }
-
-  details summary::-webkit-details-marker {
-    display: none;
-  }
-
-  details[open] summary svg {
-    transform: rotate(180deg);
-  }
-
-  .btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .subscription-card {
-    transition: border-color var(--transition-fast);
-  }
-
-  .subscription-card:hover {
-    border-color: var(--color-secondary);
-  }
-</style>
 
 {% schema %}
 {
