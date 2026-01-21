@@ -1,0 +1,74 @@
+{%- comment -%}
+  Product Card Component
+  Usage: {% render 'product-card', product: product %}
+{%- endcomment -%}
+
+<div class="product-card" data-product-id="{{ product.id }}">
+  {%- if product.available == false -%}
+    <span class="product-card__badge badge badge--dark">Sold Out</span>
+  {%- elsif product.tags contains 'new' -%}
+    <span class="product-card__badge badge badge--gold">New</span>
+  {%- elsif product.tags contains 'exclusive' -%}
+    <span class="product-card__badge badge badge--gold">Exclusive</span>
+  {%- endif -%}
+
+  <button class="product-card__wishlist" data-wishlist-toggle aria-label="Add to wishlist">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+    </svg>
+  </button>
+
+  <a href="{{ product.url }}" class="product-card__image">
+    {%- if product.featured_image != blank -%}
+      <img
+        src="{{ product.featured_image | image_url: width: 600 }}"
+        alt="{{ product.featured_image.alt | default: product.title }}"
+        width="300"
+        height="400"
+        loading="lazy"
+      >
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+    {%- endif -%}
+
+    {%- if product.available -%}
+      <button class="product-card__quick-add" data-quick-add="{{ product.first_available_variant.id }}">
+        Quick Add to Queue
+      </button>
+    {%- endif -%}
+  </a>
+
+  <div class="product-card__content">
+    <span class="product-card__brand">{{ product.vendor | default: 'Basenotes Exclusive' }}</span>
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    {%- if product.metafields.custom.fragrance_notes != blank -%}
+      <p class="product-card__notes">{{ product.metafields.custom.fragrance_notes }}</p>
+    {%- elsif product.tags.size > 0 -%}
+      <p class="product-card__notes">
+        {%- assign note_tags = product.tags | where: 'contains', 'note:' -%}
+        {%- for tag in product.tags limit: 3 -%}
+          {%- unless tag contains ':' -%}
+            {{ tag }}{%- unless forloop.last %}, {% endunless -%}
+          {%- endunless -%}
+        {%- endfor -%}
+      </p>
+    {%- endif -%}
+
+    <div class="product-card__price">
+      {%- if product.compare_at_price > product.price -%}
+        <span style="text-decoration: line-through; color: var(--color-text-muted); margin-right: 0.5rem;">
+          {{ product.compare_at_price | money }}
+        </span>
+      {%- endif -%}
+
+      {%- if product.price == 0 -%}
+        <span class="product-card__price--subscription">Included in subscription</span>
+      {%- else -%}
+        {{ product.price | money }}
+      {%- endif -%}
+    </div>
+  </div>
+</div>

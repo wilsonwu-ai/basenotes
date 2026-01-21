@@ -1,0 +1,149 @@
+{%- layout 'theme' -%}
+
+<section class="section" style="padding-top: calc(var(--header-height) + var(--spacing-3xl));">
+  <div class="container">
+    <h1 style="font-size: var(--font-size-4xl); text-align: center; margin-bottom: var(--spacing-3xl);">
+      Your Queue
+    </h1>
+
+    {%- if cart.item_count > 0 -%}
+      <form action="{{ routes.cart_url }}" method="post">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--spacing-3xl); align-items: start;">
+
+          {% comment %} Cart Items {% endcomment %}
+          <div>
+            <div style="border: 1px solid var(--color-border);">
+              {%- for item in cart.items -%}
+                <div class="cart-line-item" style="display: flex; gap: var(--spacing-lg); padding: var(--spacing-lg); border-bottom: 1px solid var(--color-border);{% if forloop.last %}border-bottom: none;{% endif %}">
+                  <div style="width: 120px; height: 150px; background: var(--color-background-secondary); flex-shrink: 0;">
+                    {%- if item.image -%}
+                      <a href="{{ item.url }}">
+                        <img
+                          src="{{ item.image | image_url: width: 300 }}"
+                          alt="{{ item.title }}"
+                          style="width: 100%; height: 100%; object-fit: cover;"
+                        >
+                      </a>
+                    {%- endif -%}
+                  </div>
+
+                  <div style="flex: 1;">
+                    <span style="font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-light);">
+                      {{ item.product.vendor }}
+                    </span>
+                    <h3 style="font-size: var(--font-size-xl); font-family: var(--font-heading); margin: var(--spacing-xs) 0;">
+                      <a href="{{ item.url }}">{{ item.product.title }}</a>
+                    </h3>
+                    {%- if item.variant.title != 'Default Title' -%}
+                      <p style="font-size: var(--font-size-sm); color: var(--color-text-light);">
+                        {{ item.variant.title }}
+                      </p>
+                    {%- endif -%}
+
+                    <div style="display: flex; align-items: center; gap: var(--spacing-lg); margin-top: var(--spacing-md);">
+                      <div style="display: flex; align-items: center; border: 1px solid var(--color-border);">
+                        <button
+                          type="button"
+                          onclick="this.nextElementSibling.stepDown(); this.form.submit();"
+                          style="width: 36px; height: 36px; border: none; background: none; cursor: pointer; font-size: 18px;"
+                        >-</button>
+                        <input
+                          type="number"
+                          name="updates[]"
+                          value="{{ item.quantity }}"
+                          min="0"
+                          style="width: 50px; height: 36px; border: none; text-align: center; font-size: var(--font-size-base);"
+                        >
+                        <button
+                          type="button"
+                          onclick="this.previousElementSibling.stepUp(); this.form.submit();"
+                          style="width: 36px; height: 36px; border: none; background: none; cursor: pointer; font-size: 18px;"
+                        >+</button>
+                      </div>
+
+                      <a href="{{ item.url_to_remove }}" style="font-size: var(--font-size-sm); color: var(--color-text-light); text-decoration: underline;">
+                        Remove
+                      </a>
+                    </div>
+                  </div>
+
+                  <div style="text-align: right;">
+                    {%- if item.original_line_price != item.final_line_price -%}
+                      <span style="text-decoration: line-through; color: var(--color-text-muted); display: block;">
+                        {{ item.original_line_price | money }}
+                      </span>
+                    {%- endif -%}
+                    <span style="font-size: var(--font-size-lg); font-weight: 600;">
+                      {{ item.final_line_price | money }}
+                    </span>
+                  </div>
+                </div>
+              {%- endfor -%}
+            </div>
+
+            <button type="submit" name="update" class="btn btn--outline" style="margin-top: var(--spacing-lg);">
+              Update Cart
+            </button>
+          </div>
+
+          {% comment %} Order Summary {% endcomment %}
+          <div style="padding: var(--spacing-xl); background: var(--color-background-secondary); position: sticky; top: calc(var(--header-height) + var(--spacing-lg));">
+            <h2 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-xl);">Order Summary</h2>
+
+            <div style="border-bottom: 1px solid var(--color-border); padding-bottom: var(--spacing-lg); margin-bottom: var(--spacing-lg);">
+              <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-sm);">
+                <span>Subtotal</span>
+                <span>{{ cart.total_price | money }}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; color: var(--color-text-light);">
+                <span>Shipping</span>
+                <span>Calculated at checkout</span>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: var(--font-size-xl); font-weight: 600; margin-bottom: var(--spacing-xl);">
+              <span>Estimated Total</span>
+              <span>{{ cart.total_price | money }}</span>
+            </div>
+
+            <button type="submit" name="checkout" class="btn btn--primary btn--full btn--large">
+              Checkout
+            </button>
+
+            <p style="text-align: center; margin-top: var(--spacing-lg); font-size: var(--font-size-sm); color: var(--color-text-light);">
+              or <a href="/collections/all" style="color: var(--color-secondary);">continue shopping</a>
+            </p>
+
+            {% comment %} Special Note for Subscription {% endcomment %}
+            <div style="margin-top: var(--spacing-xl); padding: var(--spacing-md); background: var(--color-background); border: 1px solid var(--color-secondary);">
+              <p style="font-size: var(--font-size-sm); text-align: center; margin: 0;">
+                <strong style="color: var(--color-secondary);">Subscription Benefit:</strong><br>
+                Subscribe and get free shipping on every order.
+              </p>
+            </div>
+          </div>
+        </div>
+      </form>
+    {%- else -%}
+      <div style="text-align: center; padding: var(--spacing-4xl);">
+        <p style="font-size: var(--font-size-xl); color: var(--color-text-light); margin-bottom: var(--spacing-xl);">
+          Your queue is empty
+        </p>
+        <p style="color: var(--color-text-light); margin-bottom: var(--spacing-2xl);">
+          Explore our collection and add your first fragrance.
+        </p>
+        <a href="/collections/all" class="btn btn--primary btn--large">
+          Browse Fragrances
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+<style>
+  @media (max-width: 768px) {
+    .cart-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>

@@ -1,0 +1,167 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "eyebrow": "Exclusive Collection",
+        "heading": "Discover Your Signature Scent",
+        "description": "Experience rare, high-end fragrances from the world's most exclusive houses. Delivered monthly to your door.",
+        "button_label": "Start Your Journey",
+        "button_link": "#subscribe",
+        "secondary_button_label": "Take The Quiz",
+        "secondary_button_link": "/pages/quiz",
+        "show_scroll_indicator": true
+      }
+    },
+    "featured-collection": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "The Collection",
+        "heading": "10 Exclusive Fragrances",
+        "description": "Curated from the world's most prestigious perfume houses. Each scent tells a story of luxury and craftsmanship.",
+        "products_to_show": 10,
+        "show_view_all": true
+      }
+    },
+    "how-it-works": {
+      "type": "how-it-works",
+      "settings": {
+        "eyebrow": "Simple & Elegant",
+        "heading": "How It Works",
+        "description": "Your journey to discovering exceptional fragrances begins here.",
+        "button_label": "Get Started",
+        "button_link": "#subscribe"
+      },
+      "blocks": {
+        "step-1": {
+          "type": "step",
+          "settings": {
+            "title": "Take Our Quiz",
+            "description": "Answer a few questions about your fragrance preferences and lifestyle."
+          }
+        },
+        "step-2": {
+          "type": "step",
+          "settings": {
+            "title": "Choose Your Plan",
+            "description": "Select monthly, quarterly, or annual subscription based on your needs."
+          }
+        },
+        "step-3": {
+          "type": "step",
+          "settings": {
+            "title": "Receive Your Scent",
+            "description": "Get a premium 8ml atomizer of your chosen fragrance delivered to your door."
+          }
+        },
+        "step-4": {
+          "type": "step",
+          "settings": {
+            "title": "Discover & Repeat",
+            "description": "Rate your experience and queue your next fragrance from our collection."
+          }
+        }
+      },
+      "block_order": ["step-1", "step-2", "step-3", "step-4"]
+    },
+    "subscription-plans": {
+      "type": "subscription-plans",
+      "settings": {
+        "eyebrow": "Membership",
+        "heading": "Choose Your Plan",
+        "description": "Unlock access to the world's most exclusive fragrances with a Basenotes subscription.",
+        "note": "Cancel anytime. Free shipping on all orders."
+      },
+      "blocks": {
+        "plan-1": {
+          "type": "plan",
+          "settings": {
+            "name": "Monthly",
+            "price": "$29",
+            "period": "month",
+            "billing_note": "Billed monthly",
+            "features": "8ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Cancel anytime",
+            "button_label": "Subscribe Now"
+          }
+        },
+        "plan-2": {
+          "type": "plan",
+          "settings": {
+            "name": "Quarterly",
+            "price": "$79",
+            "period": "quarter",
+            "billing_note": "Billed every 3 months",
+            "features": "8ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Priority selection|Save 10%",
+            "featured": true,
+            "badge": "Most Popular",
+            "button_label": "Subscribe Now"
+          }
+        },
+        "plan-3": {
+          "type": "plan",
+          "settings": {
+            "name": "Annual",
+            "price": "$299",
+            "period": "year",
+            "billing_note": "Billed annually",
+            "features": "8ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Priority selection|Exclusive gifts|Save 15%",
+            "button_label": "Subscribe Now"
+          }
+        }
+      },
+      "block_order": ["plan-1", "plan-2", "plan-3"]
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "settings": {
+        "eyebrow": "Reviews",
+        "heading": "What Our Members Say"
+      },
+      "blocks": {
+        "testimonial-1": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "Basenotes introduced me to fragrances I never knew existed. Each month feels like unwrapping a luxury gift.",
+            "author": "Sarah M.",
+            "location": "New York, NY"
+          }
+        },
+        "testimonial-2": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "The attention to detail and curation is impeccable. These are truly exclusive scents you won't find anywhere else.",
+            "author": "James L.",
+            "location": "Los Angeles, CA"
+          }
+        },
+        "testimonial-3": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "I've tried other subscription services, but Basenotes is in a league of its own. Worth every penny.",
+            "author": "Michelle K.",
+            "location": "Miami, FL"
+          }
+        }
+      },
+      "block_order": ["testimonial-1", "testimonial-2", "testimonial-3"]
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "heading": "Join the Inner Circle",
+        "description": "Be the first to discover new arrivals, exclusive offers, and insider access to the world of luxury fragrance.",
+        "placeholder": "Enter your email",
+        "button_label": "Subscribe",
+        "privacy_note": "We respect your privacy. Unsubscribe at any time."
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "featured-collection",
+    "how-it-works",
+    "subscription-plans",
+    "testimonials",
+    "newsletter"
+  ]
+}

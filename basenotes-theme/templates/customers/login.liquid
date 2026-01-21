@@ -1,0 +1,135 @@
+{%- layout 'theme' -%}
+
+<section class="section" style="padding-top: calc(var(--header-height) + var(--spacing-4xl)); min-height: 80vh; display: flex; align-items: center;">
+  <div class="container container--narrow">
+    <div style="max-width: 450px; margin: 0 auto;">
+
+      <div class="text-center" style="margin-bottom: var(--spacing-3xl);">
+        <h1 style="font-size: var(--font-size-4xl); margin-bottom: var(--spacing-sm);">Welcome Back</h1>
+        <p style="color: var(--color-text-light);">Sign in to access your subscription and fragrance queue.</p>
+      </div>
+
+      {%- form 'customer_login', class: 'login-form' -%}
+        {{ form.errors | default_errors }}
+
+        <div class="form-group">
+          <label class="form-label" for="CustomerEmail">Email</label>
+          <input
+            type="email"
+            name="customer[email]"
+            id="CustomerEmail"
+            class="form-input"
+            autocomplete="email"
+            autocapitalize="off"
+            autocorrect="off"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="CustomerPassword">Password</label>
+          <input
+            type="password"
+            name="customer[password]"
+            id="CustomerPassword"
+            class="form-input"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xl);">
+          <label style="display: flex; align-items: center; gap: var(--spacing-sm); font-size: var(--font-size-sm);">
+            <input type="checkbox" name="remember_me">
+            Remember me
+          </label>
+          <a href="#recover" id="RecoverLink" style="font-size: var(--font-size-sm); color: var(--color-secondary);">
+            Forgot password?
+          </a>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full btn--large">
+          Sign In
+        </button>
+      {%- endform -%}
+
+      {% comment %} Password Recovery Form {% endcomment %}
+      <div id="RecoverForm" style="display: none;">
+        <div class="text-center" style="margin-bottom: var(--spacing-2xl);">
+          <h2 style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">Reset Password</h2>
+          <p style="color: var(--color-text-light); font-size: var(--font-size-sm);">We'll send you an email to reset your password.</p>
+        </div>
+
+        {%- form 'recover_customer_password' -%}
+          {{ form.errors | default_errors }}
+
+          {%- if form.posted_successfully? -%}
+            <div style="padding: var(--spacing-md); background: rgba(76, 175, 80, 0.1); border: 1px solid var(--color-success); margin-bottom: var(--spacing-lg); text-align: center;">
+              Check your email for a password reset link.
+            </div>
+          {%- endif -%}
+
+          <div class="form-group">
+            <label class="form-label" for="RecoverEmail">Email</label>
+            <input
+              type="email"
+              name="email"
+              id="RecoverEmail"
+              class="form-input"
+              autocomplete="email"
+              autocapitalize="off"
+              autocorrect="off"
+              required
+            >
+          </div>
+
+          <button type="submit" class="btn btn--primary btn--full btn--large">
+            Send Reset Link
+          </button>
+        {%- endform -%}
+
+        <p class="text-center" style="margin-top: var(--spacing-lg);">
+          <a href="#login" id="LoginLink" style="font-size: var(--font-size-sm); color: var(--color-secondary);">
+            &larr; Back to login
+          </a>
+        </p>
+      </div>
+
+      <div class="divider"></div>
+
+      <p class="text-center" style="color: var(--color-text-light);">
+        Don't have an account?
+        <a href="{{ routes.account_register_url }}" style="color: var(--color-secondary); font-weight: 500;">
+          Create one
+        </a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.querySelector('.login-form');
+    const recoverForm = document.getElementById('RecoverForm');
+    const recoverLink = document.getElementById('RecoverLink');
+    const loginLink = document.getElementById('LoginLink');
+
+    recoverLink?.addEventListener('click', function(e) {
+      e.preventDefault();
+      loginForm.style.display = 'none';
+      recoverForm.style.display = 'block';
+    });
+
+    loginLink?.addEventListener('click', function(e) {
+      e.preventDefault();
+      recoverForm.style.display = 'none';
+      loginForm.style.display = 'block';
+    });
+
+    // Check URL hash for recover
+    if (window.location.hash === '#recover') {
+      loginForm.style.display = 'none';
+      recoverForm.style.display = 'block';
+    }
+  });
+</script>

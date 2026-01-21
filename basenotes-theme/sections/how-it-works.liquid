@@ -1,0 +1,125 @@
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="section__header">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="section__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      <h2 class="section__title">{{ section.settings.heading }}</h2>
+      {%- if section.settings.description != blank -%}
+        <p class="section__description">{{ section.settings.description }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="steps">
+      {%- for block in section.blocks -%}
+        <div class="step" {{ block.shopify_attributes }}>
+          <div class="step__number">{{ forloop.index }}</div>
+          <h3 class="step__title">{{ block.settings.title }}</h3>
+          <p class="step__description">{{ block.settings.description }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.button_label != blank -%}
+      <div class="text-center mt-5">
+        <a href="{{ section.settings.button_link }}" class="btn btn--primary btn--large">
+          {{ section.settings.button_label }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "How It Works",
+  "tag": "section",
+  "class": "how-it-works-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Simple & Elegant"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "How It Works"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Your journey to discovering exceptional fragrances begins here."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Get Started"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Step Title"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Describe this step in the process."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "How It Works",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "title": "Take Our Quiz",
+            "description": "Answer a few questions about your fragrance preferences and lifestyle."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Choose Your Plan",
+            "description": "Select monthly, quarterly, or annual subscription based on your needs."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Receive Your Scent",
+            "description": "Get a premium 8ml atomizer of your chosen fragrance delivered to your door."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Discover & Repeat",
+            "description": "Rate your experience and queue your next fragrance from our collection."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

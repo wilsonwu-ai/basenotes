@@ -1,0 +1,14 @@
+{
+  "type": "header",
+  "name": "Header group",
+  "sections": {
+    "header": {
+      "type": "header",
+      "settings": {
+        "transparent_on_homepage": true,
+        "show_search": true
+      }
+    }
+  },
+  "order": ["header"]
+}

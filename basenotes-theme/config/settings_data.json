@@ -1,0 +1,30 @@
+{
+  "current": {
+    "color_primary": "#1a1a1a",
+    "color_secondary": "#c9a86c",
+    "color_accent": "#d4af37",
+    "color_background": "#ffffff",
+    "color_text": "#1a1a1a",
+    "color_text_light": "#666666",
+    "font_heading": "cormorant_garamond_n4",
+    "font_body": "assistant_n4",
+    "font_size_base": 16,
+    "subscription_price_monthly": "$29",
+    "subscription_price_quarterly": "$79",
+    "subscription_price_annual": "$299",
+    "subscription_tagline": "Discover rare, high-end fragrances delivered monthly",
+    "newsletter_heading": "Join the Inner Circle",
+    "newsletter_description": "Be the first to discover new arrivals and exclusive offers.",
+    "sections": {
+      "header": {
+        "type": "header",
+        "settings": {}
+      },
+      "footer": {
+        "type": "footer",
+        "settings": {}
+      }
+    },
+    "content_for_index": []
+  }
+}

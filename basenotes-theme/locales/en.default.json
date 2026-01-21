@@ -1,0 +1,120 @@
+{
+  "general": {
+    "password_page": {
+      "login_form_heading": "Enter store using password:",
+      "login_password_button": "Enter using password",
+      "login_form_password_label": "Password",
+      "login_form_password_placeholder": "Your password",
+      "login_form_error": "Wrong password!",
+      "login_form_submit": "Enter"
+    },
+    "social": {
+      "alt_text": {
+        "share_on_facebook": "Share on Facebook",
+        "share_on_twitter": "Tweet on Twitter",
+        "share_on_pinterest": "Pin on Pinterest"
+      }
+    },
+    "404": {
+      "title": "Page not found",
+      "subtext": "The page you requested does not exist."
+    },
+    "breadcrumbs": {
+      "home": "Home"
+    }
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "close": "Close",
+    "loading": "Loading...",
+    "refresh_page": "Choosing a selection results in a full page refresh."
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to Queue",
+      "added_to_cart": "Added to Queue",
+      "sold_out": "Sold out",
+      "unavailable": "Unavailable",
+      "quantity": "Quantity",
+      "price": "Price",
+      "compare_at": "Compare at",
+      "on_sale": "Sale",
+      "vendor": "Brand",
+      "type": "Type",
+      "sku": "SKU"
+    }
+  },
+  "collections": {
+    "general": {
+      "all_products": "All Fragrances",
+      "no_products": "No fragrances found"
+    },
+    "sorting": {
+      "title": "Sort by"
+    }
+  },
+  "cart": {
+    "general": {
+      "title": "Your Queue",
+      "remove": "Remove",
+      "empty": "Your queue is empty",
+      "continue_shopping": "Continue shopping",
+      "subtotal": "Subtotal",
+      "checkout": "Checkout",
+      "view_cart": "View Cart"
+    }
+  },
+  "customer": {
+    "account": {
+      "title": "My Account",
+      "welcome": "Welcome back",
+      "details": "Account Details",
+      "view_addresses": "View Addresses",
+      "logout": "Log out"
+    },
+    "login": {
+      "title": "Login",
+      "email": "Email",
+      "password": "Password",
+      "forgot_password": "Forgot your password?",
+      "sign_in": "Sign In",
+      "create_account": "Create account",
+      "guest_continue": "Continue as guest"
+    },
+    "register": {
+      "title": "Create Account",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create Account"
+    },
+    "recover_password": {
+      "title": "Reset your password",
+      "subtext": "We will send you an email to reset your password.",
+      "submit": "Submit"
+    },
+    "orders": {
+      "title": "Order History",
+      "order_number": "Order",
+      "date": "Date",
+      "payment_status": "Payment Status",
+      "fulfillment_status": "Fulfillment Status",
+      "total": "Total"
+    },
+    "addresses": {
+      "title": "Addresses",
+      "add_new": "Add a new address",
+      "edit": "Edit",
+      "delete": "Delete",
+      "default": "Default"
+    }
+  },
+  "newsletter": {
+    "title": "Join the Inner Circle",
+    "subtitle": "Subscribe to receive exclusive offers and updates.",
+    "email_placeholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "success": "Thanks for subscribing!"
+  }
+}

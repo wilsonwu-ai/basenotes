@@ -1,0 +1,41 @@
+{
+  "sections": {
+    "main-product": {
+      "type": "main-product",
+      "blocks": {
+        "accordion-1": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Shipping & Returns",
+            "content": "<p>Free shipping on all subscription orders. Returns accepted within 30 days of delivery.</p>"
+          }
+        },
+        "accordion-2": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Size Guide",
+            "content": "<p>Each atomizer contains 8ml of fragrance, approximately 120 sprays — a month's supply with daily use.</p>"
+          }
+        },
+        "accordion-3": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Subscription Benefits",
+            "content": "<p>As a subscriber, you get access to our full collection of 10 exclusive fragrances. Swap, skip, or cancel anytime.</p>"
+          }
+        }
+      },
+      "block_order": ["accordion-1", "accordion-2", "accordion-3"]
+    },
+    "related-products": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "You May Also Like",
+        "heading": "More From The Collection",
+        "products_to_show": 4,
+        "show_view_all": true
+      }
+    }
+  },
+  "order": ["main-product", "related-products"]
+}

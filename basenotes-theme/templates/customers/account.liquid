@@ -1,0 +1,147 @@
+{%- layout 'theme' -%}
+
+<section class="section" style="padding-top: calc(var(--header-height) + var(--spacing-2xl));">
+  <div class="container">
+    <div class="account-layout">
+
+      {% comment %} Sidebar Navigation {% endcomment %}
+      <aside class="account-sidebar">
+        <div style="margin-bottom: var(--spacing-xl);">
+          <p style="font-size: var(--font-size-sm); color: var(--color-text-light);">Welcome back,</p>
+          <p style="font-size: var(--font-size-xl); font-family: var(--font-heading);">{{ customer.first_name }}</p>
+        </div>
+
+        <ul class="account-nav">
+          <li class="account-nav__item">
+            <a href="{{ routes.account_url }}" class="account-nav__link is-active">Dashboard</a>
+          </li>
+          <li class="account-nav__item">
+            <a href="{{ routes.account_url }}#orders" class="account-nav__link">Order History</a>
+          </li>
+          <li class="account-nav__item">
+            <a href="{{ routes.account_addresses_url }}" class="account-nav__link">Addresses</a>
+          </li>
+          <li class="account-nav__item">
+            <a href="#subscription" class="account-nav__link">My Subscription</a>
+          </li>
+          <li class="account-nav__item">
+            <a href="#queue" class="account-nav__link">Fragrance Queue</a>
+          </li>
+          <li class="account-nav__item">
+            <a href="#preferences" class="account-nav__link">Scent Preferences</a>
+          </li>
+        </ul>
+
+        <div style="margin-top: var(--spacing-xl); padding-top: var(--spacing-xl); border-top: 1px solid var(--color-border);">
+          <a href="{{ routes.account_logout_url }}" style="font-size: var(--font-size-sm); color: var(--color-text-light);">
+            Sign Out
+          </a>
+        </div>
+      </aside>
+
+      {% comment %} Main Content {% endcomment %}
+      <main class="account-content">
+        <div class="account-header">
+          <h1 class="account-header__title">My Account</h1>
+          <p class="account-header__subtitle">Manage your subscription, orders, and preferences.</p>
+        </div>
+
+        {% comment %} Subscription Status Card {% endcomment %}
+        <div style="background: linear-gradient(135deg, var(--color-primary), #333); color: var(--color-background); padding: var(--spacing-2xl); margin-bottom: var(--spacing-2xl);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--spacing-lg);">
+            <div>
+              <span style="font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.7;">Current Plan</span>
+              <h2 style="font-size: var(--font-size-3xl); font-family: var(--font-heading); margin: var(--spacing-sm) 0;">Monthly Subscription</h2>
+              <p style="opacity: 0.8;">Your next fragrance ships on <strong>February 1, 2026</strong></p>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: var(--font-size-4xl); font-family: var(--font-heading);">$29</span>
+              <span style="opacity: 0.7;">/month</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-xl);">
+            <a href="#manage" class="btn btn--outline-light btn--small">Manage Subscription</a>
+            <a href="/collections/all" class="btn btn--gold btn--small">Change Next Scent</a>
+          </div>
+        </div>
+
+        {% comment %} Quick Stats {% endcomment %}
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-lg); margin-bottom: var(--spacing-3xl);">
+          <div style="text-align: center; padding: var(--spacing-xl); background: var(--color-background-secondary);">
+            <span style="font-size: var(--font-size-4xl); font-family: var(--font-heading); color: var(--color-secondary);">{{ customer.orders_count }}</span>
+            <span style="display: block; font-size: var(--font-size-sm); color: var(--color-text-light); margin-top: var(--spacing-xs);">Fragrances Received</span>
+          </div>
+          <div style="text-align: center; padding: var(--spacing-xl); background: var(--color-background-secondary);">
+            <span style="font-size: var(--font-size-4xl); font-family: var(--font-heading); color: var(--color-secondary);">3</span>
+            <span style="display: block; font-size: var(--font-size-sm); color: var(--color-text-light); margin-top: var(--spacing-xs);">In Your Queue</span>
+          </div>
+          <div style="text-align: center; padding: var(--spacing-xl); background: var(--color-background-secondary);">
+            <span style="font-size: var(--font-size-4xl); font-family: var(--font-heading); color: var(--color-secondary);">6</span>
+            <span style="display: block; font-size: var(--font-size-sm); color: var(--color-text-light); margin-top: var(--spacing-xs);">Months as Member</span>
+          </div>
+        </div>
+
+        {% comment %} Recent Orders {% endcomment %}
+        <div id="orders">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xl);">
+            <h2 style="font-size: var(--font-size-2xl);">Recent Orders</h2>
+            <a href="{{ routes.account_url }}" style="font-size: var(--font-size-sm); color: var(--color-secondary);">View All</a>
+          </div>
+
+          {%- if customer.orders.size > 0 -%}
+            <div style="border: 1px solid var(--color-border);">
+              {%- for order in customer.orders limit: 5 -%}
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-lg); border-bottom: 1px solid var(--color-border);{% if forloop.last %}border-bottom: none;{% endif %}">
+                  <div>
+                    <a href="{{ order.customer_url }}" style="font-weight: 500;">Order {{ order.name }}</a>
+                    <span style="display: block; font-size: var(--font-size-sm); color: var(--color-text-light);">
+                      {{ order.created_at | date: '%B %d, %Y' }}
+                    </span>
+                  </div>
+                  <div style="text-align: right;">
+                    <span style="font-weight: 600;">{{ order.total_price | money }}</span>
+                    <span style="display: block; font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.05em;
+                      {%- case order.fulfillment_status -%}
+                        {%- when 'fulfilled' -%} color: var(--color-success);
+                        {%- when 'unfulfilled' -%} color: var(--color-secondary);
+                        {%- else -%} color: var(--color-text-light);
+                      {%- endcase -%}
+                    ">
+                      {{ order.fulfillment_status_label | default: 'Processing' }}
+                    </span>
+                  </div>
+                </div>
+              {%- endfor -%}
+            </div>
+          {%- else -%}
+            <div style="text-align: center; padding: var(--spacing-3xl); background: var(--color-background-secondary);">
+              <p style="color: var(--color-text-light);">No orders yet.</p>
+              <a href="/collections/all" class="btn btn--primary" style="margin-top: var(--spacing-lg);">Explore Fragrances</a>
+            </div>
+          {%- endif -%}
+        </div>
+
+        {% comment %} Default Address {% endcomment %}
+        {%- if customer.default_address -%}
+          <div style="margin-top: var(--spacing-3xl);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+              <h2 style="font-size: var(--font-size-2xl);">Shipping Address</h2>
+              <a href="{{ routes.account_addresses_url }}" style="font-size: var(--font-size-sm); color: var(--color-secondary);">Edit</a>
+            </div>
+            <div style="padding: var(--spacing-xl); background: var(--color-background-secondary);">
+              <p>{{ customer.default_address.first_name }} {{ customer.default_address.last_name }}</p>
+              <p style="color: var(--color-text-light);">
+                {{ customer.default_address.address1 }}<br>
+                {%- if customer.default_address.address2 != blank -%}
+                  {{ customer.default_address.address2 }}<br>
+                {%- endif -%}
+                {{ customer.default_address.city }}, {{ customer.default_address.province_code }} {{ customer.default_address.zip }}<br>
+                {{ customer.default_address.country }}
+              </p>
+            </div>
+          </div>
+        {%- endif -%}
+      </main>
+    </div>
+  </div>
+</section>

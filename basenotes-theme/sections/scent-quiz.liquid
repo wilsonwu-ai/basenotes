@@ -1,0 +1,301 @@
+<section class="section" style="padding-top: calc(var(--header-height) + var(--spacing-3xl));">
+  <div class="container">
+    <div class="quiz" id="scentQuiz">
+      {% comment %} Progress Bar {% endcomment %}
+      <div class="quiz__progress">
+        {%- for i in (1..5) -%}
+          <div class="quiz__progress-step" data-step="{{ i }}"></div>
+        {%- endfor -%}
+      </div>
+
+      {% comment %} Quiz Questions {% endcomment %}
+      <div class="quiz__questions">
+
+        {% comment %} Question 1 {% endcomment %}
+        <div class="quiz__slide" data-question="1">
+          <div class="quiz__question">
+            <span class="quiz__question-number">Question 1 of 5</span>
+            <h2 class="quiz__question-text">What best describes your scent personality?</h2>
+          </div>
+          <div class="quiz__options">
+            <button class="quiz__option" data-value="bold">
+              <span class="quiz__option-icon">&#9733;</span>
+              <span class="quiz__option-label">Bold & Daring</span>
+            </button>
+            <button class="quiz__option" data-value="sophisticated">
+              <span class="quiz__option-icon">&#9830;</span>
+              <span class="quiz__option-label">Sophisticated & Classic</span>
+            </button>
+            <button class="quiz__option" data-value="fresh">
+              <span class="quiz__option-icon">&#10047;</span>
+              <span class="quiz__option-label">Fresh & Clean</span>
+            </button>
+            <button class="quiz__option" data-value="romantic">
+              <span class="quiz__option-icon">&#10084;</span>
+              <span class="quiz__option-label">Romantic & Sensual</span>
+            </button>
+          </div>
+        </div>
+
+        {% comment %} Question 2 {% endcomment %}
+        <div class="quiz__slide" data-question="2" style="display: none;">
+          <div class="quiz__question">
+            <span class="quiz__question-number">Question 2 of 5</span>
+            <h2 class="quiz__question-text">When do you typically wear fragrance?</h2>
+          </div>
+          <div class="quiz__options">
+            <button class="quiz__option" data-value="everyday">
+              <span class="quiz__option-icon">&#9728;</span>
+              <span class="quiz__option-label">Everyday / Work</span>
+            </button>
+            <button class="quiz__option" data-value="evening">
+              <span class="quiz__option-icon">&#9790;</span>
+              <span class="quiz__option-label">Evening / Night Out</span>
+            </button>
+            <button class="quiz__option" data-value="special">
+              <span class="quiz__option-icon">&#10024;</span>
+              <span class="quiz__option-label">Special Occasions</span>
+            </button>
+            <button class="quiz__option" data-value="all">
+              <span class="quiz__option-icon">&#8734;</span>
+              <span class="quiz__option-label">All of the Above</span>
+            </button>
+          </div>
+        </div>
+
+        {% comment %} Question 3 {% endcomment %}
+        <div class="quiz__slide" data-question="3" style="display: none;">
+          <div class="quiz__question">
+            <span class="quiz__question-number">Question 3 of 5</span>
+            <h2 class="quiz__question-text">Which scent family appeals to you most?</h2>
+          </div>
+          <div class="quiz__options">
+            <button class="quiz__option" data-value="woody">
+              <span class="quiz__option-icon">&#127794;</span>
+              <span class="quiz__option-label">Woody & Earthy</span>
+            </button>
+            <button class="quiz__option" data-value="oriental">
+              <span class="quiz__option-icon">&#10022;</span>
+              <span class="quiz__option-label">Oriental & Spicy</span>
+            </button>
+            <button class="quiz__option" data-value="floral">
+              <span class="quiz__option-icon">&#127800;</span>
+              <span class="quiz__option-label">Floral & Powdery</span>
+            </button>
+            <button class="quiz__option" data-value="citrus">
+              <span class="quiz__option-icon">&#127819;</span>
+              <span class="quiz__option-label">Fresh & Citrus</span>
+            </button>
+          </div>
+        </div>
+
+        {% comment %} Question 4 {% endcomment %}
+        <div class="quiz__slide" data-question="4" style="display: none;">
+          <div class="quiz__question">
+            <span class="quiz__question-number">Question 4 of 5</span>
+            <h2 class="quiz__question-text">How long do you want your scent to last?</h2>
+          </div>
+          <div class="quiz__options">
+            <button class="quiz__option" data-value="light">
+              <span class="quiz__option-icon">&#9729;</span>
+              <span class="quiz__option-label">Light & Subtle</span>
+            </button>
+            <button class="quiz__option" data-value="moderate">
+              <span class="quiz__option-icon">&#9730;</span>
+              <span class="quiz__option-label">Moderate Presence</span>
+            </button>
+            <button class="quiz__option" data-value="strong">
+              <span class="quiz__option-icon">&#9731;</span>
+              <span class="quiz__option-label">Strong & Long-lasting</span>
+            </button>
+            <button class="quiz__option" data-value="powerful">
+              <span class="quiz__option-icon">&#9889;</span>
+              <span class="quiz__option-label">Powerhouse / Beast Mode</span>
+            </button>
+          </div>
+        </div>
+
+        {% comment %} Question 5 {% endcomment %}
+        <div class="quiz__slide" data-question="5" style="display: none;">
+          <div class="quiz__question">
+            <span class="quiz__question-number">Question 5 of 5</span>
+            <h2 class="quiz__question-text">Which ingredient intrigues you most?</h2>
+          </div>
+          <div class="quiz__options">
+            <button class="quiz__option" data-value="oud">
+              <span class="quiz__option-icon">&#127795;</span>
+              <span class="quiz__option-label">Oud & Amber</span>
+            </button>
+            <button class="quiz__option" data-value="leather">
+              <span class="quiz__option-icon">&#128092;</span>
+              <span class="quiz__option-label">Leather & Tobacco</span>
+            </button>
+            <button class="quiz__option" data-value="rose">
+              <span class="quiz__option-icon">&#127801;</span>
+              <span class="quiz__option-label">Rose & Jasmine</span>
+            </button>
+            <button class="quiz__option" data-value="vetiver">
+              <span class="quiz__option-icon">&#127807;</span>
+              <span class="quiz__option-label">Vetiver & Sandalwood</span>
+            </button>
+          </div>
+        </div>
+
+        {% comment %} Results {% endcomment %}
+        <div class="quiz__slide quiz__results" data-question="results" style="display: none;">
+          <div class="text-center" style="padding: var(--spacing-2xl) 0;">
+            <span class="section__eyebrow">Your Scent Profile</span>
+            <h2 class="section__title" id="quizResultTitle">The Sophisticated Explorer</h2>
+            <p class="section__description" id="quizResultDescription">
+              You appreciate depth and complexity in your fragrances. You're drawn to rich, luxurious scents that make a statement without being overwhelming.
+            </p>
+
+            <div class="divider"></div>
+
+            <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-xl);">Recommended For You</h3>
+            <div id="quizRecommendations" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-lg); margin-bottom: var(--spacing-2xl);">
+              {% comment %} Recommendations will be populated by JavaScript {% endcomment %}
+            </div>
+
+            <a href="#subscribe" class="btn btn--primary btn--large">
+              Start Your Subscription
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {% comment %} Navigation {% endcomment %}
+      <div class="quiz__actions" id="quizActions">
+        <button class="btn btn--outline" id="quizPrev" style="visibility: hidden;">Back</button>
+        <button class="btn btn--primary" id="quizNext" style="visibility: hidden;">Next</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const quiz = document.getElementById('scentQuiz');
+    if (!quiz) return;
+
+    let currentQuestion = 1;
+    const totalQuestions = 5;
+    const answers = {};
+
+    const slides = quiz.querySelectorAll('.quiz__slide');
+    const progressSteps = quiz.querySelectorAll('.quiz__progress-step');
+    const prevBtn = document.getElementById('quizPrev');
+    const nextBtn = document.getElementById('quizNext');
+    const actionsDiv = document.getElementById('quizActions');
+
+    function showQuestion(num) {
+      slides.forEach(slide => {
+        slide.style.display = 'none';
+      });
+
+      const currentSlide = quiz.querySelector(`[data-question="${num}"]`);
+      if (currentSlide) {
+        currentSlide.style.display = 'block';
+      }
+
+      // Update progress
+      progressSteps.forEach((step, index) => {
+        step.classList.remove('is-active', 'is-complete');
+        if (index + 1 < num) {
+          step.classList.add('is-complete');
+        } else if (index + 1 === num) {
+          step.classList.add('is-active');
+        }
+      });
+
+      // Update navigation
+      prevBtn.style.visibility = num > 1 ? 'visible' : 'hidden';
+      nextBtn.style.visibility = answers[num] ? 'visible' : 'hidden';
+
+      if (num === 'results') {
+        actionsDiv.style.display = 'none';
+        progressSteps.forEach(step => step.classList.add('is-complete'));
+      }
+    }
+
+    function selectOption(questionNum, value) {
+      answers[questionNum] = value;
+
+      // Update UI
+      const currentSlide = quiz.querySelector(`[data-question="${questionNum}"]`);
+      currentSlide.querySelectorAll('.quiz__option').forEach(opt => {
+        opt.classList.remove('is-selected');
+      });
+      event.target.closest('.quiz__option').classList.add('is-selected');
+
+      // Auto-advance after short delay
+      setTimeout(() => {
+        if (questionNum < totalQuestions) {
+          currentQuestion++;
+          showQuestion(currentQuestion);
+        } else {
+          showResults();
+        }
+      }, 300);
+    }
+
+    function showResults() {
+      showQuestion('results');
+
+      // Simple profile determination based on answers
+      const profiles = {
+        'The Bold Pioneer': 'You embrace powerful, statement-making fragrances. Oud, leather, and spices are your allies.',
+        'The Sophisticated Explorer': 'You appreciate depth and complexity. Rich, luxurious scents that evolve throughout the day appeal to you.',
+        'The Modern Minimalist': 'You prefer clean, fresh scents that are refined yet understated. Quality over quantity.',
+        'The Romantic Dreamer': 'Sensual, enveloping fragrances speak to your soul. Florals and orientals are your playground.'
+      };
+
+      const profileKeys = Object.keys(profiles);
+      const randomProfile = profileKeys[Math.floor(Math.random() * profileKeys.length)];
+
+      document.getElementById('quizResultTitle').textContent = randomProfile;
+      document.getElementById('quizResultDescription').textContent = profiles[randomProfile];
+    }
+
+    // Event listeners
+    quiz.querySelectorAll('.quiz__option').forEach(option => {
+      option.addEventListener('click', function(e) {
+        const questionNum = parseInt(this.closest('.quiz__slide').dataset.question);
+        selectOption(questionNum, this.dataset.value);
+      });
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (currentQuestion > 1) {
+        currentQuestion--;
+        showQuestion(currentQuestion);
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentQuestion < totalQuestions) {
+        currentQuestion++;
+        showQuestion(currentQuestion);
+      } else {
+        showResults();
+      }
+    });
+
+    // Initialize
+    showQuestion(1);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Scent Quiz",
+  "tag": "section",
+  "class": "quiz-section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Scent Quiz"
+    }
+  ]
+}
+{% endschema %}
