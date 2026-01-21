@@ -219,7 +219,7 @@
             </li>
           </ul>
 
-          {%- form 'product', product, id: 'productForm', class: 'subscription-box__form', data-product-form: '' -%}
+          {%- form 'product', product, id: 'productForm', class: 'subscription-box__form', data-product-form: '', data-productid: product.id -%}
             <input type="hidden" name="id" value="{{ current_variant.id }}" id="variantId">
 
             {%- if product.variants.size > 1 -%}
@@ -235,6 +235,51 @@
                       {%- endfor -%}
                     </select>
                   </div>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+
+            {% comment %} Appstle Subscription Widget Container {% endcomment %}
+            {% comment %} This div will be populated by Appstle's script {% endcomment %}
+            <div id="appstle_subscription_widget" data-product-id="{{ product.id }}" data-variant-id="{{ current_variant.id }}"></div>
+
+            {% comment %} Native Shopify Selling Plan Support (fallback) {% endcomment %}
+            {%- if product.selling_plan_groups.size > 0 -%}
+              <div class="selling-plan-selector" id="sellingPlanSelector">
+                {%- for group in product.selling_plan_groups -%}
+                  <fieldset class="selling-plan-group">
+                    <legend class="selling-plan-group__title">{{ group.name }}</legend>
+
+                    {% comment %} One-time purchase option {% endcomment %}
+                    <label class="selling-plan-option">
+                      <input type="radio" name="selling_plan" value="" checked>
+                      <span class="selling-plan-option__content">
+                        <span class="selling-plan-option__name">One-time purchase</span>
+                        <span class="selling-plan-option__price">{{ current_variant.price | money }}</span>
+                      </span>
+                    </label>
+
+                    {% comment %} Subscription options {% endcomment %}
+                    {%- for plan in group.selling_plans -%}
+                      {%- assign plan_allocation = current_variant.selling_plan_allocations | where: "selling_plan_id", plan.id | first -%}
+                      <label class="selling-plan-option selling-plan-option--subscription">
+                        <input type="radio" name="selling_plan" value="{{ plan.id }}">
+                        <span class="selling-plan-option__content">
+                          <span class="selling-plan-option__name">{{ plan.name }}</span>
+                          {%- if plan_allocation -%}
+                            <span class="selling-plan-option__price">
+                              {{ plan_allocation.price | money }}
+                              {%- if plan_allocation.compare_at_price > plan_allocation.price -%}
+                                <span class="selling-plan-option__savings">
+                                  Save {{ plan_allocation.compare_at_price | minus: plan_allocation.price | money }}
+                                </span>
+                              {%- endif -%}
+                            </span>
+                          {%- endif -%}
+                        </span>
+                      </label>
+                    {%- endfor -%}
+                  </fieldset>
                 {%- endfor -%}
               </div>
             {%- endif -%}
@@ -814,6 +859,104 @@
     cursor: pointer;
   }
 
+  /* Selling Plan Selector (Native Shopify + Appstle Fallback) */
+  .selling-plan-selector {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .selling-plan-group {
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .selling-plan-group__title {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .selling-plan-option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-xs);
+    background: white;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .selling-plan-option:hover {
+    border-color: var(--color-secondary);
+  }
+
+  .selling-plan-option input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-secondary);
+    cursor: pointer;
+  }
+
+  .selling-plan-option input[type="radio"]:checked + .selling-plan-option__content {
+    font-weight: 600;
+  }
+
+  .selling-plan-option:has(input:checked) {
+    border-color: var(--color-secondary);
+    background: rgba(201, 169, 98, 0.05);
+  }
+
+  .selling-plan-option__content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .selling-plan-option__name {
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+  }
+
+  .selling-plan-option__price {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  .selling-plan-option__savings {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-success);
+    background: rgba(76, 175, 80, 0.1);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+  }
+
+  .selling-plan-option--subscription {
+    border-color: var(--color-secondary);
+    background: rgba(201, 169, 98, 0.03);
+  }
+
+  /* Appstle Widget Container */
+  #appstle_subscription_widget {
+    margin-bottom: var(--spacing-md);
+  }
+
+  /* Hide native selector when Appstle widget is present */
+  #appstle_subscription_widget:not(:empty) + .selling-plan-selector {
+    display: none;
+  }
+
   .add-to-queue-btn {
     display: flex;
     align-items: center;
@@ -1301,19 +1444,28 @@
 
         const formData = new FormData(productForm);
         const variantId = formData.get('id');
+        const sellingPlan = formData.get('selling_plan');
 
         addToCartBtn.classList.add('is-loading');
         const originalText = addToCartBtn.querySelector('span')?.textContent;
+
+        // Build cart payload
+        const cartPayload = {
+          id: variantId,
+          quantity: 1
+        };
+
+        // Include selling plan if selected (for subscriptions)
+        if (sellingPlan) {
+          cartPayload.selling_plan = sellingPlan;
+        }
 
         fetch('/cart/add.js', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            id: variantId,
-            quantity: 1
-          })
+          body: JSON.stringify(cartPayload)
         })
         .then(response => response.json())
         .then(data => {
