@@ -1,0 +1,400 @@
+{% comment %}
+  Email Capture Popup
+  Displays a modal to capture email addresses from guest visitors
+  Usage: Include in theme.liquid before closing </body> tag
+  Configurable via Theme Settings > Email Popup
+{% endcomment %}
+
+{%- if settings.popup_enabled -%}
+{%- unless customer -%}
+<div class="email-popup" id="emailPopup" role="dialog" aria-modal="true" aria-labelledby="emailPopupTitle">
+  <div class="email-popup__overlay" data-popup-close></div>
+  <div class="email-popup__content">
+    <button class="email-popup__close" data-popup-close aria-label="Close popup">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+
+    <div class="email-popup__image">
+      <svg viewBox="0 0 80 120" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="20" y="30" width="40" height="80" rx="4"/>
+        <rect x="30" y="10" width="20" height="20"/>
+        <rect x="35" y="0" width="10" height="10" rx="2"/>
+        <text x="40" y="78" text-anchor="middle" font-size="12" fill="currentColor" stroke="none">BN</text>
+      </svg>
+    </div>
+
+    <div class="email-popup__body">
+      <span class="email-popup__eyebrow">{{ settings.popup_eyebrow | default: 'Exclusive Offer' }}</span>
+      <h2 class="email-popup__title" id="emailPopupTitle">{{ settings.popup_heading | default: 'Get 15% Off Your First Month' }}</h2>
+      <p class="email-popup__description">{{ settings.popup_description | default: 'Join our inner circle for exclusive offers, new arrivals, and fragrance tips. Plus, enjoy 15% off your first subscription!' }}</p>
+
+      {%- form 'customer', class: 'email-popup__form', id: 'emailPopupForm' -%}
+        <input type="hidden" name="contact[tags]" value="{{ settings.popup_customer_tags | default: 'newsletter,popup,prospect' }}">
+
+        <div class="email-popup__form-row">
+          <input
+            type="text"
+            name="contact[first_name]"
+            class="email-popup__input"
+            placeholder="First Name"
+            required
+          >
+          <input
+            type="email"
+            name="contact[email]"
+            class="email-popup__input"
+            placeholder="Email Address"
+            required
+          >
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">
+          {{ settings.popup_button_text | default: 'Unlock My 15% Off' }}
+        </button>
+
+        <p class="email-popup__privacy">
+          By signing up, you agree to receive marketing emails. Unsubscribe anytime.
+        </p>
+      {%- endform -%}
+
+      <p class="email-popup__skip">
+        <a href="#" data-popup-close>{{ settings.popup_skip_text | default: "No thanks, I'll pay full price" }}</a>
+      </p>
+    </div>
+
+    <div class="email-popup__success" id="emailPopupSuccess" style="display: none;">
+      <div class="email-popup__success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h3>{{ settings.popup_success_heading | default: 'Welcome to Basenotes!' }}</h3>
+      <p>{{ settings.popup_success_message | default: 'Check your email for your 15% off code.' }}</p>
+      <a href="/collections/all" class="btn btn--primary">Start Exploring</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .email-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+  }
+
+  .email-popup.is-active {
+    display: flex;
+  }
+
+  .email-popup__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+  }
+
+  .email-popup__content {
+    position: relative;
+    background: white;
+    border-radius: var(--radius-lg);
+    max-width: 480px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: popupSlideIn 0.3s ease;
+  }
+
+  @keyframes popupSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .email-popup__close {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+
+  .email-popup__close:hover {
+    transform: scale(1.1);
+  }
+
+  .email-popup__close svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .email-popup__image {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #2a2a2a 100%);
+    padding: var(--spacing-3xl) var(--spacing-xl);
+    text-align: center;
+    color: white;
+  }
+
+  .email-popup__image svg {
+    width: 80px;
+    height: auto;
+    opacity: 0.8;
+  }
+
+  .email-popup__body {
+    padding: var(--spacing-2xl);
+    text-align: center;
+  }
+
+  .email-popup__eyebrow {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--color-secondary);
+    color: var(--color-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: var(--radius-full);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .email-popup__title {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .email-popup__description {
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .email-popup__form {
+    text-align: left;
+  }
+
+  .email-popup__form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .email-popup__input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    font-size: var(--font-size-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    transition: border-color 0.2s;
+  }
+
+  .email-popup__input:focus {
+    outline: none;
+    border-color: var(--color-secondary);
+  }
+
+  .email-popup__privacy {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    text-align: center;
+    margin-top: var(--spacing-md);
+  }
+
+  .email-popup__skip {
+    margin-top: var(--spacing-lg);
+    text-align: center;
+  }
+
+  .email-popup__skip a {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    text-decoration: underline;
+  }
+
+  .email-popup__success {
+    padding: var(--spacing-3xl) var(--spacing-2xl);
+    text-align: center;
+  }
+
+  .email-popup__success-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(76, 175, 80, 0.1);
+    border-radius: 50%;
+    color: var(--color-success);
+  }
+
+  .email-popup__success-icon svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .email-popup__success h3 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .email-popup__success p {
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  @media (max-width: 576px) {
+    .email-popup__form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .email-popup__content {
+      margin: var(--spacing-md);
+    }
+  }
+</style>
+
+<script>
+  (function() {
+    const popup = document.getElementById('emailPopup');
+    const form = document.getElementById('emailPopupForm');
+    const successMessage = document.getElementById('emailPopupSuccess');
+
+    if (!popup) return;
+
+    // Configuration from theme settings
+    const popupDelay = {{ settings.popup_delay | default: 5 }} * 1000;
+    const exitIntentEnabled = {{ settings.popup_exit_intent | default: true }};
+
+    // Check if popup was already shown
+    const popupShown = localStorage.getItem('basenotes_popup_shown');
+    const popupDismissed = localStorage.getItem('basenotes_popup_dismissed');
+
+    // Show popup after delay (only for new visitors)
+    if (!popupShown && !popupDismissed) {
+      setTimeout(function() {
+        popup.classList.add('is-active');
+        localStorage.setItem('basenotes_popup_shown', 'true');
+        document.body.style.overflow = 'hidden';
+      }, popupDelay);
+    }
+
+    // Also show on exit intent (desktop only)
+    if (exitIntentEnabled && !popupDismissed && window.innerWidth > 768) {
+      document.addEventListener('mouseout', function(e) {
+        if (e.clientY < 10 && !popup.classList.contains('is-active')) {
+          popup.classList.add('is-active');
+          localStorage.setItem('basenotes_popup_shown', 'true');
+          document.body.style.overflow = 'hidden';
+        }
+      }, { once: true });
+    }
+
+    // Close popup handlers
+    document.querySelectorAll('[data-popup-close]').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        closePopup();
+        localStorage.setItem('basenotes_popup_dismissed', 'true');
+      });
+    });
+
+    // Close on escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && popup.classList.contains('is-active')) {
+        closePopup();
+        localStorage.setItem('basenotes_popup_dismissed', 'true');
+      }
+    });
+
+    // Form submission
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        // Store email in localStorage for reference
+        const formData = new FormData(form);
+        const email = formData.get('contact[email]');
+        if (email) {
+          localStorage.setItem('basenotes_subscriber_email', email);
+          localStorage.setItem('basenotes_popup_dismissed', 'true');
+        }
+
+        {% comment %} Klaviyo Integration {% endcomment %}
+        {%- if settings.email_platform == 'klaviyo' and settings.klaviyo_public_api_key != blank -%}
+        e.preventDefault();
+
+        const firstName = formData.get('contact[first_name]');
+
+        // Send to Klaviyo
+        fetch('https://a.klaviyo.com/api/v2/list/{{ settings.klaviyo_list_id }}/subscribe?api_key={{ settings.klaviyo_public_api_key }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            profiles: [{
+              email: email,
+              first_name: firstName,
+              $consent: ['email']
+            }]
+          })
+        })
+        .then(function() {
+          // Show success message
+          document.querySelector('.email-popup__body').style.display = 'none';
+          document.querySelector('.email-popup__image').style.display = 'none';
+          successMessage.style.display = 'block';
+        })
+        .catch(function(error) {
+          console.error('Klaviyo subscription error:', error);
+          // Fall back to normal form submission
+          form.submit();
+        });
+        {%- endif -%}
+      });
+    }
+
+    function closePopup() {
+      popup.classList.remove('is-active');
+      document.body.style.overflow = '';
+    }
+
+    // Expose function to show popup manually
+    window.showEmailPopup = function() {
+      popup.classList.add('is-active');
+      document.body.style.overflow = 'hidden';
+    };
+
+    // Expose function to reset popup (for testing)
+    window.resetEmailPopup = function() {
+      localStorage.removeItem('basenotes_popup_shown');
+      localStorage.removeItem('basenotes_popup_dismissed');
+      console.log('Popup state reset. Refresh the page to see the popup again.');
+    };
+  })();
+</script>
+{%- endunless -%}
+{%- endif -%}

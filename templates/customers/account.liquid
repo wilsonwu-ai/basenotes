@@ -1,147 +1,825 @@
 {%- layout 'theme' -%}
 
-<section class="section" style="padding-top: calc(var(--header-height) + var(--spacing-2xl));">
+<section class="account-section">
   <div class="container">
     <div class="account-layout">
 
       {% comment %} Sidebar Navigation {% endcomment %}
       <aside class="account-sidebar">
-        <div style="margin-bottom: var(--spacing-xl);">
-          <p style="font-size: var(--font-size-sm); color: var(--color-text-light);">Welcome back,</p>
-          <p style="font-size: var(--font-size-xl); font-family: var(--font-heading);">{{ customer.first_name }}</p>
+        <div class="account-user">
+          <div class="account-user__avatar">
+            {{ customer.first_name | slice: 0 }}{{ customer.last_name | slice: 0 }}
+          </div>
+          <div class="account-user__info">
+            <p class="account-user__greeting">Welcome back,</p>
+            <p class="account-user__name">{{ customer.first_name }} {{ customer.last_name }}</p>
+            <p class="account-user__email">{{ customer.email }}</p>
+          </div>
         </div>
 
-        <ul class="account-nav">
-          <li class="account-nav__item">
-            <a href="{{ routes.account_url }}" class="account-nav__link is-active">Dashboard</a>
-          </li>
-          <li class="account-nav__item">
-            <a href="{{ routes.account_url }}#orders" class="account-nav__link">Order History</a>
-          </li>
-          <li class="account-nav__item">
-            <a href="{{ routes.account_addresses_url }}" class="account-nav__link">Addresses</a>
-          </li>
-          <li class="account-nav__item">
-            <a href="#subscription" class="account-nav__link">My Subscription</a>
-          </li>
-          <li class="account-nav__item">
-            <a href="#queue" class="account-nav__link">Fragrance Queue</a>
-          </li>
-          <li class="account-nav__item">
-            <a href="#preferences" class="account-nav__link">Scent Preferences</a>
-          </li>
-        </ul>
+        <nav class="account-nav">
+          <a href="{{ routes.account_url }}" class="account-nav__link is-active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            Dashboard
+          </a>
+          <a href="#subscription" class="account-nav__link" data-scroll>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            </svg>
+            My Subscription
+          </a>
+          <a href="#queue" class="account-nav__link" data-scroll>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="8" y1="6" x2="21" y2="6"/>
+              <line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/>
+              <line x1="3" y1="12" x2="3.01" y2="12"/>
+              <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+            Fragrance Queue
+          </a>
+          <a href="#orders" class="account-nav__link" data-scroll>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+              <path d="M3 6h18"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+            Order History
+          </a>
+          <a href="{{ routes.account_addresses_url }}" class="account-nav__link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            Addresses
+          </a>
+          <a href="#preferences" class="account-nav__link" data-scroll>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            Scent Preferences
+          </a>
+        </nav>
 
-        <div style="margin-top: var(--spacing-xl); padding-top: var(--spacing-xl); border-top: 1px solid var(--color-border);">
-          <a href="{{ routes.account_logout_url }}" style="font-size: var(--font-size-sm); color: var(--color-text-light);">
+        <div class="account-sidebar__footer">
+          <a href="{{ routes.account_logout_url }}" class="account-logout">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
             Sign Out
           </a>
         </div>
       </aside>
 
       {% comment %} Main Content {% endcomment %}
-      <main class="account-content">
-        <div class="account-header">
-          <h1 class="account-header__title">My Account</h1>
-          <p class="account-header__subtitle">Manage your subscription, orders, and preferences.</p>
-        </div>
+      <main class="account-main">
 
         {% comment %} Subscription Status Card {% endcomment %}
-        <div style="background: linear-gradient(135deg, var(--color-primary), #333); color: var(--color-background); padding: var(--spacing-2xl); margin-bottom: var(--spacing-2xl);">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--spacing-lg);">
-            <div>
-              <span style="font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.7;">Current Plan</span>
-              <h2 style="font-size: var(--font-size-3xl); font-family: var(--font-heading); margin: var(--spacing-sm) 0;">Monthly Subscription</h2>
-              <p style="opacity: 0.8;">Your next fragrance ships on <strong>February 1, 2026</strong></p>
+        <section id="subscription" class="account-card account-card--featured">
+          <div class="subscription-header">
+            <div class="subscription-info">
+              <span class="subscription-badge">Active Subscription</span>
+              <h2 class="subscription-plan">Monthly Plan</h2>
+              <p class="subscription-next">Next fragrance ships <strong>February 1, 2026</strong></p>
             </div>
-            <div style="text-align: right;">
-              <span style="font-size: var(--font-size-4xl); font-family: var(--font-heading);">$29</span>
-              <span style="opacity: 0.7;">/month</span>
+            <div class="subscription-price">
+              <span class="subscription-price__amount">$20</span>
+              <span class="subscription-price__period">/month</span>
             </div>
           </div>
-          <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-xl);">
-            <a href="#manage" class="btn btn--outline-light btn--small">Manage Subscription</a>
+
+          <div class="subscription-actions">
+            <a href="#" class="btn btn--outline-light btn--small">Manage Plan</a>
+            <a href="#" class="btn btn--outline-light btn--small">Skip Next Month</a>
             <a href="/collections/all" class="btn btn--gold btn--small">Change Next Scent</a>
           </div>
-        </div>
+
+          <div class="subscription-next-scent">
+            <p class="subscription-next-scent__label">Your next fragrance:</p>
+            <div class="subscription-next-scent__product">
+              <div class="subscription-next-scent__image">
+                <svg viewBox="0 0 60 100" fill="none" stroke="currentColor" stroke-width="1">
+                  <rect x="15" y="25" width="30" height="65" rx="3"/>
+                  <rect x="20" y="10" width="20" height="15"/>
+                  <rect x="25" y="2" width="10" height="8" rx="2"/>
+                  <text x="30" y="62" text-anchor="middle" font-size="8" fill="currentColor" stroke="none">BN</text>
+                </svg>
+              </div>
+              <div class="subscription-next-scent__details">
+                <h4>Noir Absolu</h4>
+                <p>Dark chocolate, Oud, Leather</p>
+                <a href="#" class="text-link">View Details</a>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {% comment %} Quick Stats {% endcomment %}
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-lg); margin-bottom: var(--spacing-3xl);">
-          <div style="text-align: center; padding: var(--spacing-xl); background: var(--color-background-secondary);">
-            <span style="font-size: var(--font-size-4xl); font-family: var(--font-heading); color: var(--color-secondary);">{{ customer.orders_count }}</span>
-            <span style="display: block; font-size: var(--font-size-sm); color: var(--color-text-light); margin-top: var(--spacing-xs);">Fragrances Received</span>
+        <div class="account-stats">
+          <div class="account-stat">
+            <span class="account-stat__number">{{ customer.orders_count }}</span>
+            <span class="account-stat__label">Orders</span>
           </div>
-          <div style="text-align: center; padding: var(--spacing-xl); background: var(--color-background-secondary);">
-            <span style="font-size: var(--font-size-4xl); font-family: var(--font-heading); color: var(--color-secondary);">3</span>
-            <span style="display: block; font-size: var(--font-size-sm); color: var(--color-text-light); margin-top: var(--spacing-xs);">In Your Queue</span>
+          <div class="account-stat">
+            <span class="account-stat__number">3</span>
+            <span class="account-stat__label">In Queue</span>
           </div>
-          <div style="text-align: center; padding: var(--spacing-xl); background: var(--color-background-secondary);">
-            <span style="font-size: var(--font-size-4xl); font-family: var(--font-heading); color: var(--color-secondary);">6</span>
-            <span style="display: block; font-size: var(--font-size-sm); color: var(--color-text-light); margin-top: var(--spacing-xs);">Months as Member</span>
+          <div class="account-stat">
+            <span class="account-stat__number">6</span>
+            <span class="account-stat__label">Months Active</span>
+          </div>
+          <div class="account-stat">
+            <span class="account-stat__number">{{ customer.tags.size | default: 0 }}</span>
+            <span class="account-stat__label">Favorites</span>
           </div>
         </div>
 
+        {% comment %} Fragrance Queue {% endcomment %}
+        <section id="queue" class="account-card">
+          <div class="account-card__header">
+            <h3 class="account-card__title">Your Fragrance Queue</h3>
+            <a href="/collections/all" class="text-link">Add More</a>
+          </div>
+
+          <div class="queue-list">
+            <div class="queue-item">
+              <div class="queue-item__position">1</div>
+              <div class="queue-item__image">
+                <svg viewBox="0 0 60 100" fill="none" stroke="currentColor" stroke-width="1">
+                  <rect x="15" y="25" width="30" height="65" rx="3"/>
+                  <rect x="20" y="10" width="20" height="15"/>
+                  <rect x="25" y="2" width="10" height="8" rx="2"/>
+                </svg>
+              </div>
+              <div class="queue-item__details">
+                <h4>Amber Elixir</h4>
+                <p>Amber, Vanilla, Benzoin</p>
+              </div>
+              <div class="queue-item__actions">
+                <button class="queue-item__move" title="Move up">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="18 15 12 9 6 15"/>
+                  </svg>
+                </button>
+                <button class="queue-item__remove" title="Remove">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="queue-item">
+              <div class="queue-item__position">2</div>
+              <div class="queue-item__image">
+                <svg viewBox="0 0 60 100" fill="none" stroke="currentColor" stroke-width="1">
+                  <rect x="15" y="25" width="30" height="65" rx="3"/>
+                  <rect x="20" y="10" width="20" height="15"/>
+                  <rect x="25" y="2" width="10" height="8" rx="2"/>
+                </svg>
+              </div>
+              <div class="queue-item__details">
+                <h4>Rose Oud</h4>
+                <p>Bulgarian Rose, Oud, Saffron</p>
+              </div>
+              <div class="queue-item__actions">
+                <button class="queue-item__move" title="Move up">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="18 15 12 9 6 15"/>
+                  </svg>
+                </button>
+                <button class="queue-item__remove" title="Remove">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="queue-item">
+              <div class="queue-item__position">3</div>
+              <div class="queue-item__image">
+                <svg viewBox="0 0 60 100" fill="none" stroke="currentColor" stroke-width="1">
+                  <rect x="15" y="25" width="30" height="65" rx="3"/>
+                  <rect x="20" y="10" width="20" height="15"/>
+                  <rect x="25" y="2" width="10" height="8" rx="2"/>
+                </svg>
+              </div>
+              <div class="queue-item__details">
+                <h4>Bergamot Mist</h4>
+                <p>Bergamot, White Tea, Musk</p>
+              </div>
+              <div class="queue-item__actions">
+                <button class="queue-item__move" title="Move up">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="18 15 12 9 6 15"/>
+                  </svg>
+                </button>
+                <button class="queue-item__remove" title="Remove">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {% comment %} Recent Orders {% endcomment %}
-        <div id="orders">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xl);">
-            <h2 style="font-size: var(--font-size-2xl);">Recent Orders</h2>
-            <a href="{{ routes.account_url }}" style="font-size: var(--font-size-sm); color: var(--color-secondary);">View All</a>
+        <section id="orders" class="account-card">
+          <div class="account-card__header">
+            <h3 class="account-card__title">Recent Orders</h3>
           </div>
 
           {%- if customer.orders.size > 0 -%}
-            <div style="border: 1px solid var(--color-border);">
+            <div class="orders-list">
               {%- for order in customer.orders limit: 5 -%}
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-lg); border-bottom: 1px solid var(--color-border);{% if forloop.last %}border-bottom: none;{% endif %}">
-                  <div>
-                    <a href="{{ order.customer_url }}" style="font-weight: 500;">Order {{ order.name }}</a>
-                    <span style="display: block; font-size: var(--font-size-sm); color: var(--color-text-light);">
-                      {{ order.created_at | date: '%B %d, %Y' }}
-                    </span>
+                <a href="{{ order.customer_url }}" class="order-item">
+                  <div class="order-item__info">
+                    <span class="order-item__number">{{ order.name }}</span>
+                    <span class="order-item__date">{{ order.created_at | date: '%B %d, %Y' }}</span>
                   </div>
-                  <div style="text-align: right;">
-                    <span style="font-weight: 600;">{{ order.total_price | money }}</span>
-                    <span style="display: block; font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.05em;
-                      {%- case order.fulfillment_status -%}
-                        {%- when 'fulfilled' -%} color: var(--color-success);
-                        {%- when 'unfulfilled' -%} color: var(--color-secondary);
-                        {%- else -%} color: var(--color-text-light);
-                      {%- endcase -%}
-                    ">
+                  <div class="order-item__status">
+                    <span class="order-status order-status--{{ order.fulfillment_status | default: 'processing' }}">
                       {{ order.fulfillment_status_label | default: 'Processing' }}
                     </span>
                   </div>
-                </div>
+                  <div class="order-item__total">
+                    {{ order.total_price | money }}
+                  </div>
+                  <svg class="order-item__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </a>
               {%- endfor -%}
             </div>
           {%- else -%}
-            <div style="text-align: center; padding: var(--spacing-3xl); background: var(--color-background-secondary);">
-              <p style="color: var(--color-text-light);">No orders yet.</p>
-              <a href="/collections/all" class="btn btn--primary" style="margin-top: var(--spacing-lg);">Explore Fragrances</a>
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                <path d="M3 6h18"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+              <p>No orders yet</p>
+              <a href="/collections/all" class="btn btn--primary">Start Shopping</a>
             </div>
           {%- endif -%}
-        </div>
+        </section>
 
         {% comment %} Default Address {% endcomment %}
         {%- if customer.default_address -%}
-          <div style="margin-top: var(--spacing-3xl);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
-              <h2 style="font-size: var(--font-size-2xl);">Shipping Address</h2>
-              <a href="{{ routes.account_addresses_url }}" style="font-size: var(--font-size-sm); color: var(--color-secondary);">Edit</a>
+          <section class="account-card">
+            <div class="account-card__header">
+              <h3 class="account-card__title">Shipping Address</h3>
+              <a href="{{ routes.account_addresses_url }}" class="text-link">Edit</a>
             </div>
-            <div style="padding: var(--spacing-xl); background: var(--color-background-secondary);">
-              <p>{{ customer.default_address.first_name }} {{ customer.default_address.last_name }}</p>
-              <p style="color: var(--color-text-light);">
-                {{ customer.default_address.address1 }}<br>
-                {%- if customer.default_address.address2 != blank -%}
-                  {{ customer.default_address.address2 }}<br>
-                {%- endif -%}
-                {{ customer.default_address.city }}, {{ customer.default_address.province_code }} {{ customer.default_address.zip }}<br>
-                {{ customer.default_address.country }}
-              </p>
+            <div class="address-display">
+              <p class="address-display__name">{{ customer.default_address.first_name }} {{ customer.default_address.last_name }}</p>
+              <p class="address-display__line">{{ customer.default_address.address1 }}</p>
+              {%- if customer.default_address.address2 != blank -%}
+                <p class="address-display__line">{{ customer.default_address.address2 }}</p>
+              {%- endif -%}
+              <p class="address-display__line">{{ customer.default_address.city }}, {{ customer.default_address.province_code }} {{ customer.default_address.zip }}</p>
+              <p class="address-display__line">{{ customer.default_address.country }}</p>
             </div>
-          </div>
+          </section>
         {%- endif -%}
+
       </main>
     </div>
   </div>
 </section>
+
+<style>
+  .account-section {
+    padding-top: calc(var(--header-height) + var(--spacing-2xl));
+    padding-bottom: var(--spacing-4xl);
+    min-height: 100vh;
+    background: var(--color-background-secondary);
+  }
+
+  .account-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: var(--spacing-2xl);
+  }
+
+  /* Sidebar */
+  .account-sidebar {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    height: fit-content;
+    position: sticky;
+    top: calc(var(--header-height) + var(--spacing-xl));
+  }
+
+  .account-user {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding-bottom: var(--spacing-xl);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .account-user__avatar {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+  }
+
+  .account-user__greeting {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+  }
+
+  .account-user__name {
+    font-weight: 600;
+    font-size: var(--font-size-base);
+  }
+
+  .account-user__email {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+
+  .account-nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .account-nav__link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    transition: all 0.2s;
+  }
+
+  .account-nav__link svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .account-nav__link:hover {
+    background: var(--color-background-secondary);
+    color: var(--color-primary);
+  }
+
+  .account-nav__link.is-active {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  .account-sidebar__footer {
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-xl);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .account-logout {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  .account-logout svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Main Content */
+  .account-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+  }
+
+  .account-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+  }
+
+  .account-card--featured {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #2a2a2a 100%);
+    color: white;
+  }
+
+  .account-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .account-card__title {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+  }
+
+  .text-link {
+    color: var(--color-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+  }
+
+  /* Subscription Card */
+  .subscription-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .subscription-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--color-secondary);
+    color: var(--color-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: var(--radius-full);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .subscription-plan {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .subscription-next {
+    opacity: 0.8;
+    font-size: var(--font-size-sm);
+  }
+
+  .subscription-price__amount {
+    font-size: var(--font-size-4xl);
+    font-weight: 700;
+  }
+
+  .subscription-price__period {
+    opacity: 0.7;
+  }
+
+  .subscription-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .subscription-next-scent {
+    padding-top: var(--spacing-xl);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .subscription-next-scent__label {
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .subscription-next-scent__product {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+  }
+
+  .subscription-next-scent__image {
+    width: 60px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .subscription-next-scent__image svg {
+    width: 40px;
+    opacity: 0.6;
+  }
+
+  .subscription-next-scent__details h4 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .subscription-next-scent__details p {
+    font-size: var(--font-size-sm);
+    opacity: 0.7;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  /* Stats */
+  .account-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+  }
+
+  .account-stat {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    text-align: center;
+  }
+
+  .account-stat__number {
+    display: block;
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--color-secondary);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .account-stat__label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+  }
+
+  /* Queue */
+  .queue-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .queue-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--color-background-secondary);
+    border-radius: var(--radius-md);
+  }
+
+  .queue-item__position {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-secondary);
+    color: var(--color-primary);
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: var(--font-size-sm);
+  }
+
+  .queue-item__image {
+    width: 50px;
+    height: 60px;
+    background: white;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .queue-item__image svg {
+    width: 30px;
+    color: var(--color-text-muted);
+  }
+
+  .queue-item__details {
+    flex: 1;
+  }
+
+  .queue-item__details h4 {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .queue-item__details p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+  }
+
+  .queue-item__actions {
+    display: flex;
+    gap: var(--spacing-xs);
+  }
+
+  .queue-item__move,
+  .queue-item__remove {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .queue-item__move svg,
+  .queue-item__remove svg {
+    width: 16px;
+    height: 16px;
+    color: var(--color-text-muted);
+  }
+
+  .queue-item__move:hover {
+    border-color: var(--color-secondary);
+  }
+
+  .queue-item__remove:hover {
+    border-color: var(--color-error);
+  }
+
+  .queue-item__remove:hover svg {
+    color: var(--color-error);
+  }
+
+  /* Orders */
+  .orders-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .order-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-md) 0;
+    border-bottom: 1px solid var(--color-border);
+    transition: background 0.2s;
+  }
+
+  .order-item:last-child {
+    border-bottom: none;
+  }
+
+  .order-item:hover {
+    background: var(--color-background-secondary);
+    margin: 0 calc(-1 * var(--spacing-md));
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+  }
+
+  .order-item__info {
+    flex: 1;
+  }
+
+  .order-item__number {
+    font-weight: 600;
+    display: block;
+  }
+
+  .order-item__date {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+  }
+
+  .order-status {
+    padding: 4px 10px;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: var(--radius-full);
+  }
+
+  .order-status--fulfilled {
+    background: rgba(76, 175, 80, 0.1);
+    color: var(--color-success);
+  }
+
+  .order-status--unfulfilled,
+  .order-status--processing {
+    background: rgba(201, 168, 108, 0.1);
+    color: var(--color-secondary);
+  }
+
+  .order-item__total {
+    font-weight: 600;
+  }
+
+  .order-item__arrow {
+    width: 16px;
+    height: 16px;
+    color: var(--color-text-muted);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: var(--spacing-3xl);
+  }
+
+  .empty-state svg {
+    width: 48px;
+    height: 48px;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .empty-state p {
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  /* Address */
+  .address-display {
+    color: var(--color-text-light);
+  }
+
+  .address-display__name {
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .address-display__line {
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* Responsive */
+  @media (max-width: 992px) {
+    .account-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .account-sidebar {
+      position: static;
+      order: -1;
+    }
+
+    .account-nav {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .account-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 576px) {
+    .subscription-header {
+      flex-direction: column;
+      gap: var(--spacing-lg);
+    }
+
+    .subscription-actions {
+      flex-wrap: wrap;
+    }
+
+    .account-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scroll for anchor links
+    document.querySelectorAll('[data-scroll]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        if (href.startsWith('#')) {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      });
+    });
+  });
+</script>

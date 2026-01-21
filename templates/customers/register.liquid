@@ -1,103 +1,553 @@
 {%- layout 'theme' -%}
 
-<section class="section" style="padding-top: calc(var(--header-height) + var(--spacing-4xl)); min-height: 80vh; display: flex; align-items: center;">
-  <div class="container container--narrow">
-    <div style="max-width: 450px; margin: 0 auto;">
+<section class="auth-section">
+  <div class="container">
+    <div class="auth-layout">
 
-      <div class="text-center" style="margin-bottom: var(--spacing-3xl);">
-        <span style="font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.2em; color: var(--color-secondary);">Become a Member</span>
-        <h1 style="font-size: var(--font-size-4xl); margin-bottom: var(--spacing-sm);">Join the Inner Circle</h1>
-        <p style="color: var(--color-text-light);">Create your account to access exclusive fragrances in perfectly portioned 5ml atomizers.</p>
+      {% comment %} Left Side - Benefits {% endcomment %}
+      <div class="auth-benefits">
+        <div class="auth-benefits__content">
+          <span class="auth-benefits__eyebrow">Join Basenotes</span>
+          <h2 class="auth-benefits__title">Discover Your Signature Scent</h2>
+          <p class="auth-benefits__description">Join thousands of fragrance enthusiasts who trust Basenotes for their monthly scent journey.</p>
+
+          <ul class="auth-benefits__list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span>Access to 10 exclusive luxury fragrances</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span>5ml atomizer delivered monthly ($20/mo)</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span>Swap, pause, or cancel anytime</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span>Free shipping on all orders</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span>Personalized fragrance recommendations</span>
+            </li>
+          </ul>
+
+          <div class="auth-benefits__testimonial">
+            <p>"Basenotes has completely changed how I experience fragrance. The quality is unmatched."</p>
+            <cite>— Sarah M., Member since 2024</cite>
+          </div>
+        </div>
       </div>
 
-      {%- form 'create_customer' -%}
-        {{ form.errors | default_errors }}
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
-          <div class="form-group">
-            <label class="form-label" for="FirstName">First Name</label>
-            <input
-              type="text"
-              name="customer[first_name]"
-              id="FirstName"
-              class="form-input"
-              autocomplete="given-name"
-              required
-            >
+      {% comment %} Right Side - Registration Form {% endcomment %}
+      <div class="auth-form-container">
+        <div class="auth-form-wrapper">
+          <div class="text-center" style="margin-bottom: var(--spacing-2xl);">
+            <h1 class="auth-form__title">Create Your Account</h1>
+            <p class="auth-form__subtitle">Start your fragrance journey today</p>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="LastName">Last Name</label>
-            <input
-              type="text"
-              name="customer[last_name]"
-              id="LastName"
-              class="form-input"
-              autocomplete="family-name"
-              required
-            >
+          {%- form 'create_customer', class: 'auth-form' -%}
+            {{ form.errors | default_errors }}
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="FirstName">First Name *</label>
+                <input
+                  type="text"
+                  name="customer[first_name]"
+                  id="FirstName"
+                  class="form-input"
+                  autocomplete="given-name"
+                  required
+                >
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="LastName">Last Name *</label>
+                <input
+                  type="text"
+                  name="customer[last_name]"
+                  id="LastName"
+                  class="form-input"
+                  autocomplete="family-name"
+                  required
+                >
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="Email">Email Address *</label>
+              <input
+                type="email"
+                name="customer[email]"
+                id="Email"
+                class="form-input"
+                autocomplete="email"
+                autocapitalize="off"
+                autocorrect="off"
+                placeholder="you@example.com"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="Phone">Phone Number</label>
+              <input
+                type="tel"
+                name="customer[phone]"
+                id="Phone"
+                class="form-input"
+                autocomplete="tel"
+                placeholder="(555) 123-4567"
+              >
+              <span class="form-hint">For order updates and exclusive SMS offers</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="Password">Password *</label>
+              <div class="password-input-wrapper">
+                <input
+                  type="password"
+                  name="customer[password]"
+                  id="Password"
+                  class="form-input"
+                  autocomplete="new-password"
+                  required
+                  minlength="8"
+                >
+                <button type="button" class="password-toggle" data-toggle-password>
+                  <svg class="icon-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  <svg class="icon-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                </button>
+              </div>
+              <span class="form-hint">Must be at least 8 characters</span>
+            </div>
+
+            {% comment %} Birthday for marketing {% endcomment %}
+            <div class="form-group">
+              <label class="form-label" for="Birthday">Birthday (Optional)</label>
+              <input
+                type="date"
+                name="customer[note][birthday]"
+                id="Birthday"
+                class="form-input"
+              >
+              <span class="form-hint">We'll send you a special gift on your birthday!</span>
+            </div>
+
+            {% comment %} Fragrance Preference {% endcomment %}
+            <div class="form-group">
+              <label class="form-label">What scent profiles interest you?</label>
+              <div class="checkbox-grid">
+                <label class="checkbox-card">
+                  <input type="checkbox" name="customer[note][preferences][]" value="woody">
+                  <span class="checkbox-card__content">
+                    <span class="checkbox-card__icon">🌲</span>
+                    <span class="checkbox-card__label">Woody</span>
+                  </span>
+                </label>
+                <label class="checkbox-card">
+                  <input type="checkbox" name="customer[note][preferences][]" value="floral">
+                  <span class="checkbox-card__content">
+                    <span class="checkbox-card__icon">🌸</span>
+                    <span class="checkbox-card__label">Floral</span>
+                  </span>
+                </label>
+                <label class="checkbox-card">
+                  <input type="checkbox" name="customer[note][preferences][]" value="fresh">
+                  <span class="checkbox-card__content">
+                    <span class="checkbox-card__icon">🍃</span>
+                    <span class="checkbox-card__label">Fresh</span>
+                  </span>
+                </label>
+                <label class="checkbox-card">
+                  <input type="checkbox" name="customer[note][preferences][]" value="oriental">
+                  <span class="checkbox-card__content">
+                    <span class="checkbox-card__icon">✨</span>
+                    <span class="checkbox-card__label">Oriental</span>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            {% comment %} Marketing Preferences {% endcomment %}
+            <div class="form-group marketing-options">
+              <label class="checkbox-label">
+                <input type="checkbox" name="customer[accepts_marketing]" checked>
+                <span>Email me about new arrivals, exclusive offers, and fragrance tips</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="customer[note][sms_marketing]" value="true">
+                <span>Send me SMS alerts for order updates and special offers</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn--primary btn--full btn--large">
+              Create My Account
+            </button>
+
+            <p class="auth-form__terms">
+              By creating an account, you agree to our
+              <a href="/pages/terms">Terms of Service</a>
+              and
+              <a href="/pages/privacy">Privacy Policy</a>.
+            </p>
+          {%- endform -%}
+
+          <div class="auth-form__divider">
+            <span>or</span>
           </div>
+
+          <p class="text-center" style="color: var(--color-text-light);">
+            Already have an account?
+            <a href="{{ routes.account_login_url }}" class="auth-link">
+              Sign in
+            </a>
+          </p>
         </div>
-
-        <div class="form-group">
-          <label class="form-label" for="Email">Email</label>
-          <input
-            type="email"
-            name="customer[email]"
-            id="Email"
-            class="form-input"
-            autocomplete="email"
-            autocapitalize="off"
-            autocorrect="off"
-            required
-          >
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="Password">Password</label>
-          <input
-            type="password"
-            name="customer[password]"
-            id="Password"
-            class="form-input"
-            autocomplete="new-password"
-            required
-            minlength="8"
-          >
-          <span style="font-size: var(--font-size-xs); color: var(--color-text-muted); display: block; margin-top: var(--spacing-xs);">
-            Must be at least 8 characters
-          </span>
-        </div>
-
-        <div class="form-group" style="margin-bottom: var(--spacing-xl);">
-          <label style="display: flex; align-items: flex-start; gap: var(--spacing-sm); font-size: var(--font-size-sm); color: var(--color-text-light);">
-            <input type="checkbox" name="customer[accepts_marketing]" style="margin-top: 4px;">
-            <span>
-              I'd like to receive exclusive offers, new arrivals, and fragrance recommendations from Basenotes.
-            </span>
-          </label>
-        </div>
-
-        <button type="submit" class="btn btn--primary btn--full btn--large">
-          Create Account
-        </button>
-
-        <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); text-align: center; margin-top: var(--spacing-lg);">
-          By creating an account, you agree to our
-          <a href="/pages/terms" style="color: var(--color-secondary);">Terms of Service</a>
-          and
-          <a href="/pages/privacy" style="color: var(--color-secondary);">Privacy Policy</a>.
-        </p>
-      {%- endform -%}
-
-      <div class="divider"></div>
-
-      <p class="text-center" style="color: var(--color-text-light);">
-        Already have an account?
-        <a href="{{ routes.account_login_url }}" style="color: var(--color-secondary); font-weight: 500;">
-          Sign in
-        </a>
-      </p>
+      </div>
     </div>
   </div>
 </section>
+
+<style>
+  .auth-section {
+    min-height: 100vh;
+    padding-top: var(--header-height);
+  }
+
+  .auth-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: calc(100vh - var(--header-height));
+  }
+
+  /* Benefits Side */
+  .auth-benefits {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #2a2a2a 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-4xl);
+  }
+
+  .auth-benefits__content {
+    max-width: 480px;
+  }
+
+  .auth-benefits__eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-secondary);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .auth-benefits__title {
+    font-size: var(--font-size-4xl);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    line-height: 1.2;
+  }
+
+  .auth-benefits__description {
+    font-size: var(--font-size-lg);
+    opacity: 0.8;
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .auth-benefits__list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--spacing-3xl);
+  }
+
+  .auth-benefits__list li {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) 0;
+    font-size: var(--font-size-base);
+  }
+
+  .auth-benefits__list svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: var(--color-secondary);
+  }
+
+  .auth-benefits__testimonial {
+    padding: var(--spacing-xl);
+    background: rgba(255, 255, 255, 0.1);
+    border-left: 3px solid var(--color-secondary);
+  }
+
+  .auth-benefits__testimonial p {
+    font-style: italic;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .auth-benefits__testimonial cite {
+    font-size: var(--font-size-sm);
+    opacity: 0.7;
+  }
+
+  /* Form Side */
+  .auth-form-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-3xl);
+    background: var(--color-background);
+  }
+
+  .auth-form-wrapper {
+    width: 100%;
+    max-width: 440px;
+  }
+
+  .auth-form__title {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .auth-form__subtitle {
+    color: var(--color-text-light);
+    font-size: var(--font-size-base);
+  }
+
+  .auth-form .form-group {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .form-hint {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-top: var(--spacing-xs);
+  }
+
+  .password-input-wrapper {
+    position: relative;
+  }
+
+  .password-input-wrapper .form-input {
+    padding-right: 48px;
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: var(--color-text-muted);
+  }
+
+  .password-toggle svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Checkbox Grid for Preferences */
+  .checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-sm);
+  }
+
+  .checkbox-card {
+    cursor: pointer;
+  }
+
+  .checkbox-card input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .checkbox-card__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-md);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .checkbox-card input:checked + .checkbox-card__content {
+    border-color: var(--color-secondary);
+    background: rgba(201, 168, 108, 0.1);
+  }
+
+  .checkbox-card__icon {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .checkbox-card__label {
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+  }
+
+  /* Marketing Options */
+  .marketing-options {
+    padding: var(--spacing-lg);
+    background: var(--color-background-secondary);
+    border-radius: var(--radius-md);
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    cursor: pointer;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .checkbox-label:last-child {
+    margin-bottom: 0;
+  }
+
+  .checkbox-label input {
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+
+  .auth-form__terms {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    text-align: center;
+    margin-top: var(--spacing-lg);
+  }
+
+  .auth-form__terms a {
+    color: var(--color-secondary);
+  }
+
+  .auth-form__divider {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin: var(--spacing-xl) 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  .auth-form__divider::before,
+  .auth-form__divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-border);
+  }
+
+  .auth-link {
+    color: var(--color-secondary);
+    font-weight: 600;
+  }
+
+  /* Responsive */
+  @media (max-width: 992px) {
+    .auth-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .auth-benefits {
+      display: none;
+    }
+
+    .auth-form-container {
+      min-height: calc(100vh - var(--header-height));
+    }
+  }
+
+  @media (max-width: 576px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .checkbox-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .auth-form-container {
+      padding: var(--spacing-xl);
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Password toggle
+    const toggleBtn = document.querySelector('[data-toggle-password]');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function() {
+        const input = this.parentElement.querySelector('input');
+        const showIcon = this.querySelector('.icon-show');
+        const hideIcon = this.querySelector('.icon-hide');
+
+        if (input.type === 'password') {
+          input.type = 'text';
+          showIcon.style.display = 'none';
+          hideIcon.style.display = 'block';
+        } else {
+          input.type = 'password';
+          showIcon.style.display = 'block';
+          hideIcon.style.display = 'none';
+        }
+      });
+    }
+
+    // Phone number formatting
+    const phoneInput = document.getElementById('Phone');
+    if (phoneInput) {
+      phoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 10) {
+          value = `(${value.slice(0,3)}) ${value.slice(3,6)}-${value.slice(6,10)}`;
+        } else if (value.length >= 6) {
+          value = `(${value.slice(0,3)}) ${value.slice(3,6)}-${value.slice(6)}`;
+        } else if (value.length >= 3) {
+          value = `(${value.slice(0,3)}) ${value.slice(3)}`;
+        }
+        e.target.value = value;
+      });
+    }
+  });
+</script>
