@@ -1,6 +1,60 @@
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
   assign featured_image = current_variant.featured_image | default: product.featured_image
+
+  # Get intensity from metafield or tags (1-5 scale)
+  assign intensity = product.metafields.fragrance.intensity | default: 0
+  if intensity == 0
+    for tag in product.tags
+      if tag contains 'intensity:'
+        assign intensity = tag | split: ':' | last | plus: 0
+        break
+      endif
+    endfor
+  endif
+  if intensity == 0
+    assign intensity = 3
+  endif
+
+  # Get seasons from metafield or tags
+  assign seasons = product.metafields.fragrance.season.value | default: nil
+  assign season_spring = false
+  assign season_summer = false
+  assign season_fall = false
+  assign season_winter = false
+
+  if seasons != nil
+    for season in seasons
+      assign season_lower = season | downcase
+      if season_lower == 'spring'
+        assign season_spring = true
+      elsif season_lower == 'summer'
+        assign season_summer = true
+      elsif season_lower == 'fall' or season_lower == 'autumn'
+        assign season_fall = true
+      elsif season_lower == 'winter'
+        assign season_winter = true
+      endif
+    endfor
+  else
+    for tag in product.tags
+      assign tag_lower = tag | downcase
+      if tag_lower contains 'season:spring' or tag_lower == 'spring'
+        assign season_spring = true
+      elsif tag_lower contains 'season:summer' or tag_lower == 'summer'
+        assign season_summer = true
+      elsif tag_lower contains 'season:fall' or tag_lower contains 'season:autumn' or tag_lower == 'fall' or tag_lower == 'autumn'
+        assign season_fall = true
+      elsif tag_lower contains 'season:winter' or tag_lower == 'winter'
+        assign season_winter = true
+      endif
+    endfor
+  endif
+
+  assign has_seasons = false
+  if season_spring or season_summer or season_fall or season_winter
+    assign has_seasons = true
+  endif
 -%}
 
 <section class="product-page">
@@ -272,6 +326,69 @@
             </div>
           </div>
         {%- endif -%}
+
+        {% comment %} Fragrance Characteristics - Intensity & Seasons {% endcomment %}
+        <div class="fragrance-characteristics">
+          <h3 class="fragrance-characteristics__title">Characteristics</h3>
+          <div class="fragrance-characteristics__grid">
+            {% comment %} Intensity {% endcomment %}
+            <div class="fragrance-characteristic">
+              <span class="fragrance-characteristic__label">Intensity</span>
+              <div class="fragrance-characteristic__intensity">
+                {%- for i in (1..5) -%}
+                  <span class="intensity-dot{% if i <= intensity %} is-filled{% endif %}"></span>
+                {%- endfor -%}
+                <span class="intensity-level">
+                  {%- case intensity -%}
+                    {%- when 1 -%}Light
+                    {%- when 2 -%}Subtle
+                    {%- when 3 -%}Moderate
+                    {%- when 4 -%}Strong
+                    {%- when 5 -%}Powerful
+                  {%- endcase -%}
+                </span>
+              </div>
+            </div>
+
+            {% comment %} Best Seasons {% endcomment %}
+            <div class="fragrance-characteristic">
+              <span class="fragrance-characteristic__label">Best For</span>
+              <div class="fragrance-characteristic__seasons">
+                {%- if has_seasons -%}
+                  {%- if season_spring -%}
+                    <span class="season-badge season-badge--spring">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c4.97 0 9-4.03 9-9-4.97 0-9 4.03-9 9ZM5.6 10.25c0 1.96 1.59 3.55 3.55 3.55 1.96 0 3.55-1.59 3.55-3.55 0-1.96-3.55-6.55-3.55-6.55s-3.55 4.59-3.55 6.55Zm7.7 0c0 1.96 1.59 3.55 3.55 3.55 1.96 0 3.55-1.59 3.55-3.55 0-1.96-3.55-6.55-3.55-6.55s-3.55 4.59-3.55 6.55Z"/></svg>
+                      Spring
+                    </span>
+                  {%- endif -%}
+                  {%- if season_summer -%}
+                    <span class="season-badge season-badge--summer">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                      Summer
+                    </span>
+                  {%- endif -%}
+                  {%- if season_fall -%}
+                    <span class="season-badge season-badge--fall">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8Z"/></svg>
+                      Fall
+                    </span>
+                  {%- endif -%}
+                  {%- if season_winter -%}
+                    <span class="season-badge season-badge--winter">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v4m0 12v4m-6.93-5.07 2.83-2.83m8.2-8.2 2.83-2.83M2 12h4m12 0h4M4.93 6.93l2.83 2.83m8.2 8.2 2.83 2.83m-1.42-9.9L12 12l-5.37-1.93M12 12v5.37"/></svg>
+                      Winter
+                    </span>
+                  {%- endif -%}
+                {%- else -%}
+                  <span class="season-badge season-badge--all">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+                    Year-Round
+                  </span>
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+        </div>
 
         {% comment %} Product Details Accordion {% endcomment %}
         <div class="product-accordion">
@@ -853,6 +970,115 @@
   .fragrance-note__duration {
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
+  }
+
+  /* Fragrance Characteristics */
+  .fragrance-characteristics {
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    background: var(--color-background-secondary);
+    border-radius: var(--radius-md);
+  }
+
+  .fragrance-characteristics__title {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .fragrance-characteristics__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .fragrance-characteristic__label {
+    display: block;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .fragrance-characteristic__intensity {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+
+  .intensity-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--color-border);
+    transition: background 0.2s;
+  }
+
+  .intensity-dot.is-filled {
+    background: var(--color-secondary);
+  }
+
+  .intensity-level {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text);
+    margin-left: var(--spacing-xs);
+  }
+
+  .fragrance-characteristic__seasons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+
+  .season-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    border-radius: var(--radius-full);
+    background: white;
+    border: 1px solid var(--color-border);
+  }
+
+  .season-badge svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .season-badge--spring {
+    color: #4CAF50;
+    border-color: #4CAF50;
+  }
+
+  .season-badge--summer {
+    color: #FF9800;
+    border-color: #FF9800;
+  }
+
+  .season-badge--fall {
+    color: #E65100;
+    border-color: #E65100;
+  }
+
+  .season-badge--winter {
+    color: #2196F3;
+    border-color: #2196F3;
+  }
+
+  .season-badge--all {
+    color: var(--color-secondary);
+    border-color: var(--color-secondary);
+  }
+
+  @media (max-width: 480px) {
+    .fragrance-characteristics__grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   /* Accordion */
