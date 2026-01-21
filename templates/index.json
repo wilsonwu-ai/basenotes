@@ -13,6 +13,58 @@
         "show_scroll_indicator": true
       }
     },
+    "delivery-explainer": {
+      "type": "delivery-explainer",
+      "settings": {
+        "eyebrow": "The Basenotes Experience",
+        "heading": "Full Luxury. Pocket Size.",
+        "description": "Experience the same premium fragrance found in $300 bottles—delivered in a sleek 8ml Basenotes atomizer that fits in your pocket.",
+        "full_bottle_title": "The Full Bottle",
+        "full_bottle_subtitle": "100ml · Retail Price",
+        "full_bottle_price": "$295",
+        "atomizer_title": "Your Monthly Vial",
+        "atomizer_subtitle": "8ml · 120 Sprays · 30 Days",
+        "atomizer_price": "$20/month",
+        "atomizer_badge": "What You Get",
+        "button_label": "Start Your Subscription",
+        "button_link": "#subscribe"
+      },
+      "blocks": {
+        "benefit-1": {
+          "type": "benefit",
+          "settings": {
+            "icon": "✈️",
+            "title": "Travel Ready",
+            "description": "TSA-approved size fits in any bag"
+          }
+        },
+        "benefit-2": {
+          "type": "benefit",
+          "settings": {
+            "icon": "💰",
+            "title": "93% Savings",
+            "description": "Sample luxury without the full price"
+          }
+        },
+        "benefit-3": {
+          "type": "benefit",
+          "settings": {
+            "icon": "🔄",
+            "title": "No Waste",
+            "description": "Finish it before your next scent arrives"
+          }
+        },
+        "benefit-4": {
+          "type": "benefit",
+          "settings": {
+            "icon": "📦",
+            "title": "Free Shipping",
+            "description": "Delivered to your door monthly"
+          }
+        }
+      },
+      "block_order": ["benefit-1", "benefit-2", "benefit-3", "benefit-4"]
+    },
     "featured-collection": {
       "type": "featured-collection",
       "settings": {
@@ -158,6 +210,7 @@
   },
   "order": [
     "hero",
+    "delivery-explainer",
     "featured-collection",
     "how-it-works",
     "subscription-plans",
