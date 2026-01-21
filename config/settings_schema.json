@@ -1,1 +1,502 @@
-[]
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Basenotes",
+    "theme_version": "1.0.0",
+    "theme_author": "Basenotes",
+    "theme_documentation_url": "https://basenotes.com/help",
+    "theme_support_url": "https://basenotes.com/support"
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Primary Colors"
+      },
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Primary color",
+        "default": "#1a1a1a",
+        "info": "Used for headings, buttons, and key UI elements"
+      },
+      {
+        "type": "color",
+        "id": "color_secondary",
+        "label": "Secondary color (Gold accent)",
+        "default": "#c9a86c",
+        "info": "Used for accents, highlights, and call-to-action elements"
+      },
+      {
+        "type": "header",
+        "content": "Background Colors"
+      },
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Background color",
+        "default": "#fafafa"
+      },
+      {
+        "type": "color",
+        "id": "color_background_secondary",
+        "label": "Secondary background",
+        "default": "#f5f5f5"
+      },
+      {
+        "type": "header",
+        "content": "Text Colors"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Body text color",
+        "default": "#1a1a1a"
+      },
+      {
+        "type": "color",
+        "id": "color_text_light",
+        "label": "Light text color",
+        "default": "#666666"
+      },
+      {
+        "type": "color",
+        "id": "color_text_muted",
+        "label": "Muted text color",
+        "default": "#999999"
+      },
+      {
+        "type": "header",
+        "content": "UI Colors"
+      },
+      {
+        "type": "color",
+        "id": "color_border",
+        "label": "Border color",
+        "default": "#e5e5e5"
+      },
+      {
+        "type": "color",
+        "id": "color_success",
+        "label": "Success color",
+        "default": "#4caf50"
+      },
+      {
+        "type": "color",
+        "id": "color_error",
+        "label": "Error color",
+        "default": "#f44336"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Headings"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_heading",
+        "label": "Heading font",
+        "default": "inter_n6"
+      },
+      {
+        "type": "header",
+        "content": "Body Text"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_body",
+        "label": "Body font",
+        "default": "inter_n4"
+      },
+      {
+        "type": "range",
+        "id": "font_size_base",
+        "label": "Base font size",
+        "min": 14,
+        "max": 18,
+        "step": 1,
+        "unit": "px",
+        "default": 16
+      }
+    ]
+  },
+  {
+    "name": "Social Media",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Social Media Links"
+      },
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram URL",
+        "info": "Full URL including https://"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook",
+        "label": "Facebook URL"
+      },
+      {
+        "type": "text",
+        "id": "social_twitter",
+        "label": "Twitter/X URL"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok",
+        "label": "TikTok URL"
+      },
+      {
+        "type": "text",
+        "id": "social_pinterest",
+        "label": "Pinterest URL"
+      },
+      {
+        "type": "text",
+        "id": "social_youtube",
+        "label": "YouTube URL"
+      }
+    ]
+  },
+  {
+    "name": "Email Marketing",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Email Marketing Platform"
+      },
+      {
+        "type": "paragraph",
+        "content": "Connect your email marketing platform to capture leads and run campaigns. Customer data collected through forms will be sent to your selected platform."
+      },
+      {
+        "type": "select",
+        "id": "email_platform",
+        "label": "Email platform",
+        "options": [
+          {
+            "value": "shopify",
+            "label": "Shopify Email (default)"
+          },
+          {
+            "value": "klaviyo",
+            "label": "Klaviyo"
+          },
+          {
+            "value": "mailchimp",
+            "label": "Mailchimp"
+          },
+          {
+            "value": "omnisend",
+            "label": "Omnisend"
+          }
+        ],
+        "default": "shopify",
+        "info": "Select your email marketing platform"
+      },
+      {
+        "type": "header",
+        "content": "Klaviyo Settings"
+      },
+      {
+        "type": "text",
+        "id": "klaviyo_public_api_key",
+        "label": "Klaviyo Public API Key",
+        "info": "Found in Klaviyo under Account > Settings > API Keys"
+      },
+      {
+        "type": "text",
+        "id": "klaviyo_list_id",
+        "label": "Klaviyo List ID",
+        "info": "The ID of the list to add subscribers to"
+      },
+      {
+        "type": "header",
+        "content": "Mailchimp Settings"
+      },
+      {
+        "type": "text",
+        "id": "mailchimp_form_action",
+        "label": "Mailchimp Form Action URL",
+        "info": "The action URL from your Mailchimp embedded form"
+      },
+      {
+        "type": "header",
+        "content": "Omnisend Settings"
+      },
+      {
+        "type": "text",
+        "id": "omnisend_brand_id",
+        "label": "Omnisend Brand ID",
+        "info": "Found in your Omnisend account settings"
+      }
+    ]
+  },
+  {
+    "name": "Email Popup",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Email Capture Popup"
+      },
+      {
+        "type": "checkbox",
+        "id": "popup_enabled",
+        "label": "Enable email popup",
+        "default": true,
+        "info": "Shows a popup to capture email addresses from guest visitors"
+      },
+      {
+        "type": "range",
+        "id": "popup_delay",
+        "label": "Popup delay (seconds)",
+        "min": 0,
+        "max": 60,
+        "step": 1,
+        "unit": "s",
+        "default": 5,
+        "info": "Time before popup appears"
+      },
+      {
+        "type": "checkbox",
+        "id": "popup_exit_intent",
+        "label": "Show on exit intent",
+        "default": true,
+        "info": "Show popup when user moves mouse to leave the page (desktop only)"
+      },
+      {
+        "type": "header",
+        "content": "Popup Content"
+      },
+      {
+        "type": "text",
+        "id": "popup_eyebrow",
+        "label": "Eyebrow text",
+        "default": "Exclusive Offer"
+      },
+      {
+        "type": "text",
+        "id": "popup_heading",
+        "label": "Heading",
+        "default": "Get 15% Off Your First Month"
+      },
+      {
+        "type": "textarea",
+        "id": "popup_description",
+        "label": "Description",
+        "default": "Join our inner circle for exclusive offers, new arrivals, and fragrance tips. Plus, enjoy 15% off your first subscription!"
+      },
+      {
+        "type": "text",
+        "id": "popup_button_text",
+        "label": "Button text",
+        "default": "Unlock My 15% Off"
+      },
+      {
+        "type": "text",
+        "id": "popup_skip_text",
+        "label": "Skip link text",
+        "default": "No thanks, I'll pay full price"
+      },
+      {
+        "type": "header",
+        "content": "Success Message"
+      },
+      {
+        "type": "text",
+        "id": "popup_success_heading",
+        "label": "Success heading",
+        "default": "Welcome to Basenotes!"
+      },
+      {
+        "type": "text",
+        "id": "popup_success_message",
+        "label": "Success message",
+        "default": "Check your email for your 15% off code."
+      },
+      {
+        "type": "header",
+        "content": "Tagging"
+      },
+      {
+        "type": "text",
+        "id": "popup_customer_tags",
+        "label": "Customer tags",
+        "default": "newsletter,popup,prospect",
+        "info": "Comma-separated tags to apply to captured leads"
+      }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Cart Behavior"
+      },
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Cart type",
+        "options": [
+          {
+            "value": "drawer",
+            "label": "Drawer"
+          },
+          {
+            "value": "page",
+            "label": "Page"
+          }
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_vendor",
+        "label": "Show vendor",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Free Shipping"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_free_shipping_enabled",
+        "label": "Enable free shipping threshold",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "cart_free_shipping_threshold",
+        "label": "Free shipping threshold",
+        "default": "50",
+        "info": "Dollar amount required for free shipping (numbers only)"
+      },
+      {
+        "type": "header",
+        "content": "Upsells"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_upsells_enabled",
+        "label": "Enable cart upsells",
+        "default": true
+      },
+      {
+        "type": "collection",
+        "id": "cart_upsells_collection",
+        "label": "Upsell collection",
+        "info": "Select a collection to show upsell products from"
+      },
+      {
+        "type": "range",
+        "id": "cart_upsells_count",
+        "label": "Number of upsell products",
+        "min": 2,
+        "max": 6,
+        "step": 1,
+        "default": 4
+      }
+    ]
+  },
+  {
+    "name": "Subscription",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Subscription Settings"
+      },
+      {
+        "type": "text",
+        "id": "subscription_price",
+        "label": "Monthly subscription price",
+        "default": "$20",
+        "info": "Displayed price for subscription plan"
+      },
+      {
+        "type": "text",
+        "id": "subscription_description",
+        "label": "Subscription tagline",
+        "default": "One new fragrance every month"
+      },
+      {
+        "type": "textarea",
+        "id": "subscription_benefits",
+        "label": "Subscription benefits",
+        "default": "Free shipping on all orders|Access to exclusive fragrances|Pause or cancel anytime|Earn rewards points",
+        "info": "Separate benefits with | character"
+      },
+      {
+        "type": "header",
+        "content": "Subscription Portal"
+      },
+      {
+        "type": "url",
+        "id": "subscription_manage_url",
+        "label": "Manage subscription URL",
+        "info": "Link to your subscription management portal (Recharge, Bold, etc.)"
+      }
+    ]
+  },
+  {
+    "name": "Favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "32x32px .png or .ico recommended"
+      }
+    ]
+  },
+  {
+    "name": "Analytics & Tracking",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Google Analytics"
+      },
+      {
+        "type": "text",
+        "id": "ga4_measurement_id",
+        "label": "GA4 Measurement ID",
+        "info": "Starts with G- (e.g., G-XXXXXXXXXX)"
+      },
+      {
+        "type": "header",
+        "content": "Facebook Pixel"
+      },
+      {
+        "type": "text",
+        "id": "facebook_pixel_id",
+        "label": "Facebook Pixel ID"
+      },
+      {
+        "type": "header",
+        "content": "TikTok Pixel"
+      },
+      {
+        "type": "text",
+        "id": "tiktok_pixel_id",
+        "label": "TikTok Pixel ID"
+      },
+      {
+        "type": "header",
+        "content": "Pinterest Tag"
+      },
+      {
+        "type": "text",
+        "id": "pinterest_tag_id",
+        "label": "Pinterest Tag ID"
+      }
+    ]
+  }
+]

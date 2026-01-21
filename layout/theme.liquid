@@ -69,5 +69,8 @@
   </div>
 
   {{ 'theme.js' | asset_url | script_tag }}
+
+  {% comment %} Email Capture Popup for Guest Visitors {% endcomment %}
+  {% render 'email-popup' %}
 </body>
 </html>
