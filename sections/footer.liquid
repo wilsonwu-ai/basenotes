@@ -53,7 +53,7 @@
               <a href="{{ routes.root_url }}" class="footer__logo-text">{{ shop.name }}</a>
             {%- endif -%}
           </div>
-          <p class="footer__tagline">{{ section.settings.tagline | default: 'Curating the world\'s most exclusive fragrances for the discerning collector.' }}</p>
+          <p class="footer__tagline">{{ section.settings.tagline | default: "Curating the world's most exclusive fragrances for the discerning collector." }}</p>
 
           {% comment %} Contact Info {% endcomment %}
           {%- if section.settings.show_contact -%}
