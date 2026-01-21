@@ -561,5 +561,31 @@
         "label": "Pinterest Tag ID"
       }
     ]
+  },
+  {
+    "name": "SEO",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Default Meta Description"
+      },
+      {
+        "type": "textarea",
+        "id": "default_meta_description",
+        "label": "Default meta description",
+        "default": "Discover luxury fragrances with Basenotes. Get a new designer fragrance delivered monthly for just $20. Free shipping, cancel anytime.",
+        "info": "Used when pages don't have their own description set. Keep under 160 characters for best results."
+      },
+      {
+        "type": "header",
+        "content": "Social Sharing Image"
+      },
+      {
+        "type": "image_picker",
+        "id": "share_image",
+        "label": "Default sharing image",
+        "info": "Used when sharing pages on social media. Recommended size: 1200x630px"
+      }
+    ]
   }
 ]

@@ -6,10 +6,17 @@
       </video>
     {%- elsif section.settings.image != blank -%}
       <img
-        src="{{ section.settings.image | image_url: width: 2000 }}"
+        src="{{ section.settings.image | image_url: width: 1920 }}"
+        srcset="{{ section.settings.image | image_url: width: 750 }} 750w,
+                {{ section.settings.image | image_url: width: 1080 }} 1080w,
+                {{ section.settings.image | image_url: width: 1920 }} 1920w"
+        sizes="100vw"
         alt="{{ section.settings.image.alt | default: section.settings.heading }}"
+        width="1920"
+        height="1080"
         loading="eager"
         fetchpriority="high"
+        decoding="async"
       >
     {%- else -%}
       <div class="hero__placeholder">

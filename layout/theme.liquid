@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0">
-  <meta name="theme-color" content="{{ settings.color_primary }}">
+  <meta name="theme-color" content="{{ settings.color_primary | default: '#1a1a1a' }}">
 
   <title>
     {{ page_title }}
@@ -13,26 +13,53 @@
     {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
   </title>
 
-  {% if page_description %}
-    <meta name="description" content="{{ page_description | escape }}">
-  {% endif %}
+  {%- liquid
+    assign default_description = settings.default_meta_description | default: 'Discover luxury fragrances with Basenotes. Get a new designer fragrance delivered monthly for just $20. Free shipping, cancel anytime.'
+    assign meta_description = page_description | default: shop.description | default: default_description
+  -%}
+  <meta name="description" content="{{ meta_description | truncate: 160, '' | escape }}">
 
   {% render 'meta-tags' %}
 
   <link rel="canonical" href="{{ canonical_url }}">
+
+  {% comment %} Preconnect to critical third-party origins {% endcomment %}
   <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  {% comment %} Preload critical assets {% endcomment %}
+  <link rel="preload" href="{{ 'base.css' | asset_url }}" as="style">
 
   {%- if settings.favicon != blank -%}
     <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
   {%- endif -%}
 
-  {% comment %} Google Fonts {% endcomment %}
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  {% comment %} Critical CSS inlined for faster first paint {% endcomment %}
+  <style>
+    :root{--color-primary:#1a1a1a;--color-secondary:#c9a86c;--color-background:#fff;--color-text:#1a1a1a;--color-text-light:#545454;--color-border:#e5e5e5;--font-body:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;--header-height:80px;--spacing-md:1rem;--spacing-lg:1.5rem}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}
+    body{font-family:var(--font-body);line-height:1.6;color:var(--color-text);background:var(--color-background)}
+    .container{max-width:1400px;margin:0 auto;padding:0 1.5rem}
+    .header{position:fixed;top:0;left:0;right:0;z-index:1000;background:#fff;height:var(--header-height)}
+    .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+    img,video{max-width:100%;height:auto}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:.875rem 1.75rem;font-weight:600;border-radius:6px;cursor:pointer;transition:all .2s}
+    .btn--primary{background:var(--color-primary);color:#fff;border:none}
+  </style>
 
-  {{ 'base.css' | asset_url | stylesheet_tag }}
-  {{ 'component-variables.css' | asset_url | stylesheet_tag }}
+  {% comment %} Load Google Fonts asynchronously to prevent render-blocking {% endcomment %}
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+
+  {% comment %} Load CSS with low priority for non-critical styles {% endcomment %}
+  <link rel="stylesheet" href="{{ 'base.css' | asset_url }}" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="{{ 'component-variables.css' | asset_url }}" media="print" onload="this.media='all'">
+  <noscript>
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    {{ 'component-variables.css' | asset_url | stylesheet_tag }}
+  </noscript>
 
   {{ content_for_header }}
 
@@ -68,7 +95,8 @@
     </div>
   </div>
 
-  {{ 'theme.js' | asset_url | script_tag }}
+  {% comment %} Defer JavaScript loading for better performance {% endcomment %}
+  <script src="{{ 'theme.js' | asset_url }}" defer></script>
 
   {% comment %} Email Capture Popup for Guest Visitors {% endcomment %}
   {% render 'email-popup' %}
