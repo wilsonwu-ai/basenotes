@@ -1,6 +1,7 @@
 {%- liquid
   assign has_media = false
-  if section.settings.video != blank or section.settings.image != blank
+  assign hero_bg_asset = 'hero-background.jpg' | asset_url
+  if section.settings.video != blank or section.settings.image != blank or section.settings.image_url != blank or hero_bg_asset != blank
     assign has_media = true
   endif
 -%}
@@ -20,6 +21,26 @@
                   {{ section.settings.image | image_url: width: 1920 }} 1920w"
           sizes="100vw"
           alt="{{ section.settings.image.alt | default: section.settings.heading }}"
+          width="1920"
+          height="1080"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        >
+      {%- elsif section.settings.image_url != blank -%}
+        <img
+          src="{{ section.settings.image_url }}"
+          alt="{{ section.settings.heading }}"
+          width="1920"
+          height="1080"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        >
+      {%- else -%}
+        <img
+          src="{{ 'hero-atomizer.png' | asset_url }}"
+          alt="{{ section.settings.heading }}"
           width="1920"
           height="1080"
           loading="eager"
@@ -73,14 +94,14 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background: #1A1A2E;
+    background: #2D4641;
   }
 
   /* Compact minimal hero without background media */
   .hero--minimal {
     min-height: auto;
-    padding: calc(var(--header-height) + 4rem) var(--spacing-xl) 4rem;
-    background: linear-gradient(135deg, #1A1A2E 0%, #0d0d1a 100%);
+    padding: calc(var(--header-height) + 1.5rem) var(--spacing-xl) 3rem;
+    background: linear-gradient(135deg, #2D4641 0%, #1a2927 100%);
   }
 
   .hero__background {
@@ -101,9 +122,9 @@
     inset: 0;
     background: linear-gradient(
       to bottom,
-      rgba(26, 26, 46, 0.4) 0%,
-      rgba(26, 26, 46, 0.6) 50%,
-      rgba(26, 26, 46, 0.8) 100%
+      rgba(45, 70, 65, 0.4) 0%,
+      rgba(45, 70, 65, 0.6) 50%,
+      rgba(45, 70, 65, 0.8) 100%
     );
   }
 
@@ -117,7 +138,7 @@
   }
 
   .hero--minimal .hero__content {
-    padding: var(--spacing-2xl) var(--spacing-xl);
+    padding: var(--spacing-lg) var(--spacing-xl);
   }
 
   .hero__eyebrow {
@@ -197,7 +218,7 @@
     }
 
     .hero--minimal {
-      padding: calc(var(--header-height) + 2rem) var(--spacing-md) 2.5rem;
+      padding: calc(var(--header-height) + 1rem) var(--spacing-md) 2rem;
     }
 
     .hero__cta {
@@ -225,7 +246,13 @@
     {
       "type": "image_picker",
       "id": "image",
-      "label": "Background image"
+      "label": "Background image (upload)"
+    },
+    {
+      "type": "text",
+      "id": "image_url",
+      "label": "Background image URL (external)",
+      "info": "Use an external image URL (e.g., from Unsplash). This is used if no image is uploaded above."
     },
     {
       "type": "url",
