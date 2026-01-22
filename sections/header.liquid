@@ -602,8 +602,8 @@
 
   .header__cart-count {
     position: absolute;
-    top: 4px;
-    right: 4px;
+    top: 2px;
+    right: 2px;
     min-width: 18px;
     height: 18px;
     display: flex;
@@ -614,11 +614,30 @@
     font-size: 11px;
     font-weight: 700;
     border-radius: var(--radius-full);
-    padding: 0 4px;
+    padding: 0 5px;
+    border: 2px solid var(--color-primary);
   }
 
   .header__cart-count.is-hidden {
     display: none;
+  }
+
+  /* Ensure cart icon doesn't get cut off on mobile */
+  @media (max-width: 768px) {
+    .header__actions {
+      gap: 0;
+      margin-right: -4px;
+    }
+
+    .header__action-btn {
+      width: 40px;
+      height: 40px;
+    }
+
+    .header__action-btn svg {
+      width: 20px;
+      height: 20px;
+    }
   }
 
   .header__account-indicator {
@@ -661,13 +680,9 @@
   .header__hamburger span {
     display: block;
     height: 2px;
-    background: var(--color-text);
+    background: white;
     border-radius: 1px;
     transition: transform 0.2s, opacity 0.2s;
-  }
-
-  .header.is-transparent .header__hamburger span {
-    background: white;
   }
 
   /* Search Overlay */

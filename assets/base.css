@@ -12,7 +12,7 @@
 
 :root {
   /* Colors - Per Brand Spec with WCAG AA compliance */
-  --color-primary: #1A1A2E; /* Deep Navy */
+  --color-primary: #2D4641; /* Dark Teal */
   --color-secondary: #C9A962; /* Warm Gold */
   --color-accent: #B8860B; /* Rich Amber for CTAs */
   --color-background: #FAF8F5; /* Warm Cream */
@@ -52,7 +52,7 @@
   /* Layout */
   --container-max-width: 1400px;
   --container-padding: 1.5rem;
-  --header-height: 80px;
+  --header-height: 110px;
 
   /* Transitions */
   --transition-fast: 150ms ease;
@@ -76,6 +76,7 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -87,6 +88,9 @@ body {
   background-color: var(--color-background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
 }
 
 /* Typography */

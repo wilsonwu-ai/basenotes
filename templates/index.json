@@ -78,9 +78,10 @@
       "type": "featured-collection",
       "settings": {
         "eyebrow": "Presence Without Noise",
-        "heading": "10 Exclusive Fragrances",
+        "heading": "Featured Fragrances",
         "description": "Each 5ml atomizer holds approximately 30 sprays—a full month of quiet confidence. Sample the extraordinary before committing.",
-        "products_to_show": 10,
+        "collection": "all",
+        "products_to_show": 4,
         "show_view_all": true
       }
     },
@@ -182,7 +183,7 @@
         "testimonial-1": {
           "type": "testimonial",
           "settings": {
-            "quote": "Finally, a way to explore high-end fragrances without committing to $300 bottles. The atomizers are sleek and perfect for travel.",
+            "quote": "Started with Creed Aventus and I'm hooked. Finally got to try Baccarat Rouge 540 without dropping $300. The 5ml atomizer lasts me the whole month.",
             "author": "David R.",
             "location": "New York, NY"
           }
@@ -190,7 +191,7 @@
         "testimonial-2": {
           "type": "testimonial",
           "settings": {
-            "quote": "The quality is unmistakable. These aren't diluted samples—they're the real thing in a perfectly portioned format.",
+            "quote": "Parfums de Marly Layton is now my signature scent—never would have discovered it without Basenotes. The Pegasus and Althair are next on my list.",
             "author": "James L.",
             "location": "Los Angeles, CA"
           }
@@ -198,7 +199,7 @@
         "testimonial-3": {
           "type": "testimonial",
           "settings": {
-            "quote": "I've built a collection of scents for different occasions without cluttering my shelf with bottles I'll never finish.",
+            "quote": "Tom Ford Ombre Leather for date nights, Green Irish Tweed for the office, Perseus for weekends. Built my entire rotation for less than one full bottle.",
             "author": "Marcus T.",
             "location": "Chicago, IL"
           }

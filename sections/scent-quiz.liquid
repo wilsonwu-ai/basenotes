@@ -966,8 +966,12 @@ document.addEventListener('DOMContentLoaded', function() {
       if (questionNum < totalQuestions) {
         currentQuestion++;
         showQuestion(currentQuestion);
+        // Scroll to top of quiz container for next question
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         showResults();
+        // Scroll to top for results
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }, 400);
   }
