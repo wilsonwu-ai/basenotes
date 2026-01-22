@@ -1,0 +1,392 @@
+<section class="get-started">
+  <div class="container">
+
+    {% comment %} Header {% endcomment %}
+    <div class="get-started__header">
+      <span class="get-started__eyebrow">{{ section.settings.eyebrow | default: 'Your Journey Begins' }}</span>
+      <h1 class="get-started__title">{{ section.settings.heading | default: 'How Would You Like to Start?' }}</h1>
+      <p class="get-started__description">{{ section.settings.description | default: 'Choose your path to discovering your perfect fragrance.' }}</p>
+    </div>
+
+    {% comment %} Dual Path Cards {% endcomment %}
+    <div class="get-started__paths">
+
+      {% comment %} Path A: Discovery / Quiz {% endcomment %}
+      <a href="{{ section.settings.discovery_link | default: '/pages/find-your-scent' }}" class="path-card path-card--discovery">
+        <div class="path-card__icon">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="32" cy="32" r="28"/>
+            <path d="M32 18v14l8 8"/>
+            <circle cx="32" cy="32" r="4" fill="currentColor"/>
+            <path d="M32 8v4M56 32h-4M32 56v-4M8 32h4"/>
+            <path d="M47.8 16.2l-2.8 2.8M47.8 47.8l-2.8-2.8M16.2 47.8l2.8-2.8M16.2 16.2l2.8 2.8"/>
+          </svg>
+        </div>
+        <div class="path-card__content">
+          <h2 class="path-card__title">{{ section.settings.discovery_title | default: 'Help Me Discover' }}</h2>
+          <p class="path-card__description">{{ section.settings.discovery_description | default: "Not sure where to start? Take our quick quiz and we'll recommend the perfect fragrance based on your preferences." }}</p>
+          <ul class="path-card__features">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              2-minute fragrance quiz
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Personalized recommendations
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Discover your scent profile
+            </li>
+          </ul>
+          <span class="path-card__cta">
+            Take the Quiz
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </div>
+        <div class="path-card__badge">Recommended</div>
+      </a>
+
+      {% comment %} Path B: Direct Selection / Catalog {% endcomment %}
+      <a href="{{ section.settings.catalog_link | default: '/collections/fragrances' }}" class="path-card path-card--catalog">
+        <div class="path-card__icon">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="8" y="8" width="20" height="20" rx="2"/>
+            <rect x="36" y="8" width="20" height="20" rx="2"/>
+            <rect x="8" y="36" width="20" height="20" rx="2"/>
+            <rect x="36" y="36" width="20" height="20" rx="2"/>
+            <circle cx="18" cy="18" r="4" fill="currentColor"/>
+            <circle cx="46" cy="18" r="4" fill="currentColor"/>
+            <circle cx="18" cy="46" r="4" fill="currentColor"/>
+            <circle cx="46" cy="46" r="4" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="path-card__content">
+          <h2 class="path-card__title">{{ section.settings.catalog_title | default: 'I Know What I Want' }}</h2>
+          <p class="path-card__description">{{ section.settings.catalog_description | default: 'Already have a fragrance in mind? Browse our full collection of premium scents and choose your first delivery.' }}</p>
+          <ul class="path-card__features">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Browse 10+ exclusive scents
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Filter by notes & seasons
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Pick your first fragrance
+            </li>
+          </ul>
+          <span class="path-card__cta">
+            Browse Collection
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </div>
+      </a>
+
+    </div>
+
+    {% comment %} Bottom Note {% endcomment %}
+    <div class="get-started__note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 16v-4M12 8h.01"/>
+      </svg>
+      <p>{{ section.settings.note | default: "Both paths lead to the same destination: a premium 5ml atomizer delivered to your door for just $20/month. Cancel anytime." }}</p>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .get-started {
+    padding: calc(var(--header-height) + var(--spacing-3xl)) 0 var(--spacing-4xl);
+    min-height: 100vh;
+    background: linear-gradient(180deg, var(--color-background) 0%, #f5f3f0 100%);
+  }
+
+  .get-started__header {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto var(--spacing-3xl);
+  }
+
+  .get-started__eyebrow {
+    display: inline-block;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-secondary);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .get-started__title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-primary);
+  }
+
+  .get-started__description {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-light);
+    line-height: 1.6;
+  }
+
+  /* Path Cards */
+  .get-started__paths {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xl);
+    max-width: 1000px;
+    margin: 0 auto var(--spacing-3xl);
+  }
+
+  .path-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-2xl);
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--color-border);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+
+  .path-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--color-secondary);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  }
+
+  .path-card--discovery {
+    border-color: var(--color-secondary);
+  }
+
+  .path-card__badge {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    padding: 4px 12px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--color-secondary);
+    color: var(--color-primary);
+    border-radius: var(--radius-full);
+  }
+
+  .path-card__icon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: var(--spacing-xl);
+    color: var(--color-secondary);
+  }
+
+  .path-card__icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .path-card__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .path-card__title {
+    font-size: var(--font-size-2xl);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-primary);
+  }
+
+  .path-card__description {
+    font-size: var(--font-size-base);
+    color: var(--color-text-light);
+    line-height: 1.6;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .path-card__features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--spacing-xl);
+    flex: 1;
+  }
+
+  .path-card__features li {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .path-card__features svg {
+    width: 18px;
+    height: 18px;
+    color: var(--color-success);
+    flex-shrink: 0;
+  }
+
+  .path-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-secondary);
+    transition: gap 0.2s ease;
+  }
+
+  .path-card:hover .path-card__cta {
+    gap: var(--spacing-md);
+  }
+
+  .path-card__cta svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s ease;
+  }
+
+  .path-card:hover .path-card__cta svg {
+    transform: translateX(4px);
+  }
+
+  /* Bottom Note */
+  .get-started__note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+    background: white;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+  }
+
+  .get-started__note svg {
+    width: 24px;
+    height: 24px;
+    color: var(--color-secondary);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .get-started__note p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .get-started__paths {
+      grid-template-columns: 1fr;
+    }
+
+    .path-card {
+      padding: var(--spacing-xl);
+    }
+
+    .path-card__icon {
+      width: 60px;
+      height: 60px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Get Started",
+  "tag": "section",
+  "class": "get-started-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Your Journey Begins"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "How Would You Like to Start?"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Choose your path to discovering your perfect fragrance."
+    },
+    {
+      "type": "header",
+      "content": "Discovery Path"
+    },
+    {
+      "type": "text",
+      "id": "discovery_title",
+      "label": "Title",
+      "default": "Help Me Discover"
+    },
+    {
+      "type": "textarea",
+      "id": "discovery_description",
+      "label": "Description",
+      "default": "Not sure where to start? Take our quick quiz and we'll recommend the perfect fragrance based on your preferences."
+    },
+    {
+      "type": "url",
+      "id": "discovery_link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Catalog Path"
+    },
+    {
+      "type": "text",
+      "id": "catalog_title",
+      "label": "Title",
+      "default": "I Know What I Want"
+    },
+    {
+      "type": "textarea",
+      "id": "catalog_description",
+      "label": "Description",
+      "default": "Already have a fragrance in mind? Browse our full collection of premium scents and choose your first delivery."
+    },
+    {
+      "type": "url",
+      "id": "catalog_link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Bottom Note"
+    },
+    {
+      "type": "textarea",
+      "id": "note",
+      "label": "Note text",
+      "default": "Both paths lead to the same destination: a premium 5ml atomizer delivered to your door for just $20/month. Cancel anytime."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Get Started"
+    }
+  ]
+}
+{% endschema %}
