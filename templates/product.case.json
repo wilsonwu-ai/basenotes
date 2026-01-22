@@ -1,0 +1,12 @@
+{
+  "sections": {
+    "main-case": {
+      "type": "product-case",
+      "settings": {
+        "upsell_heading": "Complete the Experience",
+        "upsell_subheading": "Pair your case with one of our signature fragrances"
+      }
+    }
+  },
+  "order": ["main-case"]
+}

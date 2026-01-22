@@ -1,0 +1,926 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign featured_image = current_variant.featured_image | default: product.featured_image
+-%}
+
+<section class="case-product-page">
+  <div class="container">
+
+    {% comment %} Breadcrumb {% endcomment %}
+    <nav class="product-breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="{{ routes.root_url }}">Home</a></li>
+        <li><a href="{{ routes.collections_url }}/accessories">Accessories</a></li>
+        <li aria-current="page">{{ product.title }}</li>
+      </ol>
+    </nav>
+
+    <div class="case-layout">
+
+      {% comment %} Product Gallery - Left Side {% endcomment %}
+      <div class="case-gallery">
+        <div class="case-gallery__main">
+          {%- if featured_image != blank -%}
+            <img
+              src="{{ featured_image | image_url: width: 1000 }}"
+              srcset="{{ featured_image | image_url: width: 500 }} 500w, {{ featured_image | image_url: width: 750 }} 750w, {{ featured_image | image_url: width: 1000 }} 1000w"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              alt="{{ featured_image.alt | default: product.title }}"
+              id="mainCaseImage"
+              class="case-gallery__image"
+            >
+          {%- else -%}
+            <img
+              src="{{ 'hero-atomizer.png' | asset_url }}"
+              alt="{{ product.title }}"
+              class="case-gallery__image"
+            >
+          {%- endif -%}
+
+          <div class="case-gallery__badge">
+            <span>Essential Accessory</span>
+          </div>
+        </div>
+
+        {%- if product.images.size > 1 -%}
+          <div class="case-gallery__thumbs">
+            {%- for image in product.images -%}
+              <button
+                class="case-gallery__thumb {% if image == featured_image %}is-active{% endif %}"
+                data-image-url="{{ image | image_url: width: 1000 }}"
+                type="button"
+                aria-label="View image {{ forloop.index }}"
+              >
+                <img
+                  src="{{ image | image_url: width: 150 }}"
+                  alt="{{ image.alt | default: product.title }}"
+                  loading="lazy"
+                >
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {% comment %} Product Info - Right Side {% endcomment %}
+      <div class="case-info">
+
+        <header class="case-info__header">
+          <span class="case-info__label">Basenotes Accessory</span>
+          <h1 class="case-info__title">{{ product.title }}</h1>
+          <p class="case-info__tagline">{{ product.metafields.custom.tagline | default: 'The perfect companion for your monthly fragrance' }}</p>
+        </header>
+
+        {% comment %} Key Features {% endcomment %}
+        <div class="case-features">
+          <div class="case-feature">
+            <div class="case-feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="11" width="18" height="10" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <div class="case-feature__text">
+              <span class="case-feature__title">Protective Design</span>
+              <span class="case-feature__desc">Keeps your vial safe from scratches & drops</span>
+            </div>
+          </div>
+
+          <div class="case-feature">
+            <div class="case-feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                <line x1="7" y1="7" x2="7.01" y2="7"/>
+              </svg>
+            </div>
+            <div class="case-feature__text">
+              <span class="case-feature__title">Premium Materials</span>
+              <span class="case-feature__desc">Matte aluminum with gold accents</span>
+            </div>
+          </div>
+
+          <div class="case-feature">
+            <div class="case-feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <div class="case-feature__text">
+              <span class="case-feature__title">Travel Ready</span>
+              <span class="case-feature__desc">TSA-approved, pocket-sized convenience</span>
+            </div>
+          </div>
+
+          <div class="case-feature">
+            <div class="case-feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                <line x1="9" y1="9" x2="9.01" y2="9"/>
+                <line x1="15" y1="9" x2="15.01" y2="9"/>
+              </svg>
+            </div>
+            <div class="case-feature__text">
+              <span class="case-feature__title">Signature Style</span>
+              <span class="case-feature__desc">Branded "BN" design makes a statement</span>
+            </div>
+          </div>
+        </div>
+
+        {% comment %} Purchase Box {% endcomment %}
+        <div class="case-purchase">
+          <div class="case-purchase__price">
+            <span class="case-purchase__amount">{{ current_variant.price | money }}</span>
+            {%- if current_variant.compare_at_price > current_variant.price -%}
+              <span class="case-purchase__compare">{{ current_variant.compare_at_price | money }}</span>
+              <span class="case-purchase__save">Save {{ current_variant.compare_at_price | minus: current_variant.price | money }}</span>
+            {%- endif -%}
+          </div>
+
+          {%- form 'product', product, id: 'caseProductForm', class: 'case-purchase__form' -%}
+            <input type="hidden" name="id" value="{{ current_variant.id }}">
+
+            {%- if product.variants.size > 1 -%}
+              <div class="case-variants">
+                <label class="case-variants__label">Select Color</label>
+                <div class="case-variants__options">
+                  {%- for variant in product.variants -%}
+                    <button
+                      type="button"
+                      class="case-variant-btn {% if variant == current_variant %}is-active{% endif %}"
+                      data-variant-id="{{ variant.id }}"
+                      {% unless variant.available %}disabled{% endunless %}
+                    >
+                      {{ variant.title }}
+                      {% unless variant.available %}<span class="sold-out-text">Sold Out</span>{% endunless %}
+                    </button>
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- endif -%}
+
+            <button
+              type="submit"
+              class="case-purchase__btn"
+              {% unless current_variant.available %}disabled{% endunless %}
+            >
+              {%- if current_variant.available -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                  <path d="M3 6h18"/>
+                  <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+                Add to Cart
+              {%- else -%}
+                Sold Out
+              {%- endif -%}
+            </button>
+          {%- endform -%}
+
+          <p class="case-purchase__note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M5 12h14"/>
+              <path d="M12 5l7 7-7 7"/>
+            </svg>
+            Free shipping on orders over $50
+          </p>
+        </div>
+
+        {% comment %} How It Works {% endcomment %}
+        <div class="case-how-it-works">
+          <h3 class="case-how-it-works__title">How It Works</h3>
+          <div class="case-how-it-works__steps">
+            <div class="case-step">
+              <span class="case-step__num">1</span>
+              <span class="case-step__text">Slide your Basenotes vial into the case</span>
+            </div>
+            <div class="case-step">
+              <span class="case-step__num">2</span>
+              <span class="case-step__text">Twist to lock for leak-proof protection</span>
+            </div>
+            <div class="case-step">
+              <span class="case-step__num">3</span>
+              <span class="case-step__text">Spray directly through the case opening</span>
+            </div>
+          </div>
+        </div>
+
+        {% comment %} Description {% endcomment %}
+        {%- if product.description != blank -%}
+          <div class="case-description">
+            <h3>About This Case</h3>
+            {{ product.description }}
+          </div>
+        {%- endif -%}
+
+        {% comment %} Specs {% endcomment %}
+        <div class="case-specs">
+          <h3 class="case-specs__title">Specifications</h3>
+          <dl class="case-specs__list">
+            <div class="case-specs__item">
+              <dt>Material</dt>
+              <dd>{{ product.metafields.custom.material | default: 'Anodized Aluminum' }}</dd>
+            </div>
+            <div class="case-specs__item">
+              <dt>Dimensions</dt>
+              <dd>{{ product.metafields.custom.dimensions | default: '3.5" x 0.75" (9cm x 2cm)' }}</dd>
+            </div>
+            <div class="case-specs__item">
+              <dt>Weight</dt>
+              <dd>{{ product.metafields.custom.weight | default: '0.8 oz (23g)' }}</dd>
+            </div>
+            <div class="case-specs__item">
+              <dt>Compatibility</dt>
+              <dd>{{ product.metafields.custom.compatibility | default: 'All Basenotes 5ml vials' }}</dd>
+            </div>
+          </dl>
+        </div>
+
+      </div>
+    </div>
+
+    {% comment %} Upsell - Pair with Fragrances {% endcomment %}
+    <div class="case-upsell">
+      <div class="case-upsell__header">
+        <h2 class="case-upsell__title">Complete the Experience</h2>
+        <p class="case-upsell__subtitle">Pair your case with one of our signature fragrances</p>
+      </div>
+
+      <div class="case-upsell__products">
+        {%- assign fragrance_collection = collections['all'] -%}
+        {%- for fragrance in fragrance_collection.products limit: 4 -%}
+          {%- unless fragrance.id == product.id -%}
+            {% render 'product-card', product: fragrance, show_quick_add: true %}
+          {%- endunless -%}
+        {%- endfor -%}
+      </div>
+
+      <div class="case-upsell__cta">
+        <a href="{{ routes.collections_url }}/all" class="btn btn--outline">
+          Browse All Fragrances
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .case-product-page {
+    padding: calc(var(--header-height, 80px) + var(--spacing-xl)) 0 var(--spacing-4xl);
+    background: var(--color-background);
+  }
+
+  /* Breadcrumb */
+  .product-breadcrumb {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .product-breadcrumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: var(--font-size-sm);
+  }
+
+  .product-breadcrumb li {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  .product-breadcrumb li:not(:last-child)::after {
+    content: '/';
+    color: var(--color-text-muted);
+  }
+
+  .product-breadcrumb a {
+    color: var(--color-text-light);
+    text-decoration: none;
+  }
+
+  .product-breadcrumb a:hover {
+    color: var(--color-secondary);
+  }
+
+  .product-breadcrumb li[aria-current="page"] {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  /* Layout */
+  .case-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-3xl);
+    align-items: start;
+    margin-bottom: var(--spacing-4xl);
+  }
+
+  /* Gallery */
+  .case-gallery {
+    position: sticky;
+    top: calc(var(--header-height, 80px) + var(--spacing-xl));
+  }
+
+  .case-gallery__main {
+    position: relative;
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #2D4641 0%, #1a2927 100%);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .case-gallery__image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: var(--spacing-2xl);
+  }
+
+  .case-gallery__badge {
+    position: absolute;
+    top: var(--spacing-md);
+    left: var(--spacing-md);
+  }
+
+  .case-gallery__badge span {
+    display: inline-block;
+    padding: 8px 16px;
+    background: var(--color-secondary);
+    color: var(--color-primary);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-radius: var(--radius-full);
+  }
+
+  .case-gallery__thumbs {
+    display: flex;
+    gap: var(--spacing-sm);
+  }
+
+  .case-gallery__thumb {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    padding: 0;
+    border: 2px solid transparent;
+    background: var(--color-background-secondary);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .case-gallery__thumb.is-active,
+  .case-gallery__thumb:hover {
+    border-color: var(--color-secondary);
+  }
+
+  .case-gallery__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Info */
+  .case-info {
+    max-width: 560px;
+  }
+
+  .case-info__header {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .case-info__label {
+    display: inline-block;
+    padding: 6px 14px;
+    background: var(--color-primary);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: var(--radius-full);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .case-info__title {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 var(--spacing-sm);
+    color: var(--color-text);
+  }
+
+  .case-info__tagline {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-light);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Features */
+  .case-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .case-feature {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  .case-feature__icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-background-secondary);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .case-feature__icon svg {
+    width: 22px;
+    height: 22px;
+    color: var(--color-secondary);
+  }
+
+  .case-feature__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .case-feature__title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .case-feature__desc {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+
+  /* Purchase Box */
+  .case-purchase {
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .case-purchase__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .case-purchase__amount {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .case-purchase__compare {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-muted);
+    text-decoration: line-through;
+  }
+
+  .case-purchase__save {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-success);
+    background: rgba(76, 175, 80, 0.1);
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+  }
+
+  .case-variants {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .case-variants__label {
+    display: block;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .case-variants__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+
+  .case-variant-btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text);
+    background: white;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .case-variant-btn:hover {
+    border-color: var(--color-secondary);
+  }
+
+  .case-variant-btn.is-active {
+    border-color: var(--color-secondary);
+    background: rgba(201, 169, 98, 0.1);
+  }
+
+  .case-variant-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .case-variant-btn .sold-out-text {
+    display: block;
+    font-size: 10px;
+    color: var(--color-text-muted);
+  }
+
+  .case-purchase__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding: var(--spacing-lg);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: white;
+    background: var(--color-primary);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .case-purchase__btn:hover {
+    background: #1a1a1a;
+  }
+
+  .case-purchase__btn:disabled {
+    background: var(--color-text-muted);
+    cursor: not-allowed;
+  }
+
+  .case-purchase__btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .case-purchase__note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    margin: var(--spacing-md) 0 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+
+  .case-purchase__note svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* How It Works */
+  .case-how-it-works {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .case-how-it-works__title {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin: 0 0 var(--spacing-lg);
+    color: var(--color-text);
+  }
+
+  .case-how-it-works__steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .case-step {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+
+  .case-step__num {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-secondary);
+    color: var(--color-primary);
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .case-step__text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+  }
+
+  /* Description */
+  .case-description {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .case-description h3 {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin: 0 0 var(--spacing-md);
+  }
+
+  .case-description p {
+    font-size: var(--font-size-base);
+    line-height: 1.7;
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  /* Specs */
+  .case-specs {
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--spacing-xl);
+  }
+
+  .case-specs__title {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin: 0 0 var(--spacing-md);
+  }
+
+  .case-specs__list {
+    margin: 0;
+  }
+
+  .case-specs__item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .case-specs__item:last-child {
+    border-bottom: none;
+  }
+
+  .case-specs__item dt {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  .case-specs__item dd {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text);
+    margin: 0;
+  }
+
+  /* Upsell Section */
+  .case-upsell {
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--spacing-3xl);
+  }
+
+  .case-upsell__header {
+    text-align: center;
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .case-upsell__title {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    margin: 0 0 var(--spacing-sm);
+  }
+
+  .case-upsell__subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-light);
+    margin: 0;
+  }
+
+  .case-upsell__products {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .case-upsell__cta {
+    text-align: center;
+  }
+
+  /* Responsive */
+  @media (max-width: 992px) {
+    .case-layout {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-2xl);
+    }
+
+    .case-gallery {
+      position: static;
+    }
+
+    .case-info {
+      max-width: none;
+    }
+
+    .case-upsell__products {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .case-features {
+      grid-template-columns: 1fr;
+    }
+
+    .case-upsell__products {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .case-gallery__thumbs {
+      gap: var(--spacing-xs);
+    }
+
+    .case-gallery__thumb {
+      width: 60px;
+      height: 60px;
+    }
+
+    .case-upsell__products {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-md);
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Gallery thumbnails
+    const thumbnails = document.querySelectorAll('.case-gallery__thumb');
+    const mainImage = document.getElementById('mainCaseImage');
+
+    thumbnails.forEach(thumb => {
+      thumb.addEventListener('click', function() {
+        thumbnails.forEach(t => t.classList.remove('is-active'));
+        this.classList.add('is-active');
+        if (mainImage) {
+          mainImage.src = this.dataset.imageUrl;
+        }
+      });
+    });
+
+    // Variant selection
+    const variantButtons = document.querySelectorAll('.case-variant-btn');
+    const variantInput = document.querySelector('#caseProductForm input[name="id"]');
+
+    variantButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        if (this.disabled) return;
+
+        variantButtons.forEach(b => b.classList.remove('is-active'));
+        this.classList.add('is-active');
+
+        if (variantInput) {
+          variantInput.value = this.dataset.variantId;
+        }
+      });
+    });
+
+    // Add to cart
+    const caseForm = document.getElementById('caseProductForm');
+    const addBtn = caseForm?.querySelector('.case-purchase__btn');
+
+    if (caseForm && addBtn) {
+      caseForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(caseForm);
+        const variantId = formData.get('id');
+
+        addBtn.disabled = true;
+        const originalText = addBtn.textContent;
+        addBtn.textContent = 'Adding...';
+
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: variantId,
+            quantity: 1
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          addBtn.textContent = 'Added!';
+          addBtn.style.background = 'var(--color-success)';
+
+          // Update cart count
+          fetch('/cart.js')
+            .then(res => res.json())
+            .then(cart => {
+              const cartCount = document.querySelector('[data-cart-count]');
+              if (cartCount) {
+                cartCount.textContent = cart.item_count;
+                cartCount.classList.remove('is-hidden');
+              }
+
+              // Open cart drawer
+              const cartDrawer = document.querySelector('[data-cart-drawer]');
+              if (cartDrawer) {
+                cartDrawer.classList.add('is-open');
+                document.body.style.overflow = 'hidden';
+              }
+            });
+
+          setTimeout(() => {
+            addBtn.textContent = originalText;
+            addBtn.style.background = '';
+            addBtn.disabled = false;
+          }, 2000);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          addBtn.textContent = originalText;
+          addBtn.disabled = false;
+        });
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Product - Case",
+  "tag": "section",
+  "class": "case-product-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "upsell_heading",
+      "label": "Upsell section heading",
+      "default": "Complete the Experience"
+    },
+    {
+      "type": "text",
+      "id": "upsell_subheading",
+      "label": "Upsell section subheading",
+      "default": "Pair your case with one of our signature fragrances"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product - Case"
+    }
+  ]
+}
+{% endschema %}

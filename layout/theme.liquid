@@ -18,8 +18,26 @@
     assign meta_description = page_description | default: shop.description | default: default_description
   -%}
   <meta name="description" content="{{ meta_description | truncate: 160, '' | escape }}">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 
   {% render 'meta-tags' %}
+
+  {% comment %} Organization Schema for SEO {% endcomment %}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": {{ shop.name | json }},
+      "url": {{ shop.url | json }},
+      "logo": {% if settings.logo %}{{ settings.logo | image_url: width: 600 | prepend: 'https:' | json }}{% else %}""{% endif %},
+      "description": {{ meta_description | json }},
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "url": "{{ shop.url }}/pages/contact"
+      }
+    }
+  </script>
 
   <link rel="canonical" href="{{ canonical_url }}">
 
@@ -31,19 +49,27 @@
   {% comment %} Preload critical assets {% endcomment %}
   <link rel="preload" href="{{ 'base.css' | asset_url }}" as="style">
 
+  {% comment %} Preload LCP image for homepage {% endcomment %}
+  {%- if template.name == 'index' -%}
+    <link rel="preload" as="image" href="{{ 'hero-atomizer.png' | asset_url }}" fetchpriority="high">
+  {%- endif -%}
+
   {%- if settings.favicon != blank -%}
     <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
   {%- endif -%}
 
   {% comment %} Critical CSS inlined for faster first paint {% endcomment %}
   <style>
-    :root{--color-primary:#1A1A2E;--color-secondary:#C9A962;--color-accent:#B8860B;--color-background:#FAF8F5;--color-text:#2D2D2D;--color-text-light:#5A5A5A;--font-heading:'Cormorant Garamond',Georgia,serif;--font-body:'Lato',-apple-system,sans-serif;--header-height:80px;--spacing-md:1rem;--spacing-lg:1.5rem;--spacing-xl:2rem;--spacing-2xl:3rem;--radius-full:9999px}
+    :root{--color-primary:#2D4641;--color-secondary:#C9A962;--color-accent:#B8860B;--color-background:#FAF8F5;--color-text:#2D2D2D;--color-text-light:#5A5A5A;--font-heading:'Cormorant Garamond',Georgia,serif;--font-body:'Lato',-apple-system,sans-serif;--header-height:110px;--spacing-md:1rem;--spacing-lg:1.5rem;--spacing-xl:2rem;--spacing-2xl:3rem;--radius-full:9999px}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{font-size:16px;scroll-behavior:smooth}
     body{font-family:var(--font-body);line-height:1.6;color:var(--color-text);background:var(--color-background);-webkit-font-smoothing:antialiased}
     h1,h2,h3,h4,h5,h6{font-family:var(--font-heading);font-weight:600;line-height:1.2}
     .container{max-width:1400px;margin:0 auto;padding:0 1.5rem}
-    .header{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--color-background);height:var(--header-height)}
+    .header{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--color-primary);height:var(--header-height)}
+    .header__action-btn,.header__action-btn svg{color:white !important;stroke:white !important}
+    .header__nav-link{color:white}
+    .header__logo-text{color:white}
     .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
     img,video{max-width:100%;height:auto;display:block}
     .btn{display:inline-flex;align-items:center;justify-content:center;padding:.875rem 1.75rem;font-weight:600;border-radius:4px;cursor:pointer;transition:all .2s;text-decoration:none;text-transform:uppercase;letter-spacing:.08em;font-size:.9rem}
@@ -51,8 +77,8 @@
     .btn--gold{background:var(--color-accent);color:var(--color-primary);border:2px solid var(--color-accent)}
     .btn--outline-light{background:transparent;color:#fff;border:2px solid #fff}
     .btn--large{padding:1.25rem 2.5rem;font-size:1rem}
-    .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#1A1A2E}
-    .hero--minimal{min-height:auto;padding:calc(var(--header-height) + 4rem) 2rem 4rem;background:linear-gradient(135deg,#1A1A2E 0%,#0d0d1a 100%)}
+    .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#2D4641}
+    .hero--minimal{min-height:auto;padding:calc(var(--header-height) + 4rem) 2rem 4rem;background:linear-gradient(135deg,#2D4641 0%,#1a2927 100%)}
     .hero__content{position:relative;z-index:1;text-align:center;color:#fff;max-width:800px;padding:0 var(--spacing-xl)}
     .hero--minimal .hero__content{padding:var(--spacing-2xl) var(--spacing-xl)}
     .hero__eyebrow{display:inline-block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.25em;color:#C9A962;margin-bottom:var(--spacing-lg);padding:.5rem 1.5rem;border:1px solid #C9A962;border-radius:var(--radius-full)}
