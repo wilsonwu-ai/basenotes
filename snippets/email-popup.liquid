@@ -61,7 +61,7 @@
       {%- endform -%}
 
       <p class="email-popup__skip">
-        <a href="#" data-popup-close>{{ settings.popup_skip_text | default: "No thanks, I'll pay full price" }}</a>
+        <a href="#" data-popup-close>{{ settings.popup_skip_text | default: "Maybe later" }}</a>
       </p>
     </div>
 
@@ -182,7 +182,7 @@
   }
 
   .email-popup__title {
-    font-size: var(--font-size-2xl);
+    font-size: 1.75rem; /* ~28px, increased from 1.5rem */
     margin-bottom: var(--spacing-sm);
   }
 
