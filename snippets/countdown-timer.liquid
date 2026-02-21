@@ -1,0 +1,123 @@
+{% comment %}
+  Countdown Timer Component
+  Usage: {% render 'countdown-timer', duration: 300, id: 'hero-timer', style: 'inline' %}
+  Parameters:
+    - duration: seconds (default 300 = 5 minutes)
+    - id: unique identifier
+    - style: 'banner' | 'inline' | 'boxed'
+{% endcomment %}
+
+{%- assign timer_duration = duration | default: 300 -%}
+{%- assign timer_id = id | default: 'countdown' -%}
+{%- assign timer_style = style | default: 'inline' -%}
+
+<span class="countdown-timer countdown-timer--{{ timer_style }}" data-countdown="{{ timer_duration }}" id="timer-{{ timer_id }}">
+  <span class="countdown-timer__digits">
+    {%- if timer_style == 'boxed' -%}
+      <span class="countdown-timer__box">
+        <span data-countdown-min>05</span>
+        <span class="countdown-timer__unit">min</span>
+      </span>
+      <span class="countdown-timer__sep">:</span>
+      <span class="countdown-timer__box">
+        <span data-countdown-sec>00</span>
+        <span class="countdown-timer__unit">sec</span>
+      </span>
+    {%- else -%}
+      <span data-countdown-min>05</span><span class="countdown-timer__sep">:</span><span data-countdown-sec>00</span>
+    {%- endif -%}
+  </span>
+</span>
+
+<style>
+  .countdown-timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .countdown-timer__digits {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 700;
+  }
+
+  .countdown-timer__sep {
+    margin: 0 2px;
+  }
+
+  /* Inline style (for announcement bar) */
+  .countdown-timer--inline {
+    font-weight: 700;
+  }
+
+  /* Boxed style (for PDP or registration) */
+  .countdown-timer--boxed .countdown-timer__digits {
+    gap: 4px;
+  }
+
+  .countdown-timer--boxed .countdown-timer__box {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    min-width: 44px;
+    font-size: 1.1em;
+    line-height: 1;
+  }
+
+  .countdown-timer--boxed .countdown-timer__unit {
+    font-size: 0.55em;
+    font-weight: 400;
+    text-transform: lowercase;
+    margin-top: 2px;
+    opacity: 0.8;
+  }
+
+  .countdown-timer--boxed .countdown-timer__sep {
+    font-size: 1.2em;
+    font-weight: 700;
+    margin: 0 4px;
+  }
+</style>
+
+<script>
+  (function() {
+    // Initialize all countdown timers on the page
+    function initCountdowns() {
+      document.querySelectorAll('[data-countdown]').forEach(function(timer) {
+        if (timer.dataset.countdownInit) return;
+        timer.dataset.countdownInit = 'true';
+
+        var duration = parseInt(timer.dataset.countdown) || 300;
+        var minEl = timer.querySelector('[data-countdown-min]');
+        var secEl = timer.querySelector('[data-countdown-sec]');
+        var remaining = duration;
+
+        function updateDisplay() {
+          var mins = Math.floor(remaining / 60);
+          var secs = remaining % 60;
+          if (minEl) minEl.textContent = String(mins).padStart(2, '0');
+          if (secEl) secEl.textContent = String(secs).padStart(2, '0');
+        }
+
+        updateDisplay();
+
+        setInterval(function() {
+          remaining--;
+          if (remaining <= 0) remaining = duration;
+          updateDisplay();
+        }, 1000);
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCountdowns);
+    } else {
+      initCountdowns();
+    }
+  })();
+</script>

@@ -11,9 +11,17 @@
   <div class="container">
     <p class="announcement-bar__text">
       {%- if section.settings.announcement_link != blank -%}
-        <a href="{{ section.settings.announcement_link }}">{{ section.settings.announcement_text }}</a>
+        <a href="{{ section.settings.announcement_link }}">
+          {{ section.settings.announcement_text }}
+          {%- if settings.urgency_timer_enabled -%}
+            {% render 'countdown-timer', duration: settings.urgency_timer_duration, id: 'announcement', style: 'inline' %}
+          {%- endif -%}
+        </a>
       {%- else -%}
         {{ section.settings.announcement_text }}
+        {%- if settings.urgency_timer_enabled -%}
+          {% render 'countdown-timer', duration: settings.urgency_timer_duration, id: 'announcement', style: 'inline' %}
+        {%- endif -%}
       {%- endif -%}
     </p>
   </div>
