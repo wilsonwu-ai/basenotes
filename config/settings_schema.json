@@ -587,5 +587,69 @@
         "info": "Used when sharing pages on social media. Recommended size: 1200x630px"
       }
     ]
+  },
+  {
+    "name": "Checkout & Auth",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Auth Gate"
+      },
+      {
+        "type": "checkbox",
+        "id": "checkout_require_account",
+        "label": "Require account for checkout",
+        "default": true,
+        "info": "Redirect guests to registration before checkout"
+      },
+      {
+        "type": "header",
+        "content": "Urgency Timer"
+      },
+      {
+        "type": "checkbox",
+        "id": "urgency_timer_enabled",
+        "label": "Enable countdown timer",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "urgency_timer_duration",
+        "label": "Timer duration (seconds)",
+        "min": 60,
+        "max": 600,
+        "step": 30,
+        "default": 300,
+        "unit": "s"
+      },
+      {
+        "type": "text",
+        "id": "urgency_timer_text",
+        "label": "Timer promotional text",
+        "default": "Get 50% off your first month. Offer ends in"
+      },
+      {
+        "type": "header",
+        "content": "Cart Subscription Upsell"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_sub_upsell_enabled",
+        "label": "Show subscription upsell in cart",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "cart_sub_upsell_heading",
+        "label": "Upsell heading",
+        "default": "WOULD YOU LIKE TO ADD A MONTHLY FRAGRANCE SUBSCRIPTION?"
+      },
+      {
+        "type": "url",
+        "id": "cart_sub_upsell_link",
+        "label": "Subscription page link",
+        "info": "Where the 'YES, ADD IT!' button links to"
+      }
+    ]
   }
 ]

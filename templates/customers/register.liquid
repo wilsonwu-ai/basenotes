@@ -2,64 +2,32 @@
 
 <section class="auth-section">
   <div class="container">
+
+    {% comment %} Auth gate context message {% endcomment %}
+    <div class="auth-gate-message" id="authGateMessage" style="display: none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+        <path d="M3 6h18"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+      <span>Create an account to complete your purchase</span>
+    </div>
+
     <div class="auth-layout">
 
-      {% comment %} Left Side - Benefits {% endcomment %}
-      <div class="auth-benefits">
-        <div class="auth-benefits__content">
-          <span class="auth-benefits__eyebrow">Join Base Note</span>
-          <h2 class="auth-benefits__title">Discover Your Signature Scent</h2>
-          <p class="auth-benefits__description">Join thousands of fragrance enthusiasts who trust Base Note for their monthly scent journey.</p>
-
-          <ul class="auth-benefits__list">
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-              <span>Access to 10 exclusive luxury fragrances</span>
-            </li>
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-              <span>5ml atomizer delivered monthly ($20/mo)</span>
-            </li>
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-              <span>Swap, pause, or cancel anytime</span>
-            </li>
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-              <span>Free shipping on all orders</span>
-            </li>
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-              <span>Personalized fragrance recommendations</span>
-            </li>
-          </ul>
-
-          <div class="auth-benefits__testimonial">
-            <p>"Base Note has completely changed how I experience fragrance. The quality is unmatched."</p>
-            <cite>— Sarah M., Member since 2024</cite>
-          </div>
-        </div>
-      </div>
-
-      {% comment %} Right Side - Registration Form {% endcomment %}
+      {% comment %} Left Side - Registration Form (55%) {% endcomment %}
       <div class="auth-form-container">
         <div class="auth-form-wrapper">
-          <div class="text-center" style="margin-bottom: var(--spacing-2xl);">
-            <h1 class="auth-form__title">Create Your Account</h1>
-            <p class="auth-form__subtitle">Start your fragrance journey today</p>
+
+          <div class="auth-form__header">
+            <h1 class="auth-form__title">Create your account</h1>
+            <a href="{{ routes.account_login_url }}{% if request.params.redirect %}?redirect={{ request.params.redirect | url_encode }}{% endif %}" class="auth-form__login-link">
+              Log in
+            </a>
           </div>
 
           {%- form 'create_customer', class: 'auth-form' -%}
+
             {%- if form.errors -%}
               <div class="alert alert--error">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -74,69 +42,75 @@
               </div>
             {%- endif -%}
 
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="FirstName">First Name *</label>
-                <input
-                  type="text"
-                  name="customer[first_name]"
-                  id="FirstName"
-                  class="form-input"
-                  autocomplete="given-name"
-                  required
-                >
-              </div>
+            {% comment %} Redirect handling {% endcomment %}
+            {%- if request.params.redirect -%}
+              <input type="hidden" name="return_to" value="{{ request.params.redirect }}">
+            {%- endif -%}
 
-              <div class="form-group">
-                <label class="form-label" for="LastName">Last Name *</label>
-                <input
-                  type="text"
-                  name="customer[last_name]"
-                  id="LastName"
-                  class="form-input"
-                  autocomplete="family-name"
-                  required
-                >
+            {% comment %} Field 1: Scent Preference {% endcomment %}
+            <div class="form-group">
+              <label class="form-label">Which type of scents do you prefer?</label>
+              <div class="scent-preference-cards">
+                <label class="scent-card scent-card--selected" data-scent-card>
+                  <input type="radio" name="customer[note][scent_preference]" value="feminine" checked class="visually-hidden">
+                  <div class="scent-card__content">
+                    <svg class="scent-card__icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <ellipse cx="32" cy="20" rx="8" ry="9"/>
+                      <path d="M24 29c-4 2-8 6-8 14 0 6 4 12 16 12s16-6 16-12c0-8-4-12-8-14"/>
+                      <path d="M28 38c0 0 2 3 4 3s4-3 4-3"/>
+                    </svg>
+                    <span class="scent-card__label">Feminine</span>
+                    <span class="scent-card__check">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    </span>
+                  </div>
+                </label>
+                <label class="scent-card" data-scent-card>
+                  <input type="radio" name="customer[note][scent_preference]" value="masculine" class="visually-hidden">
+                  <div class="scent-card__content">
+                    <svg class="scent-card__icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <ellipse cx="32" cy="20" rx="9" ry="10"/>
+                      <path d="M23 29c-3 2-7 6-7 14 0 6 4 12 16 12s16-6 16-12c0-8-4-12-7-14"/>
+                      <path d="M26 36h12"/>
+                    </svg>
+                    <span class="scent-card__label">Masculine</span>
+                    <span class="scent-card__check">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    </span>
+                  </div>
+                </label>
               </div>
             </div>
 
+            {% comment %} Field 2: Email {% endcomment %}
             <div class="form-group">
-              <label class="form-label" for="Email">Email Address *</label>
               <input
                 type="email"
                 name="customer[email]"
-                id="Email"
+                id="RegisterEmail"
                 class="form-input"
                 autocomplete="email"
                 autocapitalize="off"
                 autocorrect="off"
-                placeholder="you@example.com"
+                placeholder="Email"
                 required
               >
             </div>
 
+            {% comment %} Field 3: Password (required by Shopify) {% endcomment %}
             <div class="form-group">
-              <label class="form-label" for="Phone">Phone Number</label>
-              <input
-                type="tel"
-                name="customer[phone]"
-                id="Phone"
-                class="form-input"
-                autocomplete="tel"
-                placeholder="(555) 123-4567"
-              >
-              <span class="form-hint">For order updates and exclusive SMS offers</span>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="Password">Password *</label>
               <div class="password-input-wrapper">
                 <input
                   type="password"
                   name="customer[password]"
-                  id="Password"
+                  id="RegisterPassword"
                   class="form-input"
                   autocomplete="new-password"
+                  placeholder="Password"
                   required
                   minlength="8"
                 >
@@ -154,102 +128,73 @@
               <span class="form-hint">Must be at least 8 characters</span>
             </div>
 
-            {% comment %} Birthday for marketing {% endcomment %}
+            {% comment %} Field 4: Newsletter Opt-in (pre-checked) {% endcomment %}
             <div class="form-group">
-              <label class="form-label" for="Birthday">Birthday (Optional)</label>
-              <input
-                type="date"
-                name="customer[note][birthday]"
-                id="Birthday"
-                class="form-input"
-              >
-              <span class="form-hint">We'll send you a special gift on your birthday!</span>
-            </div>
-
-            {% comment %} Fragrance Preference {% endcomment %}
-            <div class="form-group">
-              <label class="form-label">What scent profiles interest you?</label>
-              <div class="checkbox-grid">
-                <label class="checkbox-card">
-                  <input type="checkbox" name="customer[note][preferences][]" value="woody">
-                  <span class="checkbox-card__content">
-                    <span class="checkbox-card__icon">🌲</span>
-                    <span class="checkbox-card__label">Woody</span>
-                  </span>
-                </label>
-                <label class="checkbox-card">
-                  <input type="checkbox" name="customer[note][preferences][]" value="floral">
-                  <span class="checkbox-card__content">
-                    <span class="checkbox-card__icon">🌸</span>
-                    <span class="checkbox-card__label">Floral</span>
-                  </span>
-                </label>
-                <label class="checkbox-card">
-                  <input type="checkbox" name="customer[note][preferences][]" value="fresh">
-                  <span class="checkbox-card__content">
-                    <span class="checkbox-card__icon">🍃</span>
-                    <span class="checkbox-card__label">Fresh</span>
-                  </span>
-                </label>
-                <label class="checkbox-card">
-                  <input type="checkbox" name="customer[note][preferences][]" value="oriental">
-                  <span class="checkbox-card__content">
-                    <span class="checkbox-card__icon">✨</span>
-                    <span class="checkbox-card__label">Oriental</span>
-                  </span>
-                </label>
-              </div>
-            </div>
-
-            {% comment %} Marketing Preferences {% endcomment %}
-            <div class="form-group marketing-options">
               <label class="checkbox-label">
-                <input type="checkbox" name="customer[accepts_marketing]" checked>
-                <span>Email me about new arrivals, exclusive offers, and fragrance tips</span>
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" name="customer[note][sms_marketing]" value="true">
-                <span>Send me SMS alerts for order updates and special offers</span>
+                <input type="checkbox" name="customer[accepts_marketing]" checked id="NewsletterOptIn">
+                <span class="checkbox-custom"></span>
+                <span>Sign me up for updates from Base Note</span>
               </label>
             </div>
 
-            <button type="submit" class="btn btn--primary btn--full btn--large">
-              Create My Account
+            {% comment %} Field 5: Terms & Conditions (NOT pre-checked, REQUIRED) {% endcomment %}
+            <div class="form-group">
+              <label class="checkbox-label checkbox-label--terms">
+                <input type="checkbox" id="TermsAgreement" required>
+                <span class="checkbox-custom"></span>
+                <span>I agree to the Base Note <a href="/pages/terms" target="_blank">Terms and Conditions</a>, including the arbitration provision, and that I have read and understand the <a href="/pages/privacy" target="_blank">Privacy Policy</a>.</span>
+              </label>
+            </div>
+
+            {% comment %} Submit Button {% endcomment %}
+            <button type="submit" class="btn btn--primary btn--full btn--large" id="SignUpBtn" disabled>
+              SIGN UP
             </button>
 
-            <p class="auth-form__terms">
-              By creating an account, you agree to our
-              <a href="/pages/terms">Terms of Service</a>
-              and
-              <a href="/pages/privacy">Privacy Policy</a>.
-            </p>
           {%- endform -%}
+        </div>
+      </div>
 
-          <div class="auth-form__divider">
-            <span>or sign up with</span>
-          </div>
+      {% comment %} Right Side - Social Auth (45%) {% endcomment %}
+      <div class="auth-social-container">
+        <div class="auth-social-wrapper">
+          <h2 class="auth-social__heading">Or quickly sign up</h2>
 
-          {% comment %} Social Login Buttons - Requires third-party app for functionality {% endcomment %}
           <div class="social-login-buttons">
-            <button type="button" class="btn-social btn-social--google" id="googleSignUpBtn">
+            <button type="button" class="btn-social btn-social--google" data-social-auth="google">
               <svg viewBox="0 0 24 24" width="20" height="20">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              Continue with Google
+              Sign up with Google
+            </button>
+
+            <button type="button" class="btn-social btn-social--facebook" data-social-auth="facebook">
+              <svg viewBox="0 0 24 24" width="20" height="20">
+                <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+              Sign up with Facebook
+            </button>
+
+            <button type="button" class="btn-social btn-social--apple" data-social-auth="apple">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+              </svg>
+              Sign up with Apple
             </button>
           </div>
 
-          <p class="text-center" style="color: var(--color-text-light); margin-top: var(--spacing-xl);">
+          <p class="auth-social__login-text">
             Already have an account?
-            <a href="{{ routes.account_login_url }}" class="auth-link">
+            <a href="{{ routes.account_login_url }}{% if request.params.redirect %}?redirect={{ request.params.redirect | url_encode }}{% endif %}" class="auth-link">
               Sign in
             </a>
           </p>
         </div>
       </div>
+
     </div>
   </div>
 </section>
@@ -258,119 +203,201 @@
   .auth-section {
     min-height: 100vh;
     padding-top: var(--header-height);
+    background: var(--color-background);
   }
 
-  .auth-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    min-height: calc(100vh - var(--header-height));
-  }
-
-  /* Benefits Side */
-  .auth-benefits {
-    background: linear-gradient(135deg, var(--color-primary) 0%, #2a2a2a 100%);
-    color: white;
+  /* Auth gate message */
+  .auth-gate-message {
     display: flex;
     align-items: center;
-    padding: var(--spacing-4xl);
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: rgba(201, 169, 98, 0.1);
+    border: 1px solid var(--color-secondary);
+    border-radius: var(--radius-md);
+    margin: var(--spacing-xl) auto var(--spacing-md);
+    max-width: 500px;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text);
   }
 
-  .auth-benefits__content {
-    max-width: 480px;
-  }
-
-  .auth-benefits__eyebrow {
-    display: inline-block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: var(--color-secondary);
-    margin-bottom: var(--spacing-lg);
-  }
-
-  .auth-benefits__title {
-    font-size: var(--font-size-4xl);
-    font-weight: 700;
-    margin-bottom: var(--spacing-md);
-    line-height: 1.2;
-  }
-
-  .auth-benefits__description {
-    font-size: var(--font-size-lg);
-    opacity: 0.8;
-    margin-bottom: var(--spacing-2xl);
-  }
-
-  .auth-benefits__list {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 var(--spacing-3xl);
-  }
-
-  .auth-benefits__list li {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-sm) 0;
-    font-size: var(--font-size-base);
-  }
-
-  .auth-benefits__list svg {
+  .auth-gate-message svg {
     width: 20px;
     height: 20px;
     flex-shrink: 0;
     color: var(--color-secondary);
   }
 
-  .auth-benefits__testimonial {
-    padding: var(--spacing-xl);
-    background: rgba(255, 255, 255, 0.1);
-    border-left: 3px solid var(--color-secondary);
+  /* Layout */
+  .auth-layout {
+    display: grid;
+    grid-template-columns: 55fr 45fr;
+    min-height: calc(100vh - var(--header-height));
+    gap: 0;
   }
 
-  .auth-benefits__testimonial p {
-    font-style: italic;
-    margin-bottom: var(--spacing-sm);
-  }
-
-  .auth-benefits__testimonial cite {
-    font-size: var(--font-size-sm);
-    opacity: 0.7;
-  }
-
-  /* Form Side */
+  /* Form Side (Left) */
   .auth-form-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--spacing-3xl);
+    padding: var(--spacing-3xl) var(--spacing-4xl);
     background: var(--color-background);
   }
 
   .auth-form-wrapper {
     width: 100%;
-    max-width: 440px;
+    max-width: 460px;
+  }
+
+  .auth-form__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-2xl);
   }
 
   .auth-form__title {
     font-size: var(--font-size-3xl);
-    margin-bottom: var(--spacing-xs);
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
   }
 
-  .auth-form__subtitle {
+  .auth-form__login-link {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-secondary);
+    text-decoration: none;
+  }
+
+  .auth-form__login-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Scent Preference Cards */
+  .scent-preference-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .scent-card {
+    cursor: pointer;
+    display: block;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .scent-card__content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-xl) var(--spacing-lg);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    text-align: center;
+    background: white;
+  }
+
+  .scent-card__content:hover {
+    border-color: var(--color-secondary);
+  }
+
+  .scent-card--selected .scent-card__content {
+    border-color: var(--color-secondary);
+    background: rgba(201, 169, 98, 0.06);
+  }
+
+  .scent-card__icon {
+    width: 56px;
+    height: 56px;
+    margin-bottom: var(--spacing-sm);
     color: var(--color-text-light);
-    font-size: var(--font-size-base);
   }
 
+  .scent-card--selected .scent-card__icon {
+    color: var(--color-secondary);
+  }
+
+  .scent-card__label {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .scent-card__check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-success, #4caf50);
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s ease;
+  }
+
+  .scent-card--selected .scent-card__check {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .scent-card__check svg {
+    width: 14px;
+    height: 14px;
+    color: white;
+  }
+
+  /* Form Elements */
   .auth-form .form-group {
     margin-bottom: var(--spacing-lg);
   }
 
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-md);
+  .form-label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: var(--font-size-base);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: white;
+    color: var(--color-text);
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.1);
+  }
+
+  .form-input::placeholder {
+    color: var(--color-text-muted);
   }
 
   .form-hint {
@@ -405,108 +432,120 @@
     height: 20px;
   }
 
-  /* Checkbox Grid for Preferences */
-  .checkbox-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--spacing-sm);
-  }
-
-  .checkbox-card {
-    cursor: pointer;
-  }
-
-  .checkbox-card input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .checkbox-card__content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: var(--spacing-md);
-    border: 2px solid var(--color-border);
-    border-radius: var(--radius-md);
-    transition: all 0.2s;
-    text-align: center;
-  }
-
-  .checkbox-card input:checked + .checkbox-card__content {
-    border-color: var(--color-secondary);
-    background: rgba(201, 168, 108, 0.1);
-  }
-
-  .checkbox-card__icon {
-    font-size: 1.5rem;
-    margin-bottom: var(--spacing-xs);
-  }
-
-  .checkbox-card__label {
-    font-size: var(--font-size-xs);
-    font-weight: 500;
-  }
-
-  /* Marketing Options */
-  .marketing-options {
-    padding: var(--spacing-lg);
-    background: var(--color-background-secondary);
-    border-radius: var(--radius-md);
-  }
-
+  /* Checkboxes */
   .checkbox-label {
     display: flex;
     align-items: flex-start;
     gap: var(--spacing-sm);
     font-size: var(--font-size-sm);
-    color: var(--color-text-light);
+    color: var(--color-text);
     cursor: pointer;
-    margin-bottom: var(--spacing-sm);
+    line-height: 1.5;
   }
 
-  .checkbox-label:last-child {
-    margin-bottom: 0;
+  .checkbox-label input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
   }
 
-  .checkbox-label input {
-    margin-top: 3px;
+  .checkbox-custom {
+    width: 20px;
+    height: 20px;
     flex-shrink: 0;
+    border: 2px solid var(--color-border);
+    border-radius: 3px;
+    margin-top: 1px;
+    position: relative;
+    transition: all 0.2s;
+    background: white;
   }
 
-  .auth-form__terms {
+  .checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
+    background: var(--color-secondary);
+    border-color: var(--color-secondary);
+  }
+
+  .checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 6px;
+    height: 11px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .checkbox-label--terms {
     font-size: var(--font-size-xs);
-    color: var(--color-text-muted);
-    text-align: center;
-    margin-top: var(--spacing-lg);
+    color: var(--color-text-light);
+    line-height: 1.6;
   }
 
-  .auth-form__terms a {
+  .checkbox-label--terms a {
     color: var(--color-secondary);
+    font-weight: 500;
   }
 
-  .auth-form__divider {
+  .checkbox-label--terms a:hover {
+    text-decoration: underline;
+  }
+
+  /* Submit Button */
+  .btn--primary {
+    display: block;
+    width: 100%;
+    padding: 16px 32px;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: white;
+    background: var(--color-primary);
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn--primary:hover:not(:disabled) {
+    background: #1a1a1a;
+  }
+
+  .btn--primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Social Auth Side (Right) */
+  .auth-social-container {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
-    margin: var(--spacing-xl) 0;
-    color: var(--color-text-muted);
-    font-size: var(--font-size-sm);
+    justify-content: center;
+    padding: var(--spacing-3xl) var(--spacing-4xl);
+    background: var(--color-background-secondary, #f5f5f5);
+    border-left: 1px solid var(--color-border);
   }
 
-  .auth-form__divider::before,
-  .auth-form__divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--color-border);
+  .auth-social-wrapper {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .auth-social__heading {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    margin-bottom: var(--spacing-2xl);
+    color: var(--color-text);
   }
 
   /* Social Login Buttons */
   .social-login-buttons {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-md);
   }
 
   .btn-social {
@@ -515,21 +554,18 @@
     justify-content: center;
     gap: var(--spacing-sm);
     width: 100%;
-    padding: 0.875rem 1.5rem;
+    padding: 14px 24px;
     font-size: var(--font-size-base);
     font-weight: 500;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .btn-social--google {
     background: white;
     border: 1px solid var(--color-border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
     color: var(--color-text);
   }
 
-  .btn-social--google:hover {
+  .btn-social:hover {
     background: #f8f9fa;
     border-color: #dadce0;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -539,9 +575,21 @@
     flex-shrink: 0;
   }
 
+  .auth-social__login-text {
+    text-align: center;
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-2xl);
+  }
+
   .auth-link {
     color: var(--color-secondary);
     font-weight: 600;
+    text-decoration: none;
+  }
+
+  .auth-link:hover {
+    text-decoration: underline;
   }
 
   /* Alert Messages */
@@ -579,40 +627,78 @@
       grid-template-columns: 1fr;
     }
 
-    .auth-benefits {
-      display: none;
+    .auth-form-container {
+      padding: var(--spacing-2xl);
     }
 
-    .auth-form-container {
-      min-height: calc(100vh - var(--header-height));
+    .auth-social-container {
+      border-left: none;
+      border-top: 1px solid var(--color-border);
+      padding: var(--spacing-2xl);
     }
   }
 
   @media (max-width: 576px) {
-    .form-row {
+    .scent-preference-cards {
       grid-template-columns: 1fr;
     }
 
-    .checkbox-grid {
-      grid-template-columns: repeat(2, 1fr);
+    .auth-form-container,
+    .auth-social-container {
+      padding: var(--spacing-xl);
     }
 
-    .auth-form-container {
-      padding: var(--spacing-xl);
+    .auth-form__header {
+      flex-direction: column;
+      gap: var(--spacing-sm);
     }
   }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+
+    // Auth gate message (from checkout redirect)
+    if (sessionStorage.getItem('basenote_auth_gate_origin') === 'checkout') {
+      var msg = document.getElementById('authGateMessage');
+      if (msg) msg.style.display = 'flex';
+      sessionStorage.removeItem('basenote_auth_gate_origin');
+    }
+
+    // Scent preference card selection
+    document.querySelectorAll('[data-scent-card]').forEach(function(card) {
+      card.addEventListener('click', function() {
+        document.querySelectorAll('[data-scent-card]').forEach(function(c) {
+          c.classList.remove('scent-card--selected');
+        });
+        this.classList.add('scent-card--selected');
+      });
+    });
+
+    // Form validation — enable/disable submit
+    var emailInput = document.getElementById('RegisterEmail');
+    var termsCheckbox = document.getElementById('TermsAgreement');
+    var submitBtn = document.getElementById('SignUpBtn');
+
+    function validateForm() {
+      var emailValid = emailInput && emailInput.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+      var termsChecked = termsCheckbox && termsCheckbox.checked;
+      if (submitBtn) {
+        submitBtn.disabled = !(emailValid && termsChecked);
+      }
+    }
+
+    if (emailInput) emailInput.addEventListener('input', validateForm);
+    if (termsCheckbox) termsCheckbox.addEventListener('change', validateForm);
+    validateForm();
+
     // Password toggle
-    const toggleBtn = document.querySelector('[data-toggle-password]');
+    var toggleBtn = document.querySelector('[data-toggle-password]');
     if (toggleBtn) {
       toggleBtn.addEventListener('click', function() {
-        const input = this.parentElement.querySelector('input');
-        const showIcon = this.querySelector('.icon-show');
-        const hideIcon = this.querySelector('.icon-hide');
-
+        var input = this.parentElement.querySelector('input');
+        var showIcon = this.querySelector('.icon-show');
+        var hideIcon = this.querySelector('.icon-hide');
         if (input.type === 'password') {
           input.type = 'text';
           showIcon.style.display = 'none';
@@ -625,36 +711,17 @@
       });
     }
 
-    // Phone number formatting
-    const phoneInput = document.getElementById('Phone');
-    if (phoneInput) {
-      phoneInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length >= 10) {
-          value = `(${value.slice(0,3)}) ${value.slice(3,6)}-${value.slice(6,10)}`;
-        } else if (value.length >= 6) {
-          value = `(${value.slice(0,3)}) ${value.slice(3,6)}-${value.slice(6)}`;
-        } else if (value.length >= 3) {
-          value = `(${value.slice(0,3)}) ${value.slice(3)}`;
-        }
-        e.target.value = value;
-      });
-    }
-
-    // Google Sign-Up button handler
-    // Note: Actual Google OAuth requires a third-party app integration
-    const googleBtn = document.getElementById('googleSignUpBtn');
-    if (googleBtn) {
-      googleBtn.addEventListener('click', function() {
-        // Check if social login app has injected handlers
-        if (typeof window.socialLoginGoogle === 'function') {
-          window.socialLoginGoogle();
+    // Social auth button handlers (UI only — requires third-party app)
+    document.querySelectorAll('[data-social-auth]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var provider = this.dataset.socialAuth;
+        var handlerName = 'socialLogin' + provider.charAt(0).toUpperCase() + provider.slice(1);
+        if (typeof window[handlerName] === 'function') {
+          window[handlerName]();
         } else {
-          // Show info for store admin - this could be replaced by actual app integration
-          console.log('Google Sign-Up clicked. Install a social login app to enable this feature.');
-          // For users, attempt OAuth flow will be handled by the app when installed
+          console.log(provider + ' auth: Install a social login app to enable.');
         }
       });
-    }
+    });
   });
 </script>
