@@ -1,5 +1,5 @@
 /**
- * Basenotes Theme JavaScript
+ * Base Note Theme JavaScript
  * Premium Fragrance Subscription
  */
 

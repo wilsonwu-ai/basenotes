@@ -24,6 +24,17 @@
     "subscription_tagline": "Discover rare, high-end fragrances delivered monthly",
     "newsletter_heading": "Join the Inner Circle",
     "newsletter_description": "Be the first to discover new arrivals and exclusive offers.",
+    "popup_enabled": true,
+    "popup_delay": 5,
+    "popup_exit_intent": true,
+    "popup_eyebrow": "Exclusive Offer",
+    "popup_heading": "Get 15% Off Your First Month",
+    "popup_description": "Join the Base Note inner circle for exclusive offers, new fragrance drops, and expert scent advice. Plus, enjoy 15% off your first subscription!",
+    "popup_button_text": "Unlock My 15% Off",
+    "popup_skip_text": "No thanks, I'll pay full price",
+    "popup_success_heading": "Welcome to Base Note!",
+    "popup_success_message": "Check your email for your exclusive 15% off code.",
+    "popup_customer_tags": "newsletter,popup,prospect",
     "sections": {
       "header": {
         "type": "header",
