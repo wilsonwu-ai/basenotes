@@ -25,9 +25,9 @@
     "delivery-explainer": {
       "type": "delivery-explainer",
       "settings": {
-        "eyebrow": "The Basenotes Experience",
+        "eyebrow": "The Base Note Experience",
         "heading": "Full Luxury. Pocket Size.",
-        "description": "Experience the same premium fragrance found in $300 bottles—delivered in a sleek 5ml Basenotes atomizer that fits in your pocket.",
+        "description": "Experience the same premium fragrance found in $300 bottles—delivered in a sleek 5ml Base Note atomizer that fits in your pocket.",
         "full_bottle_title": "The Full Bottle",
         "full_bottle_subtitle": "100ml · Retail Price",
         "full_bottle_price": "$295",
@@ -191,7 +191,7 @@
         "testimonial-2": {
           "type": "testimonial",
           "settings": {
-            "quote": "Parfums de Marly Layton is now my signature scent—never would have discovered it without Basenotes. The Pegasus and Althair are next on my list.",
+            "quote": "Parfums de Marly Layton is now my signature scent—never would have discovered it without Base Note. The Pegasus and Althair are next on my list.",
             "author": "James L.",
             "location": "Los Angeles, CA"
           }

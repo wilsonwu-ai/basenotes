@@ -14,7 +14,7 @@
   </title>
 
   {%- liquid
-    assign default_description = settings.default_meta_description | default: 'Discover luxury fragrances with Basenotes. Get a new designer fragrance delivered monthly for just $20. Free shipping, cancel anytime.'
+    assign default_description = settings.default_meta_description | default: 'Discover luxury fragrances with Base Note. Get a new designer fragrance delivered monthly for just $20. Free shipping, cancel anytime.'
     assign meta_description = page_description | default: shop.description | default: default_description
   -%}
   <meta name="description" content="{{ meta_description | truncate: 160, '' | escape }}">
