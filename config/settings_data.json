@@ -35,6 +35,12 @@
     "popup_success_heading": "Welcome to Base Note!",
     "popup_success_message": "Check your email for your exclusive 15% off code.",
     "popup_customer_tags": "newsletter,popup,prospect",
+    "checkout_require_account": true,
+    "urgency_timer_enabled": true,
+    "urgency_timer_duration": 300,
+    "urgency_timer_text": "Get 50% off your first month. Offer ends in",
+    "cart_sub_upsell_enabled": true,
+    "cart_sub_upsell_heading": "WOULD YOU LIKE TO ADD A MONTHLY FRAGRANCE SUBSCRIPTION?",
     "sections": {
       "header": {
         "type": "header",
