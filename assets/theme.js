@@ -80,7 +80,7 @@
    * Cart drawer
    */
   function initCartDrawer() {
-    const cartToggle = document.querySelector('[data-cart-toggle]');
+    const cartToggle = document.querySelector('[data-cart-toggle]') || document.querySelector('[data-cart-open]');
     const cartDrawer = document.querySelector('[data-cart-drawer]');
     const cartClose = document.querySelector('[data-cart-close]');
     const overlay = document.getElementById('overlay');
@@ -88,14 +88,14 @@
     if (!cartToggle || !cartDrawer) return;
 
     function openCart() {
-      cartDrawer.classList.add('is-active');
-      overlay?.classList.add('is-active');
+      cartDrawer.classList.add('is-open');
+      cartDrawer.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
     }
 
     function closeCart() {
-      cartDrawer.classList.remove('is-active');
-      overlay?.classList.remove('is-active');
+      cartDrawer.classList.remove('is-open');
+      cartDrawer.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
     }
 
@@ -114,7 +114,7 @@
 
     // Close on escape
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && cartDrawer.classList.contains('is-active')) {
+      if (e.key === 'Escape' && cartDrawer.classList.contains('is-open')) {
         closeCart();
       }
     });
@@ -151,9 +151,13 @@
               this.textContent = 'Quick Add to Queue';
             }, 1500);
 
-            // Optionally open cart drawer
-            document.querySelector('[data-cart-drawer]')?.classList.add('is-active');
-            document.getElementById('overlay')?.classList.add('is-active');
+            // Open cart drawer
+            const drawer = document.querySelector('[data-cart-drawer]');
+            if (drawer) {
+              drawer.classList.add('is-open');
+              drawer.setAttribute('aria-hidden', 'false');
+              document.body.style.overflow = 'hidden';
+            }
           })
           .catch(err => {
             console.error('Add to cart error:', err);
@@ -165,10 +169,12 @@
   }
 
   /**
-   * Wishlist functionality
+   * Wishlist / Rotation Queue functionality
+   * Serves dual purpose: wishlist for browsing + rotation queue for subscription
    */
   function initWishlist() {
     const wishlistKey = 'basenotes_wishlist';
+    const queueKey = 'basenotes_queue';
 
     function getWishlist() {
       try {
@@ -182,15 +188,25 @@
       localStorage.setItem(wishlistKey, JSON.stringify(items));
     }
 
+    function getQueue() {
+      try {
+        return JSON.parse(localStorage.getItem(queueKey)) || [];
+      } catch {
+        return [];
+      }
+    }
+
     function toggleWishlist(productId) {
       const wishlist = getWishlist();
       const index = wishlist.indexOf(productId);
 
       if (index > -1) {
         wishlist.splice(index, 1);
+        saveWishlist(wishlist);
         return false;
       } else {
         wishlist.push(productId);
+        saveWishlist(wishlist);
         return true;
       }
     }
@@ -213,9 +229,16 @@
 
         const isAdded = toggleWishlist(productId);
         this.classList.toggle('is-active', isAdded);
-        saveWishlist(getWishlist());
       });
     });
+
+    // Update rotation queue count badge if exists
+    const queueCountEl = document.querySelector('[data-queue-count]');
+    if (queueCountEl) {
+      const queue = getQueue();
+      queueCountEl.textContent = queue.length;
+      queueCountEl.style.display = queue.length > 0 ? 'flex' : 'none';
+    }
   }
 
   /**
@@ -242,10 +265,11 @@
       return fetch('/cart.js')
         .then(res => res.json())
         .then(cart => {
-          const countEl = document.querySelector('.header__cart-count');
+          const countEl = document.querySelector('[data-cart-count]') || document.querySelector('.header__cart-count');
           if (countEl) {
             countEl.textContent = cart.item_count;
             countEl.style.display = cart.item_count > 0 ? 'flex' : 'none';
+            countEl.classList.toggle('is-hidden', cart.item_count === 0);
           }
         });
     });

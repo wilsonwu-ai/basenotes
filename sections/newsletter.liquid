@@ -6,13 +6,16 @@
 
       {%- form 'customer', class: 'newsletter__form', id: 'newsletter-form' -%}
         <input type="hidden" name="contact[tags]" value="newsletter">
+        <label for="newsletter-email" class="visually-hidden">Email address</label>
         <input
           type="email"
           name="contact[email]"
+          id="newsletter-email"
           class="newsletter__input"
           placeholder="{{ section.settings.placeholder }}"
           required
           autocomplete="email"
+          aria-label="Email address for newsletter"
         >
         <button type="submit" class="btn btn--gold">
           {{ section.settings.button_label }}

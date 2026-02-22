@@ -1,0 +1,174 @@
+{%- comment -%}
+  Base Note — Staff Order Notification Email
+  ──────────────────────────────────────────
+  Internal notification sent to team when a new order is placed.
+  Recipients: wilson@basenotescent.com, jeff@basenotescent.com, alex@basenotescent.com
+
+  USAGE: Copy the HTML below into a Klaviyo flow or Shopify Flow notification.
+  Trigger: Order Created
+  ──────────────────────────────────────────
+{%- endcomment -%}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Order — Base Note</title>
+</head>
+<body style="margin:0;padding:0;background:#f5f5f5;font-family:'Helvetica Neue',Arial,sans-serif;color:#1a1a1a;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:24px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:#1a1a1a;padding:24px 32px;text-align:center;">
+              <h1 style="margin:0;font-size:20px;font-weight:700;color:#c9a86c;letter-spacing:0.1em;text-transform:uppercase;">
+                BASE NOTE
+              </h1>
+              <p style="margin:4px 0 0;font-size:12px;color:#888;letter-spacing:0.05em;">INTERNAL — NEW ORDER NOTIFICATION</p>
+            </td>
+          </tr>
+
+          <!-- Alert Banner -->
+          <tr>
+            <td style="background:#c9a86c;padding:16px 32px;text-align:center;">
+              <p style="margin:0;font-size:16px;font-weight:700;color:#1a1a1a;letter-spacing:0.02em;">
+                New Order Received!
+              </p>
+            </td>
+          </tr>
+
+          <!-- Order Summary -->
+          <tr>
+            <td style="padding:32px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding-bottom:20px;">
+                    <p style="margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#888;">Order Number</p>
+                    <p style="margin:0;font-size:20px;font-weight:700;color:#1a1a1a;">{{ order_number }}</p>
+                  </td>
+                  <td style="padding-bottom:20px;text-align:right;">
+                    <p style="margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#888;">Order Date</p>
+                    <p style="margin:0;font-size:14px;color:#1a1a1a;">{{ order_date }}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Divider -->
+              <hr style="border:none;border-top:1px solid #e8e6e3;margin:0 0 20px;">
+
+              <!-- Customer Info -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+                <tr>
+                  <td width="50%" style="vertical-align:top;">
+                    <p style="margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#888;">Customer</p>
+                    <p style="margin:0;font-size:14px;font-weight:600;">{{ customer_name }}</p>
+                    <p style="margin:2px 0 0;font-size:13px;color:#666;">{{ customer_email }}</p>
+                  </td>
+                  <td width="50%" style="vertical-align:top;">
+                    <p style="margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#888;">Shipping Address</p>
+                    <p style="margin:0;font-size:13px;color:#666;line-height:1.5;">
+                      {{ shipping_address_line1 }}<br>
+                      {% if shipping_address_line2 %}{{ shipping_address_line2 }}<br>{% endif %}
+                      {{ shipping_city }}, {{ shipping_state }} {{ shipping_zip }}<br>
+                      {{ shipping_country }}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Divider -->
+              <hr style="border:none;border-top:1px solid #e8e6e3;margin:0 0 20px;">
+
+              <!-- Items -->
+              <p style="margin:0 0 12px;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#888;">Items Ordered</p>
+
+              <!-- Item Row (repeat for each item) -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+                <tr>
+                  <td style="padding:12px;background:#faf8f5;border-radius:6px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="60" style="vertical-align:top;">
+                          <img src="{{ item_image }}" alt="{{ item_title }}" width="60" height="80" style="border-radius:4px;object-fit:cover;background:#eee;">
+                        </td>
+                        <td style="padding-left:12px;vertical-align:top;">
+                          <p style="margin:0;font-size:15px;font-weight:600;">{{ item_title }}</p>
+                          <p style="margin:4px 0 0;font-size:12px;color:#666;">{{ item_variant }}</p>
+                          {% if subscription_plan %}
+                            <p style="margin:4px 0 0;font-size:11px;font-weight:600;color:#c9a86c;">SUBSCRIPTION — {{ subscription_plan }}</p>
+                          {% endif %}
+                        </td>
+                        <td style="text-align:right;vertical-align:top;">
+                          <p style="margin:0;font-size:15px;font-weight:600;">{{ item_price }}</p>
+                          <p style="margin:4px 0 0;font-size:12px;color:#666;">Qty: {{ item_quantity }}</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Divider -->
+              <hr style="border:none;border-top:1px solid #e8e6e3;margin:0 0 16px;">
+
+              <!-- Totals -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding:4px 0;font-size:13px;color:#666;">Subtotal</td>
+                  <td style="padding:4px 0;font-size:13px;color:#666;text-align:right;">{{ subtotal }}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 0;font-size:13px;color:#666;">Shipping</td>
+                  <td style="padding:4px 0;font-size:13px;color:#27ae60;text-align:right;font-weight:600;">{{ shipping_cost }}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 0;font-size:13px;color:#666;">Tax</td>
+                  <td style="padding:4px 0;font-size:13px;color:#666;text-align:right;">{{ tax_amount }}</td>
+                </tr>
+                {% if discount_amount %}
+                <tr>
+                  <td style="padding:4px 0;font-size:13px;color:#27ae60;">Discount ({{ discount_code }})</td>
+                  <td style="padding:4px 0;font-size:13px;color:#27ae60;text-align:right;">-{{ discount_amount }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                  <td style="padding:12px 0 4px;font-size:16px;font-weight:700;border-top:1px solid #e8e6e3;">Total</td>
+                  <td style="padding:12px 0 4px;font-size:16px;font-weight:700;border-top:1px solid #e8e6e3;text-align:right;">{{ order_total }}</td>
+                </tr>
+              </table>
+
+              <!-- Action Button -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;">
+                <tr>
+                  <td align="center">
+                    <a href="{{ admin_order_url }}" style="display:inline-block;padding:12px 32px;background:#1a1a1a;color:#ffffff;text-decoration:none;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;border-radius:4px;">
+                      View Order in Shopify Admin
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#faf8f5;padding:20px 32px;text-align:center;border-top:1px solid #e8e6e3;">
+              <p style="margin:0;font-size:11px;color:#999;">
+                This is an internal notification for Base Note team members only.
+              </p>
+              <p style="margin:4px 0 0;font-size:11px;color:#999;">
+                Recipients: wilson@basenotescent.com, jeff@basenotescent.com, alex@basenotescent.com
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

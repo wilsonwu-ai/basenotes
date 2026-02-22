@@ -666,6 +666,11 @@
   .collection__grid {
     display: grid;
     gap: var(--spacing-xl);
+    align-items: stretch;
+  }
+
+  .collection__grid > * {
+    height: 100%;
   }
 
   .collection__grid[data-columns="2"] {
