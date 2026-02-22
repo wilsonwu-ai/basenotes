@@ -1,0 +1,131 @@
+{% comment %}
+  Email Reference: Annual Subscription Reminder
+  PURPOSE: Klaviyo design reference — NOT rendered by the theme.
+  California Auto-Renewal Law (ARL) compliance.
+  Sent once per year to remind subscribers of their active subscription.
+{% endcomment %}
+
+<!-- ANNUAL REMINDER EMAIL (California ARL Compliance) -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Base Note Subscription — Annual Reminder</title>
+</head>
+<body style="margin:0;padding:0;background:#F5F3F0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+  <!-- Header -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#2D4641;">
+    <tr>
+      <td align="center" style="padding:24px;">
+        <span style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#fff;letter-spacing:0.05em;">BASE NOTE</span>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Body -->
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;">
+
+          <!-- Gold accent bar -->
+          <tr><td style="height:4px;background:#C9A962;"></td></tr>
+
+          <tr>
+            <td style="padding:40px 32px;">
+
+              <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:26px;color:#2D4641;margin:0 0 8px;text-align:center;">Your Subscription Reminder</h1>
+              <p style="font-size:15px;color:#666;line-height:1.6;margin:0 0 28px;text-align:center;">{{ first_name }}, this is your annual reminder about your active Base Note subscription. No action is required — this is just a heads-up.</p>
+
+              <!-- Subscription details -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF8F5;border-radius:12px;margin-bottom:28px;">
+                <tr>
+                  <td style="padding:24px;">
+                    <p style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:0.1em;font-weight:bold;margin:0 0 16px;border-bottom:1px solid #E8E6E3;padding-bottom:12px;">Active Subscription Details</p>
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="font-size:13px;color:#999;padding:8px 0;">Plan</td>
+                        <td style="font-size:14px;color:#2D4641;font-weight:bold;text-align:right;padding:8px 0;">{{ plan_name }}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size:13px;color:#999;padding:8px 0;">Price</td>
+                        <td style="font-size:14px;color:#2D4641;font-weight:bold;text-align:right;padding:8px 0;">{{ subscription_price }} / {{ billing_frequency }}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size:13px;color:#999;padding:8px 0;">Billing Method</td>
+                        <td style="font-size:14px;color:#2D4641;font-weight:bold;text-align:right;padding:8px 0;">Card ending in {{ card_last_four }}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size:13px;color:#999;padding:8px 0;">Next Charge Date</td>
+                        <td style="font-size:14px;color:#2D4641;font-weight:bold;text-align:right;padding:8px 0;">{{ next_charge_date }}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size:13px;color:#999;padding:8px 0;">Member Since</td>
+                        <td style="font-size:14px;color:#2D4641;font-weight:bold;text-align:right;padding:8px 0;">{{ member_since_date }}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Key points -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+                <tr>
+                  <td style="padding:12px 0;">
+                    <p style="font-size:14px;color:#666;line-height:1.6;margin:0 0 12px;">
+                      <strong style="color:#2D4641;">Your subscription will continue to auto-renew</strong> at {{ subscription_price }} per {{ billing_frequency }} until you cancel. You will be charged on your billing date automatically.
+                    </p>
+                    <p style="font-size:14px;color:#666;line-height:1.6;margin:0;">
+                      <strong style="color:#2D4641;">To cancel:</strong> You can cancel anytime from your <a href="{{ account_url }}#subscription" style="color:#C9A962;">account dashboard</a>, or by emailing <a href="mailto:hello@basenote.com" style="color:#C9A962;">hello@basenote.com</a>. Cancel before your next billing date to avoid being charged.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTAs -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+                <tr>
+                  <td width="50%" style="padding-right:6px;">
+                    <a href="{{ account_url }}#subscription" style="display:block;padding:14px;background:#2D4641;color:#fff;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:0.06em;text-decoration:none;text-align:center;border-radius:6px;">Manage Subscription</a>
+                  </td>
+                  <td width="50%" style="padding-left:6px;">
+                    <a href="{{ update_payment_url }}" style="display:block;padding:14px;background:#FAF8F5;color:#2D4641;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:0.06em;text-decoration:none;text-align:center;border-radius:6px;border:1px solid #E8E6E3;">Update Payment</a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Your year in fragrance -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:rgba(201,169,98,0.06);border:1px dashed #C9A962;border-radius:10px;margin-bottom:28px;">
+                <tr>
+                  <td style="padding:20px;text-align:center;">
+                    <p style="font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:bold;color:#2D4641;margin:0 0 4px;">Your Year in Fragrance</p>
+                    <p style="font-size:13px;color:#666;margin:0 0 12px;">You've discovered {{ fragrances_this_year }} luxury fragrances this year!</p>
+                    <a href="{{ account_url }}#history" style="color:#C9A962;font-size:13px;font-weight:bold;text-decoration:underline;">View Your Scent Journey</a>
+                  </td>
+                </tr>
+              </table>
+
+              <hr style="border:none;border-top:1px solid #E8E6E3;margin:0 0 20px;">
+
+              <p style="font-size:11px;color:#bbb;line-height:1.5;margin:0;text-align:center;">This email is sent in compliance with California Business and Professions Code Section 17600 et seq. (Auto-Renewal Law). You are receiving this because you have an active subscription with Base Note.</p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Footer -->
+        <table width="600" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding:24px;text-align:center;">
+              <p style="font-size:12px;color:#999;margin:0 0 8px;">Base Note — Luxury Fragrances, Delivered Monthly</p>
+              <p style="font-size:11px;color:#bbb;margin:0;"><a href="{{ unsubscribe_url }}" style="color:#bbb;">Unsubscribe</a> | <a href="{{ manage_preferences_url }}" style="color:#bbb;">Manage Preferences</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

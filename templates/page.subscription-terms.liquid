@@ -1,0 +1,199 @@
+{%- layout 'theme' -%}
+
+{%- comment -%}
+  Subscription Terms & Conditions
+  FTC ROSCA / California ARL compliance page.
+  URL: /pages/subscription-terms
+{%- endcomment -%}
+
+<section class="terms-page">
+  <div class="container terms-page__container">
+
+    <header class="terms-page__header">
+      <span class="terms-page__label">Legal</span>
+      <h1 class="terms-page__title">Subscription Terms & Conditions</h1>
+      <p class="terms-page__updated">Last updated: {{ 'now' | date: '%B %d, %Y' }}</p>
+    </header>
+
+    <div class="terms-page__content">
+
+      <div class="terms-section">
+        <h2>1. What the Subscription Includes</h2>
+        <p>Your Base Note subscription includes one (1) luxury fragrance sample delivered monthly in a 5ml atomizer (approximately 30 sprays). Each shipment includes free standard shipping within the United States.</p>
+        <p>Subscribers also receive access to our full fragrance collection, the ability to swap fragrances before each shipment, and subscriber-exclusive pricing on full-size bottles.</p>
+      </div>
+
+      <div class="terms-section">
+        <h2>2. Price & Billing</h2>
+        <p>Base Note offers the following subscription plans:</p>
+        <ul>
+          <li><strong>Monthly Plan:</strong> {{ settings.subscription_price | default: '$20.00' }} per month, billed monthly</li>
+          <li><strong>Quarterly Plan:</strong> {{ settings.subscription_quarterly_price | default: '$16.00' }} per month, billed every 3 months ({{ settings.subscription_quarterly_total | default: '$48.00' }} per quarter)</li>
+          <li><strong>Annual Plan:</strong> {{ settings.subscription_annual_price | default: '$14.00' }} per month, billed annually ({{ settings.subscription_annual_total | default: '$168.00' }} per year)</li>
+        </ul>
+        <p>All prices are in USD and include applicable sales tax where required by law. Your subscription renews automatically on the same calendar date each billing period ("anniversary billing"). If your billing date falls on the 29th, 30th, or 31st and the renewal month has fewer days, billing will occur on the last day of that month.</p>
+        <p>Payment is processed securely via Shopify Payments (powered by Stripe). Your card will be charged automatically on each renewal date unless you cancel before that date.</p>
+      </div>
+
+      <div class="terms-section">
+        <h2>3. How to Cancel</h2>
+        <p>You may cancel your subscription at any time through any of these methods:</p>
+        <ul>
+          <li><strong>Self-service:</strong> Log in to your <a href="/account#subscription">account dashboard</a> and select "Cancel Subscription"</li>
+          <li><strong>Email:</strong> Send a cancellation request to <a href="mailto:hello@basenote.com">hello@basenote.com</a></li>
+          <li><strong>Customer portal:</strong> Access the <a href="{{ settings.subscription_portal_url | default: '/account' }}">subscription management portal</a></li>
+        </ul>
+        <p>Cancellation is effective immediately. You will retain access to your subscription benefits until the end of your current billing period.</p>
+      </div>
+
+      <div class="terms-section">
+        <h2>4. Cancellation Timing</h2>
+        <p>To avoid being charged for the next billing period, you must cancel <strong>before</strong> your next billing date. Once a charge has been processed for the current period, that charge is non-refundable, but your subscription benefits will continue through the end of that period.</p>
+        <p>You can view your next billing date at any time in your <a href="/account#subscription">account dashboard</a>.</p>
+      </div>
+
+      <div class="terms-section">
+        <h2>5. Skipping & Pausing</h2>
+        <p>You may skip individual months or pause your subscription from your account dashboard. Skipping a month means you will not be charged or receive a shipment for that period. Paused subscriptions will not be billed until you resume.</p>
+      </div>
+
+      <div class="terms-section">
+        <h2>6. Refund Policy</h2>
+        <p>Once a billing period charge has been processed, it is <strong>non-refundable</strong>. If your shipment arrives damaged or is not as described, please contact us within 14 days of delivery at <a href="mailto:hello@basenote.com">hello@basenote.com</a> and we will ship a replacement at no charge.</p>
+        <p>Unopened, unused full-size bottle purchases may be returned within 30 days for a full refund. Subscription atomizers are not eligible for return due to the personal nature of fragrance.</p>
+      </div>
+
+      <div class="terms-section">
+        <h2>7. Failed Payments</h2>
+        <p>If a payment fails, we will attempt to process the charge up to three (3) additional times over a 7-day period. During this time, you will receive email notifications with instructions to update your payment method.</p>
+        <p>If payment cannot be collected after all retry attempts, your subscription will be automatically cancelled. You may reactivate at any time by starting a new subscription.</p>
+      </div>
+
+      <div class="terms-section">
+        <h2>8. Payment Security</h2>
+        <p>All payment processing is handled by Stripe, a PCI Level 1 certified payment processor — the highest level of security certification. Your credit card information is tokenized and encrypted; Base Note never stores or has access to your raw card data.</p>
+      </div>
+
+      <div class="terms-section">
+        <h2>9. Changes to Terms</h2>
+        <p>We may update these terms from time to time. If we make material changes to pricing or billing practices, we will notify you by email at least 30 days before the changes take effect. Continued use of the subscription after the effective date constitutes acceptance of the updated terms.</p>
+      </div>
+
+      <div class="terms-section">
+        <h2>10. California Auto-Renewal Law Notice</h2>
+        <p>In compliance with California Business and Professions Code Section 17600 et seq., the following disclosures are provided:</p>
+        <ul>
+          <li>Your subscription will automatically renew at the price and frequency described above unless you cancel.</li>
+          <li>You will receive an annual reminder email confirming your active subscription, including the current price, next billing date, and cancellation instructions.</li>
+          <li>You may cancel at any time using the methods listed in Section 3 above.</li>
+          <li>A confirmation of your enrollment will be sent to the email address on file at the time of purchase.</li>
+        </ul>
+      </div>
+
+      <div class="terms-section">
+        <h2>11. Contact Us</h2>
+        <p>If you have questions about your subscription or these terms, please contact us:</p>
+        <ul class="terms-contact">
+          <li><strong>Email:</strong> <a href="mailto:hello@basenote.com">hello@basenote.com</a></li>
+          <li><strong>Website:</strong> <a href="/">basenote.com</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="terms-page__back">
+      <a href="/pages/subscription">&larr; Back to Subscription</a>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .terms-page {
+    padding: calc(var(--header-height, 80px) + 40px) 0 80px;
+  }
+  .terms-page__container {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .terms-page__header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid #E8E6E3;
+  }
+  .terms-page__label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #C9A962;
+    margin-bottom: 8px;
+  }
+  .terms-page__title {
+    font-family: var(--font-heading, Georgia, 'Times New Roman', serif);
+    font-size: clamp(24px, 4vw, 36px);
+    font-weight: 700;
+    color: #2D4641;
+    margin: 0 0 8px;
+  }
+  .terms-page__updated {
+    font-size: 13px;
+    color: #999;
+    margin: 0;
+  }
+  .terms-page__content {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #444;
+  }
+  .terms-section {
+    margin-bottom: 36px;
+  }
+  .terms-section h2 {
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 20px;
+    font-weight: 700;
+    color: #2D4641;
+    margin: 0 0 12px;
+  }
+  .terms-section p {
+    margin: 0 0 12px;
+  }
+  .terms-section p:last-child {
+    margin-bottom: 0;
+  }
+  .terms-section ul {
+    margin: 8px 0 12px;
+    padding-left: 20px;
+  }
+  .terms-section li {
+    margin-bottom: 6px;
+  }
+  .terms-section a {
+    color: #C9A962;
+    text-decoration: underline;
+  }
+  .terms-contact {
+    list-style: none;
+    padding: 0;
+  }
+  .terms-contact li {
+    padding: 4px 0;
+  }
+  .terms-page__back {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid #E8E6E3;
+  }
+  .terms-page__back a {
+    font-size: 14px;
+    color: #C9A962;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .terms-page__back a:hover {
+    text-decoration: underline;
+  }
+</style>
