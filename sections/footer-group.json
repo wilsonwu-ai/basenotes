@@ -1,35 +1,64 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "type": "footer",
   "name": "Footer group",
   "sections": {
     "footer": {
       "type": "footer",
-      "settings": {
-        "tagline": "Curating the world's most exclusive fragrances for the discerning collector.",
-        "show_social": true
-      },
       "blocks": {
         "menu-1": {
           "type": "menu",
           "settings": {
-            "heading": "Shop"
+            "heading": "Shop",
+            "menu": ""
           }
         },
         "menu-2": {
           "type": "menu",
           "settings": {
-            "heading": "Support"
+            "heading": "Support",
+            "menu": ""
           }
         },
         "menu-3": {
           "type": "menu",
           "settings": {
-            "heading": "Company"
+            "heading": "Company",
+            "menu": ""
           }
         }
       },
-      "block_order": ["menu-1", "menu-2", "menu-3"]
+      "block_order": [
+        "menu-1",
+        "menu-2",
+        "menu-3"
+      ],
+      "settings": {
+        "newsletter_enabled": false,
+        "newsletter_heading": "Join the Inner Circle",
+        "newsletter_description": "Subscribe for exclusive offers, fragrance tips, and early access to new releases.",
+        "tagline": "Curating the world's most exclusive fragrances for the discerning collector.",
+        "show_contact": true,
+        "email": "hello@basenotes.com",
+        "phone": "",
+        "show_social": true,
+        "privacy_link": "",
+        "terms_link": "",
+        "refund_link": "",
+        "shipping_link": "",
+        "show_payment_icons": true
+      }
     }
   },
-  "order": ["footer"]
+  "order": [
+    "footer"
+  ]
 }
