@@ -12,9 +12,11 @@
     "hero": {
       "type": "hero",
       "settings": {
-        "eyebrow": "Refined. Not Loud.",
-        "heading": "Class, Distilled.",
-        "description": "Luxury fragrances in perfectly portioned 5ml atomizers. Discover a new signature scent every month—no commitment to full bottles.",
+        "image_url": "",
+        "video": "",
+        "eyebrow": "",
+        "heading": "Your Signature Starts Here",
+        "description": "<b>Luxury fragrances. Perfectly portioned. <br>\nA new signature scent every month—no commitment to full bottles</b>",
         "button_label": "Start Your Journey",
         "button_link": "#subscribe",
         "secondary_button_label": "Find Your Scent",
@@ -24,35 +26,21 @@
     },
     "delivery-explainer": {
       "type": "delivery-explainer",
-      "settings": {
-        "eyebrow": "The Base Note Experience",
-        "heading": "Full Luxury. Pocket Size.",
-        "description": "Experience the same premium fragrance found in $300 bottles—delivered in a sleek 5ml Base Note atomizer that fits in your pocket.",
-        "full_bottle_title": "The Full Bottle",
-        "full_bottle_subtitle": "100ml · Retail Price",
-        "full_bottle_price": "$295",
-        "atomizer_title": "Your Monthly Vial",
-        "atomizer_subtitle": "5ml · ~30 Sprays · 30 Days",
-        "atomizer_price": "$20/month",
-        "atomizer_badge": "What You Get",
-        "button_label": "Start Your Subscription",
-        "button_link": "#subscribe"
-      },
       "blocks": {
         "benefit-1": {
           "type": "benefit",
           "settings": {
             "icon": "✈️",
             "title": "Travel Ready",
-            "description": "TSA-approved size fits in any bag"
+            "description": "TSA-compliant. Fits anywhere"
           }
         },
         "benefit-2": {
           "type": "benefit",
           "settings": {
             "icon": "💰",
-            "title": "93% Savings",
-            "description": "Sample luxury without the full price"
+            "title": "Cost Effective",
+            "description": "Luxury without the full price"
           }
         },
         "benefit-3": {
@@ -60,7 +48,7 @@
           "settings": {
             "icon": "🔄",
             "title": "No Waste",
-            "description": "Finish it before your next scent arrives"
+            "description": "Designed to avoid clutter"
           }
         },
         "benefit-4": {
@@ -72,14 +60,35 @@
           }
         }
       },
-      "block_order": ["benefit-1", "benefit-2", "benefit-3", "benefit-4"]
+      "block_order": [
+        "benefit-1",
+        "benefit-2",
+        "benefit-3",
+        "benefit-4"
+      ],
+      "settings": {
+        "eyebrow": "The Base Note Experience",
+        "heading": "Full Luxury. Pocket Size.",
+        "description": "The same elite fragrance found in $500 bottles -- crafted into a sleek, precision atomizer",
+        "full_bottle_image": "shopify://shop_images/Screenshot_2026-02-11_at_9.24.19_PM.png",
+        "full_bottle_title": "The Full Bottle",
+        "full_bottle_subtitle": "100ml · Retail Price",
+        "full_bottle_price": "$500",
+        "atomizer_image": "shopify://shop_images/Screenshot_2026-02-14_at_11.45.14_AM.png",
+        "atomizer_title": "Your Monthly Vial",
+        "atomizer_subtitle": "5ml · ~45 Sprays · 30 Days",
+        "atomizer_price": "$20/month",
+        "atomizer_badge": "What You Get",
+        "button_label": "Start Your Subscription",
+        "button_link": "#subscribe"
+      }
     },
     "featured-collection": {
       "type": "featured-collection",
       "settings": {
         "eyebrow": "Presence Without Noise",
         "heading": "Featured Fragrances",
-        "description": "Each 5ml atomizer holds approximately 30 sprays—a full month of quiet confidence. Sample the extraordinary before committing.",
+        "description": "",
         "collection": "all",
         "products_to_show": 4,
         "show_view_all": true
@@ -87,53 +96,52 @@
     },
     "how-it-works": {
       "type": "how-it-works",
-      "settings": {
-        "eyebrow": "Elegance, Worn Lightly",
-        "heading": "How It Works",
-        "description": "No full-size commitment. No clutter. Just one perfectly curated scent each month.",
-        "button_label": "Get Started",
-        "button_link": "#subscribe"
-      },
       "blocks": {
         "step-1": {
           "type": "step",
           "settings": {
             "title": "Find Your Profile",
-            "description": "Take our 2-minute quiz to discover which scent families match your style."
+            "description": "Find your signature scent in 2 minutes"
           }
         },
         "step-2": {
           "type": "step",
           "settings": {
             "title": "Choose Your Plan",
-            "description": "Monthly, quarterly, or annual—pick what works for you. Cancel anytime."
+            "description": "Choose monthly, quarterly or annual plans"
           }
         },
         "step-3": {
           "type": "step",
           "settings": {
             "title": "Receive Your Atomizer",
-            "description": "A sleek 5ml vial arrives at your door—approximately 30 sprays of pure luxury."
+            "description": "45 sprays of luxury delivered"
           }
         },
         "step-4": {
           "type": "step",
           "settings": {
             "title": "Explore & Refine",
-            "description": "Rate, swap, and build your fragrance wardrobe one vial at a time."
+            "description": "Curate your elite fragrance collection - one vial at a time."
           }
         }
       },
-      "block_order": ["step-1", "step-2", "step-3", "step-4"]
+      "block_order": [
+        "step-1",
+        "step-2",
+        "step-3",
+        "step-4"
+      ],
+      "settings": {
+        "eyebrow": "",
+        "heading": "How It Works",
+        "description": "Luxury, simplified: one elite fragrance delivered monthly",
+        "button_label": "Get Started",
+        "button_link": "#subscribe"
+      }
     },
     "subscription-plans": {
       "type": "subscription-plans",
-      "settings": {
-        "eyebrow": "For Men of Standards",
-        "heading": "Choose Your Plan",
-        "description": "One 5ml atomizer per month. ~30 sprays of curated luxury. No full bottles, no waste, no regrets.",
-        "note": "Cancel anytime. Free shipping on all orders."
-      },
       "blocks": {
         "plan-1": {
           "type": "plan",
@@ -143,6 +151,8 @@
             "period": "month",
             "billing_note": "Billed monthly",
             "features": "5ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Cancel anytime",
+            "featured": false,
+            "badge": "",
             "button_label": "Subscribe Now",
             "button_link": "/collections/all"
           }
@@ -169,19 +179,27 @@
             "period": "year",
             "billing_note": "Billed annually — 2 months free",
             "features": "5ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Priority selection|2 months free|Exclusive member gifts|Early access to new scents",
+            "featured": false,
+            "badge": "",
             "button_label": "Subscribe Now",
             "button_link": "/collections/all"
           }
         }
       },
-      "block_order": ["plan-1", "plan-2", "plan-3"]
+      "block_order": [
+        "plan-1",
+        "plan-2",
+        "plan-3"
+      ],
+      "settings": {
+        "eyebrow": "For Men of Standards",
+        "heading": "Choose Your Plan",
+        "description": "One 5ml atomizer per month. ~30 sprays of curated luxury. No full bottles, no waste, no regrets.",
+        "note": "Cancel anytime. Free shipping on all orders."
+      }
     },
     "testimonials": {
       "type": "testimonials",
-      "settings": {
-        "eyebrow": "Command the Room. Say Nothing.",
-        "heading": "What Our Members Say"
-      },
       "blocks": {
         "testimonial-1": {
           "type": "testimonial",
@@ -208,7 +226,15 @@
           }
         }
       },
-      "block_order": ["testimonial-1", "testimonial-2", "testimonial-3"]
+      "block_order": [
+        "testimonial-1",
+        "testimonial-2",
+        "testimonial-3"
+      ],
+      "settings": {
+        "eyebrow": "Command the Room. Say Nothing.",
+        "heading": "What Our Members Say"
+      }
     },
     "newsletter": {
       "type": "newsletter",
