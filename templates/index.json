@@ -143,7 +143,8 @@
             "period": "month",
             "billing_note": "Billed monthly",
             "features": "5ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Cancel anytime",
-            "button_label": "Subscribe Now"
+            "button_label": "Subscribe Now",
+            "button_link": "/collections/all"
           }
         },
         "plan-2": {
@@ -156,7 +157,8 @@
             "features": "5ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Priority selection|Save 20%|Free travel case",
             "featured": true,
             "badge": "Best Value",
-            "button_label": "Subscribe Now"
+            "button_label": "Subscribe Now",
+            "button_link": "/collections/all"
           }
         },
         "plan-3": {
@@ -167,7 +169,8 @@
             "period": "year",
             "billing_note": "Billed annually — 2 months free",
             "features": "5ml premium fragrance|Free shipping|Access to all 10 scents|Swap anytime|Priority selection|2 months free|Exclusive member gifts|Early access to new scents",
-            "button_label": "Subscribe Now"
+            "button_label": "Subscribe Now",
+            "button_link": "/collections/all"
           }
         }
       },
