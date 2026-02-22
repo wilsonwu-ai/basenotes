@@ -1005,6 +1005,7 @@
 <script>
   (function() {
     var SECTION_ID = 'cart-drawer-section';
+    var refreshSeq = 0;
 
     function getDrawer() {
       return document.getElementById('cartDrawer');
@@ -1035,21 +1036,24 @@
     }
 
     // Use Section Rendering API to get fresh cart drawer HTML from the server
+    // refreshSeq prevents stale responses from overwriting newer ones on rapid clicks
     function refreshAndOpenCartDrawer() {
+      var seq = ++refreshSeq;
       var sectionEl = document.getElementById('shopify-section-' + SECTION_ID);
 
       fetch('/?sections=' + SECTION_ID)
         .then(function(res) { return res.json(); })
         .then(function(data) {
+          if (seq !== refreshSeq) return;
           var html = data[SECTION_ID];
           if (html && sectionEl) {
             sectionEl.innerHTML = html;
           }
-          // Update cart count in header
           return fetch('/cart.js');
         })
-        .then(function(res) { return res.json(); })
+        .then(function(res) { if (res) return res.json(); })
         .then(function(cart) {
+          if (!cart || seq !== refreshSeq) return;
           updateCartCount(cart.item_count);
           openDrawer();
         })
@@ -1060,19 +1064,22 @@
     }
 
     function refreshCartDrawer() {
+      var seq = ++refreshSeq;
       var sectionEl = document.getElementById('shopify-section-' + SECTION_ID);
 
       fetch('/?sections=' + SECTION_ID)
         .then(function(res) { return res.json(); })
         .then(function(data) {
+          if (seq !== refreshSeq) return;
           var html = data[SECTION_ID];
           if (html && sectionEl) {
             sectionEl.innerHTML = html;
           }
           return fetch('/cart.js');
         })
-        .then(function(res) { return res.json(); })
+        .then(function(res) { if (res) return res.json(); })
         .then(function(cart) {
+          if (!cart || seq !== refreshSeq) return;
           updateCartCount(cart.item_count);
         });
     }

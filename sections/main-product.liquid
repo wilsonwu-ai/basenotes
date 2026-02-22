@@ -1858,8 +1858,10 @@
         return response.json();
       })
       .then(function(data) {
-        addToCartBtn.classList.remove('is-loading');
-        addToCartBtn.classList.add('is-added');
+        if (addToCartBtn) {
+          addToCartBtn.classList.remove('is-loading');
+          addToCartBtn.classList.add('is-added');
+        }
         if (addToCartText) addToCartText.textContent = sellingPlan ? 'Added to Queue!' : 'Added to Cart!';
 
         // Refresh cart drawer with new content and open it
@@ -1868,18 +1870,18 @@
         }
 
         setTimeout(function() {
-          addToCartBtn.classList.remove('is-added');
+          if (addToCartBtn) addToCartBtn.classList.remove('is-added');
           if (addToCartText) addToCartText.textContent = originalText;
         }, 2000);
       })
       .catch(function(error) {
         console.error('Add to cart error:', error);
-        addToCartBtn.classList.remove('is-loading');
+        if (addToCartBtn) addToCartBtn.classList.remove('is-loading');
         if (addToCartText) addToCartText.textContent = 'Error — Try Again';
-        addToCartBtn.style.background = '#c0392b';
+        if (addToCartBtn) addToCartBtn.style.background = '#c0392b';
         setTimeout(function() {
           if (addToCartText) addToCartText.textContent = originalText;
-          addToCartBtn.style.background = '';
+          if (addToCartBtn) addToCartBtn.style.background = '';
         }, 3000);
       });
     }
