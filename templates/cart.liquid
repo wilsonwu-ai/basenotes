@@ -245,7 +245,7 @@
 
               <div class="cart-summary__row">
                 <span data-summary-plan-label>Monthly Plan</span>
-                <span data-summary-plan-price>{{ monthly_price }}</span>
+                <span data-summary-plan-price>{{ cart.total_price | money }}</span>
               </div>
 
               <div class="cart-summary__row cart-summary__row--light">
@@ -266,11 +266,11 @@
 
               <div class="cart-summary__row cart-summary__row--total">
                 <span>Due Today</span>
-                <span data-summary-total>{{ monthly_price }}</span>
+                <span data-summary-total>{{ cart.total_price | money }}</span>
               </div>
 
               <p class="cart-summary__renewal" data-summary-renewal>
-                Then {{ monthly_price }}/month. Cancel anytime.
+                Then {{ cart.total_price | money }}/month. Cancel anytime.
               </p>
 
               {%- comment -%} Promo Code {%- endcomment -%}
