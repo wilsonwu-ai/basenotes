@@ -1662,6 +1662,63 @@
       });
     });
 
+    // ─── Queue / Rotation System ───
+    const QUEUE_KEY = 'basenotes_queue';
+
+    function getRotationQueue() {
+      try { return JSON.parse(localStorage.getItem(QUEUE_KEY)) || []; }
+      catch(e) { return []; }
+    }
+
+    function saveRotationQueue(queue) {
+      localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
+    }
+
+    function addToRotationQueue(productData) {
+      var queue = getRotationQueue();
+      // Don't add duplicates
+      if (queue.some(function(item) { return item.productId === productData.productId; })) return false;
+      queue.push(productData);
+      saveRotationQueue(queue);
+      return true;
+    }
+
+    function showSwapModal(existingTitle, newTitle, onSwap, onAddToRotation) {
+      // Remove existing modal if any
+      var existing = document.getElementById('swapModal');
+      if (existing) existing.remove();
+
+      var modal = document.createElement('div');
+      modal.id = 'swapModal';
+      modal.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);';
+      modal.innerHTML = '<div style="background:#fff;border-radius:12px;padding:2rem;max-width:420px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.2);">' +
+        '<h3 style="margin:0 0 0.5rem;font-size:1.25rem;">You already have a fragrance selected</h3>' +
+        '<p style="color:#666;font-size:0.9rem;margin:0 0 1.5rem;">Your queue for this month already includes <strong>' + existingTitle + '</strong>. What would you like to do?</p>' +
+        '<div style="display:flex;flex-direction:column;gap:0.5rem;">' +
+          '<button id="swapBtn" style="padding:0.75rem;background:#1a1a1a;color:#fff;border:none;border-radius:6px;font-size:0.9rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.05em;">Swap to ' + newTitle + '</button>' +
+          '<button id="rotationBtn" style="padding:0.75rem;background:#c9a86c;color:#fff;border:none;border-radius:6px;font-size:0.9rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.05em;">Add ' + newTitle + ' to My Rotation</button>' +
+          '<button id="cancelSwapBtn" style="padding:0.75rem;background:none;color:#666;border:1px solid #ddd;border-radius:6px;font-size:0.9rem;cursor:pointer;">Cancel</button>' +
+        '</div>' +
+      '</div>';
+
+      document.body.appendChild(modal);
+
+      document.getElementById('swapBtn').addEventListener('click', function() {
+        modal.remove();
+        onSwap();
+      });
+      document.getElementById('rotationBtn').addEventListener('click', function() {
+        modal.remove();
+        onAddToRotation();
+      });
+      document.getElementById('cancelSwapBtn').addEventListener('click', function() {
+        modal.remove();
+      });
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) modal.remove();
+      });
+    }
+
     // ─── Add to Cart ───
     if (productForm && addToCartBtn) {
       productForm.addEventListener('submit', function(e) {
@@ -1670,10 +1727,73 @@
         const formData = new FormData(productForm);
         const variantId = formData.get('id');
         const sellingPlan = formData.get('selling_plan');
+        const isSubscription = !!sellingPlan;
+        const productTitle = {{ product.title | json }};
+        const productId = {{ product.id }};
+        const productUrl = {{ product.url | json }};
+        const productImage = {{ product.featured_image | image_url: width: 200 | json }};
 
         addToCartBtn.classList.add('is-loading');
         const originalText = addToCartText ? addToCartText.textContent : 'Add to Cart';
 
+        // For subscription items, enforce single-item cart
+        if (isSubscription) {
+          fetch('/cart.js')
+            .then(function(res) { return res.json(); })
+            .then(function(cart) {
+              var existingSub = null;
+              cart.items.forEach(function(item) {
+                if (item.selling_plan_allocation) {
+                  existingSub = item;
+                }
+              });
+
+              if (existingSub) {
+                // Already has subscription item — show swap modal
+                addToCartBtn.classList.remove('is-loading');
+                showSwapModal(
+                  existingSub.product_title,
+                  productTitle,
+                  function onSwap() {
+                    // Remove existing, then add new
+                    addToCartBtn.classList.add('is-loading');
+                    fetch('/cart/change.js', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ id: existingSub.key, quantity: 0 })
+                    }).then(function() {
+                      doAddToCart(variantId, sellingPlan, originalText);
+                    });
+                  },
+                  function onAddToRotation() {
+                    addToRotationQueue({
+                      productId: productId,
+                      title: productTitle,
+                      url: productUrl,
+                      image: productImage,
+                      variantId: parseInt(variantId),
+                      addedAt: new Date().toISOString()
+                    });
+                    if (addToCartText) addToCartText.textContent = 'Added to Rotation!';
+                    addToCartBtn.classList.remove('is-loading');
+                    addToCartBtn.classList.add('is-added');
+                    addToCartBtn.style.background = '#c9a86c';
+                    setTimeout(function() {
+                      addToCartBtn.classList.remove('is-added');
+                      if (addToCartText) addToCartText.textContent = originalText;
+                      addToCartBtn.style.background = '';
+                    }, 2500);
+                  }
+                );
+              } else {
+                // No existing subscription — add normally
+                doAddToCart(variantId, sellingPlan, originalText);
+              }
+            });
+          return;
+        }
+
+        // Non-subscription: add directly
         const cartPayload = { id: parseInt(variantId), quantity: 1 };
         if (sellingPlan) cartPayload.selling_plan = parseInt(sellingPlan);
 
@@ -1682,7 +1802,14 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(cartPayload)
         })
-        .then(function(response) { return response.json(); })
+        .then(function(response) {
+          if (!response.ok) {
+            return response.json().then(function(err) {
+              throw new Error(err.description || err.message || 'Could not add item to cart');
+            });
+          }
+          return response.json();
+        })
         .then(function(data) {
           addToCartBtn.classList.remove('is-loading');
           addToCartBtn.classList.add('is-added');
@@ -1690,14 +1817,16 @@
 
           // Update cart count & open drawer
           fetch('/cart.js').then(function(res) { return res.json(); }).then(function(cart) {
-            var cartCount = document.querySelector('[data-cart-count]');
-            if (cartCount) {
-              cartCount.textContent = cart.item_count;
-              cartCount.classList.remove('is-hidden');
-            }
+            var countEls = document.querySelectorAll('[data-cart-count], .header__cart-count');
+            countEls.forEach(function(el) {
+              el.textContent = cart.item_count;
+              el.style.display = cart.item_count > 0 ? 'flex' : 'none';
+              el.classList.toggle('is-hidden', cart.item_count === 0);
+            });
             var cartDrawer = document.querySelector('[data-cart-drawer]');
             if (cartDrawer) {
               cartDrawer.classList.add('is-open');
+              cartDrawer.setAttribute('aria-hidden', 'false');
               document.body.style.overflow = 'hidden';
             }
           });
@@ -1710,7 +1839,70 @@
         .catch(function(error) {
           console.error('Add to cart error:', error);
           addToCartBtn.classList.remove('is-loading');
+          addToCartBtn.classList.remove('is-added');
+          if (addToCartText) addToCartText.textContent = 'Error — Try Again';
+          addToCartBtn.style.background = '#c0392b';
+          setTimeout(function() {
+            if (addToCartText) addToCartText.textContent = originalText;
+            addToCartBtn.style.background = '';
+          }, 3000);
         });
+      });
+    }
+
+    // ─── doAddToCart helper (used by subscription swap flow) ───
+    function doAddToCart(variantId, sellingPlan, originalText) {
+      var payload = { id: parseInt(variantId), quantity: 1 };
+      if (sellingPlan) payload.selling_plan = parseInt(sellingPlan);
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(function(response) {
+        if (!response.ok) {
+          return response.json().then(function(err) {
+            throw new Error(err.description || err.message || 'Could not add item to cart');
+          });
+        }
+        return response.json();
+      })
+      .then(function(data) {
+        addToCartBtn.classList.remove('is-loading');
+        addToCartBtn.classList.add('is-added');
+        if (addToCartText) addToCartText.textContent = sellingPlan ? 'Added to Queue!' : 'Added to Cart!';
+
+        // Update cart count & open drawer
+        fetch('/cart.js').then(function(res) { return res.json(); }).then(function(cart) {
+          var countEls = document.querySelectorAll('[data-cart-count], .header__cart-count');
+          countEls.forEach(function(el) {
+            el.textContent = cart.item_count;
+            el.style.display = cart.item_count > 0 ? 'flex' : 'none';
+            el.classList.toggle('is-hidden', cart.item_count === 0);
+          });
+          var cartDrawer = document.querySelector('[data-cart-drawer]');
+          if (cartDrawer) {
+            cartDrawer.classList.add('is-open');
+            cartDrawer.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+          }
+        });
+
+        setTimeout(function() {
+          addToCartBtn.classList.remove('is-added');
+          if (addToCartText) addToCartText.textContent = originalText;
+        }, 2000);
+      })
+      .catch(function(error) {
+        console.error('Add to cart error:', error);
+        addToCartBtn.classList.remove('is-loading');
+        if (addToCartText) addToCartText.textContent = 'Error — Try Again';
+        addToCartBtn.style.background = '#c0392b';
+        setTimeout(function() {
+          if (addToCartText) addToCartText.textContent = originalText;
+          addToCartBtn.style.background = '';
+        }, 3000);
       });
     }
 

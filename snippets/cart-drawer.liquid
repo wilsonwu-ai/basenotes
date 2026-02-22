@@ -98,30 +98,41 @@
               </div>
 
               <div class="cart-drawer-item__bottom">
-                <div class="cart-drawer-item__quantity">
-                  <button
-                    type="button"
-                    class="cart-drawer-item__qty-btn"
-                    data-decrease-qty="{{ item.key }}"
-                    aria-label="Decrease quantity"
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <line x1="5" y1="12" x2="19" y2="12"/>
+                {%- if item.selling_plan_allocation -%}
+                  {%- comment -%} Subscription items: no quantity controls, show swap link {%- endcomment -%}
+                  <a href="/collections/all" class="cart-drawer-item__swap-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                      <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
                     </svg>
-                  </button>
-                  <span class="cart-drawer-item__qty-value" data-qty-display="{{ item.key }}">{{ item.quantity }}</span>
-                  <button
-                    type="button"
-                    class="cart-drawer-item__qty-btn"
-                    data-increase-qty="{{ item.key }}"
-                    aria-label="Increase quantity"
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <line x1="12" y1="5" x2="12" y2="19"/>
-                      <line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
-                  </button>
-                </div>
+                    Swap Fragrance
+                  </a>
+                {%- else -%}
+                  {%- comment -%} Non-subscription items: normal quantity controls {%- endcomment -%}
+                  <div class="cart-drawer-item__quantity">
+                    <button
+                      type="button"
+                      class="cart-drawer-item__qty-btn"
+                      data-decrease-qty="{{ item.key }}"
+                      aria-label="Decrease quantity"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                      </svg>
+                    </button>
+                    <span class="cart-drawer-item__qty-value" data-qty-display="{{ item.key }}">{{ item.quantity }}</span>
+                    <button
+                      type="button"
+                      class="cart-drawer-item__qty-btn"
+                      data-increase-qty="{{ item.key }}"
+                      aria-label="Increase quantity"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                      </svg>
+                    </button>
+                  </div>
+                {%- endif -%}
 
                 <div class="cart-drawer-item__price">
                   {%- if item.original_line_price != item.final_line_price -%}
@@ -637,6 +648,23 @@
     font-weight: 600;
   }
 
+  .cart-drawer-item__swap-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-secondary);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: opacity 0.2s;
+  }
+
+  .cart-drawer-item__swap-link:hover {
+    opacity: 0.7;
+  }
+
   .cart-drawer-item__remove {
     align-self: start;
     width: 32px;
@@ -1003,7 +1031,10 @@
     // Close handlers
     document.querySelectorAll('[data-cart-close]').forEach(function(trigger) {
       trigger.addEventListener('click', function(e) {
-        e.preventDefault();
+        // Only prevent default on buttons, not links (so "Browse Fragrances" can navigate)
+        if (trigger.tagName === 'BUTTON' || trigger.tagName === 'DIV') {
+          e.preventDefault();
+        }
         closeDrawer();
       });
     });
