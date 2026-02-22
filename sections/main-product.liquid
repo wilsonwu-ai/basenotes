@@ -62,8 +62,8 @@
   if variant_title_lower contains '5ml' or variant_title_lower contains '5 ml' or variant_title_lower contains 'atomizer' or variant_title_lower contains 'subscription'
     assign is_subscription_variant = true
   endif
-  # If only 1 variant, treat as subscription by default
-  if product.variants.size == 1
+  # If only 1 variant AND it has a selling plan, treat as subscription
+  if product.variants.size == 1 and product.selling_plan_groups.size > 0
     assign is_subscription_variant = true
   endif
 -%}
@@ -1524,7 +1524,7 @@
           options: {{ variant.options | json }},
           featuredImage: {{ variant.featured_image | json }}{%- if variant.featured_image -%},
           imageUrl: {{ variant.featured_image | image_url: width: 1000 | json }},
-          imageSrcset: {{ variant.featured_image | image_url: width: 500 | append: ' 500w, ' | append: variant.featured_image | image_url: width: 750 | append: ' 750w, ' | append: variant.featured_image | image_url: width: 1000 | append: ' 1000w' | json }}
+          imageSrcset: "{{ variant.featured_image | image_url: width: 500 }} 500w, {{ variant.featured_image | image_url: width: 750 }} 750w, {{ variant.featured_image | image_url: width: 1000 }} 1000w"
           {%- endif -%}
         }{%- unless forloop.last -%},{%- endunless -%}
       {%- endfor -%}
@@ -1582,8 +1582,9 @@
       url.searchParams.set('variant', variant.id);
       window.history.replaceState({}, '', url);
 
-      // Determine variant type
-      const isSub = productVariants.length === 1 || isSubscriptionVariant(variant);
+      // Determine variant type (single-variant only counts as subscription if it has selling plans)
+      const hasSellPlans = document.getElementById('sellingPlanSelector') !== null || (appstleWidget && appstleWidget.innerHTML.trim() !== '');
+      const isSub = (productVariants.length === 1 && hasSellPlans) || isSubscriptionVariant(variant);
 
       // Toggle views
       if (subscriptionView) subscriptionView.style.display = isSub ? '' : 'none';
