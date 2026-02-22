@@ -1008,7 +1008,7 @@
     if (!drawer) return;
 
     var FREE_SHIPPING_THRESHOLD = {{ settings.cart_free_shipping_threshold | default: '50' | times: 100 }};
-    var isLoggedIn = {{ customer | default: false | json }};
+    var isLoggedIn = {% if customer %}true{% else %}false{% endif %};
 
     function formatMoney(cents) {
       return '$' + (cents / 100).toFixed(2);

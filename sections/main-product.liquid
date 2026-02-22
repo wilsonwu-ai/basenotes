@@ -1862,21 +1862,10 @@
         addToCartBtn.classList.add('is-added');
         if (addToCartText) addToCartText.textContent = sellingPlan ? 'Added to Queue!' : 'Added to Cart!';
 
-        // Update cart count & open drawer
-        fetch('/cart.js').then(function(res) { return res.json(); }).then(function(cart) {
-          var countEls = document.querySelectorAll('[data-cart-count], .header__cart-count');
-          countEls.forEach(function(el) {
-            el.textContent = cart.item_count;
-            el.style.display = cart.item_count > 0 ? 'flex' : 'none';
-            el.classList.toggle('is-hidden', cart.item_count === 0);
-          });
-          var cartDrawer = document.querySelector('[data-cart-drawer]');
-          if (cartDrawer) {
-            cartDrawer.classList.add('is-open');
-            cartDrawer.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
-          }
-        });
+        // Refresh cart drawer with new content and open it
+        if (window.refreshAndOpenCartDrawer) {
+          window.refreshAndOpenCartDrawer();
+        }
 
         setTimeout(function() {
           addToCartBtn.classList.remove('is-added');
