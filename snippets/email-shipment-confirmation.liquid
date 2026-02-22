@@ -1,0 +1,128 @@
+{% comment %}
+  Email Reference: Shipment Confirmation
+  PURPOSE: Klaviyo design reference — NOT rendered by the theme.
+  Sent when the monthly fragrance ships with tracking info.
+{% endcomment %}
+
+<!-- SHIPMENT CONFIRMATION EMAIL -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Fragrance Has Shipped!</title>
+</head>
+<body style="margin:0;padding:0;background:#F5F3F0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+  <!-- Header -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#2D4641;">
+    <tr>
+      <td align="center" style="padding:24px;">
+        <span style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#fff;letter-spacing:0.05em;">BASE NOTE</span>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Body -->
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;">
+
+          <!-- Green accent bar (success) -->
+          <tr><td style="height:4px;background:#4CAF50;"></td></tr>
+
+          <tr>
+            <td style="padding:40px 32px;">
+
+              <!-- Success icon -->
+              <div style="text-align:center;margin-bottom:20px;">
+                <span style="display:inline-block;width:56px;height:56px;background:rgba(76,175,80,0.1);border-radius:50%;line-height:56px;font-size:28px;">&#10003;</span>
+              </div>
+
+              <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:26px;color:#2D4641;margin:0 0 8px;text-align:center;">Your Fragrance Has Shipped!</h1>
+              <p style="font-size:15px;color:#666;line-height:1.6;margin:0 0 28px;text-align:center;">{{ first_name }}, your luxury fragrance is on its way.</p>
+
+              <!-- Tracking info -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF8F5;border-radius:12px;margin-bottom:24px;">
+                <tr>
+                  <td style="padding:20px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:0.1em;font-weight:bold;padding-bottom:12px;border-bottom:1px solid #E8E6E3;">Tracking Details</td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top:12px;">
+                          <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="font-size:13px;color:#999;padding:6px 0;">Tracking Number</td>
+                              <td style="font-size:14px;color:#2D4641;font-weight:bold;text-align:right;padding:6px 0;"><a href="{{ tracking_url }}" style="color:#C9A962;">{{ tracking_number }}</a></td>
+                            </tr>
+                            <tr>
+                              <td style="font-size:13px;color:#999;padding:6px 0;">Carrier</td>
+                              <td style="font-size:14px;color:#2D4641;font-weight:bold;text-align:right;padding:6px 0;">{{ carrier }}</td>
+                            </tr>
+                            <tr>
+                              <td style="font-size:13px;color:#999;padding:6px 0;">Est. Delivery</td>
+                              <td style="font-size:14px;color:#2D4641;font-weight:bold;text-align:right;padding:6px 0;">{{ estimated_delivery }}</td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Fragrance card -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF8F5;border-radius:12px;margin-bottom:28px;">
+                <tr>
+                  <td style="padding:20px;">
+                    <p style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:0.1em;font-weight:bold;margin:0 0 12px;">This Month's Fragrance</p>
+                    <table cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="80" style="vertical-align:top;">
+                          <img src="{{ fragrance_image }}" alt="{{ fragrance_name }}" width="80" height="80" style="border-radius:8px;display:block;">
+                        </td>
+                        <td style="padding-left:16px;vertical-align:top;">
+                          <p style="font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:bold;text-transform:uppercase;color:#2D4641;margin:0 0 4px;">{{ fragrance_name }}</p>
+                          <p style="font-size:11px;font-weight:bold;text-transform:uppercase;color:#C9A962;margin:0 0 6px;">{{ fragrance_family }}</p>
+                          <p style="font-size:12px;color:#666;line-height:1.5;margin:0;"><strong>Top:</strong> {{ top_notes }}<br><strong>Heart:</strong> {{ heart_notes }}<br><strong>Base:</strong> {{ base_notes }}</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <a href="{{ tracking_url }}" style="display:inline-block;padding:14px 36px;background:#2D4641;color:#fff;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;border-radius:6px;">Track Your Package</a>
+                  </td>
+                </tr>
+              </table>
+
+              <hr style="border:none;border-top:1px solid #E8E6E3;margin:32px 0;">
+
+              <p style="font-size:12px;color:#999;margin:0;text-align:center;">Questions about your shipment? <a href="mailto:hello@basenote.com" style="color:#C9A962;">hello@basenote.com</a></p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Footer -->
+        <table width="600" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding:24px;text-align:center;">
+              <p style="font-size:12px;color:#999;margin:0 0 8px;">Base Note — Luxury Fragrances, Delivered Monthly</p>
+              <p style="font-size:11px;color:#bbb;margin:0;"><a href="{{ unsubscribe_url }}" style="color:#bbb;">Unsubscribe</a> | <a href="{{ manage_preferences_url }}" style="color:#bbb;">Manage Preferences</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

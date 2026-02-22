@@ -1,0 +1,119 @@
+{% comment %}
+  Email Reference: Pre-Shipment Reminder (7 days before)
+  PURPOSE: Klaviyo design reference — NOT rendered by the theme.
+
+  3 variants:
+  - User has selected a fragrance
+  - Auto-pilot / system-selected
+  - No selection yet (action needed)
+
+  Merge tags use Klaviyo syntax: {{ first_name }}, {{ fragrance_name }}, etc.
+{% endcomment %}
+
+<!-- PRE-SHIPMENT REMINDER EMAIL -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Next Fragrance Ships Soon</title>
+</head>
+<body style="margin:0;padding:0;background:#F5F3F0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+  <!-- Header -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#2D4641;">
+    <tr>
+      <td align="center" style="padding:24px;">
+        <span style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#fff;letter-spacing:0.05em;">BASE NOTE</span>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Body -->
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;">
+
+          <!-- Gold accent bar -->
+          <tr><td style="height:4px;background:#C9A962;"></td></tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding:40px 32px;">
+
+              <!-- VARIANT 1: User selected -->
+              <p style="font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:0.15em;color:#C9A962;margin:0 0 8px;">Your Selection is Confirmed</p>
+              <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:28px;color:#2D4641;margin:0 0 8px;">Hi {{ first_name }},</h1>
+              <p style="font-size:16px;color:#666;line-height:1.6;margin:0 0 28px;">Your next fragrance ships in <strong style="color:#2D4641;">7 days</strong>. Here's what's coming:</p>
+
+              <!-- Fragrance card -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF8F5;border-radius:12px;margin-bottom:28px;">
+                <tr>
+                  <td style="padding:20px;">
+                    <table cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="100" style="vertical-align:top;">
+                          <img src="{{ fragrance_image }}" alt="{{ fragrance_name }}" width="100" height="100" style="border-radius:10px;display:block;">
+                        </td>
+                        <td style="padding-left:20px;vertical-align:top;">
+                          <p style="font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:bold;text-transform:uppercase;letter-spacing:0.03em;color:#2D4641;margin:0 0 4px;">{{ fragrance_name }}</p>
+                          <p style="font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:0.06em;color:#C9A962;margin:0 0 8px;">{{ fragrance_family }}</p>
+                          <p style="font-size:13px;color:#666;line-height:1.5;margin:0;"><strong style="color:#2D4641;">Top:</strong> {{ top_notes }}<br><strong style="color:#2D4641;">Heart:</strong> {{ heart_notes }}<br><strong style="color:#2D4641;">Base:</strong> {{ base_notes }}</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="font-size:14px;color:#666;line-height:1.6;margin:0 0 24px;">Want something different? You can swap your fragrance anytime before the ship date.</p>
+
+              <!-- CTA -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <a href="{{ account_url }}#next-shipment" style="display:inline-block;padding:14px 36px;background:#2D4641;color:#fff;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;border-radius:6px;">Manage Shipment</a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Divider -->
+              <hr style="border:none;border-top:1px solid #E8E6E3;margin:32px 0;">
+
+              <!-- VARIANT 2: Auto-pilot (uncomment to use) -->
+              <!--
+              <p style="font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:0.15em;color:#C9A962;margin:0 0 8px;">Auto-Pilot Selection</p>
+              <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:28px;color:#2D4641;margin:0 0 8px;">Hi {{ first_name }},</h1>
+              <p style="font-size:16px;color:#666;line-height:1.6;margin:0 0 28px;">We've picked a fragrance we think you'll love. It ships in <strong style="color:#2D4641;">7 days</strong>.</p>
+              <p style="font-size:14px;color:#666;line-height:1.6;margin:0 0 24px;">Not feeling it? Swap to any fragrance in our collection before the ship date.</p>
+              -->
+
+              <!-- VARIANT 3: No selection (uncomment to use) -->
+              <!--
+              <p style="font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:0.15em;color:#FF9800;margin:0 0 8px;">Action Needed</p>
+              <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:28px;color:#2D4641;margin:0 0 8px;">{{ first_name }}, choose your fragrance!</h1>
+              <p style="font-size:16px;color:#666;line-height:1.6;margin:0 0 28px;">Your next shipment is in <strong style="color:#2D4641;">7 days</strong> and you haven't selected a fragrance yet. Choose now or we'll pick one for you!</p>
+              <a href="{{ account_url }}#next-shipment" style="display:inline-block;padding:14px 36px;background:#C9A962;color:#2D4641;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;border-radius:6px;">Choose Your Fragrance</a>
+              -->
+
+              <p style="font-size:12px;color:#999;margin:0;text-align:center;">Questions? Reply to this email or contact <a href="mailto:hello@basenote.com" style="color:#C9A962;">hello@basenote.com</a></p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Footer -->
+        <table width="600" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding:24px;text-align:center;">
+              <p style="font-size:12px;color:#999;margin:0 0 8px;">Base Note — Luxury Fragrances, Delivered Monthly</p>
+              <p style="font-size:11px;color:#bbb;margin:0;"><a href="{{ unsubscribe_url }}" style="color:#bbb;">Unsubscribe</a> | <a href="{{ manage_preferences_url }}" style="color:#bbb;">Manage Preferences</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

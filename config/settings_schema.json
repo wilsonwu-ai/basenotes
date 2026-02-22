@@ -510,6 +510,110 @@
     ]
   },
   {
+    "name": "Subscription Plans",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Plan Pricing"
+      },
+      {
+        "type": "text",
+        "id": "sub_plan_monthly_price",
+        "label": "Monthly plan total price",
+        "default": "$20"
+      },
+      {
+        "type": "text",
+        "id": "sub_plan_monthly_per_month",
+        "label": "Monthly per-month display",
+        "default": "$20/mo"
+      },
+      {
+        "type": "text",
+        "id": "sub_plan_quarterly_price",
+        "label": "Quarterly plan total price",
+        "default": "$48"
+      },
+      {
+        "type": "text",
+        "id": "sub_plan_quarterly_per_month",
+        "label": "Quarterly per-month display",
+        "default": "$16/mo"
+      },
+      {
+        "type": "text",
+        "id": "sub_plan_annual_price",
+        "label": "Annual plan total price",
+        "default": "$168"
+      },
+      {
+        "type": "text",
+        "id": "sub_plan_annual_per_month",
+        "label": "Annual per-month display",
+        "default": "$14/mo"
+      },
+      {
+        "type": "header",
+        "content": "Subscription Disclosure"
+      },
+      {
+        "type": "textarea",
+        "id": "sub_disclosure_text",
+        "label": "Subscription terms disclosure text",
+        "default": "By proceeding, you agree to a recurring subscription. Your subscription will auto-renew until cancelled. You can cancel, skip, or swap anytime from your account dashboard."
+      },
+      {
+        "type": "checkbox",
+        "id": "sub_disclosure_checkbox_required",
+        "label": "Require terms checkbox before checkout",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Cancellation & Retention"
+      },
+      {
+        "type": "text",
+        "id": "cancel_discount_code",
+        "label": "Retention discount code",
+        "default": "STAYWITHUS30",
+        "info": "Discount code offered during cancellation flow"
+      },
+      {
+        "type": "text",
+        "id": "cancel_discount_amount",
+        "label": "Retention discount description",
+        "default": "30% off your next 3 months"
+      },
+      {
+        "type": "text",
+        "id": "cancel_pause_duration",
+        "label": "Pause offer duration",
+        "default": "up to 3 months"
+      },
+      {
+        "type": "header",
+        "content": "Fragrance Catalog"
+      },
+      {
+        "type": "collection",
+        "id": "sub_fragrance_collection",
+        "label": "Subscription fragrance collection",
+        "info": "Collection containing the subscription fragrances"
+      },
+      {
+        "type": "header",
+        "content": "Integration"
+      },
+      {
+        "type": "url",
+        "id": "recharge_portal_url",
+        "label": "Subscription portal URL",
+        "info": "External subscription management portal URL (Recharge, Appstle, etc.). Leave blank if not installed."
+      }
+    ]
+  },
+  {
     "name": "Favicon",
     "settings": [
       {

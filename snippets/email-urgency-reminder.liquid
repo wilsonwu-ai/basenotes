@@ -1,0 +1,82 @@
+{% comment %}
+  Email Reference: Urgency Reminder (3 days before shipment)
+  PURPOSE: Klaviyo design reference — NOT rendered by the theme.
+  Sent when user hasn't made a selection with 3 days left.
+{% endcomment %}
+
+<!-- URGENCY REMINDER EMAIL -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Last Chance to Choose Your Fragrance</title>
+</head>
+<body style="margin:0;padding:0;background:#F5F3F0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+  <!-- Header -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#2D4641;">
+    <tr>
+      <td align="center" style="padding:24px;">
+        <span style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#fff;letter-spacing:0.05em;">BASE NOTE</span>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Body -->
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;">
+
+          <!-- Amber accent bar (urgency) -->
+          <tr><td style="height:4px;background:#FF9800;"></td></tr>
+
+          <tr>
+            <td style="padding:40px 32px;text-align:center;">
+
+              <!-- Urgency badge -->
+              <span style="display:inline-block;padding:6px 18px;background:rgba(255,152,0,0.1);color:#FF9800;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:0.12em;border-radius:999px;margin-bottom:20px;">Last Chance — 3 Days Left</span>
+
+              <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:26px;color:#2D4641;margin:0 0 12px;">{{ first_name }}, don't miss out!</h1>
+              <p style="font-size:16px;color:#666;line-height:1.6;margin:0 0 28px;max-width:420px;display:inline-block;">Your next shipment is in <strong style="color:#2D4641;">3 days</strong> and you haven't chosen a fragrance. Pick your scent now or we'll select one for you.</p>
+
+              <!-- Countdown visual -->
+              <table cellpadding="0" cellspacing="0" style="margin:0 auto 28px;">
+                <tr>
+                  <td style="width:60px;height:60px;background:#2D4641;border-radius:10px;text-align:center;vertical-align:middle;">
+                    <span style="font-family:Georgia,'Times New Roman',serif;font-size:28px;font-weight:bold;color:#C9A962;">3</span>
+                  </td>
+                  <td style="padding:0 12px;font-size:14px;color:#999;text-align:left;">
+                    days until<br>auto-selection
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA -->
+              <a href="{{ account_url }}#next-shipment" style="display:inline-block;padding:16px 48px;background:#C9A962;color:#2D4641;font-size:14px;font-weight:bold;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;border-radius:6px;margin-bottom:16px;">Choose Your Fragrance</a>
+
+              <p style="font-size:13px;color:#999;margin:16px 0 0;">or <a href="{{ account_url }}#next-shipment" style="color:#C9A962;text-decoration:underline;">skip this month</a></p>
+
+              <hr style="border:none;border-top:1px solid #E8E6E3;margin:32px 0;">
+
+              <p style="font-size:12px;color:#999;margin:0;">Questions? <a href="mailto:hello@basenote.com" style="color:#C9A962;">hello@basenote.com</a></p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Footer -->
+        <table width="600" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding:24px;text-align:center;">
+              <p style="font-size:12px;color:#999;margin:0 0 8px;">Base Note — Luxury Fragrances, Delivered Monthly</p>
+              <p style="font-size:11px;color:#bbb;margin:0;"><a href="{{ unsubscribe_url }}" style="color:#bbb;">Unsubscribe</a> | <a href="{{ manage_preferences_url }}" style="color:#bbb;">Manage Preferences</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
