@@ -10,7 +10,6 @@
   document.addEventListener('DOMContentLoaded', function() {
     initHeader();
     initMobileNav();
-    initCartDrawer();
     initQuickAdd();
     initWishlist();
   });
@@ -73,58 +72,6 @@
       if (e.key === 'Escape' && nav.classList.contains('is-active')) {
         closeNav();
       }
-    });
-  }
-
-  /**
-   * Cart drawer
-   */
-  function initCartDrawer() {
-    const cartToggle = document.querySelector('[data-cart-toggle]') || document.querySelector('[data-cart-open]');
-    const cartDrawer = document.querySelector('[data-cart-drawer]');
-    const cartClose = document.querySelector('[data-cart-close]');
-    const overlay = document.getElementById('overlay');
-
-    if (!cartToggle || !cartDrawer) return;
-
-    function openCart() {
-      cartDrawer.classList.add('is-open');
-      cartDrawer.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeCart() {
-      cartDrawer.classList.remove('is-open');
-      cartDrawer.setAttribute('aria-hidden', 'true');
-      document.body.style.overflow = '';
-    }
-
-    cartToggle.addEventListener('click', function(e) {
-      e.preventDefault();
-      openCart();
-    });
-
-    cartClose?.addEventListener('click', closeCart);
-
-    overlay?.addEventListener('click', function() {
-      closeCart();
-      // Also close mobile nav if open
-      document.querySelector('[data-mobile-nav]')?.classList.remove('is-active');
-    });
-
-    // Close on escape
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && cartDrawer.classList.contains('is-open')) {
-        closeCart();
-      }
-    });
-
-    // Remove item from cart
-    document.querySelectorAll('[data-remove-item]').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const key = this.dataset.removeItem;
-        updateCartItem(key, 0);
-      });
     });
   }
 
@@ -289,8 +236,9 @@
     })
     .then(response => response.json())
     .then(() => {
-      // Reload page to update cart drawer
-      window.location.reload();
+      if (window.refreshCartDrawer) {
+        window.refreshCartDrawer();
+      }
     });
   }
 
