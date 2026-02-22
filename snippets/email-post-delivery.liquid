@@ -1,0 +1,133 @@
+{% comment %}
+  Email Reference: Post-Delivery Feedback Request
+  PURPOSE: Klaviyo design reference — NOT rendered by the theme.
+  Sent 3-5 days after delivery with clickable star rating.
+{% endcomment %}
+
+<!-- POST-DELIVERY FEEDBACK EMAIL -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How Was Your Fragrance?</title>
+</head>
+<body style="margin:0;padding:0;background:#F5F3F0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+  <!-- Header -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#2D4641;">
+    <tr>
+      <td align="center" style="padding:24px;">
+        <span style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#fff;letter-spacing:0.05em;">BASE NOTE</span>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Body -->
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;">
+
+          <!-- Gold accent bar -->
+          <tr><td style="height:4px;background:#C9A962;"></td></tr>
+
+          <tr>
+            <td style="padding:40px 32px;text-align:center;">
+
+              <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:26px;color:#2D4641;margin:0 0 8px;">How was {{ fragrance_name }}?</h1>
+              <p style="font-size:15px;color:#666;line-height:1.6;margin:0 0 28px;">{{ first_name }}, we'd love to hear what you thought of this month's fragrance.</p>
+
+              <!-- Fragrance card -->
+              <table cellpadding="0" cellspacing="0" style="margin:0 auto 28px;">
+                <tr>
+                  <td style="text-align:center;">
+                    <img src="{{ fragrance_image }}" alt="{{ fragrance_name }}" width="120" height="120" style="border-radius:12px;display:block;margin:0 auto 12px;">
+                    <p style="font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:bold;text-transform:uppercase;color:#2D4641;margin:0 0 4px;">{{ fragrance_name }}</p>
+                    <p style="font-size:12px;font-weight:bold;text-transform:uppercase;color:#C9A962;margin:0;">{{ fragrance_family }}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Star Rating -->
+              <p style="font-size:14px;color:#666;margin:0 0 16px;">Tap a star to rate:</p>
+              <table cellpadding="0" cellspacing="0" style="margin:0 auto 28px;">
+                <tr>
+                  <!-- Each star links to a Klaviyo flow/webhook with the rating value -->
+                  <td style="padding:0 6px;">
+                    <a href="{{ rating_url_1 }}" style="text-decoration:none;font-size:36px;color:#ddd;">&#9733;</a>
+                  </td>
+                  <td style="padding:0 6px;">
+                    <a href="{{ rating_url_2 }}" style="text-decoration:none;font-size:36px;color:#ddd;">&#9733;</a>
+                  </td>
+                  <td style="padding:0 6px;">
+                    <a href="{{ rating_url_3 }}" style="text-decoration:none;font-size:36px;color:#ddd;">&#9733;</a>
+                  </td>
+                  <td style="padding:0 6px;">
+                    <a href="{{ rating_url_4 }}" style="text-decoration:none;font-size:36px;color:#ddd;">&#9733;</a>
+                  </td>
+                  <td style="padding:0 6px;">
+                    <a href="{{ rating_url_5 }}" style="text-decoration:none;font-size:36px;color:#ddd;">&#9733;</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="5" style="text-align:center;padding-top:4px;">
+                    <span style="font-size:12px;color:#999;">1 = Not for me &nbsp;&bull;&nbsp; 5 = Love it!</span>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Quick Actions -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+                <tr>
+                  <td width="50%" style="padding-right:6px;">
+                    <a href="{{ buy_full_size_url }}" style="display:block;padding:14px;background:#FAF8F5;border:1px solid #E8E6E3;border-radius:10px;text-decoration:none;text-align:center;">
+                      <span style="display:block;font-size:13px;font-weight:bold;color:#2D4641;">Buy Full Size</span>
+                      <span style="display:block;font-size:11px;color:#999;margin-top:2px;">Get the full bottle</span>
+                    </a>
+                  </td>
+                  <td width="50%" style="padding-left:6px;">
+                    <a href="{{ account_url }}#next-shipment" style="display:block;padding:14px;background:#FAF8F5;border:1px solid #E8E6E3;border-radius:10px;text-decoration:none;text-align:center;">
+                      <span style="display:block;font-size:13px;font-weight:bold;color:#2D4641;">Get It Again</span>
+                      <span style="display:block;font-size:11px;color:#999;margin-top:2px;">Add to next shipment</span>
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Account CTA -->
+              <a href="{{ account_url }}#history" style="display:inline-block;padding:14px 36px;background:#2D4641;color:#fff;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;border-radius:6px;">View Your Scent History</a>
+
+              <hr style="border:none;border-top:1px solid #E8E6E3;margin:32px 0;">
+
+              <!-- Referral nudge -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:rgba(201,169,98,0.06);border:1px dashed #C9A962;border-radius:10px;">
+                <tr>
+                  <td style="padding:20px;text-align:center;">
+                    <p style="font-size:14px;font-weight:bold;color:#2D4641;margin:0 0 4px;">Share the Love, Get $10</p>
+                    <p style="font-size:12px;color:#666;margin:0 0 12px;">Refer a friend and you both get $10 off.</p>
+                    <a href="{{ referral_url }}" style="color:#C9A962;font-size:13px;font-weight:bold;text-decoration:underline;">Share Your Link</a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="font-size:12px;color:#999;margin:20px 0 0;text-align:center;">Questions? <a href="mailto:hello@basenote.com" style="color:#C9A962;">hello@basenote.com</a></p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Footer -->
+        <table width="600" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding:24px;text-align:center;">
+              <p style="font-size:12px;color:#999;margin:0 0 8px;">Base Note — Luxury Fragrances, Delivered Monthly</p>
+              <p style="font-size:11px;color:#bbb;margin:0;"><a href="{{ unsubscribe_url }}" style="color:#bbb;">Unsubscribe</a> | <a href="{{ manage_preferences_url }}" style="color:#bbb;">Manage Preferences</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

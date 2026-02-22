@@ -5,6 +5,7 @@
   and paste it into Shopify Admin > Settings > Checkout > Order status page > Additional scripts
 
   This adds:
+  - Subscription welcome (if order contains selling_plan_allocation)
   - Custom thank you message styling
   - Next steps guidance
   - Subscription upsell (if not already subscribed)
@@ -13,133 +14,262 @@
 {% endcomment %}
 
 <!-- START: Copy from here -->
+
+{%- assign has_subscription = false -%}
+{%- for line_item in order.line_items -%}
+  {%- if line_item.selling_plan_allocation -%}
+    {%- assign has_subscription = true -%}
+    {%- assign sub_item = line_item -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+
 <style>
-  .basenotes-thankyou {
-    max-width: 600px;
+  .bn-ty {
+    max-width: 640px;
     margin: 32px auto;
     padding: 0 16px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
-  .basenotes-thankyou__card {
+  /* ── Welcome Hero (subscription) ── */
+  .bn-ty__welcome {
+    background: linear-gradient(135deg, #2D4641 0%, #1a2927 100%);
+    border-radius: 16px;
+    padding: 48px 32px;
+    text-align: center;
+    color: #fff;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bn-ty__welcome::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 20%, rgba(201,169,98,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .bn-ty__welcome-badge {
+    display: inline-block;
+    padding: 6px 20px;
+    background: rgba(201,169,98,0.15);
+    border: 1px solid rgba(201,169,98,0.4);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #C9A962;
+    margin-bottom: 20px;
+  }
+  .bn-ty__welcome-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    line-height: 1.2;
+  }
+  .bn-ty__welcome-subtitle {
+    font-size: 15px;
+    opacity: 0.75;
+    margin: 0 0 28px;
+    line-height: 1.5;
+  }
+
+  /* ── Subscription Summary Card ── */
+  .bn-ty__sub-summary {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    text-align: left;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .bn-ty__sub-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.05);
+  }
+  .bn-ty__sub-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .bn-ty__sub-details {
+    flex: 1;
+    min-width: 0;
+  }
+  .bn-ty__sub-name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin: 0 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bn-ty__sub-plan {
+    font-size: 13px;
+    color: #C9A962;
+    font-weight: 600;
+    margin: 0 0 2px;
+  }
+  .bn-ty__sub-next {
+    font-size: 12px;
+    opacity: 0.6;
+    margin: 0;
+  }
+
+  /* ── Success Card (non-subscription) ── */
+  .bn-ty__card {
     background: #fff;
-    border: 1px solid #e5e5e5;
+    border: 1px solid #E8E6E3;
     border-radius: 12px;
     padding: 32px;
     margin-bottom: 24px;
     text-align: center;
   }
-
-  .basenotes-thankyou__icon {
-    width: 72px;
-    height: 72px;
-    margin: 0 auto 20px;
+  .bn-ty__icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #c9a86c 0%, #d4b88a 100%);
+    background: linear-gradient(135deg, #C9A962 0%, #d4b88a 100%);
     border-radius: 50%;
     color: #fff;
   }
-
-  .basenotes-thankyou__icon svg {
-    width: 36px;
-    height: 36px;
+  .bn-ty__icon svg {
+    width: 32px;
+    height: 32px;
   }
-
-  .basenotes-thankyou__title {
+  .bn-ty__title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
     font-size: 28px;
-    font-weight: 700;
+    font-weight: 600;
     margin: 0 0 8px;
-    color: #1a1a1a;
+    color: #2D4641;
   }
-
-  .basenotes-thankyou__subtitle {
-    font-size: 16px;
+  .bn-ty__subtitle {
+    font-size: 15px;
     color: #666;
-    margin: 0 0 24px;
+    margin: 0 0 20px;
+    line-height: 1.5;
   }
-
-  .basenotes-thankyou__order-number {
+  .bn-ty__order-tag {
     display: inline-block;
     padding: 8px 16px;
-    background: #f5f5f5;
+    background: #FAF8F5;
     border-radius: 6px;
-    font-size: 14px;
-    color: #1a1a1a;
+    font-size: 13px;
+    color: #2D4641;
+    font-weight: 600;
   }
 
-  .basenotes-thankyou__steps {
-    background: #fafafa;
-    border: 1px solid #e5e5e5;
+  /* ── What Happens Next ── */
+  .bn-ty__steps {
+    background: #fff;
+    border: 1px solid #E8E6E3;
     border-radius: 12px;
-    padding: 24px;
+    padding: 28px;
     margin-bottom: 24px;
   }
-
-  .basenotes-thankyou__steps-title {
-    font-size: 18px;
+  .bn-ty__steps-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 20px;
     font-weight: 600;
-    margin: 0 0 20px;
-    color: #1a1a1a;
+    margin: 0 0 24px;
+    color: #2D4641;
+    text-align: center;
   }
-
-  .basenotes-thankyou__step {
+  .bn-ty__step {
     display: flex;
     align-items: flex-start;
     gap: 16px;
-    text-align: left;
-    padding: 12px 0;
-    border-bottom: 1px solid #e5e5e5;
+    padding: 14px 0;
+    border-bottom: 1px solid #F0EDE8;
   }
-
-  .basenotes-thankyou__step:last-child {
+  .bn-ty__step:last-child {
     border-bottom: none;
     padding-bottom: 0;
   }
-
-  .basenotes-thankyou__step-number {
+  .bn-ty__step-num {
     width: 32px;
     height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #c9a86c;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 600;
+    background: #2D4641;
+    color: #C9A962;
+    font-size: 13px;
+    font-weight: 700;
     border-radius: 50%;
     flex-shrink: 0;
   }
-
-  .basenotes-thankyou__step-content h4 {
+  .bn-ty__step-body h4 {
     font-size: 14px;
-    font-weight: 600;
-    margin: 0 0 4px;
-    color: #1a1a1a;
+    font-weight: 700;
+    margin: 0 0 3px;
+    color: #2D4641;
   }
-
-  .basenotes-thankyou__step-content p {
+  .bn-ty__step-body p {
     font-size: 13px;
     color: #666;
     margin: 0;
     line-height: 1.5;
   }
 
-  .basenotes-thankyou__cta {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  /* ── Account CTA ── */
+  .bn-ty__account-cta {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .bn-ty__account-btn {
+    display: inline-block;
+    padding: 14px 36px;
+    background: #2D4641;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .bn-ty__account-btn:hover {
+    background: #1a2927;
+    transform: translateY(-1px);
+  }
+
+  /* ── Subscribe CTA (non-subscribers) ── */
+  .bn-ty__cta {
+    background: linear-gradient(135deg, #2D4641 0%, #1a2927 100%);
     border-radius: 12px;
     padding: 32px;
     color: #fff;
     text-align: center;
     margin-bottom: 24px;
   }
-
-  .basenotes-thankyou__cta-badge {
+  .bn-ty__cta-badge {
     display: inline-block;
-    padding: 4px 12px;
-    background: #c9a86c;
-    color: #1a1a1a;
+    padding: 4px 14px;
+    background: #C9A962;
+    color: #2D4641;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
@@ -147,230 +277,288 @@
     border-radius: 20px;
     margin-bottom: 16px;
   }
-
-  .basenotes-thankyou__cta h3 {
+  .bn-ty__cta h3 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 600;
     margin: 0 0 8px;
   }
-
-  .basenotes-thankyou__cta p {
+  .bn-ty__cta p {
     font-size: 14px;
     opacity: 0.8;
     margin: 0 0 20px;
   }
-
-  .basenotes-thankyou__cta-btn {
+  .bn-ty__cta-btn {
     display: inline-block;
     padding: 14px 32px;
-    background: #c9a86c;
-    color: #1a1a1a;
-    font-size: 14px;
-    font-weight: 600;
+    background: #C9A962;
+    color: #2D4641;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     text-decoration: none;
     border-radius: 6px;
     transition: background 0.2s, transform 0.2s;
   }
-
-  .basenotes-thankyou__cta-btn:hover {
+  .bn-ty__cta-btn:hover {
     background: #d4b88a;
-    transform: translateY(-2px);
+    transform: translateY(-1px);
   }
 
-  .basenotes-thankyou__social {
+  /* ── Social Follow ── */
+  .bn-ty__social {
     text-align: center;
     padding: 24px;
     background: #fff;
-    border: 1px solid #e5e5e5;
+    border: 1px solid #E8E6E3;
     border-radius: 12px;
     margin-bottom: 24px;
   }
-
-  .basenotes-thankyou__social-title {
-    font-size: 14px;
+  .bn-ty__social-title {
+    font-size: 13px;
     color: #666;
     margin: 0 0 16px;
   }
-
-  .basenotes-thankyou__social-links {
+  .bn-ty__social-links {
     display: flex;
     justify-content: center;
     gap: 12px;
   }
-
-  .basenotes-thankyou__social-link {
+  .bn-ty__social-link {
     width: 44px;
     height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f5f5f5;
+    background: #FAF8F5;
     border-radius: 50%;
-    color: #1a1a1a;
+    color: #2D4641;
     text-decoration: none;
     transition: background 0.2s, color 0.2s;
   }
-
-  .basenotes-thankyou__social-link:hover {
-    background: #1a1a1a;
+  .bn-ty__social-link:hover {
+    background: #2D4641;
     color: #fff;
   }
-
-  .basenotes-thankyou__social-link svg {
+  .bn-ty__social-link svg {
     width: 20px;
     height: 20px;
   }
 
-  .basenotes-thankyou__referral {
+  /* ── Referral ── */
+  .bn-ty__referral {
     text-align: center;
     padding: 24px;
-    background: #fff8f0;
-    border: 1px dashed #c9a86c;
+    background: rgba(201,169,98,0.06);
+    border: 1px dashed #C9A962;
     border-radius: 12px;
   }
-
-  .basenotes-thankyou__referral h4 {
-    font-size: 16px;
+  .bn-ty__referral h4 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
     font-weight: 600;
-    margin: 0 0 8px;
-    color: #1a1a1a;
+    margin: 0 0 6px;
+    color: #2D4641;
   }
-
-  .basenotes-thankyou__referral p {
+  .bn-ty__referral p {
     font-size: 13px;
     color: #666;
     margin: 0 0 16px;
   }
-
-  .basenotes-thankyou__referral-code {
+  .bn-ty__referral-code {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     padding: 10px 16px;
     background: #fff;
-    border: 1px solid #c9a86c;
+    border: 1px solid #C9A962;
     border-radius: 6px;
     font-family: monospace;
     font-size: 14px;
     font-weight: 600;
-    color: #c9a86c;
+    color: #C9A962;
   }
-
-  .basenotes-thankyou__referral-code button {
+  .bn-ty__referral-code button {
     background: none;
     border: none;
     cursor: pointer;
     padding: 4px;
     color: #666;
+    transition: color 0.2s;
   }
-
-  .basenotes-thankyou__referral-code button:hover {
-    color: #c9a86c;
+  .bn-ty__referral-code button:hover {
+    color: #C9A962;
   }
 
   @media (max-width: 480px) {
-    .basenotes-thankyou__card,
-    .basenotes-thankyou__steps,
-    .basenotes-thankyou__cta {
-      padding: 24px 20px;
-    }
-
-    .basenotes-thankyou__title {
-      font-size: 24px;
-    }
+    .bn-ty__welcome { padding: 32px 20px; }
+    .bn-ty__welcome-title { font-size: 26px; }
+    .bn-ty__sub-summary { flex-direction: column; text-align: center; }
+    .bn-ty__sub-name { white-space: normal; }
+    .bn-ty__card, .bn-ty__steps, .bn-ty__cta { padding: 24px 20px; }
+    .bn-ty__title { font-size: 24px; }
   }
 </style>
 
-<div class="basenotes-thankyou">
-  <!-- Success Message -->
-  <div class="basenotes-thankyou__card">
-    <div class="basenotes-thankyou__icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="20 6 9 17 4 12"/>
-      </svg>
-    </div>
-    <h2 class="basenotes-thankyou__title">Thank You!</h2>
-    <p class="basenotes-thankyou__subtitle">Your fragrance journey is about to begin.</p>
-    <span class="basenotes-thankyou__order-number">Order {{ order.name }}</span>
-  </div>
+<div class="bn-ty">
 
-  <!-- What's Next -->
-  <div class="basenotes-thankyou__steps">
-    <h3 class="basenotes-thankyou__steps-title">What Happens Next?</h3>
-
-    <div class="basenotes-thankyou__step">
-      <span class="basenotes-thankyou__step-number">1</span>
-      <div class="basenotes-thankyou__step-content">
-        <h4>Order Confirmation</h4>
-        <p>You'll receive an email confirmation at {{ order.email }} with your order details.</p>
+  {%- if has_subscription -%}
+    <!-- ═══ Subscription Welcome ═══ -->
+    <div class="bn-ty__welcome">
+      <span class="bn-ty__welcome-badge">Welcome to the Club</span>
+      <h2 class="bn-ty__welcome-title">Welcome to Base Note!</h2>
+      <p class="bn-ty__welcome-subtitle">
+        Your luxury fragrance journey starts now. We're thrilled to have you as a member.
+      </p>
+      <div class="bn-ty__sub-summary">
+        {%- if sub_item.image -%}
+          <div class="bn-ty__sub-image">
+            <img src="{{ sub_item.image | image_url: width: 200 }}" alt="{{ sub_item.product.title | escape }}">
+          </div>
+        {%- endif -%}
+        <div class="bn-ty__sub-details">
+          <p class="bn-ty__sub-name">{{ sub_item.product.title }}</p>
+          <p class="bn-ty__sub-plan">{{ sub_item.selling_plan_allocation.selling_plan.name }}</p>
+          <p class="bn-ty__sub-next">Your first fragrance ships within 1-2 business days</p>
+        </div>
       </div>
     </div>
 
-    <div class="basenotes-thankyou__step">
-      <span class="basenotes-thankyou__step-number">2</span>
-      <div class="basenotes-thankyou__step-content">
-        <h4>Carefully Packaged</h4>
-        <p>Your fragrance will be prepared with care and shipped within 1-2 business days.</p>
+    <!-- What Happens Next (subscription flow) -->
+    <div class="bn-ty__steps">
+      <h3 class="bn-ty__steps-title">What Happens Next</h3>
+
+      <div class="bn-ty__step">
+        <span class="bn-ty__step-num">1</span>
+        <div class="bn-ty__step-body">
+          <h4>Confirmation Email</h4>
+          <p>Check {{ order.email }} for your subscription confirmation and order details.</p>
+        </div>
+      </div>
+
+      <div class="bn-ty__step">
+        <span class="bn-ty__step-num">2</span>
+        <div class="bn-ty__step-body">
+          <h4>Your Fragrance Ships</h4>
+          <p>Your first 5ml luxury atomizer is carefully prepared and shipped within 1-2 business days.</p>
+        </div>
+      </div>
+
+      <div class="bn-ty__step">
+        <span class="bn-ty__step-num">3</span>
+        <div class="bn-ty__step-body">
+          <h4>Monthly Reminder</h4>
+          <p>7 days before your next shipment, we'll email you to choose your next fragrance or keep the auto-selection.</p>
+        </div>
+      </div>
+
+      <div class="bn-ty__step">
+        <span class="bn-ty__step-num">4</span>
+        <div class="bn-ty__step-body">
+          <h4>Manage From Your Dashboard</h4>
+          <p>Swap fragrances, skip months, view your scent history, and more from your account page.</p>
+        </div>
       </div>
     </div>
 
-    <div class="basenotes-thankyou__step">
-      <span class="basenotes-thankyou__step-number">3</span>
-      <div class="basenotes-thankyou__step-content">
-        <h4>Delivered to You</h4>
-        <p>Track your package and expect delivery within 3-5 business days.</p>
+    <!-- Account CTA -->
+    <div class="bn-ty__account-cta">
+      <a href="/account#dashboard" class="bn-ty__account-btn">Go to My Account</a>
+    </div>
+
+  {%- else -%}
+    <!-- ═══ Standard Thank You ═══ -->
+    <div class="bn-ty__card">
+      <div class="bn-ty__icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h2 class="bn-ty__title">Thank You!</h2>
+      <p class="bn-ty__subtitle">Your fragrance journey is about to begin.</p>
+      <span class="bn-ty__order-tag">Order {{ order.name }}</span>
+    </div>
+
+    <!-- What Happens Next (standard) -->
+    <div class="bn-ty__steps">
+      <h3 class="bn-ty__steps-title">What Happens Next?</h3>
+
+      <div class="bn-ty__step">
+        <span class="bn-ty__step-num">1</span>
+        <div class="bn-ty__step-body">
+          <h4>Order Confirmation</h4>
+          <p>You'll receive an email confirmation at {{ order.email }} with your order details.</p>
+        </div>
+      </div>
+
+      <div class="bn-ty__step">
+        <span class="bn-ty__step-num">2</span>
+        <div class="bn-ty__step-body">
+          <h4>Carefully Packaged</h4>
+          <p>Your fragrance will be prepared with care and shipped within 1-2 business days.</p>
+        </div>
+      </div>
+
+      <div class="bn-ty__step">
+        <span class="bn-ty__step-num">3</span>
+        <div class="bn-ty__step-body">
+          <h4>Delivered to You</h4>
+          <p>Track your package and expect delivery within 3-5 business days.</p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Subscription CTA (for non-subscribers) -->
-  {% unless customer and customer.tags contains 'subscriber' %}
-  <div class="basenotes-thankyou__cta">
-    <span class="basenotes-thankyou__cta-badge">Special Offer</span>
-    <h3>Subscribe & Save</h3>
-    <p>Get a new luxury fragrance delivered every month for just $20 + free shipping.</p>
-    <a href="/pages/subscription" class="basenotes-thankyou__cta-btn">Start Your Subscription</a>
-  </div>
-  {% endunless %}
+    <!-- Subscription CTA (non-subscribers) -->
+    {%- unless customer and customer.tags contains 'subscriber' -%}
+    <div class="bn-ty__cta">
+      <span class="bn-ty__cta-badge">Special Offer</span>
+      <h3>Subscribe & Save</h3>
+      <p>Get a new luxury fragrance delivered every month for just $20 + free shipping.</p>
+      <a href="/pages/subscription" class="bn-ty__cta-btn">Start Your Subscription</a>
+    </div>
+    {%- endunless -%}
 
-  <!-- Social Follow -->
-  {% assign instagram_url = shop.metafields.social.instagram | default: 'https://instagram.com/basenotes' %}
-  {% assign tiktok_url = shop.metafields.social.tiktok | default: 'https://tiktok.com/@basenotes' %}
-  {% assign facebook_url = shop.metafields.social.facebook | default: 'https://facebook.com/basenotes' %}
-  <div class="basenotes-thankyou__social">
-    <p class="basenotes-thankyou__social-title">Follow us for fragrance tips & exclusive offers</p>
-    <div class="basenotes-thankyou__social-links">
-      {% if instagram_url != blank %}
-      <a href="{{ instagram_url }}" target="_blank" class="basenotes-thankyou__social-link" aria-label="Instagram">
+  {%- endif -%}
+
+  <!-- Social Follow (all orders) -->
+  {% assign instagram_url = shop.metafields.social.instagram | default: 'https://instagram.com/basenote' %}
+  {% assign tiktok_url = shop.metafields.social.tiktok | default: 'https://tiktok.com/@basenote' %}
+  {% assign facebook_url = shop.metafields.social.facebook | default: 'https://facebook.com/basenote' %}
+  <div class="bn-ty__social">
+    <p class="bn-ty__social-title">Follow us for fragrance tips & exclusive offers</p>
+    <div class="bn-ty__social-links">
+      {%- if instagram_url != blank -%}
+      <a href="{{ instagram_url }}" target="_blank" class="bn-ty__social-link" aria-label="Instagram">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
           <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
           <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
         </svg>
       </a>
-      {% endif %}
-      {% if tiktok_url != blank %}
-      <a href="{{ tiktok_url }}" target="_blank" class="basenotes-thankyou__social-link" aria-label="TikTok">
+      {%- endif -%}
+      {%- if tiktok_url != blank -%}
+      <a href="{{ tiktok_url }}" target="_blank" class="bn-ty__social-link" aria-label="TikTok">
         <svg viewBox="0 0 24 24" fill="currentColor">
           <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
         </svg>
       </a>
-      {% endif %}
-      {% if facebook_url != blank %}
-      <a href="{{ facebook_url }}" target="_blank" class="basenotes-thankyou__social-link" aria-label="Facebook">
+      {%- endif -%}
+      {%- if facebook_url != blank -%}
+      <a href="{{ facebook_url }}" target="_blank" class="bn-ty__social-link" aria-label="Facebook">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
         </svg>
       </a>
-      {% endif %}
+      {%- endif -%}
     </div>
   </div>
 
-  <!-- Referral Program -->
-  <div class="basenotes-thankyou__referral">
+  <!-- Referral (all orders) -->
+  <div class="bn-ty__referral">
     <h4>Share the Love, Get $10</h4>
     <p>Give your friends $10 off their first order and you'll get $10 too!</p>
-    <div class="basenotes-thankyou__referral-code">
+    <div class="bn-ty__referral-code">
       FRIEND{{ order.order_number | modulo: 10000 }}
       <button onclick="navigator.clipboard.writeText('FRIEND{{ order.order_number | modulo: 10000 }}')" title="Copy code">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -380,6 +568,7 @@
       </button>
     </div>
   </div>
+
 </div>
 
 <script>
@@ -411,5 +600,18 @@
       content_type: 'product'
     });
   }
+
+  // Store subscription data for account page (if subscription order)
+  {% if has_subscription %}
+  try {
+    var subData = {
+      orderId: '{{ order.order_number }}',
+      plan: '{{ sub_item.selling_plan_allocation.selling_plan.name | escape }}',
+      product: '{{ sub_item.product.title | escape }}',
+      date: new Date().toISOString()
+    };
+    localStorage.setItem('bn_last_subscription', JSON.stringify(subData));
+  } catch(e) {}
+  {% endif %}
 </script>
 <!-- END: Copy to here -->

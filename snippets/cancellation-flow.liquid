@@ -1,0 +1,378 @@
+{% comment %}
+  Cancellation Flow — 5-step churn reduction modal
+  Rendered inside account.liquid for active subscribers only.
+
+  Opens via: document.dispatchEvent(new Event('cancellation:open'))
+  Settings injected: cancelDiscountCode, cancelDiscountAmount, cancelPauseDuration, rechargePortalUrl
+{% endcomment %}
+
+<div class="cf-overlay" id="cancelFlowOverlay" style="display:none;" aria-hidden="true">
+  <div class="cf-overlay__bg" data-cf-close></div>
+  <div class="cf-panel" role="dialog" aria-label="Cancel subscription">
+
+    <!-- Step 1: Value Reminder -->
+    <div class="cf-step" data-cf-step="1">
+      <div class="cf-step__icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </div>
+      <h3 class="cf-step__title">We're sorry to see you go, {{ customer.first_name }}</h3>
+      <p class="cf-step__desc">Before you cancel, here's what you'll lose access to:</p>
+
+      <div class="cf-perks">
+        <div class="cf-perk">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="2" width="20" height="20"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/></svg>
+          <span>Monthly luxury fragrances delivered to your door</span>
+        </div>
+        <div class="cf-perk">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="2" width="20" height="20"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          <span>Free shipping on every order</span>
+        </div>
+        <div class="cf-perk">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>Your personalized fragrance history & ratings</span>
+        </div>
+        <div class="cf-perk">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="2" width="20" height="20"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <span>Exclusive subscriber pricing & early access</span>
+        </div>
+      </div>
+
+      <button class="btn btn--primary cf-btn--full" data-cf-action="keep">Keep My Subscription</button>
+      <button class="cf-text-link" data-cf-action="next">I still want to cancel</button>
+    </div>
+
+    <!-- Step 2: Reason Survey -->
+    <div class="cf-step" data-cf-step="2" style="display:none;">
+      <h3 class="cf-step__title">Help us improve</h3>
+      <p class="cf-step__desc">Why are you canceling? Your feedback helps us get better.</p>
+
+      <div class="cf-reasons" id="cfReasons">
+        <label class="cf-reason"><input type="radio" name="cf_reason" value="too_expensive"><span>Too expensive</span></label>
+        <label class="cf-reason"><input type="radio" name="cf_reason" value="not_using"><span>Not using it enough</span></label>
+        <label class="cf-reason"><input type="radio" name="cf_reason" value="dont_like_scents"><span>Don't like the scent selection</span></label>
+        <label class="cf-reason"><input type="radio" name="cf_reason" value="tried_enough"><span>I've tried enough fragrances</span></label>
+        <label class="cf-reason"><input type="radio" name="cf_reason" value="switching"><span>Switching to another service</span></label>
+        <label class="cf-reason"><input type="radio" name="cf_reason" value="financial"><span>Financial reasons</span></label>
+        <label class="cf-reason"><input type="radio" name="cf_reason" value="shipping_issues"><span>Shipping or delivery issues</span></label>
+        <label class="cf-reason"><input type="radio" name="cf_reason" value="other"><span>Other</span></label>
+      </div>
+
+      <textarea class="cf-feedback" id="cfFeedback" placeholder="Any additional feedback? (optional)" rows="3"></textarea>
+
+      <button class="btn btn--primary cf-btn--full" data-cf-action="continue" id="cfContinueBtn" disabled>Continue</button>
+      <button class="cf-text-link" data-cf-action="back">Go back</button>
+    </div>
+
+    <!-- Step 3: Retention Offer -->
+    <div class="cf-step" data-cf-step="3" style="display:none;">
+      <div class="cf-offer" id="cfOffer">
+        <!-- Content populated by JS based on reason -->
+      </div>
+
+      <button class="btn btn--primary cf-btn--full" id="cfAcceptOffer">Accept Offer</button>
+      <button class="cf-text-link" data-cf-action="decline">No thanks, continue canceling</button>
+    </div>
+
+    <!-- Step 4: Final Confirmation -->
+    <div class="cf-step" data-cf-step="4" style="display:none;">
+      <h3 class="cf-step__title">Final Confirmation</h3>
+      <p class="cf-step__desc">Please confirm you'd like to cancel your subscription.</p>
+
+      <div class="cf-final-details">
+        <div class="cf-final-row">
+          <span>Subscription ends</span>
+          <strong id="cfEndDate">End of current billing period</strong>
+        </div>
+        <div class="cf-final-row">
+          <span>What you keep</span>
+          <strong>All fragrances received & your scent history</strong>
+        </div>
+        <div class="cf-final-row">
+          <span>What you lose</span>
+          <strong>Monthly deliveries, subscriber pricing, free shipping</strong>
+        </div>
+      </div>
+
+      <button class="btn btn--primary cf-btn--full" data-cf-action="keep" style="margin-bottom:12px;">Keep My Subscription</button>
+      <button class="cf-cancel-confirm" data-cf-action="confirm-cancel">Confirm Cancellation</button>
+    </div>
+
+    <!-- Step 5: Post-Cancellation -->
+    <div class="cf-step" data-cf-step="5" style="display:none;">
+      <div class="cf-step__icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+          <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+        </svg>
+      </div>
+      <h3 class="cf-step__title">We'll miss you</h3>
+      <p class="cf-step__desc">Your subscription has been canceled. You'll continue to have access until the end of your current billing period.</p>
+      <p class="cf-step__desc" style="margin-top:12px;">If you change your mind, we'd love to have you back anytime.</p>
+
+      <a href="/collections/all" class="btn btn--primary cf-btn--full">Come Back Anytime</a>
+      <button class="cf-text-link" data-cf-action="close" style="margin-top:12px;">Close</button>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .cf-overlay { position: fixed; inset: 0; z-index: 10002; display: flex; align-items: center; justify-content: center; }
+  .cf-overlay__bg { position: absolute; inset: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(4px); }
+  .cf-panel { position: relative; z-index: 1; background: #FAF8F5; border-radius: 16px; max-width: 560px; width: 94%; max-height: 90vh; overflow-y: auto; padding: 2.5rem; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+  .cf-step { text-align: center; }
+  .cf-step__icon { margin-bottom: 20px; color: #C9A962; }
+  .cf-step__title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.5rem; font-weight: 600; color: #2D4641; margin: 0 0 8px; }
+  .cf-step__desc { font-size: 14px; color: #666; margin: 0 0 24px; line-height: 1.6; }
+
+  /* Perks */
+  .cf-perks { text-align: left; margin-bottom: 28px; }
+  .cf-perk { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #fff; border-radius: 10px; margin-bottom: 8px; font-size: 14px; color: #2D4641; }
+
+  /* Buttons */
+  .cf-btn--full { width: 100%; margin-bottom: 12px; }
+  .cf-text-link { display: block; background: none; border: none; color: #999; font-size: 13px; cursor: pointer; font-family: inherit; margin: 0 auto; padding: 8px; }
+  .cf-text-link:hover { color: #666; text-decoration: underline; }
+  .cf-cancel-confirm { display: block; width: 100%; padding: 14px; background: #c62828; color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; font-family: inherit; transition: background 0.2s; }
+  .cf-cancel-confirm:hover { background: #b71c1c; }
+
+  /* Reasons */
+  .cf-reasons { text-align: left; margin-bottom: 16px; }
+  .cf-reason { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #fff; border: 2px solid transparent; border-radius: 10px; margin-bottom: 6px; font-size: 14px; cursor: pointer; transition: border-color 0.2s; }
+  .cf-reason:hover { border-color: #E8E6E3; }
+  .cf-reason input { accent-color: #C9A962; width: 18px; height: 18px; }
+  .cf-reason input:checked ~ span { color: #2D4641; font-weight: 600; }
+  .cf-reason:has(input:checked) { border-color: #C9A962; background: rgba(201,169,98,0.04); }
+  .cf-feedback { width: 100%; border: 1px solid #E8E6E3; border-radius: 10px; padding: 12px 16px; font-size: 14px; font-family: inherit; resize: vertical; margin-bottom: 20px; }
+  .cf-feedback:focus { outline: none; border-color: #C9A962; }
+
+  /* Offer */
+  .cf-offer { text-align: center; padding: 24px; background: linear-gradient(135deg, #2D4641 0%, #1a2927 100%); border-radius: 14px; color: #fff; margin-bottom: 24px; }
+  .cf-offer__badge { display: inline-block; padding: 5px 16px; background: rgba(201,169,98,0.2); border: 1px solid rgba(201,169,98,0.4); border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #C9A962; margin-bottom: 16px; }
+  .cf-offer__title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.35rem; font-weight: 600; margin: 0 0 8px; }
+  .cf-offer__desc { font-size: 14px; opacity: 0.8; margin: 0; line-height: 1.6; }
+
+  /* Final details */
+  .cf-final-details { text-align: left; margin-bottom: 24px; }
+  .cf-final-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #E8E6E3; font-size: 14px; }
+  .cf-final-row:last-child { border-bottom: none; }
+  .cf-final-row span { color: #999; }
+  .cf-final-row strong { color: #2D4641; text-align: right; max-width: 60%; }
+
+  @media (max-width: 768px) {
+    .cf-panel { padding: 1.5rem; border-radius: 12px; width: 100%; max-height: 100vh; border-radius: 0; }
+    .cf-step__title { font-size: 1.25rem; }
+  }
+</style>
+
+<script>
+(function() {
+  'use strict';
+
+  var overlay = document.getElementById('cancelFlowOverlay');
+  if (!overlay) return;
+
+  var currentStep = 1;
+  var selectedReason = '';
+  var steps = overlay.querySelectorAll('[data-cf-step]');
+
+  // Settings from theme
+  var settings = {
+    discountCode: {{ settings.cancel_discount_code | default: 'STAYWITHUS30' | json }},
+    discountAmount: {{ settings.cancel_discount_amount | default: '30% off your next 3 months' | json }},
+    pauseDuration: {{ settings.cancel_pause_duration | default: 'up to 3 months' | json }},
+    portalUrl: {{ settings.recharge_portal_url | default: '' | json }}
+  };
+
+  function showStep(n) {
+    currentStep = n;
+    steps.forEach(function(s) {
+      s.style.display = s.dataset.cfStep == n ? '' : 'none';
+    });
+    overlay.querySelector('.cf-panel').scrollTop = 0;
+  }
+
+  function openFlow() {
+    overlay.style.display = '';
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    showStep(1);
+  }
+
+  function closeFlow() {
+    overlay.style.display = 'none';
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  // Open event
+  document.addEventListener('cancellation:open', openFlow);
+
+  // Close events
+  overlay.querySelectorAll('[data-cf-close]').forEach(function(el) {
+    el.addEventListener('click', closeFlow);
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && overlay.style.display !== 'none') {
+      closeFlow();
+    }
+  });
+
+  // Reason radio buttons
+  var reasons = overlay.querySelectorAll('input[name="cf_reason"]');
+  var continueBtn = document.getElementById('cfContinueBtn');
+
+  reasons.forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      selectedReason = this.value;
+      if (continueBtn) continueBtn.disabled = false;
+    });
+  });
+
+  // Retention offers by reason
+  var offers = {
+    too_expensive: {
+      badge: 'Special Offer',
+      title: 'How about ' + settings.discountAmount + '?',
+      desc: 'We\'d love to keep you. Use code <strong>' + settings.discountCode + '</strong> for ' + settings.discountAmount + '. That\'s less than the price of a coffee per day for luxury fragrances.',
+      action: 'Apply Discount'
+    },
+    not_using: {
+      badge: 'Take a Break',
+      title: 'Pause instead of canceling',
+      desc: 'You can pause your subscription for ' + settings.pauseDuration + '. No charges, and you can resume anytime with all your preferences saved.',
+      action: 'Pause My Subscription'
+    },
+    dont_like_scents: {
+      badge: 'We Can Help',
+      title: 'Free personalized scent consultation',
+      desc: 'Our fragrance experts will hand-pick scents based on your preferences — plus enjoy a free month on us while we find your perfect match.',
+      action: 'Get Free Consultation'
+    },
+    tried_enough: {
+      badge: 'Coming Soon',
+      title: 'New fragrances dropping next month',
+      desc: 'We\'re adding exciting new scents to our collection every month. Stay subscribed and be first to discover our newest arrivals.',
+      action: 'Stay for New Scents'
+    },
+    switching: {
+      badge: 'Loyalty Reward',
+      title: '40% off — our best price ever',
+      desc: 'As a valued member, we\'re offering you an exclusive 40% loyalty discount. That\'s just $12/month for luxury fragrances you won\'t find anywhere else.',
+      action: 'Claim 40% Off'
+    },
+    financial: {
+      badge: 'Save More',
+      title: 'Switch to our Annual Plan',
+      desc: 'Our annual plan is just $14/mo (save 30%). That\'s the most affordable way to keep discovering amazing fragrances.',
+      action: 'Switch to Annual'
+    },
+    shipping_issues: {
+      badge: 'We\'re Sorry',
+      title: 'Let us make it right',
+      desc: 'We take shipping seriously. Our support team will prioritize your account, and we\'ll add a free month to your subscription as an apology.',
+      action: 'Contact Support'
+    },
+    other: {
+      badge: 'Stay With Us',
+      title: '25% off your next 2 months',
+      desc: 'We value your membership. Enjoy 25% off your next 2 months while we work to make Base Note even better for you.',
+      action: 'Apply 25% Off'
+    }
+  };
+
+  function renderOffer() {
+    var offerEl = document.getElementById('cfOffer');
+    var acceptBtn = document.getElementById('cfAcceptOffer');
+    var offer = offers[selectedReason] || offers.other;
+
+    offerEl.innerHTML = '<span class="cf-offer__badge">' + offer.badge + '</span>' +
+      '<h4 class="cf-offer__title">' + offer.title + '</h4>' +
+      '<p class="cf-offer__desc">' + offer.desc + '</p>';
+
+    if (acceptBtn) acceptBtn.textContent = offer.action;
+  }
+
+  // Action handlers
+  overlay.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-cf-action]');
+    if (!btn) return;
+
+    var action = btn.dataset.cfAction;
+
+    switch(action) {
+      case 'keep':
+        closeFlow();
+        break;
+
+      case 'next':
+        showStep(2);
+        break;
+
+      case 'back':
+        showStep(currentStep - 1);
+        break;
+
+      case 'continue':
+        if (!selectedReason) return;
+        renderOffer();
+        showStep(3);
+        break;
+
+      case 'decline':
+        showStep(4);
+        break;
+
+      case 'confirm-cancel':
+        // TODO: Recharge API — cancel subscription
+        // Save cancellation data to localStorage
+        try {
+          var cancelData = {
+            reason: selectedReason,
+            feedback: (document.getElementById('cfFeedback') || {}).value || '',
+            date: new Date().toISOString()
+          };
+          localStorage.setItem('bn_cancellation', JSON.stringify(cancelData));
+        } catch(err) {}
+        showStep(5);
+        break;
+
+      case 'close':
+        closeFlow();
+        break;
+    }
+  });
+
+  // Accept offer button
+  var acceptOfferBtn = document.getElementById('cfAcceptOffer');
+  if (acceptOfferBtn) {
+    acceptOfferBtn.addEventListener('click', function() {
+      // TODO: Recharge API — apply retention offer based on selectedReason
+      var message = 'Offer applied! ';
+      switch(selectedReason) {
+        case 'too_expensive':
+        case 'switching':
+        case 'other':
+          message += 'Your discount has been applied to your next billing cycle.';
+          break;
+        case 'not_using':
+          message += 'Your subscription has been paused.';
+          break;
+        case 'dont_like_scents':
+        case 'shipping_issues':
+          message += 'Our team will reach out to you shortly.';
+          break;
+        case 'financial':
+          message += 'Your plan has been updated.';
+          break;
+        default:
+          message += 'Thank you for staying with us!';
+      }
+      alert(message);
+      closeFlow();
+    });
+  }
+})();
+</script>

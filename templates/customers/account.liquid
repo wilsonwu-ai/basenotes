@@ -1,928 +1,877 @@
 {%- layout 'theme' -%}
 
-<section class="account-section">
-  <div class="container">
-    <div class="account-layout">
+{%- assign is_subscriber = false -%}
+{%- if customer.tags contains 'subscriber' or customer.tags contains 'active_subscriber' -%}
+  {%- assign is_subscriber = true -%}
+{%- endif -%}
 
-      {% comment %} Sidebar Navigation {% endcomment %}
-      <aside class="account-sidebar">
-        <div class="account-user">
-          <div class="account-user__avatar">
-            {{ customer.first_name | slice: 0 }}{{ customer.last_name | slice: 0 }}
-          </div>
-          <div class="account-user__info">
-            <p class="account-user__greeting">Welcome back,</p>
-            <p class="account-user__name">{{ customer.first_name }} {{ customer.last_name }}</p>
-            <p class="account-user__email">{{ customer.email }}</p>
+{%- assign member_since = customer.created_at | date: '%s' -%}
+{%- assign now_ts = 'now' | date: '%s' -%}
+{%- assign diff_seconds = now_ts | minus: member_since -%}
+{%- assign months_active = diff_seconds | divided_by: 2592000 -%}
+{%- if months_active < 1 -%}{%- assign months_active = 1 -%}{%- endif -%}
+
+<section class="acct">
+  <div class="container">
+    <div class="acct__layout">
+
+      <!-- ═══ Sidebar ═══ -->
+      <aside class="acct__sidebar">
+        <div class="acct__user">
+          <div class="acct__avatar">{{ customer.first_name | slice: 0 }}{{ customer.last_name | slice: 0 }}</div>
+          <div>
+            <p class="acct__user-greeting">Welcome back,</p>
+            <p class="acct__user-name">{{ customer.first_name }} {{ customer.last_name }}</p>
+            <p class="acct__user-email">{{ customer.email }}</p>
           </div>
         </div>
 
-        <nav class="account-nav">
-          <a href="{{ routes.account_url }}" class="account-nav__link is-active">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7"/>
-              <rect x="14" y="3" width="7" height="7"/>
-              <rect x="14" y="14" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/>
-            </svg>
+        <nav class="acct__nav">
+          <a href="#dashboard" class="acct__nav-link is-active" data-nav="dashboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
             Dashboard
           </a>
-          <a href="#subscription" class="account-nav__link" data-scroll>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-            </svg>
+          <a href="#history" class="acct__nav-link" data-nav="history">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Fragrance History
+          </a>
+          <a href="#next-shipment" class="acct__nav-link" data-nav="next-shipment">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+            Next Shipment
+          </a>
+          <a href="#subscription" class="acct__nav-link" data-nav="subscription">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
             My Subscription
           </a>
-          <a href="#queue" class="account-nav__link" data-scroll>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="8" y1="6" x2="21" y2="6"/>
-              <line x1="8" y1="12" x2="21" y2="12"/>
-              <line x1="8" y1="18" x2="21" y2="18"/>
-              <line x1="3" y1="6" x2="3.01" y2="6"/>
-              <line x1="3" y1="12" x2="3.01" y2="12"/>
-              <line x1="3" y1="18" x2="3.01" y2="18"/>
-            </svg>
-            Fragrance Queue
-          </a>
-          <a href="#orders" class="account-nav__link" data-scroll>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
-              <path d="M3 6h18"/>
-              <path d="M16 10a4 4 0 0 1-8 0"/>
-            </svg>
+          <a href="#orders" class="acct__nav-link" data-nav="orders">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             Order History
           </a>
-          <a href="{{ routes.account_addresses_url }}" class="account-nav__link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
+          <a href="{{ routes.account_addresses_url }}" class="acct__nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             Addresses
-          </a>
-          <a href="#preferences" class="account-nav__link" data-scroll>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="3"/>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-            </svg>
-            Scent Preferences
           </a>
         </nav>
 
-        <div class="account-sidebar__footer">
-          <a href="{{ routes.account_logout_url }}" class="account-logout">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
+        <div class="acct__sidebar-footer">
+          <a href="{{ routes.account_logout_url }}" class="acct__logout">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             Sign Out
           </a>
         </div>
       </aside>
 
-      {% comment %} Main Content {% endcomment %}
-      <main class="account-main">
+      <!-- ═══ Main Content ═══ -->
+      <main class="acct__main">
 
-        {% comment %} Subscription Status Card {% endcomment %}
-        <section id="subscription" class="account-card account-card--featured">
-          {%- if customer.tags contains 'subscriber' or customer.tags contains 'active_subscriber' -%}
-            {%- comment -%} Active Subscriber View {%- endcomment -%}
-            <div class="subscription-header">
-              <div class="subscription-info">
-                <span class="subscription-badge">Active Subscription</span>
-                <h2 class="subscription-plan">Monthly Plan</h2>
-                <p class="subscription-next">Manage your subscription below</p>
-              </div>
-              <div class="subscription-price">
-                <span class="subscription-price__amount">{{ settings.subscription_price | default: '$20' }}</span>
-                <span class="subscription-price__period">/month</span>
-              </div>
-            </div>
+        <!-- ────── Dashboard ────── -->
+        <div data-view="dashboard" class="acct__view">
 
-            <div class="subscription-actions">
-              {%- if settings.subscription_manage_url != blank -%}
-                <a href="{{ settings.subscription_manage_url }}" class="btn btn--outline-light btn--small">Manage Plan</a>
-              {%- else -%}
-                <a href="/pages/contact" class="btn btn--outline-light btn--small">Contact Support</a>
-              {%- endif -%}
-              <a href="/collections/all" class="btn btn--gold btn--small">Browse Fragrances</a>
-            </div>
-
-            <div class="subscription-next-scent">
-              <p class="subscription-next-scent__label">Questions about your subscription?</p>
-              <p style="font-size: var(--font-size-sm); opacity: 0.8;">
-                Contact us at <a href="mailto:hello@basenotes.com" style="color: var(--color-secondary);">hello@basenotes.com</a> or visit our <a href="/pages/faq" style="color: var(--color-secondary);">FAQ page</a>.
+          <!-- Welcome Banner -->
+          <div class="acct__welcome-banner">
+            <div class="acct__welcome-content">
+              <p class="acct__welcome-eyebrow">
+                {%- if is_subscriber -%}Active Member{%- else -%}Welcome{%- endif -%}
               </p>
+              <h2 class="acct__welcome-title">Welcome back, {{ customer.first_name }}!</h2>
+              <p class="acct__welcome-meta">Member since {{ customer.created_at | date: '%B %Y' }}</p>
             </div>
+            {%- if is_subscriber -%}
+              <span class="acct__status-badge acct__status-badge--active">Active</span>
+            {%- endif -%}
+          </div>
+
+          <!-- Quick Stats -->
+          <div class="acct__stats">
+            <div class="acct__stat">
+              <span class="acct__stat-num" id="statFragrances">{{ customer.orders_count }}</span>
+              <span class="acct__stat-label">Fragrances Discovered</span>
+            </div>
+            <div class="acct__stat">
+              <span class="acct__stat-num">
+                {%- if is_subscriber -%}Monthly{%- else -%}—{%- endif -%}
+              </span>
+              <span class="acct__stat-label">Current Plan</span>
+            </div>
+            <div class="acct__stat">
+              <span class="acct__stat-num" id="statNextShipment">—</span>
+              <span class="acct__stat-label">Next Shipment</span>
+            </div>
+            <div class="acct__stat">
+              <span class="acct__stat-num">{{ months_active }}</span>
+              <span class="acct__stat-label">Months Active</span>
+            </div>
+          </div>
+
+          <!-- Upcoming Shipment (condensed) -->
+          {%- if is_subscriber -%}
+          <div class="acct__card">
+            <div class="acct__card-header">
+              <h3 class="acct__card-title">Upcoming Shipment</h3>
+              <a href="#next-shipment" class="acct__text-link">Manage</a>
+            </div>
+            <div class="acct__shipment-preview" id="dashShipmentPreview">
+              <div class="acct__shipment-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                <p>Choose your next fragrance</p>
+                <a href="#next-shipment" class="btn btn--primary btn--small">Select Fragrance</a>
+              </div>
+            </div>
+          </div>
           {%- else -%}
-            {%- comment -%} Non-Subscriber View {%- endcomment -%}
-            <div class="subscription-header">
-              <div class="subscription-info">
-                <span class="subscription-badge" style="background: rgba(255,255,255,0.2); color: white;">Start Your Journey</span>
-                <h2 class="subscription-plan">Join Base Note</h2>
-                <p class="subscription-next">Get a new luxury fragrance every month</p>
-              </div>
-              <div class="subscription-price">
-                <span class="subscription-price__amount">{{ settings.subscription_price | default: '$20' }}</span>
-                <span class="subscription-price__period">/month</span>
-              </div>
-            </div>
-
-            <ul class="subscription-benefits" style="list-style: none; padding: 0; margin: 0 0 var(--spacing-xl); opacity: 0.9;">
-              <li style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm); font-size: var(--font-size-sm);">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                5ml atomizer of premium fragrance
-              </li>
-              <li style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm); font-size: var(--font-size-sm);">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                Free shipping on all orders
-              </li>
-              <li style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm); font-size: var(--font-size-sm);">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                Pause or cancel anytime
-              </li>
-            </ul>
-
-            <div class="subscription-actions">
-              <a href="/pages/subscription" class="btn btn--gold btn--large">Start Your Subscription</a>
-              <a href="/pages/quiz" class="btn btn--outline-light btn--small" style="margin-left: var(--spacing-sm);">Take the Quiz</a>
-            </div>
+          <div class="acct__card acct__card--cta">
+            <span class="acct__cta-badge">Start Your Journey</span>
+            <h3 class="acct__cta-title">Join Base Note</h3>
+            <p class="acct__cta-desc">Get a new luxury fragrance delivered every month for just $20 + free shipping.</p>
+            <a href="/collections/all" class="btn btn--gold">Subscribe Now</a>
+          </div>
           {%- endif -%}
-        </section>
 
-        {% comment %} Quick Stats {% endcomment %}
-        <div class="account-stats">
-          <div class="account-stat">
-            <span class="account-stat__number">{{ customer.orders_count }}</span>
-            <span class="account-stat__label">Orders</span>
+          <!-- Recent Orders (condensed) -->
+          <div class="acct__card">
+            <div class="acct__card-header">
+              <h3 class="acct__card-title">Recent Activity</h3>
+              <a href="#orders" class="acct__text-link">View All</a>
+            </div>
+            {%- if customer.orders.size > 0 -%}
+              <div class="acct__order-list">
+                {%- for order in customer.orders limit: 3 -%}
+                <a href="{{ order.customer_url }}" class="acct__order-row">
+                  <div class="acct__order-info">
+                    <span class="acct__order-num">{{ order.name }}</span>
+                    <span class="acct__order-date">{{ order.created_at | date: '%b %d, %Y' }}</span>
+                  </div>
+                  <span class="acct__order-status acct__order-status--{{ order.fulfillment_status | default: 'processing' }}">
+                    {{ order.fulfillment_status_label | default: 'Processing' }}
+                  </span>
+                  <span class="acct__order-total">{{ order.total_price | money }}</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+                {%- endfor -%}
+              </div>
+            {%- else -%}
+              <div class="acct__empty">
+                <p>No orders yet</p>
+                <a href="/collections/all" class="btn btn--primary btn--small">Start Shopping</a>
+              </div>
+            {%- endif -%}
           </div>
-          <div class="account-stat">
-            <span class="account-stat__number" id="queueCountStat">0</span>
-            <span class="account-stat__label">In Queue</span>
-          </div>
-          <div class="account-stat">
-            {%- assign member_since = customer.created_at | date: '%s' -%}
-            {%- assign now = 'now' | date: '%s' -%}
-            {%- assign diff_seconds = now | minus: member_since -%}
-            {%- assign months_active = diff_seconds | divided_by: 2592000 -%}
-            {%- if months_active < 1 -%}{%- assign months_active = 1 -%}{%- endif -%}
-            <span class="account-stat__number">{{ months_active }}</span>
-            <span class="account-stat__label">Months Active</span>
-          </div>
-          <div class="account-stat">
-            <span class="account-stat__number" id="wishlistCountStat">0</span>
-            <span class="account-stat__label">Wishlist</span>
-          </div>
+
         </div>
 
-        {% comment %} Fragrance Queue {% endcomment %}
-        <section id="queue" class="account-card">
-          <div class="account-card__header">
-            <h3 class="account-card__title">Your Fragrance Queue</h3>
-            <a href="/collections/all" class="text-link">Add More</a>
-          </div>
+        <!-- ────── Fragrance History ────── -->
+        <div data-view="history" class="acct__view" style="display:none;">
 
-          <div class="queue-list" id="queueList">
-            {%- comment -%} Queue items will be populated by JavaScript from localStorage {%- endcomment -%}
-          </div>
+          <div class="acct__card">
+            <div class="acct__card-header">
+              <h3 class="acct__card-title">Your Fragrance Journey</h3>
+            </div>
 
-          <div class="queue-empty" id="queueEmpty" style="display: none;">
-            <div class="empty-state">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                <line x1="8" y1="6" x2="21" y2="6"/>
-                <line x1="8" y1="12" x2="21" y2="12"/>
-                <line x1="8" y1="18" x2="21" y2="18"/>
-                <line x1="3" y1="6" x2="3.01" y2="6"/>
-                <line x1="3" y1="12" x2="3.01" y2="12"/>
-                <line x1="3" y1="18" x2="3.01" y2="18"/>
+            {%- comment -%}
+              Data source: customer.metafields.subscription.fragrance_history
+              Expected JSON array: [{ "month":"March 2026", "product_title":"Midnight Oud", "product_handle":"midnight-oud", "product_image":"...", "family":"Woody", "top_notes":"Bergamot, Saffron", "heart_notes":"Oud, Rose", "base_notes":"Sandalwood, Musk" }, ...]
+            {%- endcomment -%}
+            {%- assign fh_json = customer.metafields.subscription.fragrance_history -%}
+
+            <div class="fh-timeline" id="fragranceTimeline">
+              <!-- Populated by JS from metafield or localStorage fallback -->
+            </div>
+
+            <div class="fh-empty" id="fragranceTimelineEmpty" style="display:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
               </svg>
-              <p>Your fragrance queue is empty</p>
-              <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--spacing-lg);">
-                Browse our collection and add fragrances to build your queue
-              </p>
-              <a href="/collections/all" class="btn btn--primary">Browse Fragrances</a>
+              <h4>Your journey starts soon!</h4>
+              <p>Once you receive your first fragrance, your scent history will appear here.</p>
+              <a href="/collections/all" class="btn btn--primary btn--small">Browse Fragrances</a>
             </div>
           </div>
-        </section>
 
-        {% comment %} Recent Orders {% endcomment %}
-        <section id="orders" class="account-card">
-          <div class="account-card__header">
-            <h3 class="account-card__title">Recent Orders</h3>
-          </div>
+        </div>
 
-          {%- if customer.orders.size > 0 -%}
-            <div class="orders-list">
-              {%- for order in customer.orders limit: 5 -%}
-                <a href="{{ order.customer_url }}" class="order-item">
-                  <div class="order-item__info">
-                    <span class="order-item__number">{{ order.name }}</span>
-                    <span class="order-item__date">{{ order.created_at | date: '%B %d, %Y' }}</span>
-                  </div>
-                  <div class="order-item__status">
-                    <span class="order-status order-status--{{ order.fulfillment_status | default: 'processing' }}">
-                      {{ order.fulfillment_status_label | default: 'Processing' }}
-                    </span>
-                  </div>
-                  <div class="order-item__total">
-                    {{ order.total_price | money }}
-                  </div>
-                  <svg class="order-item__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="9 18 15 12 9 6"/>
-                  </svg>
-                </a>
-              {%- endfor -%}
+        <!-- ────── Next Shipment ────── -->
+        <div data-view="next-shipment" class="acct__view" style="display:none;">
+
+          {%- if is_subscriber -%}
+          <div class="acct__card">
+            <div class="acct__card-header">
+              <h3 class="acct__card-title">Next Shipment</h3>
+              <span class="ns-status-badge" id="nsStatusBadge">Action Needed</span>
             </div>
+
+            <!-- Selected fragrance display -->
+            <div class="ns-selected" id="nsSelected" style="display:none;">
+              <div class="ns-selected__card">
+                <div class="ns-selected__image" id="nsImage"></div>
+                <div class="ns-selected__info">
+                  <h4 class="ns-selected__name" id="nsName"></h4>
+                  <span class="ns-selected__family" id="nsFamily"></span>
+                  <p class="ns-selected__ship">Ships in <span id="nsShipDays">—</span> days</p>
+                </div>
+              </div>
+              <div class="ns-actions">
+                <button class="btn btn--outline btn--small" id="nsSwapBtn">Swap Fragrance</button>
+                <button class="btn btn--outline btn--small ns-skip-btn" id="nsSkipBtn">Skip This Month</button>
+              </div>
+            </div>
+
+            <!-- No selection / action needed -->
+            <div class="ns-choose" id="nsChoose">
+              <div class="ns-choose__content">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+                  <path d="M12 6v6l4 2"/>
+                </svg>
+                <h4>Choose Your Next Fragrance</h4>
+                <p>Select from our exclusive collection before the auto-selection date.</p>
+                <button class="btn btn--primary" id="nsChooseBtn">Choose Now</button>
+              </div>
+            </div>
+
+            <!-- Skipped state -->
+            <div class="ns-skipped" id="nsSkipped" style="display:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40">
+                <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
+              </svg>
+              <h4>Month Skipped</h4>
+              <p>You've skipped this month's shipment. Your subscription will resume next month.</p>
+              <button class="btn btn--outline btn--small" id="nsUndoSkip">Undo Skip</button>
+            </div>
+          </div>
           {%- else -%}
-            <div class="empty-state">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
-                <path d="M3 6h18"/>
-                <path d="M16 10a4 4 0 0 1-8 0"/>
-              </svg>
-              <p>No orders yet</p>
-              <a href="/collections/all" class="btn btn--primary">Start Shopping</a>
-            </div>
+          <div class="acct__card acct__card--cta">
+            <span class="acct__cta-badge">Get Started</span>
+            <h3 class="acct__cta-title">Subscribe to Base Note</h3>
+            <p class="acct__cta-desc">Choose your own fragrance each month or let us surprise you with our expert picks.</p>
+            <a href="/collections/all" class="btn btn--gold">Start Your Subscription</a>
+          </div>
           {%- endif -%}
-        </section>
 
-        {% comment %} Default Address {% endcomment %}
-        {%- if customer.default_address -%}
-          <section class="account-card">
-            <div class="account-card__header">
-              <h3 class="account-card__title">Shipping Address</h3>
-              <a href="{{ routes.account_addresses_url }}" class="text-link">Edit</a>
+        </div>
+
+        <!-- ────── Subscription Management ────── -->
+        <div data-view="subscription" class="acct__view" style="display:none;">
+
+          {%- if is_subscriber -%}
+          <!-- Featured card -->
+          <div class="acct__welcome-banner">
+            <div class="acct__welcome-content">
+              <span class="acct__status-badge acct__status-badge--active" style="margin-bottom:12px;">Active</span>
+              <h2 class="acct__welcome-title" style="font-size:1.5rem;">Monthly Subscription</h2>
+              <p class="acct__welcome-meta">{{ settings.sub_plan_monthly_per_month | default: '$20/mo' }}</p>
             </div>
-            <div class="address-display">
-              <p class="address-display__name">{{ customer.default_address.first_name }} {{ customer.default_address.last_name }}</p>
-              <p class="address-display__line">{{ customer.default_address.address1 }}</p>
-              {%- if customer.default_address.address2 != blank -%}
-                <p class="address-display__line">{{ customer.default_address.address2 }}</p>
-              {%- endif -%}
-              <p class="address-display__line">{{ customer.default_address.city }}, {{ customer.default_address.province_code }} {{ customer.default_address.zip }}</p>
-              <p class="address-display__line">{{ customer.default_address.country }}</p>
+            <p class="acct__welcome-meta">Member since {{ customer.created_at | date: '%B %Y' }}</p>
+          </div>
+
+          <!-- Plan Details -->
+          <div class="acct__card">
+            <div class="acct__card-header">
+              <h3 class="acct__card-title">Plan Details</h3>
             </div>
-          </section>
-        {%- endif -%}
+            <div class="sub-details">
+              <div class="sub-details__row">
+                <span class="sub-details__label">Plan</span>
+                <span class="sub-details__value">Monthly</span>
+              </div>
+              <div class="sub-details__row">
+                <span class="sub-details__label">Price</span>
+                <span class="sub-details__value">{{ settings.sub_plan_monthly_per_month | default: '$20/mo' }}</span>
+              </div>
+              <div class="sub-details__row">
+                <span class="sub-details__label">Next Billing</span>
+                <span class="sub-details__value" id="subNextBilling">—</span>
+              </div>
+              <div class="sub-details__row">
+                <span class="sub-details__label">Payment Method</span>
+                <span class="sub-details__value">•••• •••• •••• ——</span>
+              </div>
+              <div class="sub-details__row">
+                <span class="sub-details__label">Shipping Address</span>
+                <span class="sub-details__value">
+                  {%- if customer.default_address -%}
+                    {{ customer.default_address.address1 }}, {{ customer.default_address.city }}
+                  {%- else -%}
+                    Not set
+                  {%- endif -%}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="acct__card">
+            <div class="acct__card-header">
+              <h3 class="acct__card-title">Subscription Actions</h3>
+            </div>
+            <div class="sub-actions">
+              <a href="{{ settings.recharge_portal_url | default: '/pages/contact' }}" class="sub-action-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Change Plan
+              </a>
+              <a href="{{ settings.recharge_portal_url | default: '/pages/contact' }}" class="sub-action-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                Update Payment
+              </a>
+              <button class="sub-action-btn" id="subSkipBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+                Skip Next Month
+              </button>
+              <button class="sub-action-btn" id="subPauseBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                Pause Subscription
+              </button>
+            </div>
+            <div class="sub-cancel">
+              <button class="sub-cancel__link" id="subCancelBtn">Cancel subscription</button>
+            </div>
+          </div>
+          {%- else -%}
+          <div class="acct__card acct__card--cta">
+            <span class="acct__cta-badge">Start Your Journey</span>
+            <h3 class="acct__cta-title">Join Base Note</h3>
+            <p class="acct__cta-desc">Discover a new luxury fragrance every month. Plans start at just $14/mo.</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <a href="/collections/all" class="btn btn--gold">Subscribe Now</a>
+              <a href="/pages/quiz" class="btn btn--outline">Take the Scent Quiz</a>
+            </div>
+          </div>
+          {%- endif -%}
+
+        </div>
+
+        <!-- ────── Order History ────── -->
+        <div data-view="orders" class="acct__view" style="display:none;">
+
+          <div class="acct__card">
+            <div class="acct__card-header">
+              <h3 class="acct__card-title">Order History</h3>
+            </div>
+
+            {%- if customer.orders.size > 0 -%}
+              <div class="acct__order-list">
+                {%- for order in customer.orders -%}
+                <a href="{{ order.customer_url }}" class="acct__order-row">
+                  <div class="acct__order-info">
+                    <span class="acct__order-num">{{ order.name }}</span>
+                    <span class="acct__order-date">{{ order.created_at | date: '%B %d, %Y' }}</span>
+                  </div>
+                  <span class="acct__order-status acct__order-status--{{ order.fulfillment_status | default: 'processing' }}">
+                    {{ order.fulfillment_status_label | default: 'Processing' }}
+                  </span>
+                  <span class="acct__order-total">{{ order.total_price | money }}</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+                {%- endfor -%}
+              </div>
+            {%- else -%}
+              <div class="acct__empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="48" height="48">
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+                <p>No orders yet</p>
+                <a href="/collections/all" class="btn btn--primary btn--small">Start Shopping</a>
+              </div>
+            {%- endif -%}
+          </div>
+
+        </div>
 
       </main>
     </div>
   </div>
 </section>
 
+{%- if is_subscriber -%}
+  {% render 'fragrance-selector', mode: 'modal' %}
+  {% render 'cancellation-flow' %}
+{%- endif -%}
+
+<!-- ═══════════════════════════════════════ -->
+<!-- STYLES                                  -->
+<!-- ═══════════════════════════════════════ -->
 <style>
-  .account-section {
-    padding-top: calc(var(--header-height) + var(--spacing-2xl));
-    padding-bottom: var(--spacing-4xl);
-    min-height: 100vh;
-    background: var(--color-background-secondary);
-  }
-
-  .account-layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: var(--spacing-2xl);
-  }
-
-  /* Sidebar */
-  .account-sidebar {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
-    height: fit-content;
-    position: sticky;
-    top: calc(var(--header-height) + var(--spacing-xl));
-  }
-
-  .account-user {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding-bottom: var(--spacing-xl);
-    border-bottom: 1px solid var(--color-border);
-    margin-bottom: var(--spacing-xl);
-  }
-
-  .account-user__avatar {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--color-primary);
-    color: white;
-    border-radius: 50%;
-    font-weight: 600;
-    font-size: var(--font-size-sm);
-  }
-
-  .account-user__greeting {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-light);
-  }
-
-  .account-user__name {
-    font-weight: 600;
-    font-size: var(--font-size-base);
-  }
-
-  .account-user__email {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-muted);
-  }
-
-  .account-nav {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
-
-  .account-nav__link {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    transition: all 0.2s;
-  }
-
-  .account-nav__link svg {
-    width: 18px;
-    height: 18px;
-  }
-
-  .account-nav__link:hover {
-    background: var(--color-background-secondary);
-    color: var(--color-primary);
-  }
-
-  .account-nav__link.is-active {
-    background: var(--color-primary);
-    color: white;
-  }
-
-  .account-sidebar__footer {
-    margin-top: var(--spacing-xl);
-    padding-top: var(--spacing-xl);
-    border-top: 1px solid var(--color-border);
-  }
-
-  .account-logout {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-  }
-
-  .account-logout svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  /* Main Content */
-  .account-main {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xl);
-  }
-
-  .account-card {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
-  }
-
-  .account-card--featured {
-    background: linear-gradient(135deg, var(--color-primary) 0%, #2a2a2a 100%);
-    color: white;
-  }
-
-  .account-card__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-lg);
-  }
-
-  .account-card__title {
-    font-size: var(--font-size-xl);
-    font-weight: 600;
-  }
-
-  .text-link {
-    color: var(--color-secondary);
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-  }
-
-  /* Subscription Card */
-  .subscription-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: var(--spacing-xl);
-  }
-
-  .subscription-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    background: var(--color-secondary);
-    color: var(--color-primary);
-    font-size: var(--font-size-xs);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-radius: var(--radius-full);
-    margin-bottom: var(--spacing-sm);
-  }
-
-  .subscription-plan {
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--spacing-xs);
-  }
-
-  .subscription-next {
-    opacity: 0.8;
-    font-size: var(--font-size-sm);
-  }
-
-  .subscription-price__amount {
-    font-size: var(--font-size-4xl);
-    font-weight: 700;
-  }
-
-  .subscription-price__period {
-    opacity: 0.7;
-  }
-
-  .subscription-actions {
-    display: flex;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-xl);
-  }
-
-  .subscription-next-scent {
-    padding-top: var(--spacing-xl);
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .subscription-next-scent__label {
-    font-size: var(--font-size-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    opacity: 0.7;
-    margin-bottom: var(--spacing-md);
-  }
-
-  .subscription-next-scent__product {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-lg);
-  }
-
-  .subscription-next-scent__image {
-    width: 60px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .subscription-next-scent__image svg {
-    width: 40px;
-    opacity: 0.6;
-  }
-
-  .subscription-next-scent__details h4 {
-    font-size: var(--font-size-lg);
-    margin-bottom: var(--spacing-xs);
-  }
-
-  .subscription-next-scent__details p {
-    font-size: var(--font-size-sm);
-    opacity: 0.7;
-    margin-bottom: var(--spacing-sm);
-  }
-
-  /* Stats */
-  .account-stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--spacing-md);
-  }
-
-  .account-stat {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
-    text-align: center;
-  }
-
-  .account-stat__number {
-    display: block;
-    font-size: var(--font-size-3xl);
-    font-weight: 700;
-    color: var(--color-secondary);
-    margin-bottom: var(--spacing-xs);
-  }
-
-  .account-stat__label {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-  }
-
-  /* Queue */
-  .queue-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-  }
-
-  .queue-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md);
-    background: var(--color-background-secondary);
-    border-radius: var(--radius-md);
-  }
-
-  .queue-item__position {
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--color-secondary);
-    color: var(--color-primary);
-    border-radius: 50%;
-    font-weight: 700;
-    font-size: var(--font-size-sm);
-  }
-
-  .queue-item__image {
-    width: 50px;
-    height: 60px;
-    background: white;
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .queue-item__image svg {
-    width: 30px;
-    color: var(--color-text-muted);
-  }
-
-  .queue-item__details {
-    flex: 1;
-  }
-
-  .queue-item__details h4 {
-    font-size: var(--font-size-base);
-    font-weight: 600;
-    margin-bottom: 2px;
-  }
-
-  .queue-item__details p {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-  }
-
-  .queue-item__actions {
-    display: flex;
-    gap: var(--spacing-xs);
-  }
-
-  .queue-item__move,
-  .queue-item__remove {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .queue-item__move svg,
-  .queue-item__remove svg {
-    width: 16px;
-    height: 16px;
-    color: var(--color-text-muted);
-  }
-
-  .queue-item__move:hover {
-    border-color: var(--color-secondary);
-  }
-
-  .queue-item__remove:hover {
-    border-color: var(--color-error);
-  }
-
-  .queue-item__remove:hover svg {
-    color: var(--color-error);
-  }
-
-  /* Orders */
-  .orders-list {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .order-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-lg);
-    padding: var(--spacing-md) 0;
-    border-bottom: 1px solid var(--color-border);
-    transition: background 0.2s;
-  }
-
-  .order-item:last-child {
-    border-bottom: none;
-  }
-
-  .order-item:hover {
-    background: var(--color-background-secondary);
-    margin: 0 calc(-1 * var(--spacing-md));
-    padding-left: var(--spacing-md);
-    padding-right: var(--spacing-md);
-  }
-
-  .order-item__info {
-    flex: 1;
-  }
-
-  .order-item__number {
-    font-weight: 600;
-    display: block;
-  }
-
-  .order-item__date {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-  }
-
-  .order-status {
-    padding: 4px 10px;
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-radius: var(--radius-full);
-  }
-
-  .order-status--fulfilled {
-    background: rgba(76, 175, 80, 0.1);
-    color: var(--color-success);
-  }
-
-  .order-status--unfulfilled,
-  .order-status--processing {
-    background: rgba(201, 168, 108, 0.1);
-    color: var(--color-secondary);
-  }
-
-  .order-item__total {
-    font-weight: 600;
-  }
-
-  .order-item__arrow {
-    width: 16px;
-    height: 16px;
-    color: var(--color-text-muted);
-  }
-
-  /* Empty State */
-  .empty-state {
-    text-align: center;
-    padding: var(--spacing-3xl);
-  }
-
-  .empty-state svg {
-    width: 48px;
-    height: 48px;
-    color: var(--color-text-muted);
-    margin-bottom: var(--spacing-md);
-  }
-
-  .empty-state p {
-    color: var(--color-text-light);
-    margin-bottom: var(--spacing-lg);
-  }
-
-  /* Address */
-  .address-display {
-    color: var(--color-text-light);
-  }
-
-  .address-display__name {
-    font-weight: 600;
-    color: var(--color-text);
-    margin-bottom: var(--spacing-sm);
-  }
-
-  .address-display__line {
-    margin: 0;
-    line-height: 1.6;
-  }
-
-  /* Responsive */
+  /* ── Layout ── */
+  .acct { padding-top: calc(var(--header-height, 110px) + 2.5rem); padding-bottom: 4rem; min-height: 100vh; background: #F5F3F0; }
+  .acct__layout { display: grid; grid-template-columns: 280px 1fr; gap: 2rem; }
+
+  /* ── Sidebar ── */
+  .acct__sidebar { background: #fff; border-radius: 12px; padding: 1.5rem; height: fit-content; position: sticky; top: calc(var(--header-height, 110px) + 1.5rem); }
+  .acct__user { display: flex; align-items: center; gap: 12px; padding-bottom: 1.25rem; border-bottom: 1px solid #E8E6E3; margin-bottom: 1.25rem; }
+  .acct__avatar { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: #2D4641; color: #fff; border-radius: 50%; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+  .acct__user-greeting { font-size: 12px; color: #999; margin: 0; }
+  .acct__user-name { font-weight: 700; font-size: 14px; margin: 0; color: #2D4641; }
+  .acct__user-email { font-size: 12px; color: #999; margin: 0; }
+  .acct__nav { display: flex; flex-direction: column; gap: 4px; }
+  .acct__nav-link { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; color: #666; text-decoration: none; transition: all 0.2s; }
+  .acct__nav-link:hover { background: #F5F3F0; color: #2D4641; }
+  .acct__nav-link.is-active { background: #2D4641; color: #fff; }
+  .acct__sidebar-footer { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid #E8E6E3; }
+  .acct__logout { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #999; text-decoration: none; }
+  .acct__logout:hover { color: #2D4641; }
+
+  /* ── Main ── */
+  .acct__main { display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
+  .acct__view { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  /* ── Welcome Banner ── */
+  .acct__welcome-banner { background: linear-gradient(135deg, #2D4641 0%, #1a2927 100%); border-radius: 12px; padding: 2rem; color: #fff; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
+  .acct__welcome-banner::before { content: ''; position: absolute; top: -40%; right: -20%; width: 60%; height: 180%; background: radial-gradient(ellipse, rgba(201,169,98,0.08) 0%, transparent 70%); pointer-events: none; }
+  .acct__welcome-content { position: relative; }
+  .acct__welcome-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #C9A962; margin: 0 0 8px; }
+  .acct__welcome-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.75rem; font-weight: 600; margin: 0 0 4px; }
+  .acct__welcome-meta { font-size: 13px; opacity: 0.6; margin: 0; }
+  .acct__status-badge { display: inline-block; padding: 5px 14px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  .acct__status-badge--active { background: rgba(76,175,80,0.15); color: #4CAF50; border: 1px solid rgba(76,175,80,0.3); }
+
+  /* ── Stats ── */
+  .acct__stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .acct__stat { background: #fff; border-radius: 12px; padding: 1.25rem; text-align: center; }
+  .acct__stat-num { display: block; font-size: 1.5rem; font-weight: 700; color: #C9A962; margin-bottom: 4px; font-family: 'Cormorant Garamond', Georgia, serif; }
+  .acct__stat-label { font-size: 12px; color: #999; }
+
+  /* ── Card ── */
+  .acct__card { background: #fff; border-radius: 12px; padding: 1.5rem; }
+  .acct__card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+  .acct__card-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.25rem; font-weight: 600; color: #2D4641; margin: 0; }
+  .acct__text-link { color: #C9A962; font-size: 13px; font-weight: 600; text-decoration: none; }
+  .acct__text-link:hover { text-decoration: underline; }
+
+  /* ── CTA card ── */
+  .acct__card--cta { background: linear-gradient(135deg, #2D4641 0%, #1a2927 100%); color: #fff; text-align: center; padding: 2.5rem; }
+  .acct__cta-badge { display: inline-block; padding: 5px 16px; background: rgba(201,169,98,0.15); border: 1px solid rgba(201,169,98,0.4); border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #C9A962; margin-bottom: 16px; }
+  .acct__cta-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.5rem; font-weight: 600; margin: 0 0 8px; }
+  .acct__cta-desc { font-size: 14px; opacity: 0.75; margin: 0 0 24px; max-width: 400px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+
+  /* ── Orders ── */
+  .acct__order-list { display: flex; flex-direction: column; }
+  .acct__order-row { display: flex; align-items: center; gap: 1rem; padding: 12px 0; border-bottom: 1px solid #F0EDE8; text-decoration: none; color: inherit; transition: background 0.15s; }
+  .acct__order-row:last-child { border-bottom: none; }
+  .acct__order-row:hover { background: #FAF8F5; margin: 0 -12px; padding-left: 12px; padding-right: 12px; border-radius: 8px; }
+  .acct__order-info { flex: 1; min-width: 0; }
+  .acct__order-num { font-weight: 700; font-size: 14px; display: block; color: #2D4641; }
+  .acct__order-date { font-size: 12px; color: #999; }
+  .acct__order-status { padding: 3px 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; border-radius: 999px; white-space: nowrap; }
+  .acct__order-status--fulfilled { background: rgba(76,175,80,0.1); color: #4CAF50; }
+  .acct__order-status--unfulfilled, .acct__order-status--processing { background: rgba(201,169,98,0.1); color: #C9A962; }
+  .acct__order-total { font-weight: 700; font-size: 14px; color: #2D4641; }
+
+  /* ── Empty ── */
+  .acct__empty { text-align: center; padding: 2.5rem 1rem; }
+  .acct__empty svg { color: #ccc; margin-bottom: 12px; }
+  .acct__empty p { color: #999; font-size: 14px; margin: 0 0 16px; }
+
+  /* ── Shipment Preview ── */
+  .acct__shipment-placeholder { text-align: center; padding: 2rem; color: #999; }
+  .acct__shipment-placeholder svg { margin-bottom: 12px; color: #ccc; }
+  .acct__shipment-placeholder p { margin: 0 0 16px; font-size: 14px; }
+
+  /* ── Fragrance History Timeline ── */
+  .fh-timeline { position: relative; padding-left: 32px; }
+  .fh-timeline::before { content: ''; position: absolute; left: 11px; top: 0; bottom: 0; width: 2px; background: #E8E6E3; }
+  .fh-entry { position: relative; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #F0EDE8; }
+  .fh-entry:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .fh-entry__dot { position: absolute; left: -32px; top: 4px; width: 22px; height: 22px; background: #2D4641; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 2px #E8E6E3; }
+  .fh-entry__month { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #C9A962; margin-bottom: 12px; }
+  .fh-entry__grid { display: grid; grid-template-columns: 120px 1fr; gap: 1.25rem; }
+  .fh-entry__image { width: 120px; height: 120px; border-radius: 10px; overflow: hidden; background: #F5F3F0; }
+  .fh-entry__image img { width: 100%; height: 100%; object-fit: cover; }
+  .fh-entry__name { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #C9A962; margin: 0 0 4px; }
+  .fh-entry__family { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #2D4641; background: #F0EDE8; padding: 3px 10px; border-radius: 999px; margin-bottom: 10px; }
+  .fh-entry__notes { font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 12px; }
+  .fh-entry__notes strong { color: #2D4641; font-weight: 700; }
+
+  /* Star rating */
+  .fh-stars { display: flex; gap: 4px; margin-bottom: 10px; }
+  .fh-star { cursor: pointer; width: 22px; height: 22px; color: #ddd; transition: color 0.15s; }
+  .fh-star.is-filled { color: #C9A962; }
+  .fh-star:hover { color: #C9A962; }
+
+  /* User notes */
+  .fh-user-note { display: flex; gap: 8px; margin-bottom: 12px; }
+  .fh-user-note textarea { flex: 1; border: 1px solid #E8E6E3; border-radius: 8px; padding: 8px 12px; font-size: 13px; font-family: inherit; resize: vertical; min-height: 40px; }
+  .fh-user-note textarea:focus { outline: none; border-color: #C9A962; }
+  .fh-user-note button { padding: 8px 16px; background: #2D4641; color: #fff; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+
+  /* Action buttons */
+  .fh-entry__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .fh-entry__actions a, .fh-entry__actions button { padding: 6px 14px; font-size: 12px; font-weight: 600; border-radius: 6px; text-decoration: none; cursor: pointer; transition: all 0.2s; }
+  .fh-action--again { background: #2D4641; color: #fff; border: none; }
+  .fh-action--fullsize { background: transparent; color: #2D4641; border: 1px solid #E8E6E3; }
+
+  .fh-empty { text-align: center; padding: 3rem 1rem; }
+  .fh-empty svg { color: #ccc; margin-bottom: 16px; }
+  .fh-empty h4 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.25rem; color: #2D4641; margin: 0 0 8px; }
+  .fh-empty p { color: #999; font-size: 14px; margin: 0 0 20px; line-height: 1.5; }
+
+  /* ── Next Shipment ── */
+  .ns-status-badge { padding: 4px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; border-radius: 999px; }
+  .ns-status-badge.ns-confirmed { background: rgba(76,175,80,0.1); color: #4CAF50; }
+  .ns-status-badge.ns-auto { background: rgba(201,169,98,0.1); color: #C9A962; }
+  .ns-status-badge.ns-action { background: rgba(255,152,0,0.1); color: #FF9800; }
+  .ns-status-badge.ns-skipped { background: rgba(158,158,158,0.1); color: #9E9E9E; }
+  .ns-selected__card { display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem; background: #FAF8F5; border-radius: 12px; margin-bottom: 1.25rem; }
+  .ns-selected__image { width: 100px; height: 100px; border-radius: 10px; overflow: hidden; background: #F0EDE8; flex-shrink: 0; }
+  .ns-selected__image img { width: 100%; height: 100%; object-fit: cover; }
+  .ns-selected__name { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.15rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: #2D4641; margin: 0 0 4px; }
+  .ns-selected__family { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #C9A962; margin-bottom: 8px; }
+  .ns-selected__ship { font-size: 13px; color: #666; margin: 0; }
+  .ns-actions { display: flex; gap: 10px; }
+  .ns-skip-btn { color: #999 !important; border-color: #ddd !important; }
+  .ns-choose__content { text-align: center; padding: 2.5rem 1rem; }
+  .ns-choose__content svg { color: #ccc; margin-bottom: 16px; }
+  .ns-choose__content h4 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; color: #2D4641; margin: 0 0 8px; }
+  .ns-choose__content p { font-size: 14px; color: #999; margin: 0 0 20px; }
+  .ns-skipped { text-align: center; padding: 2.5rem 1rem; }
+  .ns-skipped svg { color: #ccc; margin-bottom: 16px; }
+  .ns-skipped h4 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; color: #2D4641; margin: 0 0 8px; }
+  .ns-skipped p { font-size: 14px; color: #999; margin: 0 0 20px; }
+
+  /* ── Subscription Details ── */
+  .sub-details { display: flex; flex-direction: column; }
+  .sub-details__row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #F0EDE8; }
+  .sub-details__row:last-child { border-bottom: none; }
+  .sub-details__label { font-size: 13px; color: #999; }
+  .sub-details__value { font-size: 14px; font-weight: 600; color: #2D4641; }
+  .sub-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .sub-action-btn { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: #FAF8F5; border: 1px solid #E8E6E3; border-radius: 10px; font-size: 13px; font-weight: 600; color: #2D4641; text-decoration: none; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+  .sub-action-btn:hover { border-color: #C9A962; background: rgba(201,169,98,0.04); }
+  .sub-cancel { text-align: center; padding-top: 1rem; border-top: 1px solid #F0EDE8; }
+  .sub-cancel__link { background: none; border: none; color: #999; font-size: 12px; cursor: pointer; font-family: inherit; text-decoration: underline; }
+  .sub-cancel__link:hover { color: #c62828; }
+
+  /* ── Buttons ── */
+  .btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 24px; font-weight: 700; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em; font-size: 13px; border: 2px solid transparent; font-family: inherit; }
+  .btn--primary { background: #2D4641; color: #fff; border-color: #2D4641; }
+  .btn--primary:hover { background: #1a2927; }
+  .btn--gold { background: #C9A962; color: #2D4641; border-color: #C9A962; }
+  .btn--gold:hover { background: #b8963f; }
+  .btn--outline { background: transparent; color: #fff; border-color: rgba(255,255,255,0.4); }
+  .btn--outline:hover { border-color: #fff; }
+  .btn--small { padding: 8px 18px; font-size: 12px; }
+
+  /* ── Responsive ── */
   @media (max-width: 992px) {
-    .account-layout {
-      grid-template-columns: 1fr;
-    }
-
-    .account-sidebar {
-      position: static;
-      order: -1;
-    }
-
-    .account-nav {
-      flex-direction: row;
-      flex-wrap: wrap;
-    }
-
-    .account-stats {
-      grid-template-columns: repeat(2, 1fr);
-    }
+    .acct__layout { grid-template-columns: 1fr; }
+    .acct__sidebar { position: static; }
+    .acct__nav { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+    .acct__nav-link { padding: 8px 14px; font-size: 12px; }
+    .acct__stats { grid-template-columns: repeat(2, 1fr); }
+    .sub-actions { grid-template-columns: 1fr; }
   }
-
+  @media (max-width: 768px) {
+    .acct { padding-top: calc(var(--header-height, 110px) + 1.5rem); }
+    .acct__welcome-banner { flex-direction: column; align-items: flex-start; gap: 12px; padding: 1.5rem; }
+    .acct__welcome-title { font-size: 1.35rem; }
+    .fh-entry__grid { grid-template-columns: 80px 1fr; gap: 1rem; }
+    .fh-entry__image { width: 80px; height: 80px; }
+    .ns-selected__card { flex-direction: column; text-align: center; }
+    .ns-actions { justify-content: center; }
+  }
   @media (max-width: 576px) {
-    .subscription-header {
-      flex-direction: column;
-      gap: var(--spacing-lg);
-    }
-
-    .subscription-actions {
-      flex-wrap: wrap;
-    }
-
-    .account-stats {
-      grid-template-columns: repeat(2, 1fr);
-    }
+    .acct__stats { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .acct__stat { padding: 1rem; }
+    .acct__stat-num { font-size: 1.25rem; }
   }
 </style>
 
+<!-- ═══════════════════════════════════════ -->
+<!-- JAVASCRIPT                              -->
+<!-- ═══════════════════════════════════════ -->
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Smooth scroll for anchor links
-    document.querySelectorAll('[data-scroll]').forEach(link => {
-      link.addEventListener('click', function(e) {
-        const href = this.getAttribute('href');
-        if (href.startsWith('#')) {
-          e.preventDefault();
-          const target = document.querySelector(href);
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }
+document.addEventListener('DOMContentLoaded', function() {
+  'use strict';
+
+  /* ── Hash Router ── */
+  var views = document.querySelectorAll('[data-view]');
+  var navLinks = document.querySelectorAll('[data-nav]');
+  var validRoutes = ['dashboard', 'history', 'next-shipment', 'subscription', 'orders'];
+
+  function navigate(hash) {
+    var route = (hash || '').replace('#', '') || 'dashboard';
+    if (validRoutes.indexOf(route) === -1) route = 'dashboard';
+
+    views.forEach(function(v) {
+      v.style.display = v.dataset.view === route ? '' : 'none';
+    });
+
+    navLinks.forEach(function(link) {
+      if (link.dataset.nav === route) {
+        link.classList.add('is-active');
+      } else {
+        link.classList.remove('is-active');
+      }
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  window.addEventListener('hashchange', function() {
+    navigate(location.hash);
+  });
+
+  navigate(location.hash);
+
+  /* ── Fragrance History ── */
+  var timelineEl = document.getElementById('fragranceTimeline');
+  var timelineEmptyEl = document.getElementById('fragranceTimelineEmpty');
+
+  // Try metafield data first, fall back to localStorage
+  var historyData = null;
+  {% if fh_json != blank %}
+    try { historyData = {{ fh_json }}; } catch(e) {}
+  {% endif %}
+
+  if (!historyData) {
+    try { historyData = JSON.parse(localStorage.getItem('bn_fragrance_history') || 'null'); } catch(e) {}
+  }
+
+  function getHistoryRatings() {
+    try { return JSON.parse(localStorage.getItem('bn_history_ratings') || '{}'); } catch(e) { return {}; }
+  }
+
+  function getHistoryNotes() {
+    try { return JSON.parse(localStorage.getItem('bn_history_notes') || '{}'); } catch(e) { return {}; }
+  }
+
+  function renderTimeline() {
+    if (!timelineEl) return;
+    if (!historyData || !historyData.length) {
+      if (timelineEl) timelineEl.style.display = 'none';
+      if (timelineEmptyEl) timelineEmptyEl.style.display = 'block';
+      return;
+    }
+
+    if (timelineEmptyEl) timelineEmptyEl.style.display = 'none';
+    timelineEl.style.display = 'block';
+
+    var ratings = getHistoryRatings();
+    var notes = getHistoryNotes();
+
+    timelineEl.innerHTML = historyData.map(function(entry, i) {
+      var rating = ratings[i] || 0;
+      var note = notes[i] || '';
+      var stars = '';
+      for (var s = 1; s <= 5; s++) {
+        stars += '<svg class="fh-star' + (s <= rating ? ' is-filled' : '') + '" data-entry="' + i + '" data-star="' + s + '" viewBox="0 0 24 24" fill="' + (s <= rating ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+      }
+
+      var notesHtml = '';
+      if (entry.top_notes) notesHtml += '<strong>Top:</strong> ' + entry.top_notes + '<br>';
+      if (entry.heart_notes) notesHtml += '<strong>Heart:</strong> ' + entry.heart_notes + '<br>';
+      if (entry.base_notes) notesHtml += '<strong>Base:</strong> ' + entry.base_notes;
+
+      return '<div class="fh-entry">' +
+        '<div class="fh-entry__dot"></div>' +
+        '<div class="fh-entry__month">' + (entry.month || 'Month ' + (i + 1)) + '</div>' +
+        '<div class="fh-entry__grid">' +
+          '<div class="fh-entry__image">' +
+            (entry.product_image ? '<img src="' + entry.product_image + '" alt="' + entry.product_title + '" loading="lazy">' : '') +
+          '</div>' +
+          '<div>' +
+            '<h4 class="fh-entry__name">' + (entry.product_title || 'Unknown Fragrance') + '</h4>' +
+            (entry.family ? '<span class="fh-entry__family">' + entry.family + '</span>' : '') +
+            (notesHtml ? '<div class="fh-entry__notes">' + notesHtml + '</div>' : '') +
+            '<div class="fh-stars">' + stars + '</div>' +
+            '<div class="fh-user-note">' +
+              '<textarea placeholder="Add your notes..." data-note-entry="' + i + '">' + note + '</textarea>' +
+              '<button data-save-note="' + i + '">Save</button>' +
+            '</div>' +
+            '<div class="fh-entry__actions">' +
+              (entry.product_handle ? '<a href="/products/' + entry.product_handle + '" class="fh-action--again">Get This Again</a>' : '') +
+              (entry.product_handle ? '<a href="/products/' + entry.product_handle + '" class="fh-action--fullsize">Buy Full Size</a>' : '') +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    // Star click handlers
+    timelineEl.querySelectorAll('.fh-star').forEach(function(star) {
+      star.addEventListener('click', function() {
+        var entryIdx = this.dataset.entry;
+        var starVal = parseInt(this.dataset.star);
+        var r = getHistoryRatings();
+        r[entryIdx] = starVal;
+        localStorage.setItem('bn_history_ratings', JSON.stringify(r));
+        // TODO: Recharge API — persist rating server-side
+        renderTimeline();
       });
     });
 
-    // Queue Management
-    const queueList = document.getElementById('queueList');
-    const queueEmpty = document.getElementById('queueEmpty');
-    const queueCountStat = document.getElementById('queueCountStat');
-    const wishlistCountStat = document.getElementById('wishlistCountStat');
-
-    function getQueue() {
-      try {
-        return JSON.parse(localStorage.getItem('basenotes_queue') || '[]');
-      } catch (e) {
-        return [];
-      }
-    }
-
-    function saveQueue(queue) {
-      localStorage.setItem('basenotes_queue', JSON.stringify(queue));
-      renderQueue();
-    }
-
-    function getWishlist() {
-      try {
-        return JSON.parse(localStorage.getItem('basenotes_wishlist') || '[]');
-      } catch (e) {
-        return [];
-      }
-    }
-
-    function renderQueue() {
-      const queue = getQueue();
-
-      // Update stats
-      if (queueCountStat) {
-        queueCountStat.textContent = queue.length;
-      }
-
-      if (wishlistCountStat) {
-        wishlistCountStat.textContent = getWishlist().length;
-      }
-
-      if (queue.length === 0) {
-        queueList.style.display = 'none';
-        queueEmpty.style.display = 'block';
-        return;
-      }
-
-      queueList.style.display = 'flex';
-      queueEmpty.style.display = 'none';
-
-      queueList.innerHTML = queue.map((item, index) => `
-        <div class="queue-item" data-index="${index}">
-          <div class="queue-item__position">${index + 1}</div>
-          <div class="queue-item__image">
-            ${item.image ? `<img src="${item.image}" alt="${item.title}" style="width: 100%; height: 100%; object-fit: cover;">` : `
-              <svg viewBox="0 0 60 100" fill="none" stroke="currentColor" stroke-width="1">
-                <rect x="15" y="25" width="30" height="65" rx="3"/>
-                <rect x="20" y="10" width="20" height="15"/>
-                <rect x="25" y="2" width="10" height="8" rx="2"/>
-              </svg>
-            `}
-          </div>
-          <div class="queue-item__details">
-            <h4><a href="${item.url || '#'}" style="color: inherit; text-decoration: none;">${item.title}</a></h4>
-            <p>${item.vendor || ''}</p>
-          </div>
-          <div class="queue-item__actions">
-            ${index > 0 ? `
-              <button class="queue-item__move" title="Move up" data-action="move-up" data-index="${index}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="18 15 12 9 6 15"/>
-                </svg>
-              </button>
-            ` : ''}
-            <button class="queue-item__remove" title="Remove" data-action="remove" data-index="${index}">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-      `).join('');
-
-      // Attach event listeners
-      queueList.querySelectorAll('[data-action="move-up"]').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const index = parseInt(this.dataset.index);
-          moveQueueItem(index, index - 1);
-        });
+    // Note save handlers
+    timelineEl.querySelectorAll('[data-save-note]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var idx = this.dataset.saveNote;
+        var textarea = timelineEl.querySelector('[data-note-entry="' + idx + '"]');
+        if (textarea) {
+          var n = getHistoryNotes();
+          n[idx] = textarea.value;
+          localStorage.setItem('bn_history_notes', JSON.stringify(n));
+          // TODO: Recharge API — persist notes server-side
+          btn.textContent = 'Saved!';
+          setTimeout(function() { btn.textContent = 'Save'; }, 1500);
+        }
       });
+    });
+  }
 
-      queueList.querySelectorAll('[data-action="remove"]').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const index = parseInt(this.dataset.index);
-          removeFromQueue(index);
-        });
-      });
+  renderTimeline();
+
+
+  /* ── Next Shipment ── */
+  var nsStatusBadge = document.getElementById('nsStatusBadge');
+  var nsSelected = document.getElementById('nsSelected');
+  var nsChoose = document.getElementById('nsChoose');
+  var nsSkipped = document.getElementById('nsSkipped');
+  var nsImage = document.getElementById('nsImage');
+  var nsName = document.getElementById('nsName');
+  var nsFamily = document.getElementById('nsFamily');
+
+  function getNextShipment() {
+    try { return JSON.parse(localStorage.getItem('bn_next_shipment') || 'null'); } catch(e) { return null; }
+  }
+
+  function saveNextShipment(data) {
+    localStorage.setItem('bn_next_shipment', JSON.stringify(data));
+    // TODO: Recharge API — update next shipment server-side
+    renderNextShipment();
+  }
+
+  function renderNextShipment() {
+    if (!nsStatusBadge) return;
+    var data = getNextShipment();
+
+    if (data && data.status === 'skipped') {
+      nsStatusBadge.textContent = 'Skipped';
+      nsStatusBadge.className = 'ns-status-badge ns-skipped';
+      if (nsSelected) nsSelected.style.display = 'none';
+      if (nsChoose) nsChoose.style.display = 'none';
+      if (nsSkipped) nsSkipped.style.display = 'block';
+      return;
     }
 
-    function moveQueueItem(fromIndex, toIndex) {
-      const queue = getQueue();
-      if (toIndex < 0 || toIndex >= queue.length) return;
-
-      const item = queue.splice(fromIndex, 1)[0];
-      queue.splice(toIndex, 0, item);
-      saveQueue(queue);
-    }
-
-    function removeFromQueue(index) {
-      const queue = getQueue();
-      queue.splice(index, 1);
-      saveQueue(queue);
-    }
-
-    // Initialize queue
-    renderQueue();
-
-    // Make addToQueue available globally for product pages
-    window.addToQueue = function(product) {
-      const queue = getQueue();
-      // Check if already in queue
-      if (!queue.find(item => item.id === product.id)) {
-        queue.push({
-          id: product.id,
-          title: product.title,
-          vendor: product.vendor || '',
-          url: product.url || `/products/${product.handle}`,
-          image: product.image || ''
-        });
-        saveQueue(queue);
-        alert('Added to your queue!');
-      } else {
-        alert('This fragrance is already in your queue.');
+    if (data && data.fragrance) {
+      var isAuto = data.autoSelected;
+      nsStatusBadge.textContent = isAuto ? 'Auto-Selected' : 'Confirmed';
+      nsStatusBadge.className = 'ns-status-badge ' + (isAuto ? 'ns-auto' : 'ns-confirmed');
+      if (nsSelected) {
+        nsSelected.style.display = 'block';
+        if (nsImage) nsImage.innerHTML = data.fragrance.image ? '<img src="' + data.fragrance.image + '" alt="' + data.fragrance.title + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">' : '';
+        if (nsName) nsName.textContent = data.fragrance.title;
+        if (nsFamily) nsFamily.textContent = data.fragrance.family || '';
       }
-    };
+      if (nsChoose) nsChoose.style.display = 'none';
+      if (nsSkipped) nsSkipped.style.display = 'none';
+
+      // Also update dashboard preview
+      var dashPreview = document.getElementById('dashShipmentPreview');
+      if (dashPreview) {
+        dashPreview.innerHTML = '<div style="display:flex;align-items:center;gap:16px;padding:8px;">' +
+          (data.fragrance.image ? '<img src="' + data.fragrance.image + '" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">' : '') +
+          '<div><strong style="color:#2D4641;">' + data.fragrance.title + '</strong>' +
+          '<br><span style="font-size:12px;color:#C9A962;">' + (data.fragrance.family || '') + '</span></div></div>';
+      }
+    } else {
+      nsStatusBadge.textContent = 'Action Needed';
+      nsStatusBadge.className = 'ns-status-badge ns-action';
+      if (nsSelected) nsSelected.style.display = 'none';
+      if (nsChoose) nsChoose.style.display = 'block';
+      if (nsSkipped) nsSkipped.style.display = 'none';
+    }
+
+    // Update dashboard stat
+    var statEl = document.getElementById('statNextShipment');
+    if (statEl) {
+      var nextDate = new Date();
+      nextDate.setMonth(nextDate.getMonth() + 1);
+      nextDate.setDate(1);
+      statEl.textContent = nextDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    // Update subscription billing
+    var billingEl = document.getElementById('subNextBilling');
+    if (billingEl) {
+      var billDate = new Date();
+      billDate.setMonth(billDate.getMonth() + 1);
+      billDate.setDate(1);
+      billingEl.textContent = billDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    }
+  }
+
+  renderNextShipment();
+
+  // Choose / Swap button → open fragrance selector
+  var chooseBtn = document.getElementById('nsChooseBtn');
+  var swapBtn = document.getElementById('nsSwapBtn');
+
+  function openFragranceSelector() {
+    document.dispatchEvent(new Event('fragrance-selector:open'));
+  }
+
+  if (chooseBtn) chooseBtn.addEventListener('click', openFragranceSelector);
+  if (swapBtn) swapBtn.addEventListener('click', openFragranceSelector);
+
+  // Listen for fragrance selection
+  document.addEventListener('fragrance:selected', function(e) {
+    var frag = e.detail;
+    saveNextShipment({
+      fragrance: {
+        id: frag.id,
+        handle: frag.handle,
+        title: frag.title,
+        image: frag.image,
+        family: frag.family
+      },
+      autoSelected: false,
+      status: 'confirmed'
+    });
   });
+
+  // Skip
+  var skipBtn = document.getElementById('nsSkipBtn');
+  if (skipBtn) {
+    skipBtn.addEventListener('click', function() {
+      if (confirm('Skip this month\'s shipment? You can undo this anytime.')) {
+        saveNextShipment({ status: 'skipped' });
+      }
+    });
+  }
+
+  // Undo skip
+  var undoSkipBtn = document.getElementById('nsUndoSkip');
+  if (undoSkipBtn) {
+    undoSkipBtn.addEventListener('click', function() {
+      localStorage.removeItem('bn_next_shipment');
+      renderNextShipment();
+    });
+  }
+
+  // Sub page skip/pause
+  var subSkipBtn = document.getElementById('subSkipBtn');
+  if (subSkipBtn) {
+    subSkipBtn.addEventListener('click', function() {
+      if (confirm('Skip next month\'s shipment?')) {
+        saveNextShipment({ status: 'skipped' });
+        // TODO: Recharge API
+        alert('Next month\'s shipment has been skipped.');
+      }
+    });
+  }
+
+  var subPauseBtn = document.getElementById('subPauseBtn');
+  if (subPauseBtn) {
+    subPauseBtn.addEventListener('click', function() {
+      // TODO: Recharge API — pause subscription
+      alert('To pause your subscription, please contact us at hello@basenote.com or use the Recharge portal.');
+    });
+  }
+
+  // Cancel button → open cancellation flow
+  var subCancelBtn = document.getElementById('subCancelBtn');
+  if (subCancelBtn) {
+    subCancelBtn.addEventListener('click', function() {
+      document.dispatchEvent(new Event('cancellation:open'));
+    });
+  }
+});
 </script>
