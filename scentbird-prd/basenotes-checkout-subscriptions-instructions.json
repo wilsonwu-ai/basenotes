@@ -1,0 +1,973 @@
+{
+  "project": "Base Note — Checkout, Client Portal, Subscription Reminders & Churn Reduction",
+  "version": "1.0.0",
+  "created": "2026-02-21",
+  "author": "Product Manager & Product Designer (UX/UI)",
+  "platform": "Shopify 2.0 + Recharge Subscriptions",
+  "brand": "Base Note",
+  "description": "Comprehensive JSON instructions for building the Base Note checkout flow, client portal with fragrance history, 7-day pre-shipment engagement emails, auto-pilot rotation system, and multi-step cancellation/retention flow designed to reduce churn.",
+
+  "brand_context": {
+    "tagline": "Everyone deserves access to the world's most extraordinary fragrances",
+    "catalog_size": 10,
+    "catalog_type": "Exclusive in-house fragrances only (Base Note Atelier)",
+    "atomizer_size": "5ml (~30 sprays, 1 month supply)",
+    "price_range": "$245 - $300 retail per full bottle",
+    "subscription_plans": {
+      "monthly": {"price": 20.00, "billing_cycle": "every 30 days", "perks": ["Free shipping", "Swap anytime"]},
+      "quarterly": {"price": 48.00, "billing_cycle": "every 90 days", "per_month": 16.00, "savings": "20%", "perks": ["Free shipping", "Swap anytime", "Free travel case"]},
+      "annual": {"price": 168.00, "billing_cycle": "every 365 days", "per_month": 14.00, "savings": "2 months free", "perks": ["Free shipping", "Swap anytime", "Free travel case", "Exclusive gifts"]}
+    },
+    "shipping": {
+      "regions": ["United States", "Canada"],
+      "subscription_shipping": "FREE always",
+      "new_orders": "Ships within 1-2 business days",
+      "recurring_orders": "Ships on the 1st of each month",
+      "delivery_us": "3-5 business days",
+      "delivery_canada": "5-10 business days"
+    },
+    "brand_colors": {
+      "primary_dark": "#1a1a1a",
+      "gold_accent": "#c9a86c",
+      "bright_gold": "#d4af37",
+      "background": "#faf9f6",
+      "text_primary": "#1a1a1a",
+      "text_secondary": "#666666",
+      "border_light": "#e5e5e5",
+      "error_red": "#c0392b",
+      "success_green": "#27ae60",
+      "warning_amber": "#f39c12"
+    },
+    "fragrances": [
+      {"id": 1, "name": "Midnight Oud", "family": "Woody/Oud", "occasion": "Evening", "retail": 295},
+      {"id": 2, "name": "Velvet Noir", "family": "Leather/Oriental", "occasion": "Evening", "retail": 275},
+      {"id": 3, "name": "Garden of Hesperides", "family": "Fresh/Citrus", "occasion": "Daytime", "retail": 245},
+      {"id": 4, "name": "Rose Immortelle", "family": "Floral/Rose", "occasion": "Romantic", "retail": 285},
+      {"id": 5, "name": "Tobacco & Honey", "family": "Sweet/Tobacco", "occasion": "Evening", "retail": 265},
+      {"id": 6, "name": "White Suede", "family": "Musk/Clean", "occasion": "Daytime", "retail": 255},
+      {"id": 7, "name": "Bois Sauvage", "family": "Woody/Aromatic", "occasion": "Daytime", "retail": 280},
+      {"id": 8, "name": "Ambre Céleste", "family": "Amber/Oriental", "occasion": "Evening", "retail": 290},
+      {"id": 9, "name": "Jasmine Dreams", "family": "Floral/Jasmine", "occasion": "Night", "retail": 270},
+      {"id": 10, "name": "Nomad's Path", "family": "Spicy/Exotic", "occasion": "Evening", "retail": 300}
+    ]
+  },
+
+  "module_1_checkout_flow": {
+    "description": "Complete checkout experience where any purchase automatically enrolls the user in a monthly subscription. The checkout must clearly disclose the recurring billing commitment.",
+    "critical_business_rule": "EVERY PURCHASE = AUTOMATIC SUBSCRIPTION OPT-IN. The user is subscribing to a monthly plan by completing checkout. This must be clearly disclosed per FTC guidelines.",
+
+    "step_1_cart_review": {
+      "route": "/cart",
+      "trigger": "User clicks 'Add to Cart' or 'Subscribe' from any product or plan selector",
+      "layout": {
+        "heading": "Your Subscription",
+        "subheading": "Review your selection before checkout"
+      },
+      "cart_contents": {
+        "selected_fragrance": {
+          "thumbnail": "product image",
+          "name": "e.g., Midnight Oud",
+          "size": "5ml atomizer (~30 sprays)",
+          "retail_value": "e.g., $295.00 retail value",
+          "type_badge": "SUBSCRIPTION"
+        },
+        "selected_plan": {
+          "plan_name": "e.g., Monthly Plan",
+          "price": "e.g., $20/month",
+          "billing_cycle": "Billed every 30 days",
+          "renewal_disclosure": "Your subscription renews automatically. You can cancel, skip, or swap anytime from your account.",
+          "change_plan_link": "Change plan →"
+        },
+        "plan_selector_inline": {
+          "note": "Allow user to switch plans without leaving cart",
+          "options": [
+            {"label": "Monthly", "price": "$20/mo", "badge": null},
+            {"label": "Quarterly", "price": "$16/mo", "badge": "SAVE 20%", "detail": "$48 billed every 3 months"},
+            {"label": "Annual", "price": "$14/mo", "badge": "BEST VALUE", "detail": "$168 billed annually — 2 months free"}
+          ],
+          "style": "horizontal card selector, gold border on selected"
+        },
+        "perks_display": {
+          "items": [
+            {"icon": "truck", "text": "Free shipping, always"},
+            {"icon": "refresh", "text": "Swap, skip, or cancel anytime"},
+            {"icon": "gift", "text": "Free travel case with quarterly & annual"},
+            {"icon": "shield", "text": "30-day satisfaction guarantee"}
+          ]
+        }
+      },
+      "order_summary": {
+        "fragrance": {"label": "Midnight Oud (5ml)", "value": "Included"},
+        "plan_price": {"label": "Monthly Plan", "value": "$20.00"},
+        "shipping": {"label": "Shipping", "value": "FREE", "style": "color: success_green"},
+        "discount": {"label": "Discount", "value": "-$X.XX", "conditional": true},
+        "total_today": {"label": "Total today", "value": "$20.00", "style": "font-weight: bold, font-size: 1.25rem"},
+        "renewal_notice": {"text": "Then $20.00/month starting {next_billing_date}. Cancel anytime.", "style": "font-size: 0.85rem, color: text_secondary"}
+      },
+      "promo_code": {
+        "field": {"placeholder": "Promo code", "button": "Apply"},
+        "position": "above total"
+      },
+      "cta": {
+        "label": "PROCEED TO CHECKOUT",
+        "style": "full-width, bg: primary_dark, color: white, padding: 16px, uppercase, letter-spacing",
+        "action": "navigate_to_checkout_form"
+      }
+    },
+
+    "step_2_checkout_form": {
+      "route": "/checkout",
+      "layout": "two-column: form (left 60%) | order summary (right 40%)",
+      "note": "Shopify native checkout with customizations via Shopify Functions or checkout extensibility",
+
+      "left_column_form": {
+        "section_1_contact": {
+          "heading": "Contact",
+          "fields": [
+            {"id": "email", "type": "email", "label": "Email", "required": true, "placeholder": "your@email.com"},
+            {
+              "id": "newsletter_opt_in",
+              "type": "checkbox",
+              "label": "Email me with news, exclusive offers, and fragrance recommendations",
+              "default_checked": true,
+              "pattern": "OPT-OUT (pre-checked, consistent with Scentbird model)",
+              "compliance_note": "Pre-checked permitted under CAN-SPAM (US). For GDPR (EU) users, must be unchecked by default."
+            }
+          ],
+          "account_prompt": {
+            "logged_in": "Logged in as {email}. Not you? Log out.",
+            "logged_out": "Already have an account? Log in"
+          }
+        },
+
+        "section_2_shipping": {
+          "heading": "Shipping address",
+          "fields": [
+            {"id": "country", "type": "select", "label": "Country/Region", "options": ["United States", "Canada"], "required": true},
+            {"id": "first_name", "type": "text", "label": "First name", "required": true},
+            {"id": "last_name", "type": "text", "label": "Last name", "required": true},
+            {"id": "address1", "type": "text", "label": "Address", "required": true, "autocomplete": true},
+            {"id": "address2", "type": "text", "label": "Apartment, suite, etc.", "required": false},
+            {"id": "city", "type": "text", "label": "City", "required": true},
+            {"id": "state", "type": "select", "label": "State / Province", "required": true},
+            {"id": "zip", "type": "text", "label": "ZIP / Postal code", "required": true},
+            {"id": "phone", "type": "tel", "label": "Phone", "required": false, "help_text": "For delivery updates only"}
+          ],
+          "save_address_checkbox": {
+            "label": "Save this information for next time",
+            "default_checked": true
+          }
+        },
+
+        "section_3_payment": {
+          "heading": "Payment",
+          "subheading": "All transactions are secure and encrypted.",
+          "methods": [
+            {
+              "type": "credit_card",
+              "label": "Credit card",
+              "fields": ["Card number", "Name on card", "Expiration date (MM/YY)", "Security code (CVV)"],
+              "icons": ["Visa", "Mastercard", "Amex", "Discover"],
+              "processor": "Shopify Payments (Stripe)"
+            },
+            {"type": "shopify_pay", "label": "Shop Pay", "icon": "shop_pay_logo"},
+            {"type": "paypal", "label": "PayPal", "icon": "paypal_logo"},
+            {"type": "apple_pay", "label": "Apple Pay", "conditional": "Safari/iOS only"},
+            {"type": "google_pay", "label": "Google Pay", "conditional": "Chrome/Android"}
+          ]
+        },
+
+        "section_4_subscription_disclosure": {
+          "critical": true,
+          "position": "ABOVE the Place Order button — MUST be visible without scrolling",
+          "content": {
+            "heading": "Subscription Terms",
+            "body_html": "By completing this purchase, you are subscribing to a <strong>{plan_name}</strong> plan at <strong>{price}/{cycle}</strong>. Your subscription will automatically renew and your payment method will be charged on <strong>{next_billing_date}</strong>. You may cancel, skip a month, or swap your fragrance at any time from your <a href='/account'>account dashboard</a>.",
+            "checkbox": {
+              "id": "subscription_terms_agreement",
+              "label": "I understand this is a recurring subscription and agree to the Terms of Service and Privacy Policy.",
+              "default_checked": false,
+              "required": true,
+              "links": [
+                {"text": "Terms of Service", "href": "/pages/terms"},
+                {"text": "Privacy Policy", "href": "/pages/privacy"}
+              ]
+            },
+            "style": "background: #fef9e7 (soft amber), border: 1px solid #f39c12, padding: 16px, border-radius: 4px"
+          },
+          "ftc_compliance_note": "FTC requires clear and conspicuous disclosure of material terms for negative option (auto-renewal) subscriptions. This includes: the fact that charges are recurring, the amount, the frequency, and how to cancel."
+        },
+
+        "submit_button": {
+          "label": "SUBSCRIBE & PAY ${total}",
+          "style": "full-width, bg: primary_dark, color: white, padding: 18px, font-size: 1.1rem, uppercase",
+          "disabled_until": "all required fields valid AND subscription_terms_agreement checked",
+          "loading_state": "spinner + 'Processing...'",
+          "action": "POST to Shopify checkout → create subscription via Recharge API → redirect to confirmation"
+        }
+      },
+
+      "right_column_summary": {
+        "sticky": true,
+        "content": {
+          "product_preview": {
+            "image": "fragrance thumbnail",
+            "name": "Midnight Oud",
+            "variant": "5ml Atomizer — Subscription",
+            "quantity": 1
+          },
+          "plan_badge": {
+            "text": "Monthly Plan — $20/mo",
+            "style": "bg: gold_accent, color: white, small badge"
+          },
+          "subtotal": "$20.00",
+          "shipping": "FREE",
+          "taxes": "Calculated at checkout",
+          "total": "$20.00",
+          "renewal_reminder": "Renews {next_date} at ${price}/{cycle}",
+          "guarantee": "30-day satisfaction guarantee. Not happy? We'll make it right."
+        }
+      }
+    },
+
+    "step_3_order_confirmation": {
+      "route": "/checkout/thank-you",
+      "content": {
+        "heading": "Welcome to Base Note!",
+        "subheading": "Your fragrance journey begins now.",
+        "confirmation_number": "Order #{order_number}",
+        "email_notice": "We've sent a confirmation to {email}",
+        "what_happens_next": [
+          {"step": 1, "text": "Your first 5ml atomizer of {fragrance_name} ships within 1-2 business days."},
+          {"step": 2, "text": "You'll receive a tracking email once it's on its way."},
+          {"step": 3, "text": "7 days before your next shipment, we'll email you to confirm or swap your fragrance."},
+          {"step": 4, "text": "Manage everything from your account dashboard anytime."}
+        ],
+        "cta_primary": {"label": "SET UP YOUR ACCOUNT", "link": "/account", "style": "primary button"},
+        "cta_secondary": {"label": "BROWSE MORE FRAGRANCES", "link": "/collections/all", "style": "outlined button"},
+        "subscription_summary_card": {
+          "plan": "{plan_name}",
+          "next_billing": "{date}",
+          "next_fragrance": "{fragrance_name} (or 'We'll pick for you')",
+          "manage_link": "/account"
+        }
+      },
+      "transactional_email": {
+        "trigger": "Order placed",
+        "template": "order_confirmation",
+        "content": {
+          "subject": "Welcome to Base Note — Your first fragrance is on its way!",
+          "body_includes": [
+            "Order summary",
+            "Selected fragrance details with notes pyramid",
+            "Subscription plan details with next billing date",
+            "How to manage subscription link",
+            "How to swap fragrance link",
+            "Contact support link"
+          ]
+        }
+      }
+    }
+  },
+
+  "module_2_client_portal": {
+    "description": "Customer account dashboard where subscribers manage their subscription, view fragrance history, select upcoming fragrances, and access account settings. HQ staff manage fragrance assignments via Shopify admin.",
+
+    "customer_dashboard": {
+      "route": "/account",
+      "layout": "left sidebar navigation + main content area",
+
+      "sidebar_nav": {
+        "items": [
+          {"label": "Dashboard", "icon": "home", "route": "/account"},
+          {"label": "My Subscription", "icon": "refresh", "route": "/account/subscription"},
+          {"label": "Fragrance History", "icon": "clock", "route": "/account/history"},
+          {"label": "Next Shipment", "icon": "package", "route": "/account/next-shipment"},
+          {"label": "Browse Library", "icon": "grid", "route": "/collections/all"},
+          {"label": "Orders", "icon": "receipt", "route": "/account/orders"},
+          {"label": "Addresses", "icon": "map-pin", "route": "/account/addresses"},
+          {"label": "Account Settings", "icon": "settings", "route": "/account/settings"},
+          {"label": "Help & Support", "icon": "help-circle", "route": "/pages/faq"}
+        ]
+      },
+
+      "dashboard_home": {
+        "welcome_banner": {
+          "text": "Welcome back, {first_name}!",
+          "sub_text": "Member since {join_date} — {months_subscribed} months of fragrance discovery"
+        },
+        "quick_stats": [
+          {"label": "Fragrances Discovered", "value": "{count}", "icon": "droplet"},
+          {"label": "Current Plan", "value": "{plan_name}", "icon": "credit-card"},
+          {"label": "Next Shipment", "value": "{date}", "icon": "truck"},
+          {"label": "Subscription Status", "value": "Active", "style": "color: success_green"}
+        ],
+        "upcoming_shipment_card": {
+          "heading": "Your Next Fragrance",
+          "fragrance_image": "product thumbnail",
+          "fragrance_name": "{name}",
+          "fragrance_family": "{family}",
+          "ships_on": "{date}",
+          "status": "Confirmed / Awaiting your selection",
+          "cta_swap": {"label": "Swap Fragrance", "action": "open_fragrance_selector"},
+          "cta_skip": {"label": "Skip This Month", "action": "open_skip_confirmation"}
+        },
+        "recent_activity": {
+          "heading": "Recent Activity",
+          "items": [
+            {"type": "shipment", "text": "Velvet Noir shipped", "date": "Jan 1, 2026", "tracking": "#link"},
+            {"type": "selection", "text": "You selected Midnight Oud for February", "date": "Jan 25, 2026"},
+            {"type": "billing", "text": "Payment of $20.00 processed", "date": "Jan 1, 2026"}
+          ]
+        }
+      },
+
+      "fragrance_history": {
+        "route": "/account/history",
+        "heading": "Your Fragrance Journey",
+        "subheading": "Every scent you've discovered with Base Note",
+        "layout": "vertical timeline, chronological (newest first)",
+        "data_source": "Shopify order metafields populated by HQ staff from Shopify admin",
+
+        "timeline_card_schema": {
+          "month_label": "e.g., February 2026",
+          "fragrance_image": "product photo",
+          "fragrance_name": "e.g., Midnight Oud",
+          "fragrance_family": "e.g., Woody/Oud",
+          "notes_pyramid": {
+            "top": "Saffron, Bulgarian Rose, Pink Pepper",
+            "heart": "Cambodian Oud, Incense, Orris",
+            "base": "Amber, Sandalwood, Musk"
+          },
+          "user_rating": {
+            "type": "5-star clickable",
+            "action": "save_rating_to_metafield",
+            "prompt": "Rate this fragrance"
+          },
+          "user_notes": {
+            "type": "textarea (expandable)",
+            "placeholder": "Add your personal notes about this scent...",
+            "action": "save_notes_to_metafield"
+          },
+          "cta_reorder": {"label": "Get this again", "action": "add_to_next_month_queue"},
+          "cta_full_size": {"label": "Buy full size ($295)", "action": "add_full_size_to_cart", "conditional": "if full-size available"},
+          "order_link": "View order details →"
+        },
+
+        "empty_state": {
+          "heading": "Your journey starts soon!",
+          "body": "Once your first fragrance arrives, you'll see your complete scent journey here.",
+          "cta": "BROWSE COLLECTION"
+        }
+      },
+
+      "next_shipment_management": {
+        "route": "/account/next-shipment",
+        "heading": "Next Shipment — {month} {year}",
+
+        "status_states": [
+          {
+            "state": "user_selected",
+            "display": "You've chosen {fragrance_name} for {month}.",
+            "badge": "CONFIRMED",
+            "badge_style": "bg: success_green, color: white",
+            "actions": ["Swap to different fragrance", "Skip this month"]
+          },
+          {
+            "state": "auto_pilot_assigned",
+            "display": "We've selected {fragrance_name} for you based on your preferences.",
+            "badge": "AUTO-SELECTED",
+            "badge_style": "bg: gold_accent, color: white",
+            "actions": ["Confirm this selection", "Choose a different fragrance", "Skip this month"]
+          },
+          {
+            "state": "awaiting_selection",
+            "display": "Choose your fragrance for {month}! Selection closes on {deadline}.",
+            "badge": "ACTION NEEDED",
+            "badge_style": "bg: warning_amber, color: white",
+            "actions": ["Browse & select", "Let us choose for you"]
+          },
+          {
+            "state": "skipped",
+            "display": "You've skipped {month}. No charge and no shipment.",
+            "badge": "SKIPPED",
+            "badge_style": "bg: text_secondary, color: white",
+            "actions": ["Undo skip"]
+          }
+        ],
+
+        "fragrance_selector": {
+          "trigger": "Click 'Swap Fragrance', 'Choose a different fragrance', or 'Browse & select'",
+          "layout": "modal or full-page grid of all 10 fragrances",
+          "card_content": {
+            "image": "product photo",
+            "name": "fragrance name",
+            "family": "scent family tag",
+            "notes_preview": "top notes only",
+            "user_tried_badge": "You've tried this (if previously received)",
+            "user_rating": "Your rating: X stars (if previously rated)",
+            "cta": "SELECT THIS FRAGRANCE"
+          },
+          "filters": ["All", "Not yet tried", "Highest rated by you", "By scent family"],
+          "recommendation_section": {
+            "heading": "Recommended for you",
+            "logic": "Based on quiz results + rating history + not yet tried",
+            "display": "Highlighted top 3"
+          }
+        }
+      },
+
+      "subscription_management": {
+        "route": "/account/subscription",
+        "sections": [
+          {
+            "heading": "Your Plan",
+            "display": "{plan_name} — ${price}/{cycle}",
+            "next_billing": "{date}",
+            "payment_method": "Visa ending in {last4}",
+            "actions": ["Change plan", "Update payment method"]
+          },
+          {
+            "heading": "Shipping Address",
+            "display": "formatted address",
+            "action": "Edit address"
+          },
+          {
+            "heading": "Subscription Actions",
+            "actions": [
+              {"label": "Skip next month", "action": "open_skip_modal", "style": "outlined button"},
+              {"label": "Pause subscription", "action": "open_pause_modal", "style": "outlined button"},
+              {"label": "Cancel subscription", "action": "open_cancellation_flow", "style": "text link, color: error_red, small font"}
+            ],
+            "cancel_note": "Cancel link intentionally de-emphasized (small, text-only, bottom) — not hidden but not prominent. This is standard for subscription retention UX."
+          }
+        ]
+      }
+    },
+
+    "hq_staff_portal": {
+      "description": "Shopify admin interface where HQ/merchant staff enter fragrance assignment details for each subscriber's monthly shipment",
+      "platform": "Shopify Admin → Orders / Customers",
+
+      "staff_workflow": [
+        {
+          "step": 1,
+          "action": "View upcoming subscription orders",
+          "tool": "Recharge admin panel or Shopify Orders filtered by subscription tag",
+          "details": "See list of all active subscribers and their selected/auto-assigned fragrance for the month"
+        },
+        {
+          "step": 2,
+          "action": "Assign fragrance to order",
+          "tool": "Shopify Order metafield or Recharge order properties",
+          "metafield": {
+            "namespace": "subscription",
+            "key": "assigned_fragrance",
+            "type": "product_reference",
+            "value": "product handle or ID"
+          }
+        },
+        {
+          "step": 3,
+          "action": "Record shipment details",
+          "metafields": [
+            {"key": "subscription.month", "value": "e.g., February 2026"},
+            {"key": "subscription.fragrance_name", "value": "e.g., Midnight Oud"},
+            {"key": "subscription.fragrance_id", "value": "product ID"},
+            {"key": "subscription.selection_method", "value": "user_selected | auto_pilot | hq_assigned"},
+            {"key": "subscription.tracking_number", "value": "carrier tracking #"},
+            {"key": "subscription.shipped_date", "value": "ISO date"}
+          ]
+        },
+        {
+          "step": 4,
+          "action": "Update customer fragrance history",
+          "note": "Customer metafield stores JSON array of all fragrance history entries. Each entry populates the client portal timeline.",
+          "customer_metafield": {
+            "namespace": "subscription",
+            "key": "fragrance_history",
+            "type": "json",
+            "schema": [
+              {
+                "month": "February 2026",
+                "fragrance_id": "product_id",
+                "fragrance_name": "Midnight Oud",
+                "order_id": "order_id",
+                "selection_method": "user_selected",
+                "shipped_date": "2026-02-01",
+                "user_rating": null,
+                "user_notes": null
+              }
+            ]
+          }
+        }
+      ],
+
+      "auto_pilot_rotation_logic": {
+        "description": "When a subscriber does NOT select a fragrance by the deadline (24th of each month), the system auto-assigns one based on this priority order:",
+        "priority_rules": [
+          {"priority": 1, "rule": "Fragrance from user's quiz-matched profile that they haven't tried yet"},
+          {"priority": 2, "rule": "Highest-rated fragrance by the community that user hasn't tried"},
+          {"priority": 3, "rule": "Fragrance from a different scent family than their last 2 shipments (variety)"},
+          {"priority": 4, "rule": "New releases or seasonal recommendations"},
+          {"priority": 5, "rule": "Random from untried catalog"}
+        ],
+        "constraint": "NEVER send the same fragrance the user received in the last 3 months",
+        "staff_override": "HQ staff can manually override auto-pilot selection at any time before shipment"
+      }
+    }
+  },
+
+  "module_3_subscription_reminders": {
+    "description": "Email engagement system that sends a reminder 7 days before the next shipment, allowing users to confirm, swap, or skip their upcoming fragrance. If no action is taken, auto-pilot selects for them.",
+
+    "reminder_email_sequence": {
+
+      "email_1_seven_days_before": {
+        "trigger": "7 days before scheduled shipment (e.g., if shipping on Feb 1, send on Jan 25)",
+        "audience": "Active subscribers only (not paused, not cancelled)",
+        "subject_lines": [
+          "Your February fragrance is ready — confirm or swap?",
+          "{first_name}, your next scent ships in 7 days",
+          "Sneak peek: Here's what's coming in your Base Note box"
+        ],
+        "from": "Base Note <hello@basenote.com>",
+        "content": {
+          "header": {
+            "logo": "Base Note wordmark",
+            "hero_text": "Your {month} Fragrance"
+          },
+
+          "scenario_A_user_already_selected": {
+            "condition": "User has already selected a fragrance for this month",
+            "heading": "You're all set, {first_name}!",
+            "body": "Your selection of {fragrance_name} ships on {ship_date}.",
+            "fragrance_card": {
+              "image": "product hero image",
+              "name": "{fragrance_name}",
+              "family": "{scent_family}",
+              "description": "Brief 1-line description",
+              "notes": "Top: {top} | Heart: {heart} | Base: {base}"
+            },
+            "cta_primary": {"label": "VIEW YOUR SELECTION", "link": "/account/next-shipment"},
+            "cta_secondary": {"label": "Changed your mind? Swap fragrance →", "link": "/account/next-shipment#swap"},
+            "cta_skip": {"label": "Skip this month instead", "link": "/account/next-shipment#skip", "style": "small text link"}
+          },
+
+          "scenario_B_auto_pilot_assigned": {
+            "condition": "User has NOT selected; system has auto-assigned based on rotation logic",
+            "heading": "We picked something special for you, {first_name}",
+            "body": "Based on your scent profile, we've selected {fragrance_name} for {month}. Love it? Do nothing and it'll ship on {ship_date}. Want something different? You have 7 days to swap.",
+            "fragrance_card": "same as Scenario A",
+            "why_we_chose": {
+              "text": "Why we chose this: {reason — e.g., 'Based on your love for Midnight Oud, we think you'll enjoy another woody scent with a twist of amber.'}",
+              "style": "italic, text_secondary"
+            },
+            "cta_primary": {"label": "CONFIRM THIS SELECTION", "link": "/account/next-shipment?action=confirm"},
+            "cta_secondary": {"label": "BROWSE & SWAP", "link": "/account/next-shipment#swap"},
+            "cta_skip": {"label": "Skip this month instead", "link": "/account/next-shipment#skip", "style": "small text link"},
+            "urgency": "Deadline to change: {deadline_date}"
+          },
+
+          "scenario_C_no_selection": {
+            "condition": "User has NOT selected and auto-pilot has NOT yet assigned (early notification window)",
+            "heading": "Choose your {month} fragrance, {first_name}!",
+            "body": "Your next fragrance ships in 7 days. Browse our collection and pick the scent you want to discover this month. If you don't choose, we'll pick one for you based on your preferences.",
+            "library_preview": {
+              "heading": "Your library — 10 exclusive fragrances",
+              "cards": "3 recommended fragrances based on quiz + history",
+              "see_all_link": "See all 10 →"
+            },
+            "cta_primary": {"label": "CHOOSE MY FRAGRANCE", "link": "/account/next-shipment#select"},
+            "cta_secondary": {"label": "Surprise me — let Base Note pick", "link": "/account/next-shipment?action=autopilot"},
+            "cta_skip": {"label": "Skip this month", "link": "/account/next-shipment#skip", "style": "small text link"}
+          },
+
+          "footer": {
+            "manage_subscription": "Manage subscription →",
+            "help": "Questions? Reply to this email or visit our FAQ",
+            "unsubscribe": "Unsubscribe from reminder emails (required by CAN-SPAM)",
+            "social_links": ["Instagram", "TikTok", "YouTube"],
+            "address": "Base Note Inc., 123 Fragrance Avenue, Suite 400, New York, NY 10013"
+          }
+        }
+      },
+
+      "email_2_three_days_before": {
+        "trigger": "3 days before shipment AND user still has NOT confirmed/selected",
+        "audience": "Subscribers who received Email 1 but took no action",
+        "subject_lines": [
+          "Last chance to pick your fragrance, {first_name}!",
+          "3 days left — confirm your {month} scent",
+          "Don't miss out: Your fragrance ships in 3 days"
+        ],
+        "content": {
+          "heading": "Time's almost up!",
+          "body": "Your {month} fragrance ships in 3 days. We've pre-selected {fragrance_name} for you. Confirm it, swap it, or skip — your call.",
+          "countdown": "3 DAYS LEFT",
+          "cta_primary": {"label": "CONFIRM {fragrance_name}", "link": "/account/next-shipment?action=confirm"},
+          "cta_secondary": {"label": "SWAP TO SOMETHING ELSE", "link": "/account/next-shipment#swap"},
+          "urgency_note": "No action needed if you're happy with our pick — it'll ship automatically."
+        }
+      },
+
+      "email_3_shipment_confirmation": {
+        "trigger": "Order ships (1st of the month or when tracking number generated)",
+        "audience": "All active subscribers who received a shipment",
+        "subject_lines": [
+          "Your {month} fragrance is on its way!",
+          "{fragrance_name} is headed to you, {first_name}"
+        ],
+        "content": {
+          "heading": "It's on its way!",
+          "tracking_number": "{tracking_number}",
+          "tracking_link": "Track your package →",
+          "estimated_delivery": "{date_range}",
+          "fragrance_card": "full fragrance details with notes pyramid",
+          "how_to_wear": "Pro tip: Apply to pulse points — wrists, neck, and behind ears. Your 5ml atomizer gives you ~30 sprays, perfect for daily wear all month.",
+          "cta": "TRACK YOUR ORDER",
+          "footer_cta": "Already thinking about next month? Browse the library →"
+        }
+      },
+
+      "email_4_post_delivery_feedback": {
+        "trigger": "5 days after estimated delivery date",
+        "audience": "Subscribers whose order shows 'delivered'",
+        "subject_lines": [
+          "How are you liking {fragrance_name}?",
+          "Quick question about your latest scent, {first_name}"
+        ],
+        "content": {
+          "heading": "How's {fragrance_name}?",
+          "body": "You've had a few days with your latest fragrance. We'd love to know what you think!",
+          "rating_cta": {
+            "label": "Rate this fragrance",
+            "format": "5 clickable star icons directly in email (link to /account/history#{fragrance_id}#rate)",
+            "stars_inline": [
+              {"value": 1, "link": "/account/history?rate={id}&stars=1"},
+              {"value": 2, "link": "/account/history?rate={id}&stars=2"},
+              {"value": 3, "link": "/account/history?rate={id}&stars=3"},
+              {"value": 4, "link": "/account/history?rate={id}&stars=4"},
+              {"value": 5, "link": "/account/history?rate={id}&stars=5"}
+            ]
+          },
+          "testimonial_prompt": "Love it? Share your thoughts and help others discover their next favorite scent.",
+          "cta_secondary": "Already picking your next fragrance? Browse →",
+          "note": "This email drives engagement metrics and provides data for auto-pilot algorithm improvement"
+        }
+      }
+    },
+
+    "email_timing_summary": {
+      "timeline": [
+        {"day": -7, "email": "Email 1: Pre-shipment reminder (confirm/swap/skip)"},
+        {"day": -3, "email": "Email 2: Urgency reminder (last chance to change)"},
+        {"day": 0, "email": "Email 3: Shipment confirmation with tracking"},
+        {"day": "+5 after delivery", "email": "Email 4: Post-delivery feedback request"}
+      ],
+      "selection_deadline": "24th of the month (7 days before 1st of next month)",
+      "auto_pilot_assignment": "If no selection by 24th, system assigns auto-pilot fragrance on 25th",
+      "final_lock": "Shipment locked on 28th — no changes after this date"
+    }
+  },
+
+  "module_4_cancellation_and_churn_reduction": {
+    "description": "Multi-step cancellation flow designed to understand why users leave, offer retention incentives, and reduce churn while remaining transparent and not manipulative.",
+    "trigger": "User clicks 'Cancel subscription' from /account/subscription",
+    "critical_principle": "Be transparent and respectful. Retention offers should feel like genuine value, not dark patterns. Always allow the user to cancel without excessive friction.",
+
+    "cancellation_flow": {
+
+      "step_1_confirmation_gate": {
+        "type": "modal_overlay",
+        "heading": "We're sorry to see you go, {first_name}",
+        "body": "Before you cancel, here's what you'll lose:",
+        "value_reminder": [
+          {"icon": "gift", "text": "Access to 10 exclusive luxury fragrances at a fraction of retail"},
+          {"icon": "truck", "text": "Free shipping on every order"},
+          {"icon": "clock", "text": "Your {months_subscribed}-month fragrance history and ratings"},
+          {"icon": "percent", "text": "Subscriber-only pricing on full-size bottles"}
+        ],
+        "cta_keep": {"label": "KEEP MY SUBSCRIPTION", "style": "primary button (gold bg, white text)", "action": "close_modal"},
+        "cta_continue_cancel": {"label": "I still want to cancel", "style": "text link, small, text_secondary", "action": "proceed_to_step_2"}
+      },
+
+      "step_2_reason_survey": {
+        "type": "modal_or_page",
+        "heading": "Help us improve — why are you canceling?",
+        "subheading": "Your feedback directly shapes our product. Please select the reason that best describes your experience.",
+        "survey_type": "single_select_with_optional_text",
+        "reasons": [
+          {
+            "id": "too_expensive",
+            "label": "It's too expensive",
+            "icon": "dollar-sign",
+            "retention_offer": "discount"
+          },
+          {
+            "id": "not_using",
+            "label": "I'm not using the fragrances fast enough",
+            "icon": "pause",
+            "retention_offer": "pause_or_skip"
+          },
+          {
+            "id": "dont_like_scents",
+            "label": "I haven't liked the fragrances I received",
+            "icon": "thumbs-down",
+            "retention_offer": "personalization_call"
+          },
+          {
+            "id": "tried_enough",
+            "label": "I've tried all the scents I wanted",
+            "icon": "check-circle",
+            "retention_offer": "new_releases_teaser"
+          },
+          {
+            "id": "switching_competitor",
+            "label": "I'm switching to another service",
+            "icon": "arrow-right",
+            "retention_offer": "loyalty_discount"
+          },
+          {
+            "id": "financial_reasons",
+            "label": "Financial reasons / budgeting",
+            "icon": "wallet",
+            "retention_offer": "downgrade_plan"
+          },
+          {
+            "id": "shipping_issues",
+            "label": "Shipping or delivery problems",
+            "icon": "truck",
+            "retention_offer": "support_escalation"
+          },
+          {
+            "id": "other",
+            "label": "Other reason",
+            "icon": "message-circle",
+            "retention_offer": "generic_discount"
+          }
+        ],
+        "optional_feedback_field": {
+          "label": "Anything else you'd like us to know?",
+          "type": "textarea",
+          "placeholder": "Your feedback helps us create a better experience...",
+          "max_length": 500
+        },
+        "cta": {"label": "CONTINUE", "action": "proceed_to_step_3_with_reason"}
+      },
+
+      "step_3_retention_offers": {
+        "type": "modal_or_page",
+        "heading": "Before you go — we have something for you",
+        "note": "The offer shown depends on the reason selected in Step 2. Only ONE offer is presented (not multiple).",
+
+        "offer_by_reason": {
+          "too_expensive": {
+            "offer_type": "discount",
+            "heading": "How about 30% off your next 3 months?",
+            "body": "We'd hate to lose you over price. Stay with Base Note and enjoy 30% off for the next 3 months — that's just ${discounted_price}/month for luxury fragrances worth up to $300.",
+            "original_price": "$20/mo",
+            "discounted_price": "$14/mo",
+            "duration": "3 months",
+            "cta_accept": {"label": "YES, KEEP MY SUBSCRIPTION AT $14/MO", "style": "primary button", "action": "apply_discount_and_keep"},
+            "cta_decline": {"label": "No thanks, continue canceling", "style": "text link"}
+          },
+          "not_using": {
+            "offer_type": "pause",
+            "heading": "No rush — pause instead?",
+            "body": "Life gets busy! Instead of canceling, you can pause your subscription for 1-2 months. No charges, and your account stays active so you can pick up right where you left off.",
+            "pause_options": [
+              {"label": "Pause for 1 month", "action": "pause_1_month"},
+              {"label": "Pause for 2 months", "action": "pause_2_months"}
+            ],
+            "alternative": "Or switch to quarterly billing ($48 every 3 months) for more time between shipments.",
+            "cta_accept": {"label": "PAUSE MY SUBSCRIPTION", "style": "primary button"},
+            "cta_decline": {"label": "No thanks, continue canceling", "style": "text link"}
+          },
+          "dont_like_scents": {
+            "offer_type": "personalization",
+            "heading": "Let us get it right — free personalized consultation",
+            "body": "We're sorry the fragrances haven't been hitting the mark. Our scent curator would love to personally select your next 3 fragrances based on a quick chat about your preferences. Plus, your next month is on us.",
+            "perks": [
+              "1-on-1 scent consultation via email or phone",
+              "Personally curated selection for your next 3 months",
+              "Next month FREE as our apology"
+            ],
+            "cta_accept": {"label": "YES, LET'S FIND MY SCENT", "style": "primary button", "action": "schedule_consultation_and_keep"},
+            "cta_decline": {"label": "No thanks, continue canceling", "style": "text link"}
+          },
+          "tried_enough": {
+            "offer_type": "new_releases_teaser",
+            "heading": "Exciting news — new fragrances are coming!",
+            "body": "We're expanding our collection! 3 new exclusive fragrances drop in {next_quarter}. Stay subscribed and be the first to try them — plus get priority access before they're available to new subscribers.",
+            "teaser_cards": [
+              {"name": "Coming Soon #1", "hint": "A bold new take on {family}", "image": "mystery silhouette"},
+              {"name": "Coming Soon #2", "hint": "Inspired by {theme}", "image": "mystery silhouette"}
+            ],
+            "cta_accept": {"label": "STAY & GET EARLY ACCESS", "style": "primary button", "action": "keep_subscription"},
+            "cta_decline": {"label": "No thanks, continue canceling", "style": "text link"}
+          },
+          "switching_competitor": {
+            "offer_type": "loyalty_discount",
+            "heading": "We appreciate your loyalty, {first_name}",
+            "body": "You've been with us for {months} months. Before you try somewhere else, here's our loyalty offer: 40% off your next 2 months. Plus, we'd love to know what the other service offers that we don't — so we can improve.",
+            "discount": "40% off for 2 months",
+            "feedback_prompt": "What does the other service offer that we're missing?",
+            "feedback_field": {"type": "textarea", "placeholder": "Help us compete for your love..."},
+            "cta_accept": {"label": "STAY WITH 40% OFF", "style": "primary button"},
+            "cta_decline": {"label": "No thanks, continue canceling", "style": "text link"}
+          },
+          "financial_reasons": {
+            "offer_type": "downgrade",
+            "heading": "We understand — let's find a plan that fits",
+            "body": "Financial flexibility matters. Instead of canceling, consider our quarterly or annual plans that save you money:",
+            "plan_comparison": [
+              {"plan": "Current: Monthly", "price": "$20/mo", "annual_cost": "$240/yr"},
+              {"plan": "Quarterly", "price": "$16/mo", "annual_cost": "$192/yr", "savings": "Save $48/yr", "badge": "RECOMMENDED"},
+              {"plan": "Annual", "price": "$14/mo", "annual_cost": "$168/yr", "savings": "Save $72/yr", "badge": "BEST VALUE"}
+            ],
+            "cta_downgrade": {"label": "SWITCH TO ANNUAL ($14/MO)", "style": "primary button", "action": "downgrade_to_annual"},
+            "cta_decline": {"label": "No thanks, continue canceling", "style": "text link"}
+          },
+          "shipping_issues": {
+            "offer_type": "support_escalation",
+            "heading": "We're on it — let us fix this",
+            "body": "Shipping issues shouldn't ruin your experience. Our support team will personally investigate your delivery problems. Plus, your next month is free while we sort things out.",
+            "cta_accept": {"label": "CONNECT WITH SUPPORT", "style": "primary button", "action": "open_support_ticket_and_comp_month"},
+            "cta_decline": {"label": "No thanks, continue canceling", "style": "text link"}
+          },
+          "other": {
+            "offer_type": "generic_discount",
+            "heading": "How about 25% off your next 2 months?",
+            "body": "We value your membership. Stay for 2 more months at 25% off and see if things improve.",
+            "cta_accept": {"label": "KEEP SUBSCRIPTION AT 25% OFF", "style": "primary button"},
+            "cta_decline": {"label": "No thanks, continue canceling", "style": "text link"}
+          }
+        }
+      },
+
+      "step_4_final_cancellation": {
+        "type": "confirmation_page",
+        "condition": "User clicked 'No thanks, continue canceling' in Step 3",
+        "heading": "Confirm cancellation",
+        "body": "Your subscription will be canceled at the end of your current billing period ({end_date}). You'll still receive your {current_month} fragrance and have access to your account until then.",
+        "summary": {
+          "last_shipment": "{month} — {fragrance_name}",
+          "access_until": "{end_date}",
+          "billing_stops": "{end_date}",
+          "note": "Your fragrance history and ratings will be saved if you decide to resubscribe."
+        },
+        "final_cta_cancel": {
+          "label": "CONFIRM CANCELLATION",
+          "style": "bg: error_red, color: white, full-width",
+          "action": "cancel_subscription_via_recharge_api"
+        },
+        "final_cta_keep": {
+          "label": "Wait, I changed my mind — keep my subscription",
+          "style": "outlined button, above cancel button",
+          "action": "return_to_account_dashboard"
+        }
+      },
+
+      "step_5_post_cancellation": {
+        "confirmation_page": {
+          "heading": "Your subscription has been canceled",
+          "body": "We're sad to see you go, {first_name}. Your account remains active until {end_date} and your fragrance history is saved.",
+          "cta": {"label": "RESUBSCRIBE ANYTIME", "link": "/collections/all"}
+        },
+        "confirmation_email": {
+          "subject": "Your Base Note subscription has been canceled",
+          "content": {
+            "tone": "Warm, not guilt-inducing",
+            "includes": [
+              "Cancellation confirmation and end date",
+              "What they'll still have access to until end date",
+              "How to resubscribe if they change their mind",
+              "Thank you for being a member",
+              "Survey results saved (internal only)"
+            ]
+          }
+        },
+        "win_back_email_sequence": {
+          "email_1": {"delay": "14 days post-cancel", "subject": "We miss you, {first_name} — 25% off if you come back", "offer": "25% off for 3 months"},
+          "email_2": {"delay": "30 days post-cancel", "subject": "New fragrance alert: {new_fragrance_name}", "content": "Teaser of new arrivals"},
+          "email_3": {"delay": "60 days post-cancel", "subject": "Your scent journey doesn't have to end", "offer": "50% off first month back"},
+          "cap": "Max 3 win-back emails. Stop if user resubscribes or unsubscribes from marketing."
+        }
+      }
+    },
+
+    "churn_data_collection": {
+      "description": "All cancellation reasons and feedback are logged for product improvement and churn analysis",
+      "data_points_captured": [
+        "cancellation_reason (from step 2 survey)",
+        "optional_feedback_text",
+        "retention_offer_shown",
+        "retention_offer_accepted (boolean)",
+        "months_subscribed_at_cancellation",
+        "total_fragrances_received",
+        "average_fragrance_rating",
+        "last_fragrance_received",
+        "subscription_plan_at_cancellation",
+        "cancellation_date"
+      ],
+      "analytics_dashboard_metrics": [
+        "Monthly churn rate (%)",
+        "Cancellation reason distribution (pie chart)",
+        "Retention offer acceptance rate by offer type",
+        "Average subscriber lifetime (months)",
+        "Churn by subscription plan type",
+        "Correlation between fragrance ratings and churn",
+        "Win-back email conversion rate"
+      ]
+    }
+  },
+
+  "sales_tax_configuration": {
+    "rule": "destination_based_sourcing",
+    "description": "Sales tax calculated based on shipping address per US law (45/50 states). Shopify handles this automatically.",
+    "action": "Verify tax enabled in Shopify Admin > Settings > Taxes",
+    "note": "Do NOT use billing address for tax calculation on physical goods"
+  },
+
+  "single_item_cart_enforcement": {
+    "rule": "max_one_subscription_item",
+    "description": "Cart can hold maximum 1 subscription item. Additional fragrances go to Rotation List.",
+    "behavior": "If subscription item exists in cart when adding another, prompt user to swap",
+    "storage": "Rotation list stored in localStorage key 'basenotes_queue'"
+  },
+
+  "staff_order_notifications": {
+    "recipients": ["wilson@basenotescent.com", "jeff@basenotescent.com", "alex@basenotescent.com"],
+    "trigger": "new_order_placed",
+    "configuration": "Shopify Admin > Settings > Notifications"
+  },
+
+  "free_shipping_configuration": {
+    "rule": "Configure actual $0 shipping rate in Shopify Admin",
+    "applies_to": "All domestic subscription orders",
+    "note": "Theme UI displays FREE but actual rate must exist in Shopify shipping settings"
+  },
+
+  "business_rules_summary": {
+    "purchase_equals_subscription": true,
+    "subscription_model": "opt-out (auto-renewal, user must cancel)",
+    "guest_checkout": false,
+    "subscription_disclosure_required": true,
+    "newsletter_opt_in_pre_checked": true,
+    "terms_agreement_required": true,
+    "terms_agreement_pre_checked": false,
+    "auto_pilot_fragrance_rotation": true,
+    "selection_deadline_day": 24,
+    "auto_assign_day": 25,
+    "shipment_lock_day": 28,
+    "shipment_day": 1,
+    "reminder_email_days_before": [7, 3],
+    "max_consecutive_skips": 2,
+    "cancellation_requires_survey": true,
+    "cancellation_retention_offer": true,
+    "win_back_email_cap": 3,
+    "fragrance_history_stored_in": "customer metafields (Shopify)",
+    "staff_assigns_via": "Shopify admin + Recharge dashboard"
+  }
+}

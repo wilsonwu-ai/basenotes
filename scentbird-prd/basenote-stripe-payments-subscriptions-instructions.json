@@ -1,0 +1,770 @@
+{
+  "project": "Base Note",
+  "version": "1.0.0",
+  "created": "2026-02-21",
+  "author": "Product Manager / Product Designer",
+  "platform": "Shopify 2.0 + Shopify Payments (Stripe-powered) + Appstle Subscriptions",
+  "brand": "Base Note",
+  "description": "Complete payment gateway integration and subscription auto-renewal billing instructions for Base Note. Covers Shopify Payments (Stripe) setup, subscription app configuration, opt-out billing model, dunning recovery, PCI compliance, and FTC legal requirements.",
+
+  "brand_context": {
+    "tagline": "Discover Luxury, One Scent at a Time",
+    "catalog_size": 10,
+    "catalog_type": "Exclusive luxury fragrances",
+    "atomizer_size": "5ml (~30 sprays)",
+    "subscription_price": 20.00,
+    "currency": "USD",
+    "subscription_plans": {
+      "monthly": {
+        "price": 20.00,
+        "billing_cycle": "Every 1 month",
+        "billing_type": "Anniversary date (same day each month)"
+      },
+      "quarterly": {
+        "price": 48.00,
+        "billing_cycle": "Every 3 months",
+        "per_month": 16.00,
+        "savings": "20%"
+      },
+      "annual": {
+        "price": 168.00,
+        "billing_cycle": "Every 12 months",
+        "per_month": 14.00,
+        "savings": "30%"
+      }
+    },
+    "full_bottle_pricing": {
+      "example_product": "Creed Aventus",
+      "size": "3.3 fl oz",
+      "price": 408.00,
+      "compare_at": 510.00,
+      "purchase_type": "one-time (not subscription)"
+    }
+  },
+
+  "architecture_decision": {
+    "payment_gateway": "Shopify Payments",
+    "why_shopify_payments": [
+      "Shopify Payments IS Stripe under the hood — same secure infrastructure",
+      "Zero third-party transaction surcharge (saves 0.5%-2.0% per transaction)",
+      "Native integration with Shopify Checkout, Shop Pay, Apple Pay, Google Pay",
+      "PCI Level 1 compliance handled automatically",
+      "Stripe Radar fraud detection included"
+    ],
+    "why_not_stripe_direct": [
+      "Shopify adds 2.0% surcharge on Basic plan when using third-party gateways",
+      "A $20 subscription charge costs $0.88 with Shopify Payments vs $1.28 with Stripe direct — 45% more expensive",
+      "A $408 full bottle costs $12.13 with Shopify Payments vs $20.26 with Stripe direct — 67% more expensive",
+      "No access to Shop Pay, Apple Pay, or Google Pay as primary",
+      "More complex setup (separate API keys, dashboard)"
+    ],
+    "why_not_stripe_billing": [
+      "Stripe Billing adds 0.7% surcharge on all recurring charges",
+      "Not natively compatible with Shopify orders — requires custom sync code",
+      "Inventory and fulfillment would not be connected to Shopify",
+      "Double complexity for zero benefit when Shopify's subscription ecosystem exists"
+    ],
+    "subscription_app": "Appstle Subscriptions",
+    "why_appstle": [
+      "Free plan with 0% transaction fee",
+      "Full Selling Plans API support",
+      "Built-in customer portal",
+      "Dunning management included",
+      "4.9/5 rating on Shopify App Store",
+      "Good for SMB to mid-market scale"
+    ]
+  },
+
+  "module_1_payment_gateway_setup": {
+    "description": "Step-by-step instructions to activate and configure Shopify Payments (Stripe-powered) as the payment gateway for Base Note.",
+
+    "prerequisites": [
+      "Shopify store on active paid plan (Basic, Shopify, or Advanced)",
+      "Store located in Shopify Payments-supported country (US)",
+      "Valid EIN / Tax ID for the business",
+      "Business bank account ready to receive payouts"
+    ],
+
+    "step_1_activate_shopify_payments": {
+      "route": "Shopify Admin > Settings > Payments",
+      "action": "Click 'Activate Shopify Payments'",
+      "required_information": {
+        "business_details": {
+          "legal_name": "Base Note LLC (or actual entity name)",
+          "address": "Business registered address",
+          "ein_tax_id": "Federal EIN",
+          "business_type": "LLC / Sole Prop / Corporation"
+        },
+        "owner_details": {
+          "full_name": "Owner legal name",
+          "date_of_birth": "DOB for identity verification",
+          "ssn_last_4": "Last 4 digits of SSN (US requirement)"
+        },
+        "bank_account": {
+          "account_holder_name": "Name on bank account",
+          "routing_number": "Bank routing number",
+          "account_number": "Bank account number",
+          "account_type": "Checking (recommended)"
+        }
+      }
+    },
+
+    "step_2_enable_payment_methods": {
+      "route": "Shopify Admin > Settings > Payments > Shopify Payments > Manage",
+      "payment_methods": [
+        {
+          "method": "Credit / Debit Cards",
+          "networks": ["Visa", "Mastercard", "American Express", "Discover"],
+          "enabled": true,
+          "required": true
+        },
+        {
+          "method": "Shop Pay",
+          "description": "Accelerated checkout — saves customer info for fast repeat purchases",
+          "enabled": true,
+          "recommended": true
+        },
+        {
+          "method": "Apple Pay",
+          "description": "One-tap checkout on Apple devices",
+          "enabled": true,
+          "recommended": true
+        },
+        {
+          "method": "Google Pay",
+          "description": "One-tap checkout on Android / Chrome",
+          "enabled": true,
+          "recommended": true
+        },
+        {
+          "method": "PayPal",
+          "description": "Separate from Shopify Payments — adds third-party fee",
+          "enabled": false,
+          "notes": "Optional. Only enable if customers specifically request it."
+        }
+      ]
+    },
+
+    "step_3_configure_payouts": {
+      "route": "Shopify Admin > Settings > Payments > Shopify Payments > Manage > Payout schedule",
+      "recommended_schedule": "Daily (automatic)",
+      "options": ["Daily", "Weekly", "Monthly"],
+      "payout_timing": "Funds available in 2 business days (US standard)"
+    },
+
+    "step_4_fraud_prevention": {
+      "avs_enabled": true,
+      "cvv_required": true,
+      "stripe_radar": "Included by default with Shopify Payments",
+      "notes": "Stripe Radar uses machine learning to block fraudulent transactions. No additional configuration needed for basic protection."
+    },
+
+    "step_5_test_mode": {
+      "route": "Shopify Admin > Settings > Payments > Shopify Payments > Manage",
+      "action": "Enable 'Use test mode'",
+      "test_cards": {
+        "success": "4242 4242 4242 4242",
+        "decline": "4000 0000 0000 0002",
+        "requires_authentication": "4000 0025 0000 3155",
+        "expiry": "Any future date (e.g., 12/30)",
+        "cvv": "Any 3 digits (e.g., 123)",
+        "zip": "Any valid zip (e.g., 10001)"
+      },
+      "verification_steps": [
+        "Complete a test purchase through the full checkout flow",
+        "Verify order appears in Shopify Admin > Orders",
+        "Verify subscription contract is created (if subscription item)",
+        "Disable test mode when ready to accept real payments"
+      ]
+    }
+  },
+
+  "module_2_subscription_app_setup": {
+    "description": "Install and configure Appstle Subscriptions to manage recurring billing via Shopify's Selling Plans API.",
+
+    "step_1_install_app": {
+      "route": "Shopify Admin > Apps > Search 'Appstle Subscriptions'",
+      "action": "Install from Shopify App Store",
+      "plan": "Free (0% transaction fee)",
+      "url": "https://apps.shopify.com/subscriptions-by-appstle"
+    },
+
+    "step_2_create_selling_plan": {
+      "route": "Appstle Dashboard > Subscription Plans > Create Plan",
+      "plan_configuration": {
+        "plan_name": "Base Note Monthly Subscription",
+        "plan_type": "Pay-as-you-go (pay per delivery)",
+        "billing_interval_value": 1,
+        "billing_interval_unit": "month",
+        "delivery_interval_value": 1,
+        "delivery_interval_unit": "month",
+        "billing_anchor": "Anniversary date (same day as signup)",
+        "discount_type": "none",
+        "discount_value": 0,
+        "min_cycles_before_cancel": 1,
+        "allow_skip": false,
+        "allow_pause": false,
+        "auto_renewal": true
+      }
+    },
+
+    "step_3_attach_to_products": {
+      "route": "Appstle Dashboard > Subscription Plans > [Plan Name] > Products",
+      "instructions": [
+        "Select ALL products in the Base Note catalog",
+        "Ensure selling plan applies ONLY to 5ml subscription variants",
+        "Do NOT attach selling plans to full-bottle variants (3.3 fl oz, etc.)",
+        "Verify the selling plan widget appears on product pages"
+      ],
+      "critical_rule": "Full-bottle one-time purchase variants ($408+) must never be enrolled in a subscription selling plan. They are standalone purchases."
+    },
+
+    "step_4_configure_customer_portal": {
+      "route": "Appstle Dashboard > Customer Portal > Settings",
+      "features": {
+        "cancel_subscription": {
+          "enabled": true,
+          "with_retention_flow": true,
+          "notes": "Must include reason survey and retention offers per cancellation PRD"
+        },
+        "swap_fragrance": {
+          "enabled": true,
+          "notes": "Customer can browse library and choose next month's fragrance"
+        },
+        "update_payment_method": {
+          "enabled": true,
+          "notes": "Opens Stripe-hosted secure form — card data never touches merchant"
+        },
+        "view_order_history": {
+          "enabled": true,
+          "notes": "Shows all past subscription orders with fragrance details"
+        },
+        "skip_next_shipment": {
+          "enabled": false,
+          "reason": "Opt-out model — no skipping allowed. Customer either stays or cancels."
+        },
+        "pause_subscription": {
+          "enabled": false,
+          "reason": "Opt-out model — no pausing allowed."
+        },
+        "change_billing_date": {
+          "enabled": false,
+          "reason": "Anniversary billing is fixed to signup date."
+        }
+      }
+    },
+
+    "step_5_configure_dunning": {
+      "route": "Appstle Dashboard > Settings > Dunning",
+      "retry_schedule": [
+        {
+          "attempt": 1,
+          "days_after_failure": 1,
+          "action": "Retry charge via Stripe Smart Retry",
+          "email": "soft_reminder"
+        },
+        {
+          "attempt": 2,
+          "days_after_failure": 3,
+          "action": "Retry charge",
+          "email": "urgency_reminder"
+        },
+        {
+          "attempt": 3,
+          "days_after_failure": 5,
+          "action": "Retry charge",
+          "email": "final_warning"
+        },
+        {
+          "attempt": "final",
+          "days_after_failure": 7,
+          "action": "Cancel subscription",
+          "email": "cancellation_notice",
+          "post_action": "Queue win-back email for Day 14"
+        }
+      ]
+    }
+  },
+
+  "module_3_payment_processing_flow": {
+    "description": "The complete payment journey from cart to successful charge, covering both subscription and one-time purchases.",
+
+    "step_1_cart_review": {
+      "route": "/cart",
+      "display_rules": {
+        "subscription_items": {
+          "badge": "SUBSCRIPTION",
+          "price_format": "$20.00/month",
+          "note": "Ships monthly, cancel anytime before renewal"
+        },
+        "one_time_items": {
+          "badge": "ONE-TIME",
+          "price_format": "$408.00",
+          "compare_at": "$510.00",
+          "savings": "Save $102.00"
+        },
+        "recurring_charges_notice": {
+          "location": "Below subtotal",
+          "text": "Recurring charges: $20.00/month starting {next_billing_date}",
+          "visible_when": "Cart contains at least one subscription item"
+        }
+      }
+    },
+
+    "step_2_checkout": {
+      "route": "/checkout",
+      "managed_by": "Shopify Checkout (hosted)",
+      "sections": [
+        {
+          "name": "Contact Information",
+          "fields": [
+            {"id": "email", "type": "email", "required": true}
+          ]
+        },
+        {
+          "name": "Shipping Address",
+          "fields": [
+            {"id": "first_name", "type": "text", "required": true},
+            {"id": "last_name", "type": "text", "required": true},
+            {"id": "address1", "type": "text", "required": true},
+            {"id": "address2", "type": "text", "required": false},
+            {"id": "city", "type": "text", "required": true},
+            {"id": "state", "type": "select", "required": true},
+            {"id": "zip", "type": "text", "required": true},
+            {"id": "country", "type": "select", "required": true, "default": "US"}
+          ]
+        },
+        {
+          "name": "Shipping Method",
+          "options": [
+            {"label": "Standard Shipping (3-5 days)", "price": "FREE", "available_for": "subscribers"},
+            {"label": "Express Shipping (1-2 days)", "price": "$9.99", "available_for": "all"}
+          ]
+        },
+        {
+          "name": "Payment",
+          "methods": ["Credit/Debit Card", "Shop Pay", "Apple Pay", "Google Pay"],
+          "card_fields": ["Card number", "Expiration (MM/YY)", "CVV", "Name on card"],
+          "powered_by": "Stripe Elements (secure iframe — card data never touches merchant server)"
+        }
+      ]
+    },
+
+    "step_3_subscription_disclosure": {
+      "location": "Above the 'Complete Order' button, visible without scrolling",
+      "type": "Disclosure box with consent checkbox",
+      "critical_requirement": "MUST be visible before payment. Checkbox MUST NOT be pre-checked.",
+      "disclosure_text": "By completing this purchase, you are enrolling in a monthly subscription at $20.00/month. Your payment method will be automatically charged on the same day each month (your next charge: {next_billing_date}). You may cancel at any time before your next billing date through your account portal. Charges processed after your billing date are non-refundable. By checking this box, you agree to the Subscription Terms and authorize recurring charges to your payment method.",
+      "checkbox": {
+        "id": "subscription_consent",
+        "label": "I agree to the Subscription Terms and recurring billing",
+        "required": true,
+        "default_checked": false,
+        "links_to": "/pages/subscription-terms"
+      },
+      "visible_when": "Cart contains at least one subscription item"
+    },
+
+    "step_4_payment_processing_backend": {
+      "sequence": [
+        "1. Shopify Checkout captures payment details",
+        "2. Stripe Elements tokenizes the card (raw card NEVER touches Shopify or merchant)",
+        "3. Stripe processes the charge (e.g., $20 subscription + $408 full bottle = $428)",
+        "4. Stripe vaults the payment method token for future recurring charges",
+        "5. Shopify creates the Order",
+        "6. Subscription app receives SUBSCRIPTION_CONTRACTS_CREATE webhook",
+        "7. Subscription contract created: customer ID, payment token, billing interval, anchor date, next billing date, status ACTIVE",
+        "8. Order confirmation email sent by Shopify",
+        "9. Subscription welcome email sent by subscription app"
+      ]
+    },
+
+    "step_5_order_confirmation": {
+      "route": "/thank-you",
+      "display_elements": [
+        "Order number",
+        "Confirmation email sent to: {email}",
+        "Subscription status: ACTIVE",
+        "Plan: Base Note Monthly — $20.00/month",
+        "Next shipment date: {next_billing_date}",
+        "Next charge date: {next_billing_date}",
+        "CTA: [ MANAGE MY SUBSCRIPTION ] → /account",
+        "Order summary with all line items and total charged today"
+      ]
+    }
+  },
+
+  "module_4_opt_out_model": {
+    "description": "The core billing model for Base Note. Purchase = automatic enrollment. Customers must actively cancel (opt-out) before the next billing date.",
+    "critical_business_rule": "Every 5ml atomizer purchase automatically enrolls the customer in monthly recurring billing. The customer is charged on the same calendar day each month unless they cancel before the renewal date.",
+
+    "billing_rules": {
+      "billing_type": "Anniversary date recurring",
+      "billing_frequency": "Monthly (every 1 month)",
+      "billing_anchor": "Same calendar day as original purchase",
+      "edge_case_short_months": "If billing day doesn't exist (e.g., Jan 31 → Feb 28), charge on last day of month",
+      "charge_time": "Charges process at the start of the billing day (12:00 AM UTC or merchant timezone)"
+    },
+
+    "cancellation_window": {
+      "description": "Same-day opt-out window. Customer can cancel any time before the next billing date.",
+      "example_timeline": {
+        "purchase_date": "February 21, 2026",
+        "cancellation_deadline": "March 21, 2026 (end of day)",
+        "next_charge_date": "March 22, 2026 (if still active)",
+        "window_length": "29 days (varies by month)"
+      },
+      "rules": [
+        {
+          "scenario": "Customer cancels on Feb 21 (same day as purchase)",
+          "result": "Cancel confirmed. No future charges. Current order still ships."
+        },
+        {
+          "scenario": "Customer cancels on March 20 (1 day before renewal)",
+          "result": "Cancel confirmed. No March charge. Subscription ends March 21."
+        },
+        {
+          "scenario": "Customer cancels on March 21 (renewal day, before charge processes)",
+          "result": "Cancel confirmed IF charge hasn't processed yet. System checks charge status."
+        },
+        {
+          "scenario": "Customer cancels on March 22 (after charge)",
+          "result": "Too late. March charge is NON-REFUNDABLE. Order IS fulfilled and shipped. Subscription cancelled for April."
+        },
+        {
+          "scenario": "Customer contacts support after missed window",
+          "result": "Politely decline refund. Explain policy. Cancel subscription for next month. Fulfill current order."
+        }
+      ]
+    },
+
+    "refund_policy": {
+      "policy": "No refunds after the billing date charge has been processed",
+      "order_fulfillment": "ALL charged orders are fulfilled and shipped, regardless of whether the customer wanted to cancel",
+      "goodwill_exception": "At management discretion for extraordinary circumstances only — not standard practice"
+    },
+
+    "customer_portal_display": {
+      "subscription_status_card": {
+        "status": "ACTIVE",
+        "monthly_charge": "$20.00",
+        "member_since": "{signup_date}",
+        "next_billing_date": "{next_billing_date}",
+        "days_remaining": "{calculated_days} days remaining to make changes",
+        "cancellation_notice": "To avoid being charged, cancel before {next_billing_date}.",
+        "ctas": [
+          {"label": "SWAP FRAGRANCE", "action": "open_fragrance_library"},
+          {"label": "CANCEL SUBSCRIPTION", "action": "open_cancellation_flow"}
+        ]
+      }
+    },
+
+    "support_script_missed_window": "Thank you for reaching out, {first_name}. I can see your subscription renewed on {charge_date} at $20.00. Per our subscription terms, charges that have been processed are non-refundable. However, your order will be fulfilled and shipped to you shortly. I have cancelled your subscription effective immediately, so you will NOT be charged again next month. Your subscription access remains active until {end_of_period}. Is there anything else I can help with?"
+  },
+
+  "module_5_dunning_and_recovery": {
+    "description": "Automated failed payment recovery system using Stripe Smart Retry and email dunning sequences.",
+
+    "overview": {
+      "typical_failure_rate": "5-10% of subscription renewals",
+      "stripe_smart_retry_recovery": "Up to 56% of failed charges recovered",
+      "total_dunning_period": "7 days from first failure to cancellation"
+    },
+
+    "emails": {
+      "day_1_soft_reminder": {
+        "trigger": "1 day after payment failure",
+        "subject_lines": [
+          "Your Base Note payment needs attention",
+          "Quick update needed for your subscription"
+        ],
+        "tone": "Friendly, helpful",
+        "body": "We tried to process your $20.00 subscription payment, but it didn't go through. This can happen if your card expired or your bank flagged the transaction. Please update your payment method to continue receiving your monthly fragrance.",
+        "cta": {
+          "label": "UPDATE PAYMENT METHOD",
+          "action": "open_payment_update_form",
+          "style": "primary button, full-width"
+        }
+      },
+      "day_3_urgency": {
+        "trigger": "3 days after payment failure",
+        "subject_lines": [
+          "Action needed: Update your payment to keep your subscription",
+          "Don't miss your next fragrance — update your card"
+        ],
+        "tone": "Slightly urgent",
+        "body": "We've tried to charge your payment method twice now. To avoid losing access to your Base Note subscription, please update your card details. It only takes 30 seconds.",
+        "cta": {
+          "label": "UPDATE PAYMENT METHOD",
+          "action": "open_payment_update_form",
+          "style": "primary button, full-width, with urgency badge"
+        }
+      },
+      "day_5_final_warning": {
+        "trigger": "5 days after payment failure",
+        "subject_lines": [
+          "Last chance: Your Base Note subscription will be cancelled",
+          "Final reminder — 2 days left to save your subscription"
+        ],
+        "tone": "Urgent, clear consequence",
+        "body": "This is your final reminder. If we can't process your $20.00 payment within 2 days, your subscription will be automatically cancelled. Don't miss out on next month's fragrance.",
+        "cta": {
+          "label": "SAVE MY SUBSCRIPTION",
+          "action": "open_payment_update_form",
+          "style": "primary button, full-width, red/urgent"
+        }
+      },
+      "day_7_cancellation": {
+        "trigger": "7 days after payment failure (subscription cancelled)",
+        "subject_lines": [
+          "Your Base Note subscription has been cancelled",
+          "We're sorry to see you go"
+        ],
+        "tone": "Empathetic, open door",
+        "body": "We're sorry to see you go. Your subscription has been cancelled due to payment issues. If you'd like to rejoin, you can reactivate at any time from your account.",
+        "cta": {
+          "label": "REACTIVATE SUBSCRIPTION",
+          "action": "reactivate_subscription",
+          "style": "primary button, full-width"
+        }
+      }
+    }
+  },
+
+  "module_6_pci_compliance": {
+    "description": "PCI compliance and data security architecture. Base Note never touches raw credit card data.",
+
+    "architecture": {
+      "customer_browser": "Types card into Stripe Elements iframe",
+      "shopify_checkout": "Hosts checkout page. NEVER sees raw card data. PCI Level 1 certified.",
+      "stripe": "Tokenizes card. Stores in encrypted vault (AES-256). PCI Level 1 Service Provider.",
+      "base_note_merchant": "NEVER sees full card numbers. Only last 4 digits + brand. Stores payment token only via Shopify."
+    },
+
+    "what_merchant_never_sees": [
+      "Full credit card number",
+      "CVV / CVC code",
+      "Card magnetic stripe data",
+      "Card PIN"
+    ],
+
+    "merchant_obligations": [
+      "Complete SAQ-A self-assessment annually (simplest PCI level)",
+      "Use strong passwords + 2FA on Shopify Admin",
+      "Limit admin access to necessary staff only",
+      "Never ask customers to share card numbers via email, chat, or phone"
+    ]
+  },
+
+  "module_7_legal_compliance": {
+    "description": "FTC and state-level legal compliance requirements for auto-renewal subscription billing.",
+
+    "applicable_laws": [
+      {
+        "name": "ROSCA (Restore Online Shoppers' Confidence Act)",
+        "jurisdiction": "Federal (US)",
+        "status": "Active and enforced",
+        "key_requirements": ["Clear disclosure before billing", "Informed consent", "Simple cancellation mechanism"]
+      },
+      {
+        "name": "FTC Act Section 5",
+        "jurisdiction": "Federal (US)",
+        "status": "Active and enforced",
+        "key_requirements": ["No unfair or deceptive practices in subscription billing"]
+      },
+      {
+        "name": "California Auto-Renewal Law (ARL)",
+        "jurisdiction": "California",
+        "status": "Active (updated July 2025)",
+        "key_requirements": ["Annual reminders", "Easy online cancellation", "Clear disclosure of all terms"]
+      }
+    ],
+
+    "required_disclosures": {
+      "at_checkout": "By completing this purchase, you are enrolling in a monthly subscription. Your payment method will be charged $20.00 on the same day each month until you cancel.",
+      "cancellation_instructions": "You may cancel your subscription at any time before your next billing date by logging into your account at {store_url}/account or by contacting support@basenote.com.",
+      "no_refund_policy": "Charges that have been processed are non-refundable. To avoid the next charge, cancel before your billing date.",
+      "annual_reminder": "This is a reminder that you have an active Base Note subscription at $20.00/month. Your next charge is on {date}. To cancel, visit {cancel_url}."
+    },
+
+    "subscription_terms_page": {
+      "route": "/pages/subscription-terms",
+      "template": "page (default)",
+      "required_content": [
+        "What the subscription includes (5ml fragrance atomizer monthly)",
+        "Price and billing frequency ($20.00/month)",
+        "How billing works (charged on the same day each month)",
+        "How to cancel (customer portal URL, email, phone)",
+        "Cancellation timing (cancel before billing date to avoid next charge)",
+        "Refund policy (non-refundable after charge is processed)",
+        "Order fulfillment (all charged orders are fulfilled and shipped)",
+        "Payment method storage (card tokenized by Stripe, PCI compliant)",
+        "How to update payment method (customer portal)",
+        "Contact information for questions"
+      ]
+    },
+
+    "compliance_checklist": [
+      "Subscription disclosure visible at checkout BEFORE payment",
+      "Affirmative consent checkbox (NOT pre-checked) for recurring billing",
+      "Subscription terms page created at /pages/subscription-terms",
+      "Confirmation email includes subscription details and cancellation link",
+      "Customer portal allows self-service cancellation (no phone call required)",
+      "Annual reminder email configured",
+      "Renewal reminder email sent 7 days before each billing date",
+      "Support team trained on no-refund policy and always-cancel-forward protocol",
+      "Record of customer consent stored (timestamp + checkbox state)"
+    ]
+  },
+
+  "fee_structure": {
+    "shopify_payments_rates": {
+      "basic_plan": {"card_rate": "2.9% + $0.30", "third_party_surcharge": "0%"},
+      "shopify_plan": {"card_rate": "2.7% + $0.30", "third_party_surcharge": "0%"},
+      "advanced_plan": {"card_rate": "2.5% + $0.30", "third_party_surcharge": "0%"}
+    },
+    "subscription_app_fee": "0% (Appstle free plan)",
+    "stripe_billing_surcharge": "0% (not using Stripe Billing directly)",
+    "dispute_fee": "$15 per chargeback (refunded if merchant wins)",
+    "shopify_plan_cost": "$39/month (Basic plan)",
+
+    "per_transaction_examples": {
+      "subscription_20": {
+        "gross": 20.00,
+        "fee_calculation": "2.9% + $0.30 = $0.88",
+        "net": 19.12,
+        "effective_rate": "4.4%"
+      },
+      "full_bottle_408": {
+        "gross": 408.00,
+        "fee_calculation": "2.9% + $0.30 = $12.13",
+        "net": 395.87,
+        "effective_rate": "2.97%"
+      }
+    },
+
+    "revenue_projections": [
+      {"subscribers": 50, "monthly_gross": 1000, "monthly_fees": 44, "monthly_net": 956, "annual_net": 11472},
+      {"subscribers": 100, "monthly_gross": 2000, "monthly_fees": 88, "monthly_net": 1912, "annual_net": 22944},
+      {"subscribers": 250, "monthly_gross": 5000, "monthly_fees": 220, "monthly_net": 4780, "annual_net": 57360},
+      {"subscribers": 500, "monthly_gross": 10000, "monthly_fees": 440, "monthly_net": 9560, "annual_net": 114720},
+      {"subscribers": 1000, "monthly_gross": 20000, "monthly_fees": 880, "monthly_net": 19120, "annual_net": 229440}
+    ]
+  },
+
+  "implementation_phases": {
+    "phase_1_payment_gateway": {
+      "timeline": "Week 1",
+      "tasks": [
+        "Activate Shopify Payments in Shopify Admin",
+        "Complete business verification (EIN, bank account, owner details)",
+        "Enable credit/debit cards, Shop Pay, Apple Pay, Google Pay",
+        "Configure payout schedule (daily)",
+        "Run test transactions using Stripe test cards",
+        "Verify orders appear in Shopify Admin",
+        "Verify first payout arrives in bank account"
+      ]
+    },
+    "phase_2_subscription_app": {
+      "timeline": "Week 1-2",
+      "tasks": [
+        "Install Appstle Subscriptions from Shopify App Store",
+        "Create 'Base Note Monthly' selling plan ($20/month, anniversary billing)",
+        "Attach selling plan to all 5ml subscription variants",
+        "Verify selling plan does NOT apply to full-bottle variants",
+        "Test subscription checkout flow end-to-end",
+        "Verify subscription contract created after purchase",
+        "Verify auto-renewal charges work (test mode)"
+      ]
+    },
+    "phase_3_customer_portal": {
+      "timeline": "Week 2-3",
+      "tasks": [
+        "Configure customer portal (cancel, swap, update payment, view history)",
+        "Disable skip, pause, and change-billing-date features",
+        "Implement cancellation retention flow (reason survey + retention offers)",
+        "Test cancellation flow — verify no future charges",
+        "Test payment method update — verify new card is vaulted"
+      ]
+    },
+    "phase_4_legal_and_emails": {
+      "timeline": "Week 2-3",
+      "tasks": [
+        "Create /pages/subscription-terms with all required disclosures",
+        "Add subscription disclosure box to checkout",
+        "Ensure consent checkbox is present and NOT pre-checked",
+        "Configure dunning emails (4 emails over 7 days)",
+        "Configure renewal reminder email (7 days before billing)",
+        "Configure annual reminder email (California compliance)",
+        "Configure subscription welcome email",
+        "Test all email flows"
+      ]
+    },
+    "phase_5_go_live": {
+      "timeline": "Week 3-4",
+      "tasks": [
+        "Disable test mode on Shopify Payments",
+        "Place real test order with real credit card",
+        "Verify charge in Shopify Payments and bank account",
+        "Monitor first wave of subscription renewals",
+        "Set up alerts for failed payments and disputes",
+        "Train support team on subscription policies",
+        "Monitor churn rate, failed payment rate, and MRR weekly"
+      ]
+    }
+  },
+
+  "sales_tax_configuration": {
+    "rule": "destination_based_sourcing",
+    "description": "Sales tax calculated based on shipping address per US law (45/50 states). Shopify handles this automatically.",
+    "action": "Verify tax enabled in Shopify Admin > Settings > Taxes",
+    "note": "Do NOT use billing address for tax calculation on physical goods"
+  },
+
+  "free_shipping_configuration": {
+    "rule": "Configure actual $0 shipping rate in Shopify Admin",
+    "applies_to": "All domestic subscription orders",
+    "note": "Theme UI displays FREE but actual rate must exist in Shopify shipping settings"
+  },
+
+  "staff_order_notifications": {
+    "recipients": ["wilson@basenotescent.com", "jeff@basenotescent.com", "alex@basenotescent.com"],
+    "trigger": "new_order_placed",
+    "configuration": "Shopify Admin > Settings > Notifications"
+  },
+
+  "single_item_cart_enforcement": {
+    "rule": "max_one_subscription_item",
+    "description": "Cart can hold maximum 1 subscription item. Additional fragrances go to Rotation List.",
+    "behavior": "If subscription item exists in cart when adding another, prompt user to swap",
+    "storage": "Rotation list stored in localStorage key 'basenotes_queue'"
+  },
+
+  "business_rules_summary": {
+    "payment_gateway": "Shopify Payments (Stripe-powered)",
+    "purchase_equals_subscription": true,
+    "subscription_model": "opt-out",
+    "billing_type": "anniversary_date_recurring",
+    "billing_frequency_months": 1,
+    "subscription_price_usd": 20.00,
+    "cancellation_window": "any_time_before_next_billing_date",
+    "refund_after_charge": false,
+    "fulfill_after_missed_cancel": true,
+    "consent_checkbox_pre_checked": false,
+    "consent_checkbox_required": true,
+    "dunning_total_days": 7,
+    "dunning_retry_count": 3,
+    "dunning_emails_count": 4,
+    "skip_allowed": false,
+    "pause_allowed": false,
+    "change_billing_date_allowed": false,
+    "swap_fragrance_allowed": true,
+    "update_payment_method_allowed": true,
+    "smart_retry_enabled": true,
+    "pci_level": "SAQ-A (merchant never touches card data)",
+    "shopify_payments_card_rate_basic": "2.9% + $0.30",
+    "effective_fee_per_20_charge": 0.88,
+    "annual_reminder_email_required": true,
+    "renewal_reminder_days_before": 7
+  }
+}
