@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "type": "header",
   "name": "Header group",
@@ -5,10 +14,24 @@
     "header": {
       "type": "header",
       "settings": {
+        "announcement_enabled": true,
+        "announcement_text": "Free shipping on orders | Subscribe Today",
+        "announcement_link": "",
+        "logo_width": 150,
+        "menu": "main-menu",
+        "mega_menu_parent": "",
+        "mega_menu_label": "New",
+        "mega_menu_heading": "Summer Collection",
+        "mega_menu_link": "",
+        "sticky_header": true,
         "transparent_on_homepage": true,
-        "show_search": true
+        "show_search": true,
+        "search_placeholder": "Search fragrances...",
+        "show_social_mobile": true
       }
     }
   },
-  "order": ["header"]
+  "order": [
+    "header"
+  ]
 }
