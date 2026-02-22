@@ -766,23 +766,10 @@
           addBtn.querySelector('span').textContent = 'Added!';
         }
 
-        // Update cart count in header
-        fetch('/cart.js')
-          .then(res => res.json())
-          .then(cart => {
-            const cartCount = document.querySelector('[data-cart-count]');
-            if (cartCount) {
-              cartCount.textContent = cart.item_count;
-              cartCount.classList.remove('is-hidden');
-            }
-
-            // Open cart drawer if it exists
-            const cartDrawer = document.querySelector('[data-cart-drawer]');
-            if (cartDrawer) {
-              cartDrawer.classList.add('is-open');
-              document.body.style.overflow = 'hidden';
-            }
-          });
+        // Refresh and open cart drawer with updated content
+        if (window.refreshAndOpenCartDrawer) {
+          window.refreshAndOpenCartDrawer();
+        }
 
         // Reset button after delay
         setTimeout(() => {
