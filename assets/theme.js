@@ -151,12 +151,9 @@
               this.textContent = 'Quick Add to Queue';
             }, 1500);
 
-            // Open cart drawer
-            const drawer = document.querySelector('[data-cart-drawer]');
-            if (drawer) {
-              drawer.classList.add('is-open');
-              drawer.setAttribute('aria-hidden', 'false');
-              document.body.style.overflow = 'hidden';
+            // Refresh and open cart drawer with updated content
+            if (window.refreshAndOpenCartDrawer) {
+              window.refreshAndOpenCartDrawer();
             }
           })
           .catch(err => {
