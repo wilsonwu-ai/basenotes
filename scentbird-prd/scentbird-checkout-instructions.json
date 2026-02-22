@@ -1,0 +1,570 @@
+{
+  "project": "Scentbird Checkout Flow Clone",
+  "version": "1.0.0",
+  "created": "2026-02-21",
+  "author": "Product & Design Team",
+  "description": "Step-by-step JSON instructions for replicating the Scentbird customer journey — from product browsing through checkout — including mandatory account creation, social auth, newsletter opt-in, and legal compliance flows.",
+
+  "global_design_system": {
+    "brand_colors": {
+      "primary_gold": "#C4853C",
+      "primary_black": "#1A1A1A",
+      "background_light": "#F5F3F0",
+      "background_white": "#FFFFFF",
+      "text_primary": "#1A1A1A",
+      "text_secondary": "#6B6B6B",
+      "text_gold": "#C4853C",
+      "accent_red": "#D94545",
+      "border_light": "#E5E5E5",
+      "badge_bg_cream": "#FDF5EC",
+      "success_green": "#4CAF50"
+    },
+    "typography": {
+      "heading_font": "serif editorial (e.g. Playfair Display or similar)",
+      "body_font": "sans-serif clean (e.g. Helvetica Neue, Inter)",
+      "brand_names": "uppercase, letter-spacing: 0.1em, font-weight: 600",
+      "product_names": "sentence-case, color: primary_gold",
+      "cta_buttons": "uppercase, letter-spacing: 0.08em, font-weight: 600"
+    },
+    "spacing": {
+      "section_gap": "64px",
+      "card_gap": "24px",
+      "form_field_gap": "16px",
+      "button_padding": "14px 32px"
+    },
+    "border_radius": {
+      "cards": "0px (sharp edges for premium feel)",
+      "buttons": "0px (rectangular CTAs)",
+      "inputs": "4px",
+      "social_auth_buttons": "4px",
+      "badges": "0px"
+    }
+  },
+
+  "customer_journey": {
+
+    "phase_1_product_listing": {
+      "page": "Product Listing Page (PLP)",
+      "route": "/subscription/perfumes",
+      "steps": [
+        {
+          "step": 1,
+          "action": "render_top_promo_banner",
+          "element": "sticky-promo-bar",
+          "content": {
+            "text": "Get 50% off your first month of Scentbird",
+            "cta": "arrow link to /subscribe",
+            "style": "background: primary_gold, color: white, full-width, fixed top"
+          }
+        },
+        {
+          "step": 2,
+          "action": "render_navigation_bar",
+          "element": "main-nav",
+          "content": {
+            "logo": "SCENTBIRD NEW YORK (left-aligned)",
+            "nav_items": ["Perfumes", "Colognes", "Premium", "Beauty", "Shop", "Discover", "Gifting"],
+            "right_actions": [
+              {"icon": "queue", "link": "/queue", "badge_count": true},
+              {"icon": "cart", "action": "open_cart_drawer", "badge_count": true},
+              {"icon": "search", "action": "open_search_overlay"},
+              {"text": "Log in", "link": "/register/log-in"},
+              {"text": "Try now", "link": "/register", "style": "pill button, bg: primary_black, color: white"}
+            ]
+          }
+        },
+        {
+          "step": 3,
+          "action": "render_browse_toggle",
+          "element": "perfumes-colognes-toggle",
+          "content": {
+            "heading_format": "BROWSE [PERFUMES] OR [COLOGNES]",
+            "active_underline": "primary_gold, 2px bottom border",
+            "links": ["/subscription/perfumes", "/subscription/colognes"]
+          }
+        },
+        {
+          "step": 4,
+          "action": "render_discovery_categories",
+          "element": "category-image-cards",
+          "layout": "horizontal row, 5 equal cards",
+          "cards": [
+            {"label": "Scent type", "image": "lifestyle_photo", "action": "open_filter_modal"},
+            {"label": "Occasion", "image": "lifestyle_photo", "action": "open_filter_modal"},
+            {"label": "Personality", "image": "lifestyle_photo", "action": "open_filter_modal"},
+            {"label": "Fragrance family", "image": "lifestyle_photo", "action": "open_filter_modal"},
+            {"label": "Season", "image": "lifestyle_photo", "action": "open_filter_modal"}
+          ]
+        },
+        {
+          "step": 5,
+          "action": "render_results_header",
+          "element": "count-and-controls",
+          "content": {
+            "count_text": "Now browsing {count} perfumes",
+            "count_color": "primary_gold",
+            "controls": [
+              {"label": "Filter", "icon": "sliders_icon", "action": "open_filter_panel"},
+              {"separator": "or"},
+              {"label": "Personalize", "icon": "sparkle_icon", "action": "open_personalization_quiz"}
+            ]
+          }
+        },
+        {
+          "step": 6,
+          "action": "render_product_grid",
+          "element": "product-card-grid",
+          "layout": "3-column grid, responsive to 2-col tablet, 1-col mobile",
+          "card_schema": {
+            "badges": {
+              "position": "top-left stacked vertically",
+              "types": ["NEW (diamond icon)", "LIMITED TIME (clock icon)", "BEST SELLER (star icon)", "Exclusive (text only)"]
+            },
+            "premium_price_tag": {
+              "position": "top-right",
+              "format": "+$X.00",
+              "values": ["+$5.00", "+$10.00", "+$20.00"],
+              "meaning": "Additional cost above base $17.95/mo subscription"
+            },
+            "product_image": {"aspect_ratio": "1:1", "bg": "soft gradient matching product color"},
+            "brand_name": "uppercase, primary_gold, letter-spacing: 0.1em",
+            "product_name": "normal case, text_primary",
+            "star_rating": "image-based star display, X.X out of 5",
+            "scent_notes": "horizontal list, text_secondary, small font",
+            "cta": {"label": "Add to queue", "style": "text-button with right arrow, full-width card bottom", "action": "add_to_subscription_queue"}
+          }
+        },
+        {
+          "step": 7,
+          "action": "render_promotional_interstitials",
+          "element": "inline-promo-cards",
+          "note": "Promotional cards inserted between product rows in the grid",
+          "examples": [
+            {"type": "travel_size", "heading": "Buy any 4 travel-size fragrances, Get the 5th for free", "cta": "Shop now", "link": "/shop/travel-size/perfumes"},
+            {"type": "neimans_select", "heading": "Neiman's Select — premium scents curated by Neiman Marcus", "cta": "EXPLORE NEIMAN'S SELECT", "link": "/neimans-select"},
+            {"type": "scentbird_select", "heading": "Scentbird Select — curated premium perfumes and colognes", "cta": "Browse Scentbird Select", "link": "/scentbird-select"}
+          ]
+        },
+        {
+          "step": 8,
+          "action": "render_sticky_subscribe_bar",
+          "element": "bottom-sticky-bar",
+          "content": {
+            "cta_text": "Subscribe for $8.97",
+            "strikethrough_price": "$17.95",
+            "sub_text": "Get 50% off your first month and a free case in {MM}:{SS}",
+            "link": "/subscribe",
+            "style": "fixed bottom, background: white, shadow top, full-width"
+          }
+        }
+      ]
+    },
+
+    "phase_2_product_detail": {
+      "page": "Product Detail Page (PDP)",
+      "route": "/perfume/{brand-slug}-{product-slug}-{id}",
+      "steps": [
+        {
+          "step": 1,
+          "action": "render_sticky_subscription_bar",
+          "element": "top-sticky-promo",
+          "content": {
+            "text": "Get 50% off and a free case in your first month",
+            "countdown": {"format": "MM : SS", "style": "bordered digit boxes"},
+            "cta": {"label": "SUBSCRIBE FOR $8.97 $17.95", "strikethrough": "$17.95"},
+            "style": "background: primary_gold, fixed top, full-width"
+          }
+        },
+        {
+          "step": 2,
+          "action": "render_breadcrumb",
+          "content": {
+            "format": "{Category} / {Brand} / {Product}",
+            "category_link": "/subscription/perfumes",
+            "brand_link": "/brand/{brand-slug}",
+            "current_page": "plain text (no link)"
+          }
+        },
+        {
+          "step": 3,
+          "action": "render_product_hero",
+          "layout": "two-column — image (55% left) | details (45% right)",
+          "left_column": {
+            "badges_stacked": ["LIMITED TIME (clock)", "BEST SELLER (star)"],
+            "product_image": "large hero shot of bottle, centered"
+          },
+          "right_column": {
+            "brand": "VERSACE — uppercase, large bold, text_primary",
+            "product_name": "Bright Crystal — primary_gold, 1.5rem",
+            "meta_line": "Eau de Toilette, Female, $128 Retail value",
+            "rating": "star images + {count} ratings link",
+            "purchase_options": [
+              {
+                "section": "Subscription",
+                "container_style": "background: badge_bg_cream, rounded, padded",
+                "items": [{
+                  "thumbnail": "vial icon",
+                  "price": "$17.95",
+                  "size": "0.27 oz vial",
+                  "detail": "30-day supply of fragrance",
+                  "cta": {"label": "SUBSCRIBE FOR $8.97", "style": "bg: primary_black, color: white", "action": "redirect_to_register"}
+                }],
+                "urgency_box": {
+                  "label": "Limited time offer:",
+                  "headline": "50% off your first month",
+                  "sub_text": "+ Save 10% on select one-time purchases when you subscribe",
+                  "sub_text_color": "primary_gold",
+                  "countdown": "MM : SS in bordered boxes"
+                }
+              },
+              {
+                "section": "One-time purchase",
+                "items": [
+                  {"price": "$4.95", "size": "1.5 ml vial", "cta": "ADD TO CART (outlined)"},
+                  {"price": "$21.95", "size": "0.27 oz vial", "detail": "30-day supply", "cta": "ADD TO CART (outlined)"}
+                ]
+              },
+              {
+                "section": "Mini bottle",
+                "items": [
+                  {"price": "$39.00", "size": "20 ml vial", "badge": "Subscribe & get 10% off", "cta": "ADD TO CART (outlined)"}
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "step": 4,
+          "action": "render_upsell_banner",
+          "content": {
+            "tag": "NEW AT SCENTBIRD",
+            "headline": "BUY 4, GET 1 FREE",
+            "body": "Mix and match any four 0.27oz/8ml travel size designer fragrances and get the 5th free.",
+            "cta": "SHOP NOW",
+            "style": "background: badge_bg_cream"
+          }
+        },
+        {
+          "step": 5,
+          "action": "render_product_description",
+          "content": {"heading": "{BRAND} - {PRODUCT}", "body": "fragrance description paragraph", "disclaimer_link": "Disclaimer (expandable)"}
+        },
+        {
+          "step": 6,
+          "action": "render_how_it_works",
+          "content": {
+            "tagline": "INTRIGUED? WE GET IT",
+            "heading": "HERE'S HOW IT WORKS",
+            "steps_content": [
+              {"number": 1, "title": "PICK A SCENT", "body": "Choose from best sellers. Full catalog access with $17.95/month plan."},
+              {"number": 2, "title": "ACTIVATE YOUR SUBSCRIPTION", "body": "8 mL bottles, ~120 sprays, sleek refillable case."},
+              {"number": 3, "title": "RECEIVE YOUR FRAGRANCE", "body": "Free case with first order. Cancel anytime."}
+            ]
+          }
+        },
+        {
+          "step": 7,
+          "action": "render_social_proof",
+          "content": {
+            "tagline": "JOIN OVER 1,000,000 FRAGRANCE FANATICS",
+            "body": "Over 1000 fragrances. $8.97 first month, $17.95 second month.",
+            "cta": "SUBSCRIBE FOR $8.97"
+          }
+        },
+        {
+          "step": 8,
+          "action": "render_featured_notes",
+          "content": {"tagline": "STOP AND SMELL THESE", "heading": "FEATURED NOTES", "notes_display": "circular images with labels, clickable"}
+        },
+        {
+          "step": 9,
+          "action": "render_fragrance_family",
+          "content": {"label": "FRAGRANCE FAMILY", "name": "{Family Name}", "image_overlay": "dark overlay with white text"}
+        },
+        {
+          "step": 10,
+          "action": "render_community_categorization",
+          "content": {
+            "heading": "HERE'S HOW OTHERS DESCRIBED THE SCENT",
+            "categories": ["Scent type", "Occasion", "Personality", "Fragrance family", "Season", "Complexity"]
+          }
+        },
+        {
+          "step": 11,
+          "action": "render_reviews",
+          "content": {
+            "heading": "{count} REVIEWS",
+            "summary": {"average_score": "X.X", "total_ratings": "count", "star_breakdown_chart": "horizontal bars"},
+            "write_review_cta": "WRITE A REVIEW (requires login)",
+            "filters": ["Most recent dropdown", "All ratings dropdown"]
+          }
+        }
+      ]
+    },
+
+    "phase_3_cart_drawer": {
+      "page": "Cart Drawer (Slide-in Panel)",
+      "trigger": "Click 'ADD TO CART' on PDP one-time purchase options",
+      "steps": [
+        {
+          "step": 1,
+          "action": "open_cart_drawer",
+          "animation": "slide-in from right, ~420px width, backdrop overlay",
+          "header": {"text": "Your cart total – ${total}", "close_button": "X top-right"}
+        },
+        {
+          "step": 2,
+          "action": "render_cart_items",
+          "card_schema": {
+            "type_label": "ONE-TIME PURCHASE (uppercase, primary_gold)",
+            "thumbnail": "product image small",
+            "brand": "brand name text",
+            "product_name": "product name text",
+            "size_detail": "e.g. 1.5 ml",
+            "price": "$X.XX",
+            "quantity_controls": {"decrement": "minus circle", "display": "number", "increment": "plus circle"},
+            "remove_button": "X on card"
+          }
+        },
+        {
+          "step": 3,
+          "action": "render_subscription_upsell",
+          "critical": true,
+          "content": {
+            "heading": "WOULD YOU LIKE TO ADD A MONTHLY FRAGRANCE SUBSCRIPTION?",
+            "description": "A month-to-month subscription to Scentbird. Billed monthly, renews automatically.",
+            "value_prop_icon": "vial illustration",
+            "value_prop_text": "Your choice of one 8ml fragrance a month, with a free case included",
+            "buttons": {
+              "decline": {"label": "NO THANKS", "style": "outlined"},
+              "accept": {"label": "YES, ADD IT!", "style": "filled, primary_gold bg"}
+            }
+          },
+          "display_logic": "Show only if no subscription already in cart"
+        },
+        {
+          "step": 4,
+          "action": "render_order_summary",
+          "fields": {
+            "subtotal": {"label": "Subtotal", "value": "${amount}", "color": "primary_gold"},
+            "shipping": {"label": "Shipping", "value": "${amount}"},
+            "total": {"label": "Total", "value": "${amount}", "color": "primary_gold", "font_weight": "bold"}
+          },
+          "free_shipping_message": "Add ${remaining} to your order for FREE SHIPPING (threshold: $50)"
+        },
+        {
+          "step": 5,
+          "action": "render_checkout_cta",
+          "button": {
+            "label": "CHECKOUT",
+            "style": "full-width, bg: primary_black, color: white, py: 16px, uppercase",
+            "href": "/subscription/payment",
+            "auth_gate": "If NOT authenticated → redirect to /register?redirect=%2Fsubscription%2Fpayment"
+          }
+        }
+      ]
+    },
+
+    "phase_4_mandatory_registration": {
+      "page": "Registration / Sign Up Page",
+      "route": "/register?redirect={encoded_destination}",
+      "critical_business_rule": "NO GUEST CHECKOUT. Account creation is MANDATORY before accessing payment page.",
+      "steps": [
+        {
+          "step": 1,
+          "action": "render_urgency_banner",
+          "content": {
+            "text": "Get 50% off your first month. Offer ends in {MM} min, {SS.S} sec",
+            "style": "bg: primary_gold, color: white, fixed top, full-width"
+          }
+        },
+        {
+          "step": 2,
+          "action": "render_log_in_link",
+          "content": {
+            "text": "Log in",
+            "position": "top-right above form",
+            "style": "color: primary_gold",
+            "link": "/register/log-in?redirect={same_redirect}"
+          }
+        },
+        {
+          "step": 3,
+          "action": "render_two_column_registration",
+          "layout": "left column ~55% form | right column ~45% social auth",
+
+          "left_column_form": {
+            "heading": "Create your account",
+            "fields": [
+              {
+                "order": 1,
+                "id": "scent_preference",
+                "type": "visual_radio_group",
+                "label": "Which type of scents do you prefer?",
+                "options": [
+                  {"value": "feminine", "label": "Feminine", "illustration": "female_silhouette_sketch", "default_selected": true, "checkmark_badge": true},
+                  {"value": "masculine", "label": "Masculine", "illustration": "male_silhouette_sketch", "default_selected": false}
+                ],
+                "layout": "two side-by-side cards with border, click to select"
+              },
+              {
+                "order": 2,
+                "id": "email",
+                "type": "email_input",
+                "label": "Email",
+                "placeholder": "Email",
+                "required": true,
+                "validation": "RFC 5322 email format"
+              },
+              {
+                "order": 3,
+                "id": "newsletter_opt_in",
+                "type": "checkbox",
+                "label": "Sign me up for updates from Scentbird",
+                "default_state": "CHECKED",
+                "pattern": "OPT-OUT (pre-checked)",
+                "legal_implications": {
+                  "CAN_SPAM": "Pre-checked opt-in is generally permitted in the US under CAN-SPAM",
+                  "GDPR": "Pre-checked boxes are NOT valid consent under GDPR for EU users",
+                  "CCPA": "Must provide opt-out mechanism for CA residents",
+                  "recommendation": "Consider jurisdiction-aware default state based on user geolocation"
+                }
+              },
+              {
+                "order": 4,
+                "id": "terms_agreement",
+                "type": "checkbox",
+                "label_html": "I agree to the Scentbird Terms and Conditions, including the arbitration provision, and that I have read and understand the Privacy Policy and CA Notice of Financial Incentive.",
+                "default_state": "UNCHECKED",
+                "required": true,
+                "pattern": "EXPLICIT OPT-IN (must actively check)",
+                "links": [
+                  {"text": "Terms and Conditions", "href": "/terms"},
+                  {"text": "Privacy Policy", "href": "/privacy"},
+                  {"text": "CA Notice of Financial Incentive", "href": "/privacy#california"}
+                ],
+                "validation_message": "You must agree to the Terms and Conditions to create an account"
+              }
+            ],
+            "submit_button": {
+              "label": "SIGN UP",
+              "style": "full-width, bg: primary_black, color: white, uppercase, py: 16px",
+              "disabled_until": "email is valid AND terms_agreement is checked",
+              "action": "POST /api/register → on success redirect to {redirect_param}"
+            }
+          },
+
+          "right_column_social": {
+            "heading": "Or quickly sign up",
+            "buttons": [
+              {
+                "provider": "google",
+                "label": "Sign up with Google",
+                "icon": "google_multicolor_g",
+                "style": "full-width, outlined, border: 1px solid #E5E5E5, bg: white",
+                "auth_flow": "OAuth 2.0 redirect"
+              },
+              {
+                "provider": "facebook",
+                "label": "Sign up with Facebook",
+                "icon": "facebook_blue_f",
+                "style": "full-width, outlined, border: 1px solid #E5E5E5, bg: white",
+                "auth_flow": "OAuth 2.0 redirect"
+              },
+              {
+                "provider": "apple",
+                "label": "Sign up with Apple",
+                "icon": "apple_black_logo",
+                "style": "full-width, outlined, border: 1px solid #E5E5E5, bg: white",
+                "auth_flow": "Sign in with Apple (ASAuthorizationAppleIDRequest)"
+              }
+            ],
+            "implicit_consent_note": "Social signup may implicitly accept T&C and newsletter. Ensure legal review for compliance."
+          }
+        }
+      ]
+    },
+
+    "phase_5_login": {
+      "page": "Login Page (Passwordless)",
+      "route": "/register/log-in?redirect={encoded_destination}",
+      "authentication_type": "PASSWORDLESS — Magic link via email + Social OAuth",
+      "steps": [
+        {
+          "step": 1,
+          "action": "render_login_form",
+          "layout": "centered single card, max-width ~500px",
+          "content": {
+            "logo": "SCENTBIRD NEW YORK centered at top",
+            "heading": "Log in to your account.",
+            "email_field": {"type": "email", "placeholder": "Email"},
+            "info_text": "To finalize your log in, a secure link will be sent to your email address",
+            "submit": {"label": "SEND LOG IN LINK", "style": "full-width, bg: primary_black, color: white"},
+            "signup_link": {"text": "Don't have an account?", "href": "/register", "color": "primary_gold"},
+            "social_section": {
+              "heading": "Or log in with one of these platforms:",
+              "buttons": ["Sign in with Google", "Sign in with Facebook", "Sign in with Apple"]
+            }
+          }
+        }
+      ]
+    },
+
+    "phase_6_cookie_consent": {
+      "scope": "Global — all pages, first visit",
+      "steps": [
+        {
+          "step": 1,
+          "action": "show_cookie_banner",
+          "content": {
+            "message": "We use cookies and pixels to enhance your shopping experience...",
+            "policy_links": ["/privacy", "/terms"],
+            "actions": ["Accept", "Reject", "Manage cookie settings"]
+          }
+        },
+        {
+          "step": 2,
+          "action": "cookie_settings_modal",
+          "trigger": "Click 'Manage cookie settings'",
+          "categories": [
+            {"name": "Analytics", "default": false, "description": "Performance and visitor interaction tracking"},
+            {"name": "Marketing", "default": false, "description": "Targeted advertising delivery"},
+            {"name": "Personalization", "default": false, "description": "Preference remembering (language, region, etc.)"}
+          ],
+          "actions": ["Save changes", "Cancel"]
+        }
+      ]
+    }
+  },
+
+  "sales_tax_configuration": {
+    "rule": "destination_based_sourcing",
+    "description": "Sales tax calculated based on shipping address per US law (45/50 states). Shopify handles this automatically.",
+    "action": "Verify tax enabled in Shopify Admin > Settings > Taxes",
+    "note": "Do NOT use billing address for tax calculation on physical goods"
+  },
+
+  "single_item_cart_enforcement": {
+    "rule": "max_one_subscription_item",
+    "description": "Cart can hold maximum 1 subscription item. Additional fragrances go to queue.",
+    "behavior": "If subscription item exists in cart when adding another, prompt user to swap",
+    "storage": "Queue list stored in localStorage key 'basenotes_queue'"
+  },
+
+  "business_rules_summary": {
+    "checkout_requires_account": true,
+    "guest_checkout_available": false,
+    "newsletter_opt_in_pre_checked": true,
+    "terms_agreement_required_before_signup": true,
+    "terms_agreement_pre_checked": false,
+    "authentication_method": "passwordless_magic_link_plus_social_oauth",
+    "social_auth_providers": ["Google", "Facebook", "Apple"],
+    "subscription_upsell_in_cart": true,
+    "urgency_countdown_timer": true,
+    "free_shipping_threshold_usd": 50.00,
+    "base_subscription_price_usd": 17.95,
+    "promo_first_month_price_usd": 8.97,
+    "queue_system_for_subscribers": true,
+    "separate_cart_for_one_time_purchases": true
+  }
+}

@@ -1,0 +1,213 @@
+{
+  "project": "Base Note",
+  "document_type": "Bug Fix Instructions",
+  "version": "1.0",
+  "date": "2026-02-21",
+  "reported_by": "Jeff",
+  "priority": "HIGH",
+  "status": "Ready for Development",
+
+  "bug_summary": {
+    "title": "Full Bottle Variant Not Displaying Correctly on Product Page",
+    "affected_product": "Creed Aventus (and any product with multiple variant types)",
+    "description": "When a product has both a 5ml subscription variant ($20/month) and a full-size bottle variant (3.3 fl oz, $408), the product page always displays the subscription view regardless of which variant is selected in the dropdown.",
+    "expected_behavior": "Selecting the full bottle variant should show the retail price ($408), compare-at price ($510), savings badge, and an 'Add to Cart' button instead of the subscription UI.",
+    "actual_behavior": "The page always shows $20/month pricing, 5ml atomizer visual, subscription benefits, and 'Add to My Queue' button — even when '3.3 fl oz' is selected.",
+    "revenue_impact": "Blocks all full-bottle sales ($408+ per unit). Customers cannot see the correct price or purchase flow for full-size products."
+  },
+
+  "root_cause": {
+    "file": "sections/main-product.liquid",
+    "issues": [
+      {
+        "id": "RC-1",
+        "category": "Template Logic",
+        "location": "Lines 162-311",
+        "description": "The entire product info section is wrapped in a 'subscription-box' div that hardcodes the subscription UI (5ml atomizer SVG, $20/month price from settings, subscription benefits list, 'Add to My Queue' button). There is NO conditional logic to detect variant type."
+      },
+      {
+        "id": "RC-2",
+        "category": "JavaScript",
+        "location": "Lines 1420-1524",
+        "description": "No variant change event listener exists. The JavaScript handles gallery thumbnails and form submission but never listens for changes on the .variant-select dropdown. The hidden #variantId input is never updated when the user changes the variant."
+      },
+      {
+        "id": "RC-3",
+        "category": "Data Binding",
+        "location": "Script section",
+        "description": "Product variant data (prices, availability, compare-at prices, options) is not serialized into JavaScript. The frontend has no access to variant details needed for dynamic UI updates."
+      }
+    ]
+  },
+
+  "evidence": {
+    "screenshots": [
+      {
+        "file": "Image from iOS (2).jpg",
+        "description": "Frontend showing Creed Aventus product page. SIZE dropdown shows '3.3 fl oz' selected, but page still displays $20/month subscription view with 'ADD TO MY QUEUE' button."
+      },
+      {
+        "file": "Image from iOS (3).jpg",
+        "description": "Shopify admin showing the 3.3 fl oz variant correctly configured: Price $408.00, Compare at $510.00, Cost $240.00. Two variants visible: 5ml and 3.3 fl oz."
+      }
+    ],
+    "conclusion": "Data is correct in Shopify admin. The bug is 100% in the frontend template rendering."
+  },
+
+  "fix_instructions": {
+    "overview": "Single-file fix in sections/main-product.liquid with 4 changes: Liquid variant detection logic, conditional HTML rendering, new CSS styles, and JavaScript variant change handler.",
+    "files_to_modify": ["sections/main-product.liquid"],
+    "total_changes": 4,
+
+    "changes": [
+      {
+        "id": "CHANGE-A",
+        "title": "Add Variant Detection Logic",
+        "area": "Liquid Template",
+        "location": "Inside the opening {%- liquid ... -%} block (lines 1-58), add before the closing -%}",
+        "description": "Add Liquid logic to detect whether the current variant is a subscription (5ml) or one-time purchase (full bottle). Also detect if the product has both variant types.",
+        "what_to_add": "Variables: is_subscription_variant (boolean), has_multiple_purchase_types (boolean), has_subscription_variant (boolean), has_fullbottle_variant (boolean)",
+        "detection_keywords": ["5ml", "5 ml", "atomizer", "subscription"],
+        "logic": "Loop through product.variants, check each variant.title for subscription keywords. If title contains any keyword, it's a subscription variant. If not, it's a full-bottle variant."
+      },
+      {
+        "id": "CHANGE-B",
+        "title": "Add Conditional Rendering for Purchase Views",
+        "area": "HTML Template",
+        "location": "Replace lines 162-311 (the entire subscription-box div)",
+        "description": "Split into three sections: (1) Subscription View div with id='subscriptionView' that shows/hides based on variant type, (2) Purchase View div with id='purchaseView' for full-bottle variants, (3) Shared form section used by both views.",
+        "subscription_view": {
+          "id": "subscriptionView",
+          "visible_when": "is_subscription_variant is true",
+          "contains": ["5ml atomizer SVG", "$20/month pricing from settings", "Subscription benefits list"]
+        },
+        "purchase_view": {
+          "id": "purchaseView",
+          "visible_when": "is_subscription_variant is false",
+          "contains": ["Full retail price (e.g. $408.00)", "Compare-at price with strikethrough (e.g. $510.00)", "Savings badge (e.g. Save $102.00)", "Purchase details (full-size bottle, one-time purchase, free shipping)"]
+        },
+        "shared_form": {
+          "contains": ["Hidden variant ID input", "Variant selector dropdown", "Appstle widget container", "Selling plan selector", "Dynamic submit button ('Add to My Queue' or 'Add to Cart')"]
+        }
+      },
+      {
+        "id": "CHANGE-C",
+        "title": "Add CSS Styles for Purchase Box",
+        "area": "CSS Styles",
+        "location": "Add before closing </style> tag",
+        "description": "Add styles for the new .purchase-box, .purchase-box__header, .purchase-box__pricing, .compare-price, .savings-badge, .purchase-box__details, .purchase-detail, and .product-purchase-form classes. Include mobile responsive styles."
+      },
+      {
+        "id": "CHANGE-D",
+        "title": "Replace JavaScript with Variant-Aware Handler",
+        "area": "JavaScript",
+        "location": "Replace everything between <script> and </script> (lines 1420-1523)",
+        "description": "Complete rewrite of the JavaScript section to add variant change handling.",
+        "new_features": [
+          {
+            "name": "Variant Data Serialization",
+            "description": "Serialize all product.variants into a JavaScript array with id, title, price, priceFormatted, compareAtPrice, compareAtPriceFormatted, available, options, and featuredImage."
+          },
+          {
+            "name": "isSubscriptionVariant() Helper",
+            "description": "Function that checks if a variant title contains subscription keywords (5ml, atomizer, etc.)."
+          },
+          {
+            "name": "formatMoney() Helper",
+            "description": "Converts cents to dollar format (e.g., 40800 -> '$408')."
+          },
+          {
+            "name": "onVariantChange() Handler",
+            "description": "Main handler that: (1) reads selected options from all dropdowns, (2) finds matching variant from serialized data, (3) updates hidden variant ID input, (4) toggles subscription vs purchase view visibility, (5) updates button text, (6) updates price/compare-at/savings for purchase view, (7) updates product image if variant has specific image, (8) updates URL with variant parameter."
+          },
+          {
+            "name": "Event Binding",
+            "description": "Binds 'change' event to all .variant-select dropdowns to trigger onVariantChange()."
+          },
+          {
+            "name": "Preserved Features",
+            "description": "Gallery thumbnail clicks, add-to-cart form submission, cart drawer opening, and copy link button all remain functional."
+          }
+        ]
+      }
+    ]
+  },
+
+  "variant_naming_convention": {
+    "important": true,
+    "description": "The JavaScript detection relies on variant title matching. This convention must be followed for all future variants.",
+    "subscription_variants": {
+      "must_contain_one_of": ["5ml", "5 ml", "atomizer", "subscription"],
+      "examples": ["5ml", "5 ml Atomizer", "Monthly Subscription"]
+    },
+    "full_bottle_variants": {
+      "must_not_contain": ["5ml", "5 ml", "atomizer", "subscription"],
+      "examples": ["3.3 fl oz", "100ml", "Full Size", "50ml EDP"]
+    }
+  },
+
+  "testing_checklist": [
+    {
+      "scenario": "Product with ONLY 5ml variant",
+      "tests": [
+        "Page loads with subscription view ($20/month, 5ml visual, benefits list)",
+        "'Add to My Queue' button displayed",
+        "No variant dropdown shown (single variant)",
+        "Add to cart works correctly"
+      ]
+    },
+    {
+      "scenario": "Product with BOTH 5ml and full bottle variants (Creed Aventus)",
+      "tests": [
+        "Page loads with correct view for default variant",
+        "Variant dropdown displays both options",
+        "Selecting '5ml' shows subscription view with $20/month",
+        "Selecting '3.3 fl oz' shows purchase view with $408.00",
+        "Compare-at price ($510.00) shown with strikethrough",
+        "Savings badge shows 'Save $102.00'",
+        "Button changes between 'Add to My Queue' and 'Add to Cart'",
+        "Switching variants back and forth works smoothly",
+        "Add to cart works for both variant types"
+      ]
+    },
+    {
+      "scenario": "URL with variant parameter",
+      "tests": [
+        "Loading with ?variant=[full-bottle-id] shows purchase view",
+        "Loading with ?variant=[5ml-id] shows subscription view"
+      ]
+    },
+    {
+      "scenario": "Sold Out variant",
+      "tests": [
+        "Out-of-stock full bottle shows 'Sold Out' disabled button",
+        "Out-of-stock 5ml shows 'Sold Out' disabled button"
+      ]
+    },
+    {
+      "scenario": "Mobile responsive",
+      "tests": [
+        "Purchase box looks correct on mobile (375px)",
+        "Variant dropdown usable on touch devices",
+        "Price and savings badge properly visible"
+      ]
+    }
+  ],
+
+  "shopify_admin_verification": {
+    "steps": [
+      "Go to Products > Creed Aventus > Variants",
+      "Confirm 5ml variant exists with correct price ($20.00)",
+      "Confirm 3.3 fl oz variant exists with Price: $408.00, Compare at: $510.00",
+      "Verify both variants have 'Track quantity' enabled",
+      "Verify both variants have stock levels set",
+      "Verify the option name is 'Size'"
+    ]
+  },
+
+  "backward_compatibility": {
+    "existing_products": "All products with only 5ml variants will continue to work exactly as before. No changes needed.",
+    "new_behavior": "Only activates when a product has multiple variant types (subscription + full bottle).",
+    "future_products": "Any new product with both variant types will automatically get the dual-view functionality, as long as the naming convention is followed."
+  }
+}
