@@ -499,6 +499,53 @@
       },
       {
         "type": "header",
+        "content": "Pricing Display"
+      },
+      {
+        "type": "text",
+        "id": "subscription_quarterly_price",
+        "label": "Quarterly per-month price display",
+        "default": "$16",
+        "info": "Per-month equivalent for quarterly plan"
+      },
+      {
+        "type": "text",
+        "id": "subscription_quarterly_total",
+        "label": "Quarterly total price",
+        "default": "$48"
+      },
+      {
+        "type": "text",
+        "id": "subscription_annual_price",
+        "label": "Annual per-month price display",
+        "default": "$14",
+        "info": "Per-month equivalent for annual plan"
+      },
+      {
+        "type": "text",
+        "id": "subscription_annual_total",
+        "label": "Annual total price",
+        "default": "$168"
+      },
+      {
+        "type": "header",
+        "content": "Appstle Subscriptions"
+      },
+      {
+        "type": "checkbox",
+        "id": "appstle_enabled",
+        "label": "Enable Appstle Subscriptions",
+        "default": false,
+        "info": "Toggle Appstle subscription widget on product pages. Enable after installing the Appstle Subscriptions app."
+      },
+      {
+        "type": "text",
+        "id": "appstle_portal_url",
+        "label": "Appstle customer portal URL",
+        "info": "URL for the Appstle subscription management portal"
+      },
+      {
+        "type": "header",
         "content": "Subscription Portal"
       },
       {
@@ -506,6 +553,12 @@
         "id": "subscription_manage_url",
         "label": "Manage subscription URL",
         "info": "Link to your subscription management portal (Recharge, Bold, etc.)"
+      },
+      {
+        "type": "url",
+        "id": "subscription_portal_url",
+        "label": "Generic subscription portal URL",
+        "info": "Used by the account page and cancellation flow. Falls back to /account if blank."
       }
     ]
   },

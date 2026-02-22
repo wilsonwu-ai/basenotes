@@ -1,0 +1,104 @@
+{% comment %}
+  Email Reference: Dunning Day 3 — Urgent Payment Reminder
+  PURPOSE: Klaviyo design reference — NOT rendered by the theme.
+  Sent 3 days after a failed payment attempt. Tone: slightly urgent.
+{% endcomment %}
+
+<!-- DUNNING DAY 3 EMAIL -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Action needed: Update your payment</title>
+</head>
+<body style="margin:0;padding:0;background:#F5F3F0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+  <!-- Header -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#2D4641;">
+    <tr>
+      <td align="center" style="padding:24px;">
+        <span style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#fff;letter-spacing:0.05em;">BASE NOTE</span>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Body -->
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;">
+
+          <!-- Amber accent bar (urgency) -->
+          <tr><td style="height:4px;background:#FF9800;"></td></tr>
+
+          <tr>
+            <td style="padding:40px 32px;text-align:center;">
+
+              <!-- Urgency badge -->
+              <span style="display:inline-block;padding:6px 18px;background:rgba(255,152,0,0.1);color:#FF9800;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:0.12em;border-radius:999px;margin-bottom:20px;">Action Needed</span>
+
+              <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:26px;color:#2D4641;margin:0 0 12px;">{{ first_name }}, your payment still needs attention</h1>
+              <p style="font-size:16px;color:#666;line-height:1.6;margin:0 0 28px;max-width:440px;display:inline-block;">We've tried twice to process your <strong style="color:#2D4641;">{{ charge_amount }}</strong> subscription payment but it was declined. Your subscription is at risk of being paused.</p>
+
+              <!-- Timeline -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+                <tr>
+                  <td style="padding:16px;background:#FAF8F5;border-radius:12px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="33%" style="text-align:center;padding:8px;">
+                          <div style="width:32px;height:32px;margin:0 auto 6px;background:rgba(244,67,54,0.1);border-radius:50%;line-height:32px;font-size:14px;color:#f44336;">&#10007;</div>
+                          <p style="font-size:11px;color:#999;margin:0;">Day 1<br><strong style="color:#f44336;">Failed</strong></p>
+                        </td>
+                        <td width="33%" style="text-align:center;padding:8px;">
+                          <div style="width:32px;height:32px;margin:0 auto 6px;background:rgba(244,67,54,0.1);border-radius:50%;line-height:32px;font-size:14px;color:#f44336;">&#10007;</div>
+                          <p style="font-size:11px;color:#999;margin:0;">Day 3<br><strong style="color:#f44336;">Failed</strong></p>
+                        </td>
+                        <td width="33%" style="text-align:center;padding:8px;">
+                          <div style="width:32px;height:32px;margin:0 auto 6px;background:rgba(255,152,0,0.1);border-radius:50%;line-height:32px;font-size:14px;color:#FF9800;">!</div>
+                          <p style="font-size:11px;color:#999;margin:0;">Day 5<br><strong style="color:#FF9800;">Final retry</strong></p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="font-size:14px;color:#666;line-height:1.6;margin:0 0 24px;">Please update your payment method to keep receiving your monthly luxury fragrance. We'll make one more attempt in <strong style="color:#2D4641;">2 days</strong>.</p>
+
+              <!-- CTA -->
+              <a href="{{ update_payment_url }}" style="display:inline-block;padding:16px 48px;background:#FF9800;color:#fff;font-size:14px;font-weight:bold;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;border-radius:6px;">Update Payment Now</a>
+
+              <hr style="border:none;border-top:1px solid #E8E6E3;margin:32px 0;">
+
+              <!-- What you'll miss -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:rgba(45,70,65,0.04);border-radius:10px;">
+                <tr>
+                  <td style="padding:20px;text-align:center;">
+                    <p style="font-size:14px;font-weight:bold;color:#2D4641;margin:0 0 8px;">Don't miss out on:</p>
+                    <p style="font-size:13px;color:#666;margin:0;line-height:1.6;">Your monthly luxury fragrance &bull; Free shipping &bull; Subscriber-exclusive scents &bull; Full-bottle discounts</p>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="font-size:12px;color:#999;margin:20px 0 0;">Questions? <a href="mailto:hello@basenote.com" style="color:#C9A962;">hello@basenote.com</a></p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Footer -->
+        <table width="600" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding:24px;text-align:center;">
+              <p style="font-size:12px;color:#999;margin:0 0 8px;">Base Note — Luxury Fragrances, Delivered Monthly</p>
+              <p style="font-size:11px;color:#bbb;margin:0;"><a href="{{ unsubscribe_url }}" style="color:#bbb;">Unsubscribe</a> | <a href="{{ manage_preferences_url }}" style="color:#bbb;">Manage Preferences</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

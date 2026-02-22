@@ -1,0 +1,105 @@
+{% comment %}
+  Email Reference: Dunning Day 5 — Final Warning
+  PURPOSE: Klaviyo design reference — NOT rendered by the theme.
+  Sent 5 days after initial payment failure. Tone: urgent, final warning.
+{% endcomment %}
+
+<!-- DUNNING DAY 5 EMAIL -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Final notice: Your subscription will be cancelled</title>
+</head>
+<body style="margin:0;padding:0;background:#F5F3F0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+  <!-- Header -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#2D4641;">
+    <tr>
+      <td align="center" style="padding:24px;">
+        <span style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#fff;letter-spacing:0.05em;">BASE NOTE</span>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Body -->
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;">
+
+          <!-- Red accent bar (final warning) -->
+          <tr><td style="height:4px;background:#f44336;"></td></tr>
+
+          <tr>
+            <td style="padding:40px 32px;text-align:center;">
+
+              <!-- Warning badge -->
+              <span style="display:inline-block;padding:6px 18px;background:rgba(244,67,54,0.1);color:#f44336;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:0.12em;border-radius:999px;margin-bottom:20px;">Final Notice — 2 Days Left</span>
+
+              <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:26px;color:#2D4641;margin:0 0 12px;">{{ first_name }}, we're about to cancel your subscription</h1>
+              <p style="font-size:16px;color:#666;line-height:1.6;margin:0 0 28px;max-width:460px;display:inline-block;">After 3 failed payment attempts, your subscription will be <strong style="color:#f44336;">automatically cancelled on {{ cancellation_date }}</strong> unless you update your payment method.</p>
+
+              <!-- Countdown -->
+              <table cellpadding="0" cellspacing="0" style="margin:0 auto 28px;">
+                <tr>
+                  <td style="width:60px;height:60px;background:#f44336;border-radius:10px;text-align:center;vertical-align:middle;">
+                    <span style="font-family:Georgia,'Times New Roman',serif;font-size:28px;font-weight:bold;color:#fff;">2</span>
+                  </td>
+                  <td style="padding:0 12px;font-size:14px;color:#999;text-align:left;">
+                    days until<br><strong style="color:#f44336;">cancellation</strong>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA -->
+              <a href="{{ update_payment_url }}" style="display:inline-block;padding:16px 48px;background:#f44336;color:#fff;font-size:14px;font-weight:bold;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;border-radius:6px;margin-bottom:16px;">Save My Subscription</a>
+
+              <p style="font-size:13px;color:#999;margin:0 0 28px;">Takes less than 30 seconds</p>
+
+              <hr style="border:none;border-top:1px solid #E8E6E3;margin:0 0 28px;">
+
+              <!-- What you'll lose -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:rgba(244,67,54,0.03);border:1px solid rgba(244,67,54,0.15);border-radius:10px;">
+                <tr>
+                  <td style="padding:20px;">
+                    <p style="font-size:14px;font-weight:bold;color:#2D4641;margin:0 0 12px;text-align:center;">If your subscription is cancelled, you'll lose:</p>
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="padding:4px 0;font-size:13px;color:#666;">&#10007;&nbsp; Monthly luxury fragrance delivery</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:4px 0;font-size:13px;color:#666;">&#10007;&nbsp; Free shipping on all orders</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:4px 0;font-size:13px;color:#666;">&#10007;&nbsp; Access to exclusive scents</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:4px 0;font-size:13px;color:#666;">&#10007;&nbsp; Subscriber pricing on full bottles</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="font-size:12px;color:#999;margin:20px 0 0;">Questions? <a href="mailto:hello@basenote.com" style="color:#C9A962;">hello@basenote.com</a></p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Footer -->
+        <table width="600" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding:24px;text-align:center;">
+              <p style="font-size:12px;color:#999;margin:0 0 8px;">Base Note — Luxury Fragrances, Delivered Monthly</p>
+              <p style="font-size:11px;color:#bbb;margin:0;"><a href="{{ unsubscribe_url }}" style="color:#bbb;">Unsubscribe</a> | <a href="{{ manage_preferences_url }}" style="color:#bbb;">Manage Preferences</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

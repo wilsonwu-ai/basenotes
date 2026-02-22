@@ -263,6 +263,22 @@
             <p class="acct__welcome-meta">Member since {{ customer.created_at | date: '%B %Y' }}</p>
           </div>
 
+          <!-- Billing Countdown -->
+          <div class="acct__card billing-countdown" id="billingCountdown">
+            <div class="billing-countdown__header">
+              <h3 class="acct__card-title">Next Billing</h3>
+              <span class="billing-countdown__days" id="billingDaysLeft">— days</span>
+            </div>
+            <div class="billing-countdown__bar-wrap">
+              <div class="billing-countdown__bar" id="billingBar" style="width:0%"></div>
+            </div>
+            <p class="billing-countdown__date" id="billingDateText">Next charge on —</p>
+            <div class="billing-countdown__cancel-window" id="cancelWindowNotice">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span>Cancel before <strong id="cancelDeadline">—</strong> to avoid the next charge</span>
+            </div>
+          </div>
+
           <!-- Plan Details -->
           <div class="acct__card">
             <div class="acct__card-header">
@@ -304,11 +320,11 @@
               <h3 class="acct__card-title">Subscription Actions</h3>
             </div>
             <div class="sub-actions">
-              <a href="{{ settings.recharge_portal_url | default: '/pages/contact' }}" class="sub-action-btn">
+              <a href="{{ settings.subscription_portal_url | default: settings.appstle_portal_url | default: settings.recharge_portal_url | default: '/pages/contact' }}" class="sub-action-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                 Change Plan
               </a>
-              <a href="{{ settings.recharge_portal_url | default: '/pages/contact' }}" class="sub-action-btn">
+              <a href="{{ settings.subscription_portal_url | default: settings.appstle_portal_url | default: settings.recharge_portal_url | default: '/pages/contact' }}" class="sub-action-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                 Update Payment
               </a>
@@ -538,6 +554,16 @@
   .sub-cancel { text-align: center; padding-top: 1rem; border-top: 1px solid #F0EDE8; }
   .sub-cancel__link { background: none; border: none; color: #999; font-size: 12px; cursor: pointer; font-family: inherit; text-decoration: underline; }
   .sub-cancel__link:hover { color: #c62828; }
+
+  /* ── Billing Countdown ── */
+  .billing-countdown__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .billing-countdown__days { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.5rem; font-weight: 700; color: #C9A962; }
+  .billing-countdown__bar-wrap { height: 6px; background: #F0EDE8; border-radius: 3px; overflow: hidden; margin-bottom: 12px; }
+  .billing-countdown__bar { height: 100%; background: linear-gradient(90deg, #2D4641, #C9A962); border-radius: 3px; transition: width 0.6s ease; }
+  .billing-countdown__date { font-size: 13px; color: #666; margin: 0 0 12px; }
+  .billing-countdown__cancel-window { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(255,152,0,0.06); border: 1px solid rgba(255,152,0,0.2); border-radius: 8px; font-size: 12px; color: #666; }
+  .billing-countdown__cancel-window svg { color: #FF9800; flex-shrink: 0; }
+  .billing-countdown__cancel-window strong { color: #2D4641; }
 
   /* ── Buttons ── */
   .btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 24px; font-weight: 700; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em; font-size: 13px; border: 2px solid transparent; font-family: inherit; }
@@ -799,6 +825,62 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   renderNextShipment();
+
+  /* ── Billing Countdown ── */
+  function renderBillingCountdown() {
+    var countdownEl = document.getElementById('billingCountdown');
+    if (!countdownEl) return;
+
+    // Try to get real subscription data from localStorage (set by checkout scripts)
+    var subData = null;
+    try { subData = JSON.parse(localStorage.getItem('bn_active_subscription') || 'null'); } catch(e) {}
+
+    // Calculate next billing date (anniversary billing: same day next month)
+    var now = new Date();
+    var nextBill;
+    if (subData && subData.nextBillDate) {
+      nextBill = new Date(subData.nextBillDate);
+      // If next bill is in the past, advance to next month
+      while (nextBill < now) {
+        nextBill.setMonth(nextBill.getMonth() + 1);
+      }
+    } else {
+      // Fallback: assume billing is on the 1st of next month
+      nextBill = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    }
+
+    // Days remaining
+    var msPerDay = 86400000;
+    var daysLeft = Math.max(0, Math.ceil((nextBill - now) / msPerDay));
+
+    // Progress bar (30-day cycle)
+    var cycleDays = 30;
+    var elapsed = cycleDays - daysLeft;
+    var pct = Math.min(100, Math.max(0, (elapsed / cycleDays) * 100));
+
+    // Update DOM
+    var daysEl = document.getElementById('billingDaysLeft');
+    var barEl = document.getElementById('billingBar');
+    var dateTextEl = document.getElementById('billingDateText');
+    var cancelDeadlineEl = document.getElementById('cancelDeadline');
+
+    if (daysEl) daysEl.textContent = daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
+    if (barEl) barEl.style.width = pct + '%';
+
+    var dateOpts = { month: 'long', day: 'numeric', year: 'numeric' };
+    if (dateTextEl) dateTextEl.textContent = 'Next charge on ' + nextBill.toLocaleDateString('en-US', dateOpts);
+
+    // Cancel deadline = 1 day before billing
+    var cancelDate = new Date(nextBill);
+    cancelDate.setDate(cancelDate.getDate() - 1);
+    if (cancelDeadlineEl) cancelDeadlineEl.textContent = cancelDate.toLocaleDateString('en-US', dateOpts);
+
+    // Also update the plan details billing field
+    var subBillingEl = document.getElementById('subNextBilling');
+    if (subBillingEl) subBillingEl.textContent = nextBill.toLocaleDateString('en-US', dateOpts);
+  }
+
+  renderBillingCountdown();
 
   // Choose / Swap button → open fragrance selector
   var chooseBtn = document.getElementById('nsChooseBtn');
