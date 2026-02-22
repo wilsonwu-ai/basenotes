@@ -1739,7 +1739,10 @@
         // For subscription items, enforce single-item cart
         if (isSubscription) {
           fetch('/cart.js')
-            .then(function(res) { return res.json(); })
+            .then(function(res) {
+              if (!res.ok) throw new Error('Failed to fetch cart');
+              return res.json();
+            })
             .then(function(cart) {
               var existingSub = null;
               cart.items.forEach(function(item) {
@@ -1761,8 +1764,21 @@
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ id: existingSub.key, quantity: 0 })
-                    }).then(function() {
+                    })
+                    .then(function(res) {
+                      if (!res.ok) throw new Error('Failed to remove existing subscription item');
+                      return res.json();
+                    })
+                    .then(function() {
                       doAddToCart(variantId, sellingPlan, originalText);
+                    })
+                    .catch(function(err) {
+                      console.error('Swap error:', err);
+                      if (addToCartBtn) addToCartBtn.classList.remove('is-loading');
+                      if (addToCartText) addToCartText.textContent = 'Swap Failed — Try Again';
+                      setTimeout(function() {
+                        if (addToCartText) addToCartText.textContent = originalText;
+                      }, 3000);
                     });
                   },
                   function onAddToRotation() {
