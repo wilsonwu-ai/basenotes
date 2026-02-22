@@ -719,7 +719,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var r = getHistoryRatings();
         r[entryIdx] = starVal;
         localStorage.setItem('bn_history_ratings', JSON.stringify(r));
-        // TODO: Recharge API — persist rating server-side
+        // TODO: Appstle API — persist rating server-side
         renderTimeline();
       });
     });
@@ -733,7 +733,7 @@ document.addEventListener('DOMContentLoaded', function() {
           var n = getHistoryNotes();
           n[idx] = textarea.value;
           localStorage.setItem('bn_history_notes', JSON.stringify(n));
-          // TODO: Recharge API — persist notes server-side
+          // TODO: Appstle API — persist notes server-side
           btn.textContent = 'Saved!';
           setTimeout(function() { btn.textContent = 'Save'; }, 1500);
         }
@@ -759,7 +759,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function saveNextShipment(data) {
     localStorage.setItem('bn_next_shipment', JSON.stringify(data));
-    // TODO: Recharge API — update next shipment server-side
+    // TODO: Appstle API — update next shipment server-side
     renderNextShipment();
   }
 
@@ -934,7 +934,7 @@ document.addEventListener('DOMContentLoaded', function() {
     subSkipBtn.addEventListener('click', function() {
       if (confirm('Skip next month\'s shipment?')) {
         saveNextShipment({ status: 'skipped' });
-        // TODO: Recharge API
+        // TODO: Appstle API
         alert('Next month\'s shipment has been skipped.');
       }
     });
@@ -943,8 +943,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var subPauseBtn = document.getElementById('subPauseBtn');
   if (subPauseBtn) {
     subPauseBtn.addEventListener('click', function() {
-      // TODO: Recharge API — pause subscription
-      alert('To pause your subscription, please contact us at hello@basenote.com or use the Recharge portal.');
+      // TODO: Appstle API — pause subscription
+      alert('To pause your subscription, please contact us at hello@basenote.com or use the subscription portal in your account.');
     });
   }
 

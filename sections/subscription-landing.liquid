@@ -1,443 +1,505 @@
-<section class="subscription-page">
-  <div class="container">
+{%- liquid
+  assign monthly_price = settings.subscription_price | default: '$20'
+  assign quarterly_price = settings.subscription_quarterly_price | default: '$16'
+  assign annual_price = settings.subscription_annual_price | default: '$14'
+-%}
 
-    {% comment %} Hero Section {% endcomment %}
-    <div class="subscription-hero">
-      <span class="subscription-hero__eyebrow">{{ section.settings.eyebrow | default: 'Monthly Fragrance Subscription' }}</span>
-      <h1 class="subscription-hero__title">{{ section.settings.title | default: 'Discover Your Signature Scent' }}</h1>
-      <p class="subscription-hero__description">{{ section.settings.description | default: 'Get a new luxury fragrance delivered to your door every month. Just $20/month for a 5ml atomizer of premium fragrance.' }}</p>
-    </div>
+<section class="sub-landing">
 
-    {% comment %} Pricing Card {% endcomment %}
-    <div class="subscription-pricing">
-      <div class="subscription-pricing__card">
-        <div class="subscription-pricing__badge">Most Popular</div>
-        <h2 class="subscription-pricing__name">Monthly Plan</h2>
-        <div class="subscription-pricing__price">
-          <span class="subscription-pricing__amount">{{ settings.subscription_price | default: '$20' }}</span>
-          <span class="subscription-pricing__period">/month</span>
-        </div>
-
-        <ul class="subscription-pricing__features">
-          <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            5ml atomizer of luxury fragrance
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Free shipping on every order
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Access to 500+ premium fragrances
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Swap your selection anytime
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Skip a month or cancel anytime
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Personalized recommendations
-          </li>
-        </ul>
-
-        <a href="/pages/quiz" class="btn btn--primary btn--large btn--full">
-          Take the Quiz & Subscribe
-        </a>
-        <p class="subscription-pricing__note">No commitment. Cancel anytime.</p>
+  {%- comment -%} HERO {%- endcomment -%}
+  <div class="sub-hero">
+    <div class="sub-hero__bg"></div>
+    <div class="container sub-hero__content">
+      <span class="sub-hero__badge">Luxury Fragrance Subscription</span>
+      <h1 class="sub-hero__title">Discover a New Signature Scent Every Month</h1>
+      <p class="sub-hero__subtitle">Get a hand-picked, luxury fragrance delivered to your door in our sleek 5ml atomizer. Try before you commit to a full bottle.</p>
+      <div class="sub-hero__price">
+        <span class="sub-hero__price-amount">{{ monthly_price }}</span>
+        <span class="sub-hero__price-period">/ month</span>
       </div>
+      <a href="#plans" class="sub-hero__cta">Choose Your Plan</a>
+      <p class="sub-hero__terms-link">Cancel anytime. <a href="/pages/subscription-terms">View full terms</a></p>
     </div>
-
-    {% comment %} How It Works {% endcomment %}
-    <div class="subscription-steps">
-      <h2 class="subscription-steps__title">How It Works</h2>
-
-      <div class="subscription-steps__grid">
-        <div class="subscription-step">
-          <div class="subscription-step__number">1</div>
-          <div class="subscription-step__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-              <line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-          </div>
-          <h3 class="subscription-step__title">Take the Quiz</h3>
-          <p class="subscription-step__description">Answer a few questions about your scent preferences and we'll create your personalized profile.</p>
-        </div>
-
-        <div class="subscription-step">
-          <div class="subscription-step__number">2</div>
-          <div class="subscription-step__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <line x1="8" y1="6" x2="21" y2="6"/>
-              <line x1="8" y1="12" x2="21" y2="12"/>
-              <line x1="8" y1="18" x2="21" y2="18"/>
-              <line x1="3" y1="6" x2="3.01" y2="6"/>
-              <line x1="3" y1="12" x2="3.01" y2="12"/>
-              <line x1="3" y1="18" x2="3.01" y2="18"/>
-            </svg>
-          </div>
-          <h3 class="subscription-step__title">Build Your Queue</h3>
-          <p class="subscription-step__description">Browse our collection and add fragrances to your queue. We'll send them in order each month.</p>
-        </div>
-
-        <div class="subscription-step">
-          <div class="subscription-step__number">3</div>
-          <div class="subscription-step__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="1" y="3" width="15" height="13"/>
-              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-              <circle cx="5.5" cy="18.5" r="2.5"/>
-              <circle cx="18.5" cy="18.5" r="2.5"/>
-            </svg>
-          </div>
-          <h3 class="subscription-step__title">Receive Monthly</h3>
-          <p class="subscription-step__description">Your fragrance ships on the 1st of each month. Free shipping, always.</p>
-        </div>
-
-        <div class="subscription-step">
-          <div class="subscription-step__number">4</div>
-          <div class="subscription-step__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
-          </div>
-          <h3 class="subscription-step__title">Discover & Enjoy</h3>
-          <p class="subscription-step__description">Fall in love with new scents. Found your signature? Buy the full bottle at a subscriber discount.</p>
-        </div>
-      </div>
-    </div>
-
-    {% comment %} FAQ Preview {% endcomment %}
-    <div class="subscription-faq">
-      <h2 class="subscription-faq__title">Common Questions</h2>
-
-      <div class="subscription-faq__list">
-        <details class="subscription-faq__item">
-          <summary>How much fragrance is in each atomizer?</summary>
-          <p>Each atomizer contains 5ml of fragrance, which is approximately 60-80 sprays. This is enough for about 30 days of daily use.</p>
-        </details>
-
-        <details class="subscription-faq__item">
-          <summary>Can I skip a month or pause my subscription?</summary>
-          <p>Absolutely! You can skip any month or pause your subscription at any time from your account dashboard. Just make sure to do so before the 25th of the month to skip the next shipment.</p>
-        </details>
-
-        <details class="subscription-faq__item">
-          <summary>How do I cancel my subscription?</summary>
-          <p>You can cancel anytime with no fees. Simply go to your account, click on "Manage Subscription," and select cancel. You'll retain access until the end of your billing period.</p>
-        </details>
-
-        <details class="subscription-faq__item">
-          <summary>Are these authentic designer fragrances?</summary>
-          <p>Yes! We only carry 100% authentic fragrances sourced directly from brands and authorized distributors. Every fragrance is guaranteed genuine.</p>
-        </details>
-
-        <details class="subscription-faq__item">
-          <summary>What if I don't like a fragrance?</summary>
-          <p>We're confident you'll love your selections based on your profile, but if you're not satisfied, contact us within 7 days of receiving your fragrance and we'll work with you to make it right.</p>
-        </details>
-      </div>
-
-      <div class="subscription-faq__more">
-        <a href="/pages/faq" class="btn btn--outline">View All FAQs</a>
-      </div>
-    </div>
-
-    {% comment %} Final CTA {% endcomment %}
-    <div class="subscription-cta">
-      <h2 class="subscription-cta__title">Ready to Find Your Signature Scent?</h2>
-      <p class="subscription-cta__description">Join thousands of fragrance enthusiasts who discover new favorites every month.</p>
-      <a href="/pages/quiz" class="btn btn--primary btn--large">Get Started</a>
-    </div>
-
   </div>
+
+  {%- comment -%} HOW IT WORKS {%- endcomment -%}
+  <div class="sub-section container">
+    <div class="sub-section__header">
+      <span class="sub-section__label">How It Works</span>
+      <h2 class="sub-section__title">Three Simple Steps</h2>
+    </div>
+    <div class="sub-steps">
+      <div class="sub-step">
+        <div class="sub-step__number">1</div>
+        <div class="sub-step__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        </div>
+        <h3 class="sub-step__title">Choose Your Scent</h3>
+        <p class="sub-step__desc">Browse our collection and pick a fragrance that speaks to you — or let us surprise you with our expert curation.</p>
+      </div>
+      <div class="sub-step__connector">
+        <svg viewBox="0 0 40 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 12h36m0 0l-6-6m6 6l-6 6"/></svg>
+      </div>
+      <div class="sub-step">
+        <div class="sub-step__number">2</div>
+        <div class="sub-step__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <h3 class="sub-step__title">Receive Monthly</h3>
+        <p class="sub-step__desc">A luxury 5ml atomizer (~30 sprays) ships free to your door every month. Perfect for a full month of wear.</p>
+      </div>
+      <div class="sub-step__connector">
+        <svg viewBox="0 0 40 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 12h36m0 0l-6-6m6 6l-6 6"/></svg>
+      </div>
+      <div class="sub-step">
+        <div class="sub-step__number">3</div>
+        <div class="sub-step__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <h3 class="sub-step__title">Discover & Collect</h3>
+        <p class="sub-step__desc">Fall in love? Buy the full bottle at a subscriber discount. Ready for something new? Swap anytime.</p>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} PLAN COMPARISON {%- endcomment -%}
+  <div class="sub-section sub-section--alt" id="plans">
+    <div class="container">
+      <div class="sub-section__header">
+        <span class="sub-section__label">Choose Your Plan</span>
+        <h2 class="sub-section__title">Flexible Plans, No Commitments</h2>
+        <p class="sub-section__desc">All plans include free shipping, access to exclusive scents, and the ability to skip or cancel anytime.</p>
+      </div>
+      <div class="sub-plans">
+
+        <div class="sub-plan">
+          <div class="sub-plan__header">
+            <h3 class="sub-plan__name">Monthly</h3>
+            <p class="sub-plan__desc">Pay as you go</p>
+          </div>
+          <div class="sub-plan__pricing">
+            <span class="sub-plan__price">{{ monthly_price }}</span>
+            <span class="sub-plan__period">/ month</span>
+          </div>
+          <ul class="sub-plan__features">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> 1 luxury fragrance / month</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Free shipping</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Skip or cancel anytime</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Access to full collection</li>
+          </ul>
+          <a href="/collections/all" class="sub-plan__cta sub-plan__cta--secondary">Get Started</a>
+        </div>
+
+        <div class="sub-plan sub-plan--featured">
+          <div class="sub-plan__badge">Best Value</div>
+          <div class="sub-plan__header">
+            <h3 class="sub-plan__name">Annual</h3>
+            <p class="sub-plan__desc">Billed annually</p>
+          </div>
+          <div class="sub-plan__pricing">
+            <span class="sub-plan__price">{{ annual_price }}</span>
+            <span class="sub-plan__period">/ month</span>
+            <span class="sub-plan__savings">Save 30%</span>
+          </div>
+          <ul class="sub-plan__features">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> 12 luxury fragrances / year</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Free shipping</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Priority access to new scents</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Full-bottle discount: 15% off</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Free atomizer case included</li>
+          </ul>
+          <a href="/collections/all" class="sub-plan__cta">Get Started</a>
+        </div>
+
+        <div class="sub-plan">
+          <div class="sub-plan__header">
+            <h3 class="sub-plan__name">Quarterly</h3>
+            <p class="sub-plan__desc">Billed every 3 months</p>
+          </div>
+          <div class="sub-plan__pricing">
+            <span class="sub-plan__price">{{ quarterly_price }}</span>
+            <span class="sub-plan__period">/ month</span>
+            <span class="sub-plan__savings">Save 20%</span>
+          </div>
+          <ul class="sub-plan__features">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> 3 luxury fragrances / quarter</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Free shipping</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Skip or cancel anytime</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Full-bottle discount: 10% off</li>
+          </ul>
+          <a href="/collections/all" class="sub-plan__cta sub-plan__cta--secondary">Get Started</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} WHAT'S INCLUDED {%- endcomment -%}
+  <div class="sub-section container">
+    <div class="sub-section__header">
+      <span class="sub-section__label">What's Included</span>
+      <h2 class="sub-section__title">Everything You Need</h2>
+    </div>
+    <div class="sub-includes">
+      <div class="sub-include">
+        <div class="sub-include__icon">
+          <svg viewBox="0 0 50 90" fill="none">
+            <rect x="18" y="0" width="14" height="8" rx="2" fill="#c9a86c"/>
+            <rect x="20" y="8" width="10" height="5" fill="#555"/>
+            <rect x="10" y="13" width="30" height="70" rx="4" fill="#2D4641" stroke="#c9a86c" stroke-width="0.5"/>
+            <text x="25" y="50" text-anchor="middle" fill="#c9a86c" font-size="10" font-weight="600">BN</text>
+          </svg>
+        </div>
+        <h3 class="sub-include__title">5ml Luxury Atomizer</h3>
+        <p class="sub-include__desc">~30 sprays of authentic designer or niche fragrance in a sleek, pocket-sized atomizer.</p>
+      </div>
+      <div class="sub-include">
+        <div class="sub-include__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <h3 class="sub-include__title">Free Shipping</h3>
+        <p class="sub-include__desc">Every shipment ships free. Delivered in branded packaging within 3-5 business days.</p>
+      </div>
+      <div class="sub-include">
+        <div class="sub-include__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="1.5"><path d="M23 6l-13.5 13.5L3 13"/></svg>
+        </div>
+        <h3 class="sub-include__title">Swap or Skip Anytime</h3>
+        <p class="sub-include__desc">Not feeling it? Swap to any fragrance in our collection or skip a month. Full flexibility.</p>
+      </div>
+      <div class="sub-include">
+        <div class="sub-include__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3 class="sub-include__title">Satisfaction Guaranteed</h3>
+        <p class="sub-include__desc">Cancel anytime with no hidden fees. Your first month is risk-free.</p>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} FAQ {%- endcomment -%}
+  <div class="sub-section sub-section--alt">
+    <div class="container">
+      <div class="sub-section__header">
+        <span class="sub-section__label">FAQ</span>
+        <h2 class="sub-section__title">Common Questions</h2>
+      </div>
+      <div class="sub-faq">
+        <details class="sub-faq__item">
+          <summary>How does the subscription work?</summary>
+          <div class="sub-faq__answer">
+            <p>Each month, you'll receive a 5ml atomizer of a luxury fragrance. You can choose your fragrance from our collection or let us pick one for you based on your preferences. Your subscription renews automatically on the same date each month.</p>
+          </div>
+        </details>
+        <details class="sub-faq__item">
+          <summary>Can I skip a month or cancel?</summary>
+          <div class="sub-faq__answer">
+            <p>Absolutely. You can skip any month or cancel your subscription at any time from your account dashboard. Just make changes before your billing date to avoid being charged for the next month. No cancellation fees, ever.</p>
+          </div>
+        </details>
+        <details class="sub-faq__item">
+          <summary>How many sprays are in a 5ml atomizer?</summary>
+          <div class="sub-faq__answer">
+            <p>Each 5ml atomizer contains approximately 30 sprays — enough for a full month of daily wear. The atomizer is pocket-sized and TSA-approved for travel.</p>
+          </div>
+        </details>
+        <details class="sub-faq__item">
+          <summary>Are these authentic fragrances?</summary>
+          <div class="sub-faq__answer">
+            <p>Yes. Every fragrance in our collection is 100% authentic. We source directly from authorized distributors and brands. You're getting the same juice that's in the full-size bottle.</p>
+          </div>
+        </details>
+        <details class="sub-faq__item">
+          <summary>Can I buy the full bottle if I love a scent?</summary>
+          <div class="sub-faq__answer">
+            <p>Yes! Subscribers get exclusive discounts on full-size bottles. If you fall in love with a fragrance, purchase the full bottle directly from your account at up to 15% off retail.</p>
+          </div>
+        </details>
+        <details class="sub-faq__item">
+          <summary>When will I be charged?</summary>
+          <div class="sub-faq__answer">
+            <p>You'll be charged on the same date each month (your "anniversary date"). For example, if you sign up on the 15th, you'll be billed on the 15th of each month. You can view your next billing date in your account dashboard.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} BOTTOM CTA {%- endcomment -%}
+  <div class="sub-section sub-cta-section">
+    <div class="container" style="text-align:center;">
+      <h2 class="sub-cta-section__title">Ready to Find Your Signature Scent?</h2>
+      <p class="sub-cta-section__desc">Join thousands who've discovered their perfect fragrance through Base Note.</p>
+      <a href="/collections/all" class="sub-cta-section__btn">Start Your Subscription</a>
+      <p class="sub-cta-section__note">Starting at {{ annual_price }}/month. Cancel anytime. <a href="/pages/subscription-terms">Terms apply</a>.</p>
+    </div>
+  </div>
+
 </section>
 
 <style>
-  .subscription-page {
-    padding-top: calc(var(--header-height) + var(--spacing-3xl));
-    padding-bottom: var(--spacing-4xl);
-  }
+  .sub-landing { --sub-green: #2D4641; --sub-gold: #C9A962; --sub-cream: #FAF8F5; }
 
   /* Hero */
-  .subscription-hero {
-    text-align: center;
-    max-width: 700px;
-    margin: 0 auto var(--spacing-4xl);
-  }
-
-  .subscription-hero__eyebrow {
-    display: inline-block;
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: var(--color-secondary);
-    margin-bottom: var(--spacing-md);
-  }
-
-  .subscription-hero__title {
-    font-size: var(--font-size-5xl);
-    font-weight: 700;
-    line-height: 1.1;
-    margin-bottom: var(--spacing-lg);
-  }
-
-  .subscription-hero__description {
-    font-size: var(--font-size-xl);
-    color: var(--color-text-light);
-    line-height: 1.6;
-  }
-
-  /* Pricing */
-  .subscription-pricing {
-    display: flex;
-    justify-content: center;
-    margin-bottom: var(--spacing-4xl);
-  }
-
-  .subscription-pricing__card {
-    background: white;
-    border: 2px solid var(--color-secondary);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-3xl);
-    max-width: 420px;
-    width: 100%;
-    text-align: center;
+  .sub-hero {
     position: relative;
+    padding: 120px 0 80px;
+    text-align: center;
+    color: #fff;
+    overflow: hidden;
   }
-
-  .subscription-pricing__badge {
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--color-secondary);
-    color: var(--color-primary);
-    font-size: var(--font-size-xs);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: var(--spacing-xs) var(--spacing-lg);
-    border-radius: var(--radius-full);
+  .sub-hero__bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #1a2e2a 0%, #2D4641 40%, #3a5a54 100%);
+    z-index: 0;
   }
-
-  .subscription-pricing__name {
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--spacing-md);
+  .sub-hero__bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(201,169,98,0.12) 0%, transparent 60%);
   }
-
-  .subscription-pricing__price {
-    margin-bottom: var(--spacing-xl);
+  .sub-hero__content { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+  .sub-hero__badge {
+    display: inline-block;
+    padding: 6px 20px;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.15em;
+    color: var(--sub-gold); border: 1px solid rgba(201,169,98,0.4);
+    border-radius: 999px; margin-bottom: 24px;
   }
-
-  .subscription-pricing__amount {
-    font-size: var(--font-size-5xl);
-    font-weight: 700;
+  .sub-hero__title {
+    font-family: var(--font-heading, Georgia, 'Times New Roman', serif);
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 700; line-height: 1.15;
+    margin: 0 0 16px;
   }
-
-  .subscription-pricing__period {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-light);
+  .sub-hero__subtitle {
+    font-size: 17px; line-height: 1.6;
+    color: rgba(255,255,255,0.8);
+    margin: 0 0 28px;
   }
-
-  .subscription-pricing__features {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 var(--spacing-2xl);
-    text-align: left;
+  .sub-hero__price { margin-bottom: 28px; }
+  .sub-hero__price-amount {
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 40px; font-weight: 700;
   }
-
-  .subscription-pricing__features li {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) 0;
-    font-size: var(--font-size-base);
+  .sub-hero__price-period { font-size: 18px; color: rgba(255,255,255,0.7); }
+  .sub-hero__cta {
+    display: inline-block;
+    padding: 16px 48px;
+    background: var(--sub-gold); color: var(--sub-green);
+    font-size: 14px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    text-decoration: none; border-radius: 6px;
+    transition: opacity 0.2s;
   }
-
-  .subscription-pricing__features svg {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-    color: var(--color-success);
+  .sub-hero__cta:hover { opacity: 0.9; }
+  .sub-hero__terms-link {
+    font-size: 12px; color: rgba(255,255,255,0.5); margin: 16px 0 0;
   }
+  .sub-hero__terms-link a { color: rgba(255,255,255,0.6); text-decoration: underline; }
 
-  .subscription-pricing__note {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-    margin-top: var(--spacing-md);
+  /* Section Layout */
+  .sub-section { padding: 80px 0; }
+  .sub-section--alt { background: var(--sub-cream); }
+  .sub-section__header { text-align: center; margin-bottom: 48px; }
+  .sub-section__label {
+    display: block;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.15em;
+    color: var(--sub-gold); margin-bottom: 8px;
+  }
+  .sub-section__title {
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: clamp(24px, 3.5vw, 36px);
+    font-weight: 700; color: var(--sub-green); margin: 0 0 12px;
+  }
+  .sub-section__desc {
+    font-size: 16px; color: #666; max-width: 520px; margin: 0 auto; line-height: 1.6;
   }
 
   /* Steps */
-  .subscription-steps {
-    margin-bottom: var(--spacing-4xl);
-    padding: var(--spacing-4xl);
-    background: var(--color-background-secondary);
-    border-radius: var(--radius-lg);
+  .sub-steps { display: flex; align-items: flex-start; justify-content: center; gap: 0; }
+  .sub-step {
+    flex: 1; max-width: 280px;
+    text-align: center; padding: 0 16px;
   }
-
-  .subscription-steps__title {
-    text-align: center;
-    font-size: var(--font-size-3xl);
-    margin-bottom: var(--spacing-3xl);
+  .sub-step__number {
+    width: 32px; height: 32px; margin: 0 auto 16px;
+    background: var(--sub-green); color: var(--sub-gold);
+    font-size: 14px; font-weight: 700;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
   }
-
-  .subscription-steps__grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--spacing-xl);
+  .sub-step__icon { width: 48px; height: 48px; margin: 0 auto 16px; color: var(--sub-gold); }
+  .sub-step__icon svg { width: 100%; height: 100%; }
+  .sub-step__title {
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 18px; font-weight: 700; color: var(--sub-green); margin: 0 0 8px;
   }
+  .sub-step__desc { font-size: 14px; color: #666; line-height: 1.6; margin: 0; }
+  .sub-step__connector {
+    flex-shrink: 0; width: 40px;
+    padding-top: 44px; color: var(--sub-gold); opacity: 0.4;
+  }
+  .sub-step__connector svg { width: 100%; }
 
-  .subscription-step {
-    text-align: center;
+  /* Plans */
+  .sub-plans {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px; max-width: 960px; margin: 0 auto;
+    align-items: start;
+  }
+  .sub-plan {
     position: relative;
+    background: #fff; border: 1px solid #E8E6E3;
+    border-radius: 16px; padding: 32px 24px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
   }
+  .sub-plan:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+  .sub-plan--featured {
+    border: 2px solid var(--sub-gold);
+    box-shadow: 0 8px 24px rgba(201,169,98,0.15);
+    padding-top: 48px;
+  }
+  .sub-plan__badge {
+    position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+    padding: 6px 20px;
+    background: var(--sub-gold); color: var(--sub-green);
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    border-radius: 0 0 8px 8px;
+  }
+  .sub-plan__header { margin-bottom: 20px; }
+  .sub-plan__name {
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 22px; font-weight: 700; color: var(--sub-green); margin: 0 0 4px;
+  }
+  .sub-plan__desc { font-size: 13px; color: #999; margin: 0; }
+  .sub-plan__pricing { margin-bottom: 24px; }
+  .sub-plan__price {
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 36px; font-weight: 700; color: var(--sub-green);
+  }
+  .sub-plan__period { font-size: 16px; color: #999; }
+  .sub-plan__savings {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 12px; font-weight: 700;
+    color: #4CAF50;
+    background: rgba(76,175,80,0.1);
+    padding: 2px 10px; border-radius: 999px;
+  }
+  .sub-plan__features {
+    list-style: none; padding: 0; margin: 0 0 24px;
+    text-align: left;
+  }
+  .sub-plan__features li {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; color: #444;
+    padding: 8px 0; border-bottom: 1px solid #f0f0f0;
+  }
+  .sub-plan__features li:last-child { border-bottom: none; }
+  .sub-plan__features svg { width: 16px; height: 16px; stroke: #4CAF50; flex-shrink: 0; }
+  .sub-plan__cta {
+    display: block;
+    padding: 14px;
+    font-size: 14px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    text-decoration: none; border-radius: 8px;
+    transition: opacity 0.2s, background 0.2s, color 0.2s;
+    background: var(--sub-green); color: #fff;
+  }
+  .sub-plan__cta:hover { opacity: 0.9; }
+  .sub-plan__cta--secondary {
+    background: transparent; color: var(--sub-green);
+    border: 2px solid var(--sub-green);
+  }
+  .sub-plan__cta--secondary:hover { background: var(--sub-green); color: #fff; }
 
-  .subscription-step__number {
-    position: absolute;
-    top: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 24px;
-    height: 24px;
-    background: var(--color-secondary);
-    color: var(--color-primary);
-    font-size: var(--font-size-xs);
-    font-weight: 700;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  /* What's Included */
+  .sub-includes {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
   }
-
-  .subscription-step__icon {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto var(--spacing-lg);
-    background: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .sub-include {
+    text-align: center; padding: 32px 16px;
+    background: #fff; border: 1px solid #E8E6E3;
+    border-radius: 16px;
   }
-
-  .subscription-step__icon svg {
-    width: 36px;
-    height: 36px;
-    color: var(--color-secondary);
+  .sub-include__icon {
+    width: 56px; height: 56px; margin: 0 auto 16px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--sub-gold);
   }
-
-  .subscription-step__title {
-    font-size: var(--font-size-lg);
-    margin-bottom: var(--spacing-sm);
+  .sub-include__icon svg { width: 100%; height: 100%; }
+  .sub-include__title {
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 16px; font-weight: 700; color: var(--sub-green); margin: 0 0 8px;
   }
-
-  .subscription-step__description {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    line-height: 1.6;
-  }
+  .sub-include__desc { font-size: 13px; color: #666; line-height: 1.6; margin: 0; }
 
   /* FAQ */
-  .subscription-faq {
-    max-width: 700px;
-    margin: 0 auto var(--spacing-4xl);
+  .sub-faq { max-width: 680px; margin: 0 auto; }
+  .sub-faq__item {
+    border-bottom: 1px solid #E8E6E3;
   }
-
-  .subscription-faq__title {
-    text-align: center;
-    font-size: var(--font-size-3xl);
-    margin-bottom: var(--spacing-2xl);
+  .sub-faq__item summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 0;
+    font-size: 16px; font-weight: 600; color: var(--sub-green);
+    cursor: pointer; list-style: none;
   }
-
-  .subscription-faq__list {
-    margin-bottom: var(--spacing-xl);
-  }
-
-  .subscription-faq__item {
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .subscription-faq__item summary {
-    padding: var(--spacing-lg) 0;
-    font-weight: 600;
-    cursor: pointer;
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .subscription-faq__item summary::after {
+  .sub-faq__item summary::-webkit-details-marker { display: none; }
+  .sub-faq__item summary::after {
     content: '+';
-    font-size: var(--font-size-xl);
-    color: var(--color-secondary);
+    font-size: 22px; font-weight: 300; color: var(--sub-gold);
+    transition: transform 0.2s;
+  }
+  .sub-faq__item[open] summary::after { content: '\2212'; }
+  .sub-faq__answer {
+    padding: 0 0 20px;
+  }
+  .sub-faq__answer p {
+    font-size: 15px; color: #666; line-height: 1.7; margin: 0;
   }
 
-  .subscription-faq__item[open] summary::after {
-    content: '−';
+  /* Bottom CTA */
+  .sub-cta-section {
+    background: var(--sub-green); color: #fff;
+    padding: 80px 0;
   }
-
-  .subscription-faq__item p {
-    padding: 0 0 var(--spacing-lg);
-    color: var(--color-text-light);
-    line-height: 1.7;
+  .sub-cta-section__title {
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: clamp(24px, 3.5vw, 36px);
+    font-weight: 700; margin: 0 0 12px;
   }
-
-  .subscription-faq__more {
-    text-align: center;
+  .sub-cta-section__desc { font-size: 17px; color: rgba(255,255,255,0.75); margin: 0 0 32px; }
+  .sub-cta-section__btn {
+    display: inline-block;
+    padding: 16px 48px;
+    background: var(--sub-gold); color: var(--sub-green);
+    font-size: 14px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    text-decoration: none; border-radius: 6px;
+    transition: opacity 0.2s;
   }
-
-  /* CTA */
-  .subscription-cta {
-    text-align: center;
-    padding: var(--spacing-4xl);
-    background: linear-gradient(135deg, var(--color-primary) 0%, #2a2a2a 100%);
-    border-radius: var(--radius-lg);
-    color: white;
-  }
-
-  .subscription-cta__title {
-    font-size: var(--font-size-3xl);
-    margin-bottom: var(--spacing-md);
-  }
-
-  .subscription-cta__description {
-    font-size: var(--font-size-lg);
-    opacity: 0.8;
-    margin-bottom: var(--spacing-xl);
-  }
+  .sub-cta-section__btn:hover { opacity: 0.9; }
+  .sub-cta-section__note { font-size: 12px; color: rgba(255,255,255,0.5); margin: 16px 0 0; }
+  .sub-cta-section__note a { color: rgba(255,255,255,0.6); text-decoration: underline; }
 
   /* Responsive */
-  @media (max-width: 992px) {
-    .subscription-steps__grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  @media (max-width: 768px) {
+    .sub-hero { padding: 100px 0 60px; }
+    .sub-steps { flex-direction: column; align-items: center; gap: 24px; }
+    .sub-step__connector { display: none; }
+    .sub-plans { grid-template-columns: 1fr; max-width: 400px; }
+    .sub-plan--featured { order: -1; }
+    .sub-includes { grid-template-columns: 1fr 1fr; }
   }
-
-  @media (max-width: 576px) {
-    .subscription-hero__title {
-      font-size: var(--font-size-3xl);
-    }
-
-    .subscription-steps__grid {
-      grid-template-columns: 1fr;
-    }
-
-    .subscription-pricing__card {
-      padding: var(--spacing-xl);
-    }
-
-    .subscription-steps {
-      padding: var(--spacing-2xl);
-    }
+  @media (max-width: 480px) {
+    .sub-includes { grid-template-columns: 1fr; }
   }
 </style>
 
@@ -446,26 +508,7 @@
   "name": "Subscription Landing",
   "tag": "section",
   "class": "subscription-landing-section",
-  "settings": [
-    {
-      "type": "text",
-      "id": "eyebrow",
-      "label": "Eyebrow text",
-      "default": "Monthly Fragrance Subscription"
-    },
-    {
-      "type": "text",
-      "id": "title",
-      "label": "Title",
-      "default": "Discover Your Signature Scent"
-    },
-    {
-      "type": "textarea",
-      "id": "description",
-      "label": "Description",
-      "default": "Get a new luxury fragrance delivered to your door every month. Just $20/month for a 5ml atomizer of premium fragrance."
-    }
-  ],
+  "settings": [],
   "presets": [
     {
       "name": "Subscription Landing"
