@@ -163,10 +163,10 @@
             "name": "Quarterly",
             "price": "$54",
             "period": "quarter",
-            "billing_note": "Billed every 3 months — Save 10%",
-            "features": "5ml premium fragrance|Free shipping|Access to all scents|Swap anytime|Save 10%|Special Offers|Free travel Gift",
+            "billing_note": "Billed every 3 months - Save 10%",
+            "features": "5ml premium fragrance|Free shipping|Access to all scents|Swap anytime|Special Offers|Free travel Gift",
             "featured": true,
-            "badge": "Best Value",
+            "badge": "Most Popular",
             "button_label": "Subscribe Now",
             "button_link": "/collections/all"
           }
@@ -175,7 +175,7 @@
           "type": "plan",
           "settings": {
             "name": "Annual",
-            "price": "$200",
+            "price": "$192",
             "period": "year",
             "billing_note": "Billed annually — 2 months free",
             "features": "5ml premium fragrance|Free shipping|Access to all scents|Swap anytime|2 months free|Special Offers|Free Travel Gift",
