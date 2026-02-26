@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main-product": {
@@ -7,35 +16,47 @@
           "type": "accordion",
           "settings": {
             "heading": "Shipping & Returns",
-            "content": "<p>Free shipping on all subscription orders. Returns accepted within 30 days of delivery.</p>"
+            "content": "<p>Free shipping on all orders. All sales are final and non-refundable. You can cancel anytime to prevent future charges.</p>"
           }
         },
         "accordion-2": {
           "type": "accordion",
           "settings": {
             "heading": "Size Guide",
-            "content": "<p>Each atomizer contains 5ml of fragrance, approximately 30 sprays — perfect for a month of daily use.</p>"
+            "content": "<p>Each atomizer contains 5ml of fragrance, approximately 45 sprays.</p>"
           }
         },
         "accordion-3": {
           "type": "accordion",
           "settings": {
             "heading": "Subscription Benefits",
-            "content": "<p>As a subscriber, you get access to our full collection of 10 exclusive fragrances. Swap, skip, or cancel anytime.</p>"
+            "content": "<p>As a subscriber, you get access to our full collection of exclusive fragrances. Swap, skip, or cancel anytime.</p>"
           }
         }
       },
-      "block_order": ["accordion-1", "accordion-2", "accordion-3"]
+      "block_order": [
+        "accordion-1",
+        "accordion-2",
+        "accordion-3"
+      ],
+      "settings": {
+        "show_related": true
+      }
     },
     "related-products": {
       "type": "featured-collection",
       "settings": {
         "eyebrow": "You May Also Like",
         "heading": "More From The Collection",
+        "description": "Curated from the world's most prestigious perfume houses. Each scent tells a story of luxury and craftsmanship.",
+        "collection": "",
         "products_to_show": 4,
         "show_view_all": true
       }
     }
   },
-  "order": ["main-product", "related-products"]
+  "order": [
+    "main-product",
+    "related-products"
+  ]
 }
