@@ -18,20 +18,20 @@
           "type": "menu",
           "settings": {
             "heading": "Shop",
-            "menu": ""
+            "menu": "shop"
           }
         },
         "menu-2": {
           "type": "menu",
           "settings": {
             "heading": "Support",
-            "menu": ""
+            "menu": "contact-us"
           }
         },
         "menu-3": {
           "type": "menu",
           "settings": {
-            "heading": "Company",
+            "heading": "",
             "menu": ""
           }
         }
