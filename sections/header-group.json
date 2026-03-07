@@ -14,7 +14,7 @@
     "header": {
       "type": "header",
       "settings": {
-        "announcement_enabled": true,
+        "announcement_enabled": false,
         "announcement_text": "Free shipping on orders | Subscribe Today",
         "announcement_link": "",
         "logo_width": 120,
