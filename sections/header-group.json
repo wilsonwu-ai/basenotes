@@ -27,7 +27,7 @@
         "transparent_on_homepage": true,
         "show_search": true,
         "search_placeholder": "Search fragrances...",
-        "show_social_mobile": true
+        "show_social_mobile": false
       }
     }
   },
