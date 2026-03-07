@@ -18,7 +18,7 @@
         "heading": "Your Signature Starts Here",
         "description": "<b>Luxury fragrances. Perfectly portioned. <br>\nA new signature scent every month—no commitment to full bottles</b>",
         "button_label": "Start Your Journey",
-        "button_link": "#subscribe",
+        "button_link": "shopify://collections/all",
         "secondary_button_label": "Find Your Scent",
         "secondary_button_link": "/pages/find-your-scent",
         "show_scroll_indicator": true
