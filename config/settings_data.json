@@ -18,6 +18,9 @@
     "font_body": "inter_n4",
     "font_size_base": 16,
     "contact_phone": "",
+    "contact_company_name": "",
+    "contact_address_line1": "",
+    "contact_address_line2": "",
     "social_instagram": "",
     "social_facebook": "",
     "social_tiktok": "",
@@ -34,21 +37,23 @@
     "popup_success_message": "Check your email for your exclusive 15% off code.",
     "popup_customer_tags": "newsletter,popup,prospect",
     "cart_free_shipping_threshold": "",
+    "cart_upsells_collection": "fragrances",
     "subscription_price": "$20",
     "subscription_benefits": "Free shipping on all orders|Access to exclusive fragrances|Pause or cancel anytime",
     "subscription_quarterly_price": "",
     "subscription_quarterly_total": "",
     "subscription_annual_price": "",
     "subscription_annual_total": "",
+    "appstle_enabled": true,
+    "appstle_portal_url": "https://basenotescent.com/apps/subscriptions",
     "sub_plan_quarterly_price": "",
     "sub_plan_quarterly_per_month": "",
     "sub_plan_annual_price": "",
     "sub_plan_annual_per_month": "",
-    "appstle_enabled": true,
-    "appstle_portal_url": "https://basenotescent.com/apps/subscriptions",
     "cancel_discount_code": "STAYWITHUS10",
     "cancel_discount_amount": "10% off your next 1 months",
     "cancel_pause_duration": "up to 1 months",
+    "sub_fragrance_collection": "fragrances",
     "checkout_require_account": true,
     "urgency_timer_enabled": true,
     "urgency_timer_duration": 300,
@@ -76,6 +81,13 @@
         "settings": {}
       }
     },
-    "content_for_index": []
+    "content_for_index": [],
+    "blocks": {
+      "10436698916776057164": {
+        "type": "shopify://apps/appstle-subscription/blocks/appstle-subscription-helper/fe257d39-6f88-4f35-ab08-bd437e3aa94e",
+        "disabled": false,
+        "settings": {}
+      }
+    }
   }
 }
