@@ -191,7 +191,7 @@
                 </svg>
               </div>
               <span class="bottle-label">5ml Atomizer</span>
-              <span class="bottle-sprays">~30 sprays</span>
+              <span class="bottle-sprays">~45 sprays</span>
             </div>
 
             <div class="subscription-box__pricing">
@@ -199,7 +199,11 @@
                 <span class="price-amount">{{ settings.subscription_price | default: '$20' }}</span>
                 <span class="price-period">/ month</span>
               </div>
-              <p class="price-note">Month-to-month subscription. Cancel anytime.</p>
+              {%- if product.compare_at_price > product.price -%}
+                <p class="price-note">Retail: {{ product.compare_at_price | money }} — yours for {{ settings.subscription_price | default: '$20' }}/month</p>
+              {%- else -%}
+                <p class="price-note">Month-to-month subscription. Cancel anytime.</p>
+              {%- endif -%}
             </div>
           </div>
 
@@ -286,17 +290,10 @@
               {%- for group in product.selling_plan_groups -%}
                 <fieldset class="selling-plan-group">
                   <legend class="selling-plan-group__title">{{ group.name }}</legend>
-                  <label class="selling-plan-option">
-                    <input type="radio" name="selling_plan" value="" checked>
-                    <span class="selling-plan-option__content">
-                      <span class="selling-plan-option__name">One-time purchase</span>
-                      <span class="selling-plan-option__price">{{ current_variant.price | money }}</span>
-                    </span>
-                  </label>
                   {%- for plan in group.selling_plans -%}
                     {%- assign plan_allocation = current_variant.selling_plan_allocations | where: "selling_plan_id", plan.id | first -%}
                     <label class="selling-plan-option selling-plan-option--subscription">
-                      <input type="radio" name="selling_plan" value="{{ plan.id }}">
+                      <input type="radio" name="selling_plan" value="{{ plan.id }}"{% if forloop.first %} checked{% endif %}>
                       <span class="selling-plan-option__content">
                         <span class="selling-plan-option__name">{{ plan.name }}</span>
                         {%- if plan_allocation -%}
@@ -318,7 +315,7 @@
           <button type="submit" class="add-to-queue-btn" id="addToCartButton" {% unless current_variant.available %}disabled{% endunless %} data-add-to-cart>
             {%- if current_variant.available -%}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-              <span id="addToCartText">{%- if is_subscription_variant -%}Add to My Queue{%- else -%}Add to Cart{%- endif -%}</span>
+              <span id="addToCartText">Add to My Queue</span>
             {%- else -%}
               <span id="addToCartText">Sold Out</span>
             {%- endif -%}
@@ -474,35 +471,6 @@
           {%- endfor -%}
         </div>
 
-        {% comment %} Social Sharing {% endcomment %}
-        <div class="product-share">
-          <span class="product-share__label">Share this fragrance:</span>
-          <div class="product-share__buttons">
-            <a href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url }}{{ product.url }}" target="_blank" rel="noopener" class="product-share__btn" aria-label="Share on Facebook">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-              </svg>
-            </a>
-            <a href="https://twitter.com/intent/tweet?text={{ product.title | url_encode }}&url={{ shop.url }}{{ product.url | url_encode }}" target="_blank" rel="noopener" class="product-share__btn" aria-label="Share on Twitter">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
-              </svg>
-            </a>
-            <a href="https://pinterest.com/pin/create/button/?url={{ shop.url }}{{ product.url | url_encode }}&media={{ featured_image | image_url: width: 1000 | url_encode }}&description={{ product.title | url_encode }}" target="_blank" rel="noopener" class="product-share__btn" aria-label="Share on Pinterest">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4"/>
-                <path d="M8 16l2-6"/>
-              </svg>
-            </a>
-            <button class="product-share__btn" data-copy-link="{{ shop.url }}{{ product.url }}" aria-label="Copy link">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-              </svg>
-            </button>
-          </div>
-        </div>
 
       </div>
     </div>
@@ -1290,48 +1258,6 @@
     color: var(--color-text-light);
   }
 
-  /* Share */
-  .product-share {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-  }
-
-  .product-share__label {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-  }
-
-  .product-share__buttons {
-    display: flex;
-    gap: var(--spacing-xs);
-  }
-
-  .product-share__btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: var(--color-background-secondary);
-    border: none;
-    border-radius: 50%;
-    color: var(--color-text);
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-    text-decoration: none;
-  }
-
-  .product-share__btn:hover {
-    background: var(--color-primary);
-    color: white;
-  }
-
-  .product-share__btn svg {
-    width: 16px;
-    height: 16px;
-  }
-
   /* Related Products */
   .related-products {
     padding-top: var(--spacing-3xl);
@@ -1596,7 +1522,7 @@
 
       // Update button text
       if (addToCartText && variant.available) {
-        addToCartText.textContent = isSub ? 'Add to My Queue' : 'Add to Cart';
+        addToCartText.textContent = 'Add to My Queue';
       }
 
       // Update purchase view pricing (for full-bottle variants)
@@ -1734,7 +1660,7 @@
         const productImage = {{ product.featured_image | image_url: width: 200 | json }};
 
         addToCartBtn.classList.add('is-loading');
-        const originalText = addToCartText ? addToCartText.textContent : 'Add to Cart';
+        const originalText = addToCartText ? addToCartText.textContent : 'Add to My Queue';
 
         // For subscription items, enforce single-item cart
         if (isSubscription) {
@@ -1829,7 +1755,7 @@
         .then(function(data) {
           addToCartBtn.classList.remove('is-loading');
           addToCartBtn.classList.add('is-added');
-          if (addToCartText) addToCartText.textContent = sellingPlan ? 'Added to Queue!' : 'Added to Cart!';
+          if (addToCartText) addToCartText.textContent = 'Added to Queue!';
 
           // Refresh cart drawer with new content and open it
           if (window.refreshAndOpenCartDrawer) {
@@ -1878,7 +1804,7 @@
           addToCartBtn.classList.remove('is-loading');
           addToCartBtn.classList.add('is-added');
         }
-        if (addToCartText) addToCartText.textContent = sellingPlan ? 'Added to Queue!' : 'Added to Cart!';
+        if (addToCartText) addToCartText.textContent = 'Added to Queue!';
 
         // Refresh cart drawer with new content and open it
         if (window.refreshAndOpenCartDrawer) {

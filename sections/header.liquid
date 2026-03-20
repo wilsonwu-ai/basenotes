@@ -634,17 +634,24 @@
   @media (max-width: 768px) {
     .header__actions {
       gap: 0;
-      margin-right: -4px;
+      margin-right: 0;
+      flex-shrink: 0;
     }
 
     .header__action-btn {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
+      padding: 0;
     }
 
     .header__action-btn svg {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
+    }
+
+    .header .container {
+      padding-left: 8px;
+      padding-right: 8px;
     }
   }
 
