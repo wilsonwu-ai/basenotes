@@ -8,10 +8,6 @@
 
 {%- assign monthly_price = settings.sub_plan_monthly_price | default: '$20' -%}
 {%- assign monthly_per_mo = settings.sub_plan_monthly_per_month | default: '$20/mo' -%}
-{%- assign quarterly_price = settings.sub_plan_quarterly_price | default: '$48' -%}
-{%- assign quarterly_per_mo = settings.sub_plan_quarterly_per_month | default: '$16/mo' -%}
-{%- assign annual_price = settings.sub_plan_annual_price | default: '$168' -%}
-{%- assign annual_per_mo = settings.sub_plan_annual_per_month | default: '$14/mo' -%}
 
 <section class="cart-section">
   <div class="container">
@@ -49,6 +45,19 @@
                 </h2>
                 <p class="cart-items__section-subtitle">This fragrance ships with your next subscription order</p>
               </div>
+              {%- assign current_day = 'now' | date: '%d' | plus: 0 -%}
+              {%- if current_day <= 25 -%}
+                {%- assign ship_date = 'now' | date: '%B 25, %Y' -%}
+              {%- else -%}
+                {%- assign next_month_ts = 'now' | date: '%s' | plus: 2592000 -%}
+                {%- assign ship_date = next_month_ts | date: '%B 25, %Y' -%}
+              {%- endif -%}
+              <p class="cart-section__ship-date">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Expected ship date: <strong>{{ ship_date }}</strong>
+              </p>
               {%- for item in cart.items -%}
                 <div class="cart-item" data-item-key="{{ item.key }}">
                   <div class="cart-item__image">
@@ -146,34 +155,61 @@
               </div>
             </div>
 
-            {%- comment -%} Plan Selector {%- endcomment -%}
+            {%- comment -%} Seasonal Recommendations {%- endcomment -%}
+            {%- assign current_month = 'now' | date: '%m' | plus: 0 -%}
+            {%- if current_month >= 3 and current_month <= 5 -%}
+              {%- assign current_season = 'spring' -%}
+              {%- assign season_label = 'Spring' -%}
+              {%- assign season_months = 'Mar - May' -%}
+            {%- elsif current_month >= 6 and current_month <= 8 -%}
+              {%- assign current_season = 'summer' -%}
+              {%- assign season_label = 'Summer' -%}
+              {%- assign season_months = 'Jun - Aug' -%}
+            {%- elsif current_month >= 9 and current_month <= 11 -%}
+              {%- assign current_season = 'fall' -%}
+              {%- assign season_label = 'Fall' -%}
+              {%- assign season_months = 'Sep - Nov' -%}
+            {%- else -%}
+              {%- assign current_season = 'winter' -%}
+              {%- assign season_label = 'Winter' -%}
+              {%- assign season_months = 'Dec - Feb' -%}
+            {%- endif -%}
+
+            <div class="cart-seasonal">
+              <h3 class="cart-seasonal__heading">{{ season_label }} Picks ({{ season_months }})</h3>
+              <div class="cart-seasonal__grid">
+                {%- assign season_tag = 'season:' | append: current_season -%}
+                {%- assign seasonal_count = 0 -%}
+                {%- for product in collections.all.products limit: 20 -%}
+                  {%- if product.tags contains season_tag and seasonal_count < 3 -%}
+                    {%- assign in_cart = false -%}
+                    {%- for item in cart.items -%}
+                      {%- if item.product.id == product.id -%}
+                        {%- assign in_cart = true -%}
+                        {%- break -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+                    {%- unless in_cart -%}
+                      <a href="{{ product.url }}" class="cart-seasonal__item">
+                        {%- if product.featured_image -%}
+                          <img src="{{ product.featured_image | image_url: width: 80 }}" alt="{{ product.title }}" loading="lazy">
+                        {%- endif -%}
+                        <span>{{ product.title | truncate: 25 }}</span>
+                      </a>
+                      {%- assign seasonal_count = seasonal_count | plus: 1 -%}
+                    {%- endunless -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+              <a href="/collections/all" class="cart-seasonal__view-all">View All Fragrances &rarr;</a>
+            </div>
+
+            {%- comment -%} Subscription Plan {%- endcomment -%}
             <div class="plan-selector">
-              <h3 class="plan-selector__heading">Select Your Plan</h3>
-              <div class="plan-selector__options">
-
-                <label class="plan-option is-selected" data-plan="monthly">
-                  <input type="radio" name="subscription_plan" value="monthly" checked>
-                  <span class="plan-option__name">Monthly</span>
-                  <span class="plan-option__price">{{ monthly_per_mo }}</span>
-                  <span class="plan-option__detail">Billed monthly</span>
-                </label>
-
-                <label class="plan-option" data-plan="quarterly">
-                  <span class="plan-option__badge">SAVE 20%</span>
-                  <input type="radio" name="subscription_plan" value="quarterly">
-                  <span class="plan-option__name">Quarterly</span>
-                  <span class="plan-option__price">{{ quarterly_per_mo }}</span>
-                  <span class="plan-option__detail">{{ quarterly_price }} billed every 3 months</span>
-                </label>
-
-                <label class="plan-option" data-plan="annual">
-                  <span class="plan-option__badge plan-option__badge--gold">BEST VALUE</span>
-                  <input type="radio" name="subscription_plan" value="annual">
-                  <span class="plan-option__name">Annual</span>
-                  <span class="plan-option__price">{{ annual_per_mo }}</span>
-                  <span class="plan-option__detail">{{ annual_price }} billed annually — 2 months free</span>
-                </label>
-
+              <div class="plan-option is-selected" data-plan="monthly">
+                <span class="plan-option__name">Monthly Subscription</span>
+                <span class="plan-option__price">{{ monthly_per_mo }}</span>
+                <span class="plan-option__detail">Billed monthly. Cancel anytime.</span>
               </div>
             </div>
 
@@ -211,7 +247,7 @@
                   </div>
                   <div>
                     <strong>Free travel case</strong>
-                    <p>Included with quarterly & annual plans</p>
+                    <p>Included with your subscription</p>
                   </div>
                 </div>
               </div>
@@ -298,6 +334,9 @@
                       <span>I understand this is a recurring subscription and agree to the <a href="/pages/terms" target="_blank">Terms of Service</a> and <a href="/pages/privacy" target="_blank">Privacy Policy</a>.</span>
                     </label>
                   {%- endif -%}
+                  <p class="cart-disclosure__cancellation">
+                    Subscriptions renew monthly from your first purchase date. You will be notified 7 days before renewal. Cancellations on the renewal date take effect the following month.
+                  </p>
                 </div>
               </div>
 
@@ -497,6 +536,64 @@
   .cart-disclosure__checkbox { display: flex; gap: 0.5rem; align-items: flex-start; font-size: 0.8rem; color: var(--color-primary, #2D4641); cursor: pointer; line-height: 1.4; }
   .cart-disclosure__checkbox input { margin-top: 3px; accent-color: var(--color-secondary, #C9A962); flex-shrink: 0; }
   .cart-disclosure__checkbox a { color: var(--color-secondary, #C9A962); }
+  .cart-disclosure__cancellation {
+    font-size: 12px;
+    color: var(--color-text-light, #666);
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+
+  /* Seasonal Recommendations */
+  .cart-seasonal {
+    margin: var(--spacing-md, 24px) 0;
+    padding: var(--spacing-md, 24px);
+    background: var(--color-background-alt, #f9f9f7);
+    border-radius: var(--radius-md, 8px);
+  }
+  .cart-seasonal__heading {
+    font-size: var(--font-size-sm, 13px);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--spacing-sm, 12px);
+  }
+  .cart-seasonal__grid {
+    display: flex;
+    gap: var(--spacing-sm, 12px);
+    overflow-x: auto;
+  }
+  .cart-seasonal__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    color: inherit;
+    font-size: 12px;
+    min-width: 80px;
+  }
+  .cart-seasonal__item img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: var(--radius-sm, 4px);
+  }
+  .cart-seasonal__view-all {
+    display: block;
+    text-align: center;
+    margin-top: var(--spacing-sm, 12px);
+    font-size: var(--font-size-sm, 13px);
+    color: var(--color-secondary, #d4af37);
+    text-decoration: none;
+  }
+  .cart-section__ship-date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--font-size-sm, 13px);
+    color: var(--color-text-light, #666);
+    margin: var(--spacing-xs, 8px) 0;
+    padding: 0 1.5rem;
+  }
 
   /* Checkout Button */
   .cart-checkout-btn { font-size: 1rem; padding: 1rem; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s; }
@@ -577,41 +674,8 @@
 document.addEventListener('DOMContentLoaded', function() {
   'use strict';
 
-  // Plan pricing data
-  var plans = {
-    monthly:   { label: 'Monthly Plan',   perMo: '{{ monthly_per_mo }}',   total: '{{ monthly_price }}',   renewal: 'Then {{ monthly_price }}/month. Cancel anytime.', detail: 'monthly' },
-    quarterly: { label: 'Quarterly Plan',  perMo: '{{ quarterly_per_mo }}', total: '{{ quarterly_price }}', renewal: 'Then {{ quarterly_price }} every 3 months. Cancel anytime.', detail: 'every 3 months' },
-    annual:    { label: 'Annual Plan',     perMo: '{{ annual_per_mo }}',    total: '{{ annual_price }}',    renewal: 'Then {{ annual_price }}/year. Cancel anytime.', detail: 'annually' }
-  };
-
-  // Plan selector
-  var planOptions = document.querySelectorAll('.plan-option');
-  var planRadios = document.querySelectorAll('[name="subscription_plan"]');
-
-  planRadios.forEach(function(radio) {
-    radio.addEventListener('change', function() {
-      var plan = plans[radio.value];
-      if (!plan) return;
-
-      // Update visual selection
-      planOptions.forEach(function(opt) { opt.classList.remove('is-selected'); });
-      radio.closest('.plan-option').classList.add('is-selected');
-
-      // Update summary
-      var planLabel = document.querySelector('[data-summary-plan-label]');
-      var planPrice = document.querySelector('[data-summary-plan-price]');
-      var totalEl = document.querySelector('[data-summary-total]');
-      var renewalEl = document.querySelector('[data-summary-renewal]');
-
-      if (planLabel) planLabel.textContent = plan.label;
-      if (planPrice) planPrice.textContent = plan.total;
-      if (totalEl) totalEl.textContent = plan.total;
-      if (renewalEl) renewalEl.textContent = plan.renewal;
-
-      // Store for thank-you page
-      localStorage.setItem('basenote_selected_plan', radio.value);
-    });
-  });
+  // Monthly-only plan (no plan selector needed)
+  localStorage.setItem('basenote_selected_plan', 'monthly');
 
   // Terms checkbox gates checkout
   var termsCheckbox = document.getElementById('termsCheckbox');
