@@ -227,8 +227,8 @@
           </ul>
         </div>
 
-        {% comment %} ONE-TIME PURCHASE VIEW (Full bottle variant) {% endcomment %}
-        <div class="purchase-box" id="purchaseView" {% if is_subscription_variant %}style="display:none"{% endif %}>
+        {% comment %} ONE-TIME PURCHASE VIEW (Full bottle variant) — HIDDEN: subscription-only model {% endcomment %}
+        <div class="purchase-box" id="purchaseView" style="display:none">
           <div class="purchase-box__header">
             <div class="purchase-box__pricing">
               <div class="price-main">
@@ -1512,9 +1512,9 @@
       const hasSellPlans = document.getElementById('sellingPlanSelector') !== null || (appstleWidget && appstleWidget.innerHTML.trim() !== '');
       const isSub = (productVariants.length === 1 && hasSellPlans) || isSubscriptionVariant(variant);
 
-      // Toggle views
-      if (subscriptionView) subscriptionView.style.display = isSub ? '' : 'none';
-      if (purchaseView) purchaseView.style.display = isSub ? 'none' : '';
+      // Toggle views — subscription-only model, never show purchase view
+      if (subscriptionView) subscriptionView.style.display = '';
+      if (purchaseView) purchaseView.style.display = 'none';
 
       // Toggle selling plan visibility (only for subscription variants)
       if (sellingPlanSelector) sellingPlanSelector.style.display = isSub ? '' : 'none';
