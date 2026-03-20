@@ -43,7 +43,7 @@ All 15 active products should be attached to the **Monthly Plan** in Appstle.
 - No skip, no pause, cancel anytime (takes effect next month)
 
 ### Appstle Checklist
-- [ ] Verify all 15 products are attached to the Monthly Plan
+- [x] Verify all 15 products are attached to the Monthly Plan (completed 2026-03-20)
 - [ ] Verify selling plans are attached to 5ml variants only
 - [ ] Verify customer portal URL is set in theme settings
 - [ ] Verify 10% first-order discount is intentional (currently active)
