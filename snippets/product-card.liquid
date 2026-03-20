@@ -9,20 +9,6 @@
   assign featured_image = product.featured_image
   assign secondary_image = product.images[1]
 
-  # Get intensity from metafield or tags (1-5 scale)
-  assign intensity = product.metafields.fragrance.intensity | default: 0
-  if intensity == 0
-    for tag in product.tags
-      if tag contains 'intensity:'
-        assign intensity = tag | split: ':' | last | plus: 0
-        break
-      endif
-    endfor
-  endif
-  if intensity == 0
-    assign intensity = 3
-  endif
-
   # Get seasons from metafield or tags
   assign seasons = product.metafields.fragrance.season.value | default: nil
   assign season_spring = false
@@ -170,17 +156,21 @@
         </div>
       {%- endif -%}
 
-      {% comment %} Intensity Dots - Bottom Right {% endcomment %}
-      <div class="product-card__intensity" title="Intensity: {{ intensity }}/5">
-        {%- for i in (1..5) -%}
-          <span class="product-card__intensity-dot{% if i <= intensity %} is-filled{% endif %}"></span>
-        {%- endfor -%}
-      </div>
     </div>
 
     <div class="product-card__content">
       <span class="product-card__vendor">{{ product.vendor | default: 'Base Note Atelier' }}</span>
       <h3 class="product-card__title">{{ product.title }}</h3>
+
+      {%- assign origin_country = '' -%}
+      {%- for tag in product.tags -%}
+        {%- if tag contains 'origin:' -%}
+          {%- assign origin_country = tag | split: ':' | last | strip -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if origin_country != '' -%}
+        <p class="product-card__origin">Made in {{ origin_country | capitalize }}</p>
+      {%- endif -%}
 
       {% comment %} Fragrance Notes from Tags {% endcomment %}
       {%- assign note_tags = '' -%}
@@ -469,32 +459,6 @@
     color: #2196F3;
   }
 
-  /* Intensity Dots */
-  .product-card__intensity {
-    position: absolute;
-    bottom: var(--spacing-sm);
-    right: var(--spacing-sm);
-    display: flex;
-    gap: 3px;
-    padding: 4px 8px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    z-index: 3;
-  }
-
-  .product-card__intensity-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--color-border);
-    transition: background 0.2s;
-  }
-
-  .product-card__intensity-dot.is-filled {
-    background: var(--color-secondary);
-  }
-
   /* Quick View Overlay */
   .product-card__overlay {
     position: absolute;
@@ -563,6 +527,14 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     min-height: 2.6em;
+  }
+
+  .product-card__origin {
+    font-size: 11px;
+    color: var(--color-text-light, #888);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 2px 0 0;
   }
 
   .product-card__notes {
