@@ -49,7 +49,8 @@
 ### Item 5: Fix Privacy Policy link (Cancellations link does not exist in footer)
 - **File:** `sections/footer.liquid:153-166`
 - **Change:** The footer has 4 legal links: Privacy Policy (line 155), Terms of Service (line 158), Refund Policy (line 161), Shipping Policy (line 164). There is no "Cancellations" link in the footer — Jeff may have seen it elsewhere or it was already removed. The "Cancellations" flow exists in `snippets/cancellation-flow.liquid` and is accessed from the customer account dashboard, not the footer.
-- **Action:** Verify that `section.settings.privacy_link` points to a valid page. If empty, set it to Shopify's auto-generated `/policies/privacy-policy`. Do the same for terms, refund, and shipping links. No cancellation link needs to be added to the footer.
+- **Action:** Verify that `section.settings.privacy_link` points to a valid page. If empty, set it to Shopify's auto-generated `/policies/privacy-policy`. Do the same for terms, refund, and shipping links.
+- **Note:** A "Cancellations" link and policy text will now be added to the footer as part of Item 18 (new business requirement for cancellation policy disclosure).
 
 ### Item 11: Remove "Complete Your Collection" & subscription upsell from cart drawer
 - **File:** `snippets/cart-drawer.liquid`
@@ -69,18 +70,15 @@
   3. Remove any custom Intensity filter rendering if hardcoded
 - **Note:** Shopify's native filtering uses product tags — adding `season:X` and `event:Y` tags will make them filterable automatically if the store has Search & Discovery app configured, or via tag-based filtering in the collection template.
 
-### Item 9: Update subscription pricing
-- **Files:** `templates/cart.liquid:149-178`, `config/settings_data.json`
-- **Change:** Update plan selector prices per Jeff's v2 feedback (authoritative source):
-  - Monthly: $20/mo (unchanged)
-  - Quarterly: $18/mo ($54 total)
-  - Annual: $16/mo ($192 total)
-- **Price discrepancy note:** Multiple sources show different prices:
-  - MEMORY.md: Quarterly $48, Annual $168 (outdated)
-  - cart.liquid defaults: Quarterly $48/$16mo, Annual $168/$14mo
-  - settings_data.json: Monthly $29, Quarterly $79, Annual $299 (old prices)
-  - Jeff's v2 feedback: Quarterly $18/mo, Annual $16/mo (latest, authoritative)
-- **Action:** Update all sources to match Jeff's latest pricing. Update settings_data.json, cart.liquid display text, and MEMORY.md.
+### Item 9: Simplify to monthly-only subscription
+- **Files:** `templates/cart.liquid:149-178`, `templates/cart.liquid:9-14`, `config/settings_data.json`
+- **Change:** Simplify to monthly-only subscription. Remove quarterly and annual plan options from `cart.liquid` plan selector (lines 149-178). Remove the plan selector entirely — just show "Monthly $20/mo". No one-time purchase option.
+- **Implementation:**
+  - Remove the entire `<div class="plan-selector">` containing Monthly/Quarterly/Annual radio buttons (lines 149-178)
+  - Replace with a simple display showing "Monthly Subscription — $20/mo"
+  - Remove the quarterly and annual pricing variable assignments at lines 9-14 (keep only monthly)
+  - Update `config/settings_data.json` to remove quarterly/annual pricing settings
+- **Business decision:** All plans consolidated to monthly-only at $20/mo. Previous quarterly ($18/mo) and annual ($16/mo) options are eliminated.
 
 ### Item 15: Subscription view enhancements
 - **File:** `templates/cart.liquid`
@@ -129,10 +127,10 @@ Tags to add:
 - **File:** `sections/header.liquid:144-153` + header CSS
 - **Change:** The cart icon is being clipped on mobile viewports. Adjust the header layout so all action buttons (menu, search, account, cart) fit within the mobile viewport width. Likely needs `flex-shrink: 0` on cart button or reducing padding/spacing on mobile.
 
-### Item 7: Queue purchase type selector
+### Item 7: Remove one-time purchase option (subscription-only)
 - **Files:** `sections/main-product.liquid`, `assets/theme.js`
-- **Change:** When clicking "Add to Queue", offer two options: "One Time Purchase" or "Monthly Subscription". Currently it defaults to one-time purchase. Add a toggle/radio selector above the Add to Cart button.
-- **Implementation:** Add two radio buttons or a segmented control. When "Monthly Subscription" is selected, attach the selling plan ID. When "One Time Purchase" is selected, add as normal cart item.
+- **Change:** Remove one-time purchase option. All products are subscription-only at $20/mo. Ensure the selling plan selector always selects the monthly subscription plan. Remove the "One-time purchase" radio button from the native selling plan selector.
+- **Implementation:** In `sections/main-product.liquid`, find the native selling plan selector (around lines 284-316). Remove the "One-time purchase" radio option (lines 289-295). Keep only the monthly subscription plan option. The button should always say "Add to My Queue" (never "Add to Cart"). No toggle or segmented control needed — subscription is the only option.
 
 ### Item 8: Mobile checkout broken
 - **Investigation needed:** Jeff reports payments won't go through on mobile. This is likely a Shopify Payments / checkout configuration issue rather than a theme issue. Steps:
@@ -157,21 +155,37 @@ Tags to add:
 - **Recommendation:** Use option B — create an automatic discount in Shopify for first-time customers. No theme changes needed. If they want a visible "Try Free" button, add a variant.
 - **Note:** This requires business decision on which fragrances and the trial mechanism. Flag for Wilson/Jeff to decide.
 
+### Item 18: Add cancellation policy language to cart FTC disclosure and footer
+- **Files:** `templates/cart.liquid`, `sections/footer.liquid`
+- **Change:** Add cancellation policy text to two locations:
+  1. **`templates/cart.liquid`** — the FTC disclosure/terms checkbox area. Add the following text: "Subscriptions renew monthly from your first purchase date. You will be notified 7 days before renewal. Cancellations on the renewal date take effect the following month."
+  2. **`sections/footer.liquid`** — add a "Cancellations" link or inline text in the footer legal links section (alongside Privacy Policy, Terms of Service, etc.) with the same cancellation policy language.
+- **Rationale:** If a customer cancels on the renewal date, it is too late — the cancellation takes effect the following month. This must be clearly disclosed per FTC requirements and visible in both the cart checkout flow and site-wide footer.
+
+### Klaviyo Renewal Notification
+- **Platform:** Klaviyo (existing email platform)
+- **Change:** Configure a renewal notification email to be sent 7 days before each subscription renewal date.
+- **Implementation:** No theme code changes needed. This is handled via a Klaviyo flow triggered by Appstle subscription events. The flow should:
+  1. Listen for the Appstle "upcoming renewal" event (or equivalent webhook)
+  2. Send an email 7 days before the renewal date
+  3. Include the renewal date, current fragrance selection, and a link to manage the subscription
+- **Note:** This is a Klaviyo configuration task, not a theme development task.
+
 ---
 
 ## Files Changed Summary
 
 | File | Batches | Changes |
 |------|---------|---------|
-| `sections/main-product.liquid` | 1, 2, 4 | Spray count, remove share widget, add purchase type toggle |
-| `templates/cart.liquid` | 1, 3 | Spray count, remove 30-day perk, update pricing, add ship date/recs |
+| `sections/main-product.liquid` | 1, 2, 4 | Spray count, remove share widget, remove one-time purchase option |
+| `templates/cart.liquid` | 1, 3 | Spray count, remove 30-day perk, simplify to monthly-only plan, add ship date/recs, add cancellation policy to FTC disclosure |
 | `snippets/cart-drawer.liquid` | 1, 2 | Remove free shipping bar, remove upsells |
 | `snippets/product-card.liquid` | 3 | Add origin display, remove intensity dots, ensure season icons show |
 | `sections/main-collection.liquid` | 3 | Update filter logic for season/event |
-| `sections/footer.liquid` | 2 | Fix broken links |
+| `sections/footer.liquid` | 2, 3 | Fix broken links, add cancellation policy text |
 | `sections/header.liquid` | 4 | Fix mobile cart icon |
-| `assets/theme.js` | 4 | Purchase type toggle logic |
-| `config/settings_data.json` | 3 | Update subscription pricing |
+| `assets/theme.js` | 4 | Subscription-only selling plan logic |
+| `config/settings_data.json` | 3 | Remove quarterly/annual pricing settings |
 
 ---
 
@@ -180,4 +194,5 @@ Tags to add:
 - **Item 8 (mobile checkout):** Likely Shopify admin config, not theme code. Will investigate but may need Wilson to check Shopify Payments settings.
 - **Item 13 (subscription display):** Depends on Appstle integration state. Will investigate.
 - **Item 14 (free trials):** Needs business decision on mechanism. Will implement whichever approach Wilson/Jeff choose.
+- **Klaviyo renewal notifications:** 7-day pre-renewal email flow must be configured in Klaviyo using Appstle subscription events. No theme code needed.
 - **Product tags:** Will be added via Shopify Admin API. Tags are researched from Fragrantica and industry knowledge.

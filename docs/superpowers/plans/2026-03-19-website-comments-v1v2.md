@@ -333,16 +333,18 @@ Tags to add per product (append to existing tags, do not replace):
 
 ---
 
-## Task 4: Batch 3 — Product Data & Filters (Items 3, 9, 15, 16, 17)
+## Task 4: Batch 3 — Product Data & Filters (Items 3, 9, 15, 16, 17, 18)
 
 **Files:**
 - Modify: `snippets/product-card.liquid:173-178` (remove intensity dots)
 - Modify: `snippets/product-card.liquid:182-183` (add origin below title)
 - Modify: `sections/main-collection.liquid:128-192` (filter adjustments)
-- Modify: `templates/cart.liquid:9-14` (update pricing defaults)
-- Modify: `templates/cart.liquid:149-178` (update plan selector)
+- Modify: `templates/cart.liquid:9-14` (remove quarterly/annual pricing variables)
+- Modify: `templates/cart.liquid:149-178` (remove plan selector, replace with monthly display)
 - Modify: `templates/cart.liquid` (add ship date + seasonal recs section)
-- Modify: `config/settings_data.json` (update pricing settings)
+- Modify: `templates/cart.liquid` (add cancellation policy to FTC disclosure)
+- Modify: `sections/footer.liquid` (add cancellation policy text)
+- Modify: `config/settings_data.json` (remove quarterly/annual pricing settings)
 
 ### Item 17: Remove intensity dots from product cards
 
@@ -417,12 +419,12 @@ If the Shopify Search & Discovery app is not installed or filters aren't showing
       </details>
 ```
 
-### Item 9: Update subscription pricing
+### Item 9: Simplify to monthly-only subscription
 
-- [ ] **Step 4:** In `templates/cart.liquid`, update the pricing defaults at lines 9-14:
+- [ ] **Step 4:** In `templates/cart.liquid`, remove the quarterly and annual pricing variable assignments at lines 9-14. Keep only the monthly variables:
 
 ```liquid
-{# OLD #}
+{# OLD (lines 9-14) #}
 {%- assign monthly_price = settings.sub_plan_monthly_price | default: '$20' -%}
 {%- assign monthly_per_mo = settings.sub_plan_monthly_per_month | default: '$20/mo' -%}
 {%- assign quarterly_price = settings.sub_plan_quarterly_price | default: '$48' -%}
@@ -430,54 +432,70 @@ If the Shopify Search & Discovery app is not installed or filters aren't showing
 {%- assign annual_price = settings.sub_plan_annual_price | default: '$168' -%}
 {%- assign annual_per_mo = settings.sub_plan_annual_per_month | default: '$14/mo' -%}
 
-{# NEW #}
+{# NEW — keep only monthly #}
 {%- assign monthly_price = settings.sub_plan_monthly_price | default: '$20' -%}
 {%- assign monthly_per_mo = settings.sub_plan_monthly_per_month | default: '$20/mo' -%}
-{%- assign quarterly_price = settings.sub_plan_quarterly_price | default: '$54' -%}
-{%- assign quarterly_per_mo = settings.sub_plan_quarterly_per_month | default: '$18/mo' -%}
-{%- assign annual_price = settings.sub_plan_annual_price | default: '$192' -%}
-{%- assign annual_per_mo = settings.sub_plan_annual_per_month | default: '$16/mo' -%}
 ```
 
-- [ ] **Step 5:** In `templates/cart.liquid`, update the plan selector savings badges and detail text:
+- [ ] **Step 5:** In `templates/cart.liquid`, remove the entire plan selector section (the `<div class="plan-selector">` containing Monthly/Quarterly/Annual radio buttons, lines 149-178). Replace with a simple monthly subscription display:
 
-At line 162, update the quarterly savings badge:
 ```liquid
-{# OLD #}
-                  <span class="plan-option__badge">SAVE 20%</span>
+{# REMOVE: entire <div class="plan-selector"> block (lines 149-178) containing
+   Monthly/Quarterly/Annual radio buttons and savings badges #}
 
-{# NEW #}
-                  <span class="plan-option__badge">SAVE 10%</span>
+{# NEW — simple monthly display #}
+            <div class="plan-display">
+              <p class="plan-display__label">Monthly Subscription &mdash; {{ monthly_per_mo }}</p>
+            </div>
 ```
 
-At line 174, update the annual detail text:
-```liquid
-{# OLD #}
-                  <span class="plan-option__detail">{{ annual_price }} billed annually — 2 months free</span>
+Add CSS for the plan display (in cart.liquid `<style>` block):
 
-{# NEW #}
-                  <span class="plan-option__detail">{{ annual_price }} billed annually</span>
+```css
+.plan-display { padding: var(--spacing-sm) var(--spacing-md); background: var(--color-background-alt, #f9f9f7); border-radius: var(--radius-sm); margin: var(--spacing-sm) 0; }
+.plan-display__label { font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text); margin: 0; }
 ```
 
-- [ ] **Step 6:** In `config/settings_data.json`, update the subscription pricing settings (if they exist as populated values). Search for and update any pricing keys:
+- [ ] **Step 6:** In `config/settings_data.json`, remove the quarterly and annual pricing settings. Search for and update any pricing keys:
 
 ```bash
 grep -n "subscription_price\|sub_plan" config/settings_data.json
 ```
 
-The file has TWO sets of pricing keys:
-- Old keys (lines ~58-60): `subscription_price_monthly` ($29), `subscription_price_quarterly` ($79), `subscription_price_annual` ($299) — these are outdated
-- New keys (lines ~44-47): `sub_plan_quarterly_price` (""), `sub_plan_quarterly_per_month` ("") — these are empty
+Remove or zero-out all quarterly/annual keys:
+- Remove `sub_plan_quarterly_price`, `sub_plan_quarterly_per_month`
+- Remove `sub_plan_annual_price`, `sub_plan_annual_per_month`
+- Remove old `subscription_price_quarterly`, `subscription_price_annual` keys
+- Keep `sub_plan_monthly_price`: `$20` and `sub_plan_monthly_per_month`: `$20/mo`
 
-Update the new `sub_plan_*` keys with correct values:
-- `sub_plan_monthly_price`: `$20`
-- `sub_plan_monthly_per_month`: `$20/mo`
-- `sub_plan_quarterly_price`: `$54`
-- `sub_plan_quarterly_per_month`: `$18/mo`
-- `sub_plan_annual_price`: `$192`
-- `sub_plan_annual_per_month`: `$16/mo`
+### Item 18: Add cancellation policy language
 
-Remove or zero-out the old `subscription_price_monthly/quarterly/annual` keys to avoid confusion.
+- [ ] **Step 6b:** In `templates/cart.liquid`, find the FTC disclosure/terms checkbox area and add cancellation policy text. Insert the following after the existing FTC disclosure text:
+
+```liquid
+              <p class="cart-ftc__cancellation">
+                Subscriptions renew monthly from your first purchase date. You will be notified 7 days before renewal. Cancellations on the renewal date take effect the following month.
+              </p>
+```
+
+- [ ] **Step 6c:** In `sections/footer.liquid`, add a "Cancellations" link or inline cancellation policy text in the `footer__legal` div (alongside Privacy Policy, Terms of Service, etc.):
+
+```liquid
+{# Add after the existing legal links, inside the <div class="footer__legal"> #}
+          <a href="#cancellation-policy" class="footer__cancellation-link">Cancellations</a>
+
+{# And add the cancellation policy disclosure as a new element after the footer__legal div #}
+        <div class="footer__cancellation-disclosure" id="cancellation-policy">
+          <p>Subscriptions renew monthly from your first purchase date. You will be notified 7 days before renewal. Cancellations on the renewal date take effect the following month.</p>
+        </div>
+```
+
+Add CSS for the cancellation disclosure:
+
+```css
+.footer__cancellation-disclosure { font-size: 11px; color: var(--color-text-light, #888); margin-top: var(--spacing-xs); max-width: 600px; }
+.footer__cancellation-disclosure p { margin: 0; }
+```
 
 ### Item 15: Add ship date, seasonal recs, and "View All" link
 
@@ -575,22 +593,30 @@ grep -n "intensity" snippets/product-card.liquid
 grep -n "origin:" snippets/product-card.liquid
 # Expected: matches showing the new origin tag display
 
-grep -n "18/mo\|\\$54\|16/mo\|\\$192" templates/cart.liquid
-# Expected: matches showing updated pricing
+grep -n "plan-selector\|quarterly\|annual" templates/cart.liquid
+# Expected: no matches (plan selector removed, no quarterly/annual references)
+
+grep -n "plan-display" templates/cart.liquid
+# Expected: matches showing the new simple monthly display
 
 grep -n "seasonal" templates/cart.liquid
 # Expected: matches showing the new seasonal section
+
+grep -n "cancellation" templates/cart.liquid sections/footer.liquid
+# Expected: matches in both files showing cancellation policy text
 ```
 
 - [ ] **Step 10:** Commit:
 
 ```bash
-git add snippets/product-card.liquid sections/main-collection.liquid templates/cart.liquid config/settings_data.json
-git commit -m "Batch 3: Update product cards, filters, pricing, add seasonal recs
+git add snippets/product-card.liquid sections/main-collection.liquid templates/cart.liquid sections/footer.liquid config/settings_data.json
+git commit -m "Batch 3: Update product cards, filters, simplify to monthly subscription, add cancellation policy
 
 - Remove intensity dots from product cards
 - Add 'Made in [Country]' origin display on product cards
-- Update subscription pricing: Quarterly $18/mo, Annual $16/mo
+- Simplify subscription to monthly-only ($20/mo) — remove quarterly and annual plans
+- Replace plan selector with simple monthly subscription display
+- Add cancellation policy to cart FTC disclosure and footer
 - Add expected ship date to cart
 - Add seasonal fragrance recommendations to cart
 - Add 'View All Fragrances' link
@@ -604,7 +630,7 @@ Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
 
 **Files:**
 - Modify: `sections/header.liquid:633-649` (mobile header CSS)
-- Modify: `sections/main-product.liquid:280-326` (purchase type selector)
+- Modify: `sections/main-product.liquid:280-326` (remove one-time purchase option)
 - Investigate: Shopify admin (mobile checkout, subscription display, free trials)
 
 ### Item 6: Fix mobile cart icon cutoff
@@ -644,32 +670,33 @@ Also check if the header's `.container` or `.header` element has `overflow: hidd
 grep -n "overflow" sections/header.liquid
 ```
 
-### Item 7: Add purchase type selector (One-Time vs Subscription)
+### Item 7: Remove one-time purchase option (subscription-only)
 
-- [ ] **Step 2:** In `sections/main-product.liquid`, the selling plan selector already exists at lines 284-316. It has "One-time purchase" and subscription plan options via radio buttons. The issue is that when `is_subscription_variant` is true, the button says "Add to My Queue" but doesn't show the purchase type choice.
+- [ ] **Step 2:** In `sections/main-product.liquid`, find the native selling plan selector (around lines 284-316). Remove the "One-time purchase" radio option (lines 289-295). Keep only the monthly subscription plan option:
 
-Check if the selling plan selector is being hidden for subscription variants. Look for CSS or Liquid conditionals that hide `#sellingPlanSelector`:
-
-```bash
-grep -n "sellingPlanSelector\|selling-plan-selector" sections/main-product.liquid
+```liquid
+{# REMOVE: the "One-time purchase" radio button (lines 289-295) #}
+{# This block renders a radio for "One-time purchase" with value="" #}
+              <label class="selling-plan-option">
+                <input type="radio" name="selling_plan" value="" checked>
+                <span>One-time purchase</span>
+              </label>
 ```
 
-The fix: Ensure the selling plan selector (lines 284-316) is always visible when the product has selling plans, regardless of variant type. The existing code already renders both "One-time purchase" and subscription options. The issue may be CSS hiding it or the Appstle widget overriding it.
+Ensure the monthly subscription radio is pre-selected (add `checked` attribute if not present). Since there is no one-time purchase option, the subscription plan should always be selected.
 
-If the selector is conditionally hidden, remove the condition. The native Shopify selling plan selector at lines 284-316 already provides exactly what Jeff wants — "One-time purchase" vs subscription radio buttons.
+- [ ] **Step 3:** Ensure the Add to Cart button always says "Add to My Queue" (never "Add to Cart"). In `sections/main-product.liquid`, find the button text and hardcode it:
 
-- [ ] **Step 3:** Update the Add to Cart button text to be dynamic based on the selling plan selection. In `assets/theme.js`, find the selling plan change handler and update the button text:
+```liquid
+{# Ensure the button always says "Add to My Queue" #}
+<span id="addToCartText">Add to My Queue</span>
+```
+
+In `assets/theme.js`, remove or simplify the selling plan change handler that toggles between "Add to Cart" and "Add to My Queue". Since subscription is the only option, the button text should be static:
 
 ```javascript
-// Find the selling plan radio handler and ensure it updates button text
-document.querySelectorAll('input[name="selling_plan"]').forEach(function(radio) {
-  radio.addEventListener('change', function() {
-    var btn = document.getElementById('addToCartText');
-    if (btn) {
-      btn.textContent = this.value ? 'Add to My Queue' : 'Add to Cart';
-    }
-  });
-});
+// Remove the selling plan radio change handler that toggles button text
+// The button should always say "Add to My Queue" since all products are subscription-only
 ```
 
 ### Items 8, 13, 14: Investigation tasks
@@ -704,11 +731,12 @@ No theme changes needed for any option — this is Shopify admin configuration.
 
 ```bash
 git add sections/header.liquid sections/main-product.liquid assets/theme.js
-git commit -m "Batch 4: Fix mobile cart icon, ensure purchase type selector visible
+git commit -m "Batch 4: Fix mobile cart icon, remove one-time purchase option
 
 - Reduce mobile header button sizes and padding to prevent cart cutoff
-- Ensure selling plan selector shows One-Time vs Subscription options
-- Update button text dynamically based on purchase type selection
+- Remove one-time purchase radio from selling plan selector (subscription-only)
+- Hardcode button text to 'Add to My Queue' (no more 'Add to Cart')
+- Remove selling plan toggle JS handler (no longer needed)
 
 Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
 ```
@@ -762,9 +790,10 @@ Open the preview URL and check:
 2. Collection page: Season/event filters (if tags were added), no intensity dots
 3. Product cards: "Made in France/USA" shown, season icons visible
 4. Cart drawer: No shipping bar, no upsells
-5. Cart page: Updated pricing ($18/mo quarterly, $16/mo annual), ship date, seasonal recs, 3 perks (no 30-day guarantee)
-6. Footer: All 4 legal links work
+5. Cart page: Monthly-only subscription ($20/mo), no plan selector, ship date, seasonal recs, 3 perks (no 30-day guarantee), cancellation policy in FTC disclosure
+6. Footer: All 4 legal links work, cancellation policy text visible
 7. Mobile: Cart icon visible in header
+8. Product page: No one-time purchase option, button says "Add to My Queue"
 
 - [ ] **Step 3:** Push to live theme:
 
@@ -774,7 +803,7 @@ shopify theme push --store base-note.myshopify.com --theme 158692901082
 
 - [ ] **Step 4:** Update MEMORY.md pricing:
 
-Update the subscription pricing in MEMORY.md from "Plans: Monthly ($20), Quarterly ($48), Annual ($168)" to "Plans: Monthly ($20), Quarterly ($54 / $18mo), Annual ($192 / $16mo)".
+Update the subscription pricing in MEMORY.md from "Plans: Monthly ($20), Quarterly ($48), Annual ($168)" to "Plans: Monthly only ($20/mo). No quarterly or annual options. No one-time purchase." Also add: "Cancellation policy: cancellations on renewal date take effect the following month. Renewal notification: 7 days before via Klaviyo."
 
 ---
 
@@ -789,3 +818,5 @@ These items need Wilson or Jeff to handle in Shopify admin:
 | 14 | Decide on free trial mechanism (discount code vs $0 variant) | Wilson + Jeff |
 | 3 (partial) | Verify Search & Discovery app is installed for tag-based filtering | Wilson |
 | Tags | If API approach fails, manually add tags to 9 products in Shopify admin | Wilson |
+| Klaviyo | Configure 7-day pre-renewal notification email flow in Klaviyo, triggered by Appstle subscription events | Wilson |
+| Appstle | Remove quarterly and annual selling plans from Appstle subscription settings (keep monthly only) | Wilson |
