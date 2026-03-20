@@ -45,6 +45,7 @@
     "sub_plan_annual_price": "",
     "sub_plan_annual_per_month": "",
     "appstle_enabled": true,
+    "appstle_portal_url": "https://basenotescent.com/apps/subscriptions",
     "cancel_discount_code": "STAYWITHUS10",
     "cancel_discount_amount": "10% off your next 1 months",
     "cancel_pause_duration": "up to 1 months",
