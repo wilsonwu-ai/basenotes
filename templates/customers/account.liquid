@@ -1,9 +1,19 @@
 {%- layout 'theme' -%}
 
 {%- assign is_subscriber = false -%}
-{%- if customer.tags contains 'subscriber' or customer.tags contains 'active_subscriber' -%}
-  {%- assign is_subscriber = true -%}
-{%- endif -%}
+{%- assign latest_sub_order = nil -%}
+{%- assign latest_sub_item = nil -%}
+{%- for order in customer.orders -%}
+  {%- for line_item in order.line_items -%}
+    {%- if line_item.selling_plan_allocation -%}
+      {%- assign is_subscriber = true -%}
+      {%- unless latest_sub_order -%}
+        {%- assign latest_sub_order = order -%}
+        {%- assign latest_sub_item = line_item -%}
+      {%- endunless -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endfor -%}
 
 {%- assign member_since = customer.created_at | date: '%s' -%}
 {%- assign now_ts = 'now' | date: '%s' -%}
@@ -237,6 +247,14 @@
               <p>You've skipped this month's shipment. Your subscription will resume next month.</p>
               <button class="btn btn--outline btn--small" id="nsUndoSkip">Undo Skip</button>
             </div>
+
+            {%- if latest_sub_item -%}
+            <!-- Fallback: show last subscription item from order history -->
+            <div class="ns-sub-fallback" id="nsSubFallback" style="margin-top:1.25rem;padding:1.25rem;background:#FAF8F5;border-radius:12px;">
+              <p style="font-size:14px;color:#2D4641;margin:0 0 8px;">Your current subscription: <strong>{{ latest_sub_item.product.title }}</strong></p>
+              <p style="font-size:13px;color:#666;margin:0;">Want a different fragrance next month? <a href="{{ settings.appstle_portal_url | default: '/apps/subscriptions' }}" style="color:#C9A962;font-weight:600;">Swap Now &rarr;</a></p>
+            </div>
+            {%- endif -%}
           </div>
           {%- else -%}
           <div class="acct__card acct__card--cta">
@@ -320,11 +338,11 @@
               <h3 class="acct__card-title">Subscription Actions</h3>
             </div>
             <div class="sub-actions">
-              <a href="{{ settings.subscription_portal_url | default: settings.appstle_portal_url | default: settings.recharge_portal_url | default: '/pages/contact' }}" class="sub-action-btn">
+              <a href="{{ settings.subscription_portal_url | default: settings.appstle_portal_url | default: '/apps/subscriptions' }}" class="sub-action-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                 Change Plan
               </a>
-              <a href="{{ settings.subscription_portal_url | default: settings.appstle_portal_url | default: settings.recharge_portal_url | default: '/pages/contact' }}" class="sub-action-btn">
+              <a href="{{ settings.subscription_portal_url | default: settings.appstle_portal_url | default: '/apps/subscriptions' }}" class="sub-action-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                 Update Payment
               </a>
@@ -345,7 +363,7 @@
           <div class="acct__card acct__card--cta">
             <span class="acct__cta-badge">Start Your Journey</span>
             <h3 class="acct__cta-title">Join Base Note</h3>
-            <p class="acct__cta-desc">Discover a new luxury fragrance every month. Plans start at just $14/mo.</p>
+            <p class="acct__cta-desc">Discover a new luxury fragrance every month. Plans start at just $20/mo.</p>
             <div style="display:flex;gap:12px;flex-wrap:wrap;">
               <a href="/collections/all" class="btn btn--gold">Subscribe Now</a>
               <a href="/pages/quiz" class="btn btn--outline">Take the Scent Quiz</a>

@@ -505,27 +505,27 @@
         "type": "text",
         "id": "subscription_quarterly_price",
         "label": "Quarterly per-month price display",
-        "default": "$16",
-        "info": "Per-month equivalent for quarterly plan"
+        "default": "$20",
+        "info": "Per-month equivalent (monthly-only model)"
       },
       {
         "type": "text",
         "id": "subscription_quarterly_total",
         "label": "Quarterly total price",
-        "default": "$48"
+        "default": "$60"
       },
       {
         "type": "text",
         "id": "subscription_annual_price",
         "label": "Annual per-month price display",
-        "default": "$14",
-        "info": "Per-month equivalent for annual plan"
+        "default": "$20",
+        "info": "Per-month equivalent (monthly-only model)"
       },
       {
         "type": "text",
         "id": "subscription_annual_total",
         "label": "Annual total price",
-        "default": "$168"
+        "default": "$240"
       },
       {
         "type": "header",
@@ -585,25 +585,25 @@
         "type": "text",
         "id": "sub_plan_quarterly_price",
         "label": "Quarterly plan total price",
-        "default": "$48"
+        "default": "$60"
       },
       {
         "type": "text",
         "id": "sub_plan_quarterly_per_month",
         "label": "Quarterly per-month display",
-        "default": "$16/mo"
+        "default": "$20/mo"
       },
       {
         "type": "text",
         "id": "sub_plan_annual_price",
         "label": "Annual plan total price",
-        "default": "$168"
+        "default": "$240"
       },
       {
         "type": "text",
         "id": "sub_plan_annual_per_month",
         "label": "Annual per-month display",
-        "default": "$14/mo"
+        "default": "$20/mo"
       },
       {
         "type": "header",
