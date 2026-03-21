@@ -169,7 +169,11 @@
         {%- endif -%}
       {%- endfor -%}
       {%- if origin_country != '' -%}
-        <p class="product-card__origin">Made in {{ origin_country | capitalize }}</p>
+        {%- if origin_country == 'usa' -%}
+          <p class="product-card__origin">Made in USA</p>
+        {%- else -%}
+          <p class="product-card__origin">Made in {{ origin_country | capitalize }}</p>
+        {%- endif -%}
       {%- endif -%}
 
       {% comment %} Fragrance Notes from Tags {% endcomment %}
