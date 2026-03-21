@@ -625,6 +625,21 @@
 document.addEventListener('DOMContentLoaded', function() {
   'use strict';
 
+  // Subscription data from server (Liquid)
+  var serverSubData = {
+    isSubscriber: {{ is_subscriber | json }},
+    {% if latest_sub_order %}
+    orderDate: {{ latest_sub_order.created_at | json }},
+    orderName: {{ latest_sub_order.name | json }},
+    {% endif %}
+    {% if latest_sub_item %}
+    productTitle: {{ latest_sub_item.product.title | json }},
+    productImage: {{ latest_sub_item.image | image_url: width: 200 | json }},
+    productVendor: {{ latest_sub_item.product.vendor | json }},
+    {% endif %}
+    portalUrl: {{ settings.appstle_portal_url | default: '/apps/subscriptions' | json }}
+  };
+
   /* ── Hash Router ── */
   var views = document.querySelectorAll('[data-view]');
   var navLinks = document.querySelectorAll('[data-nav]');
@@ -815,6 +830,18 @@ document.addEventListener('DOMContentLoaded', function() {
           '<div><strong style="color:#2D4641;">' + data.fragrance.title + '</strong>' +
           '<br><span style="font-size:12px;color:#C9A962;">' + (data.fragrance.family || '') + '</span></div></div>';
       }
+    } else if (serverSubData.productTitle) {
+      // Default to the subscription product from order history
+      nsStatusBadge.textContent = 'Confirmed';
+      nsStatusBadge.className = 'ns-status-badge ns-confirmed';
+      if (nsSelected) {
+        nsSelected.style.display = 'block';
+        if (nsImage && serverSubData.productImage) nsImage.innerHTML = '<img src="' + serverSubData.productImage + '" alt="' + serverSubData.productTitle + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">';
+        if (nsName) nsName.textContent = serverSubData.productTitle;
+        if (nsFamily) nsFamily.textContent = serverSubData.productVendor || '';
+      }
+      if (nsChoose) nsChoose.style.display = 'none';
+      if (nsSkipped) nsSkipped.style.display = 'none';
     } else {
       nsStatusBadge.textContent = 'Action Needed';
       nsStatusBadge.className = 'ns-status-badge ns-action';
@@ -823,22 +850,13 @@ document.addEventListener('DOMContentLoaded', function() {
       if (nsSkipped) nsSkipped.style.display = 'none';
     }
 
-    // Update dashboard stat
+    // Update dashboard stat using anniversary billing
     var statEl = document.getElementById('statNextShipment');
-    if (statEl) {
-      var nextDate = new Date();
-      nextDate.setMonth(nextDate.getMonth() + 1);
-      nextDate.setDate(1);
+    if (statEl && serverSubData.orderDate) {
+      var orderD = new Date(serverSubData.orderDate);
+      var nextDate = new Date(new Date().getFullYear(), new Date().getMonth(), orderD.getDate());
+      if (nextDate <= new Date()) nextDate.setMonth(nextDate.getMonth() + 1);
       statEl.textContent = nextDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    }
-
-    // Update subscription billing
-    var billingEl = document.getElementById('subNextBilling');
-    if (billingEl) {
-      var billDate = new Date();
-      billDate.setMonth(billDate.getMonth() + 1);
-      billDate.setDate(1);
-      billingEl.textContent = billDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     }
   }
 
@@ -849,22 +867,28 @@ document.addEventListener('DOMContentLoaded', function() {
     var countdownEl = document.getElementById('billingCountdown');
     if (!countdownEl) return;
 
-    // Try to get real subscription data from localStorage (set by checkout scripts)
+    // Calculate next billing date using anniversary billing from order date
+    var now = new Date();
+    var nextBill;
+
+    // Priority: localStorage > server order data > fallback
     var subData = null;
     try { subData = JSON.parse(localStorage.getItem('bn_active_subscription') || 'null'); } catch(e) {}
 
-    // Calculate next billing date (anniversary billing: same day next month)
-    var now = new Date();
-    var nextBill;
     if (subData && subData.nextBillDate) {
       nextBill = new Date(subData.nextBillDate);
-      // If next bill is in the past, advance to next month
-      while (nextBill < now) {
-        nextBill.setMonth(nextBill.getMonth() + 1);
-      }
+    } else if (serverSubData.orderDate) {
+      // Anniversary billing: use the same day-of-month as the original order
+      var orderDate = new Date(serverSubData.orderDate);
+      var billingDay = orderDate.getDate();
+      nextBill = new Date(now.getFullYear(), now.getMonth(), billingDay);
     } else {
-      // Fallback: assume billing is on the 1st of next month
       nextBill = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    }
+
+    // Advance to future if in the past
+    while (nextBill <= now) {
+      nextBill.setMonth(nextBill.getMonth() + 1);
     }
 
     // Days remaining
