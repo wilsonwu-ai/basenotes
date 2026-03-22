@@ -1652,7 +1652,15 @@
 
         const formData = new FormData(productForm);
         const variantId = formData.get('id');
-        const sellingPlan = formData.get('selling_plan');
+        // Auto-select first selling plan if none chosen (all purchases are subscriptions)
+        var sellingPlan = formData.get('selling_plan');
+        if (!sellingPlan) {
+          var fallbackPlan = document.querySelector('input[name="selling_plan"]');
+          if (fallbackPlan) sellingPlan = fallbackPlan.value;
+        }
+        {%- if product.selling_plan_groups.size > 0 -%}
+        if (!sellingPlan) sellingPlan = '{{ product.selling_plan_groups[0].selling_plans[0].id }}';
+        {%- endif -%}
         const isSubscription = !!sellingPlan;
         const productTitle = {{ product.title | json }};
         const productId = {{ product.id }};
@@ -1735,7 +1743,7 @@
           return;
         }
 
-        // Non-subscription: add directly
+        // Fallback add-to-cart (selling plan should always be set by now)
         const cartPayload = { id: parseInt(variantId), quantity: 1 };
         if (sellingPlan) cartPayload.selling_plan = parseInt(sellingPlan);
 
