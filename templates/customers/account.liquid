@@ -631,6 +631,7 @@ document.addEventListener('DOMContentLoaded', function() {
     {% if latest_sub_order %}
     orderDate: {{ latest_sub_order.created_at | json }},
     orderName: {{ latest_sub_order.name | json }},
+    orderFulfilled: {{ latest_sub_order.fulfillment_status | json }},
     {% endif %}
     {% if latest_sub_item %}
     productTitle: {{ latest_sub_item.product.title | json }},
@@ -639,6 +640,10 @@ document.addEventListener('DOMContentLoaded', function() {
     {% endif %}
     portalUrl: {{ settings.appstle_portal_url | default: '/apps/subscriptions' | json }}
   };
+
+  function isValidDate(d) {
+    return d instanceof Date && !isNaN(d.getTime());
+  }
 
   /* ── Hash Router ── */
   var views = document.querySelectorAll('[data-view]');
@@ -830,8 +835,8 @@ document.addEventListener('DOMContentLoaded', function() {
           '<div><strong style="color:#2D4641;">' + data.fragrance.title + '</strong>' +
           '<br><span style="font-size:12px;color:#C9A962;">' + (data.fragrance.family || '') + '</span></div></div>';
       }
-    } else if (serverSubData.productTitle) {
-      // Default to the subscription product from order history
+    } else if (serverSubData.productTitle && serverSubData.orderFulfilled !== 'fulfilled') {
+      // Default to the subscription product from order history (only if not yet fulfilled)
       nsStatusBadge.textContent = 'Confirmed';
       nsStatusBadge.className = 'ns-status-badge ns-confirmed';
       if (nsSelected) {
@@ -850,39 +855,63 @@ document.addEventListener('DOMContentLoaded', function() {
       if (nsSkipped) nsSkipped.style.display = 'none';
     }
 
-    // Update dashboard stat using anniversary billing
-    var statEl = document.getElementById('statNextShipment');
-    if (statEl && serverSubData.orderDate) {
+    // Update "Ships in X days" and dashboard stat
+    var now = new Date();
+    var shipDate = null;
+
+    // Calculate next ship date from order anniversary or billing date
+    if (serverSubData.orderDate) {
       var orderD = new Date(serverSubData.orderDate);
-      var nextDate = new Date(new Date().getFullYear(), new Date().getMonth(), orderD.getDate());
-      if (nextDate <= new Date()) nextDate.setMonth(nextDate.getMonth() + 1);
-      statEl.textContent = nextDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      if (!isNaN(orderD.getTime())) {
+        shipDate = new Date(now.getFullYear(), now.getMonth(), orderD.getDate());
+        if (shipDate <= now) shipDate.setMonth(shipDate.getMonth() + 1);
+      }
+    }
+    if (!shipDate) {
+      shipDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    }
+
+    // Update "Ships in X days" on the next shipment card
+    var nsShipDaysEl = document.getElementById('nsShipDays');
+    if (nsShipDaysEl) {
+      var daysUntilShip = Math.max(0, Math.ceil((shipDate - now) / 86400000));
+      nsShipDaysEl.textContent = daysUntilShip;
+    }
+
+    // Update dashboard stat
+    var statEl = document.getElementById('statNextShipment');
+    if (statEl) {
+      statEl.textContent = shipDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
   }
 
   renderNextShipment();
 
   /* ── Billing Countdown ── */
-  function renderBillingCountdown() {
-    var countdownEl = document.getElementById('billingCountdown');
-    if (!countdownEl) return;
-
-    // Calculate next billing date using anniversary billing from order date
+  function getNextBillingDate() {
     var now = new Date();
-    var nextBill;
+    var nextBill = null;
 
-    // Priority: localStorage > server order data > fallback
-    var subData = null;
-    try { subData = JSON.parse(localStorage.getItem('bn_active_subscription') || 'null'); } catch(e) {}
+    // Try 1: localStorage (set during checkout on this device)
+    try {
+      var subData = JSON.parse(localStorage.getItem('bn_active_subscription') || 'null');
+      if (subData && subData.nextBillDate) {
+        var d = new Date(subData.nextBillDate);
+        if (isValidDate(d)) nextBill = d;
+      }
+    } catch(e) {}
 
-    if (subData && subData.nextBillDate) {
-      nextBill = new Date(subData.nextBillDate);
-    } else if (serverSubData.orderDate) {
-      // Anniversary billing: use the same day-of-month as the original order
+    // Try 2: Anniversary billing from server order date
+    if (!nextBill && serverSubData.orderDate) {
       var orderDate = new Date(serverSubData.orderDate);
-      var billingDay = orderDate.getDate();
-      nextBill = new Date(now.getFullYear(), now.getMonth(), billingDay);
-    } else {
+      if (isValidDate(orderDate)) {
+        var billingDay = orderDate.getDate();
+        nextBill = new Date(now.getFullYear(), now.getMonth(), billingDay);
+      }
+    }
+
+    // Try 3: Fallback to first of next month
+    if (!nextBill) {
       nextBill = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     }
 
@@ -890,6 +919,16 @@ document.addEventListener('DOMContentLoaded', function() {
     while (nextBill <= now) {
       nextBill.setMonth(nextBill.getMonth() + 1);
     }
+
+    return nextBill;
+  }
+
+  function renderBillingCountdown() {
+    var countdownEl = document.getElementById('billingCountdown');
+    if (!countdownEl) return;
+
+    var now = new Date();
+    var nextBill = getNextBillingDate();
 
     // Days remaining
     var msPerDay = 86400000;
