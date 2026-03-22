@@ -188,17 +188,16 @@
   /**
    * Add item to cart via AJAX
    */
-  function addToCart(variantId, quantity) {
+  function addToCart(variantId, quantity, sellingPlan) {
+    var payload = { id: variantId, quantity: quantity };
+    if (sellingPlan) payload.selling_plan = parseInt(sellingPlan);
     return fetch('/cart/add.js', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: JSON.stringify({
-        id: variantId,
-        quantity: quantity
-      })
+      body: JSON.stringify(payload)
     })
     .then(response => {
       if (!response.ok) throw new Error('Add to cart failed');
