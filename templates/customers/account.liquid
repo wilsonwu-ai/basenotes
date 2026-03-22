@@ -989,7 +989,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!active) active = contracts[0];
 
         // ── Update billing date from Appstle ──
-        var nextBill = active.nextBillingDate ? new Date(active.nextBillingDate) : null;
+        // Try multiple possible field names for the next billing/order date
+        var rawDate = active.nextBillingDate || active.nextOrderDate || active.nextOrderDateLocal
+          || active.nextBillingDateLocal || active.billingDate || active.nextDeliveryDate || null;
+        // Log for debugging (remove once confirmed working)
+        console.log('[Appstle] active contract keys:', Object.keys(active));
+        console.log('[Appstle] raw next date value:', rawDate);
+        var nextBill = rawDate ? new Date(rawDate) : null;
         if (nextBill && isValidDate(nextBill)) {
           var now = new Date();
           var msPerDay = 86400000;
