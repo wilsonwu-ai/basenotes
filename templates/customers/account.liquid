@@ -963,6 +963,101 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderBillingCountdown();
 
+  /* ── Appstle API Integration ── */
+  // Fetch real subscription data from Appstle's customer portal API (app proxy)
+  // This overrides the Shopify order-history fallback with live Appstle data
+  (function fetchAppstleData() {
+    if (!serverSubData.isSubscriber) return;
+
+    var cpBase = '/apps/subscriptions/cp/api';
+
+    fetch(cpBase + '/logged-in-customer', { credentials: 'same-origin' })
+      .then(function(r) { return r.ok ? r.json() : Promise.reject('no-session'); })
+      .then(function(customerId) {
+        if (!customerId) return Promise.reject('no-id');
+        return fetch(cpBase + '/subscription-customers-detail/valid/' + customerId, { credentials: 'same-origin' });
+      })
+      .then(function(r) { return r.ok ? r.json() : Promise.reject('no-contracts'); })
+      .then(function(contracts) {
+        if (!contracts || !contracts.length) return;
+
+        // Find the first ACTIVE contract
+        var active = null;
+        for (var i = 0; i < contracts.length; i++) {
+          if (contracts[i].status === 'ACTIVE') { active = contracts[i]; break; }
+        }
+        if (!active) active = contracts[0];
+
+        // ── Update billing date from Appstle ──
+        var nextBill = active.nextBillingDate ? new Date(active.nextBillingDate) : null;
+        if (nextBill && isValidDate(nextBill)) {
+          var now = new Date();
+          var msPerDay = 86400000;
+          var daysLeft = Math.max(0, Math.ceil((nextBill - now) / msPerDay));
+          var cycleDays = 30;
+          var elapsed = cycleDays - daysLeft;
+          var pct = Math.min(100, Math.max(0, (elapsed / cycleDays) * 100));
+          var dateOpts = { month: 'long', day: 'numeric', year: 'numeric' };
+
+          var daysEl = document.getElementById('billingDaysLeft');
+          var barEl = document.getElementById('billingBar');
+          var dateTextEl = document.getElementById('billingDateText');
+          var cancelDeadlineEl = document.getElementById('cancelDeadline');
+          var subBillingEl = document.getElementById('subNextBilling');
+          var nsShipDaysEl = document.getElementById('nsShipDays');
+
+          if (daysEl) daysEl.textContent = daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
+          if (barEl) barEl.style.width = pct + '%';
+          if (dateTextEl) dateTextEl.textContent = 'Next charge on ' + nextBill.toLocaleDateString('en-US', dateOpts);
+          if (subBillingEl) subBillingEl.textContent = nextBill.toLocaleDateString('en-US', dateOpts);
+          if (nsShipDaysEl) nsShipDaysEl.textContent = daysLeft;
+
+          var cancelDate = new Date(nextBill);
+          cancelDate.setDate(cancelDate.getDate() - 1);
+          if (cancelDeadlineEl) cancelDeadlineEl.textContent = cancelDate.toLocaleDateString('en-US', dateOpts);
+
+          // Update dashboard stat
+          var statEl = document.getElementById('statNextShipment');
+          if (statEl) statEl.textContent = nextBill.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        // ── Update next shipment product from Appstle ──
+        var lines = active.lines || active.lineItems || [];
+        if (lines.length > 0) {
+          var line = lines[0];
+          var prodTitle = line.title || line.productTitle || '';
+          var prodVendor = line.variantTitle || line.vendor || '';
+          var prodImage = line.image || line.imageSrc || '';
+
+          // Only update if we have a product title from Appstle
+          if (prodTitle && nsStatusBadge) {
+            nsStatusBadge.textContent = 'Confirmed';
+            nsStatusBadge.className = 'ns-status-badge ns-confirmed';
+            if (nsSelected) {
+              nsSelected.style.display = 'block';
+              if (nsImage && prodImage) nsImage.innerHTML = '<img src="' + prodImage + '" alt="' + prodTitle + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">';
+              if (nsName) nsName.textContent = prodTitle;
+              if (nsFamily) nsFamily.textContent = prodVendor;
+            }
+            if (nsChoose) nsChoose.style.display = 'none';
+            if (nsSkipped) nsSkipped.style.display = 'none';
+
+            // Update dashboard preview
+            var dashPreview = document.getElementById('dashShipmentPreview');
+            if (dashPreview) {
+              dashPreview.innerHTML = '<div style="display:flex;align-items:center;gap:16px;padding:8px;">' +
+                (prodImage ? '<img src="' + prodImage + '" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">' : '') +
+                '<div><strong style="color:#2D4641;">' + prodTitle + '</strong>' +
+                '<br><span style="font-size:12px;color:#C9A962;">' + prodVendor + '</span></div></div>';
+            }
+          }
+        }
+      })
+      .catch(function(err) {
+        // Silently fail — the page already has fallback data from Shopify order history
+      });
+  })();
+
   // Choose / Swap button → open fragrance selector
   var chooseBtn = document.getElementById('nsChooseBtn');
   var swapBtn = document.getElementById('nsSwapBtn');
