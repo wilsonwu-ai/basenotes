@@ -1,3 +1,11 @@
+<script>
+  window.__sellingPlans = {};
+  {%- for product in collections.all.products limit: 50 -%}
+    {%- if product.selling_plan_groups.size > 0 -%}
+      window.__sellingPlans["{{ product.handle }}"] = {{ product.selling_plan_groups[0].selling_plans[0].id }};
+    {%- endif -%}
+  {%- endfor -%}
+</script>
 <section class="quiz-section">
   {% comment %} Quiz Hero/Intro {% endcomment %}
   <div class="quiz-intro" id="quizIntro">
@@ -769,7 +777,8 @@
   }
 
   .quiz-product-card__add {
-    width: 100%;
+    width: calc(100% - 2 * var(--spacing-md));
+    margin: 0 var(--spacing-md) var(--spacing-md);
   }
 
   .quiz-product-card__add:disabled {
@@ -1094,7 +1103,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h4 class="quiz-product-card__title">
                   <a href="/products/${product.handle}">${product.title}</a>
                 </h4>
-                <span class="quiz-product-card__price">$20/mo</span>
+                <span class="quiz-product-card__price">$20</span>
                 <span class="quiz-product-card__plan-label">Monthly Subscription</span>
               </div>
               <button type="button" class="btn btn--outline btn--small btn--full quiz-product-card__add" data-variant-id="${variantId}" data-product-handle="${product.handle}">Add to Queue</button>
@@ -1108,7 +1117,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
 
-  // Quiz add-to-cart: fetch selling plan then add as subscription
+  // Quiz add-to-cart: use Liquid pre-rendered selling plan map
   document.addEventListener('click', function(e) {
     const addBtn = e.target.closest('.quiz-product-card__add');
     if (!addBtn) return;
@@ -1120,25 +1129,19 @@ document.addEventListener('DOMContentLoaded', function() {
     addBtn.disabled = true;
     addBtn.textContent = 'Adding...';
 
-    fetch('/products/' + handle + '.json')
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        var product = data.product;
-        var sellingPlan = null;
-        if (product.selling_plan_groups && product.selling_plan_groups.length > 0) {
-          var plans = product.selling_plan_groups[0].selling_plans;
-          if (plans && plans.length > 0) sellingPlan = plans[0].id;
-        }
-        var payload = { id: parseInt(variantId), quantity: 1 };
-        if (sellingPlan) payload.selling_plan = sellingPlan;
+    var sellingPlan = window.__sellingPlans && window.__sellingPlans[handle] ? window.__sellingPlans[handle] : null;
+    var payload = { id: parseInt(variantId), quantity: 1 };
+    if (sellingPlan) payload.selling_plan = sellingPlan;
 
-        return fetch('/cart/add.js', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(function(r) {
+        if (!r.ok) throw new Error('Add to cart failed');
+        return r.json();
       })
-      .then(function(r) { return r.json(); })
       .then(function() {
         addBtn.textContent = 'Added!';
         if (window.refreshAndOpenCartDrawer) window.refreshAndOpenCartDrawer();

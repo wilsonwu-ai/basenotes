@@ -191,7 +191,7 @@
    * Add item to cart via AJAX
    */
   function addToCart(variantId, quantity, sellingPlan) {
-    var payload = { id: variantId, quantity: quantity };
+    var payload = { id: parseInt(variantId), quantity: quantity };
     if (sellingPlan) payload.selling_plan = parseInt(sellingPlan);
     return fetch('/cart/add.js', {
       method: 'POST',
