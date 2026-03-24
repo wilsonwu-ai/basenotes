@@ -1,9 +1,27 @@
 <script>
   window.__sellingPlans = {};
+  window.__productMeta = {};
   {%- for product in collections.all.products limit: 50 -%}
     {%- if product.selling_plan_groups.size > 0 -%}
       window.__sellingPlans["{{ product.handle }}"] = {{ product.selling_plan_groups[0].selling_plans[0].id }};
     {%- endif -%}
+    window.__productMeta["{{ product.handle }}"] = {
+      seasons: [
+        {%- assign meta_seasons = product.metafields.fragrance.season.value -%}
+        {%- if meta_seasons -%}
+          {%- for s in meta_seasons -%}"{{ s | downcase }}"{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}
+        {%- endif -%}
+      ],
+      occasion: [
+        {%- assign meta_occasion = product.metafields.fragrance.occasion.value | default: product.metafields.custom.occasion.value -%}
+        {%- if meta_occasion -%}
+          {%- for o in meta_occasion -%}"{{ o | downcase }}"{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}
+        {%- endif -%}
+      ],
+      intensity: {{ product.metafields.fragrance.intensity | default: 0 }},
+      family: "{{ product.metafields.custom.fragrance_family | default: '' | downcase | escape }}",
+      notes: "{{ product.metafields.custom.top_notes | default: '' | escape }} {{ product.metafields.custom.heart_notes | default: '' | escape }} {{ product.metafields.custom.base_notes | default: '' | escape }}".toLowerCase()
+    };
   {%- endfor -%}
 </script>
 <section class="quiz-section">
@@ -904,6 +922,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // Profile definitions with market-research backed descriptions
+  // matchSeasons/matchOccasions/matchFamilies/intensityRange are used for metafield scoring
   const profiles = {
     classic: {
       name: 'The Refined Gentleman',
@@ -912,7 +931,11 @@ document.addEventListener('DOMContentLoaded', function() {
       season: 'Year-Round',
       projection: 'Moderate',
       keywords: ['clean', 'fresh', 'citrus', 'bergamot', 'cedar', 'musk', 'professional'],
-      tags: ['clean', 'versatile', 'professional', 'classic']
+      tags: ['clean', 'versatile', 'professional', 'classic'],
+      matchSeasons: ['spring', 'summer', 'fall', 'winter'],
+      matchOccasions: ['office', 'daily', 'casual', 'everyday'],
+      matchFamilies: ['aromatic', 'citrus', 'fresh', 'fougere'],
+      intensityRange: [2, 3]
     },
     fresh: {
       name: 'The Modern Minimalist',
@@ -921,7 +944,11 @@ document.addEventListener('DOMContentLoaded', function() {
       season: 'Spring & Summer',
       projection: 'Intimate',
       keywords: ['fresh', 'aquatic', 'citrus', 'marine', 'green', 'light', 'clean'],
-      tags: ['fresh', 'light', 'aquatic', 'citrus']
+      tags: ['fresh', 'light', 'aquatic', 'citrus'],
+      matchSeasons: ['spring', 'summer'],
+      matchOccasions: ['casual', 'active', 'everyday', 'daily'],
+      matchFamilies: ['fresh', 'aquatic', 'citrus', 'green'],
+      intensityRange: [1, 2]
     },
     sophisticated: {
       name: 'The Sophisticated Explorer',
@@ -930,7 +957,11 @@ document.addEventListener('DOMContentLoaded', function() {
       season: 'Fall & Winter',
       projection: 'Confident',
       keywords: ['woody', 'amber', 'sandalwood', 'vetiver', 'sophisticated', 'complex', 'niche'],
-      tags: ['woody', 'sophisticated', 'complex', 'refined']
+      tags: ['woody', 'sophisticated', 'complex', 'refined'],
+      matchSeasons: ['fall', 'winter'],
+      matchOccasions: ['evening', 'special occasion', 'formal', 'date'],
+      matchFamilies: ['woody', 'amber', 'chypre', 'leather'],
+      intensityRange: [3, 4]
     },
     bold: {
       name: 'The Bold Pioneer',
@@ -939,7 +970,11 @@ document.addEventListener('DOMContentLoaded', function() {
       season: 'Cold Weather',
       projection: 'Powerful',
       keywords: ['oud', 'leather', 'tobacco', 'spicy', 'intense', 'bold', 'oriental'],
-      tags: ['bold', 'intense', 'oriental', 'statement']
+      tags: ['bold', 'intense', 'oriental', 'statement'],
+      matchSeasons: ['fall', 'winter'],
+      matchOccasions: ['night out', 'evening', 'special occasion', 'events'],
+      matchFamilies: ['oriental', 'oud', 'leather', 'spicy', 'gourmand'],
+      intensityRange: [4, 5]
     }
   };
 
@@ -1056,11 +1091,12 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(data => {
         let products = data.products || [];
 
-        // Score products based on profile
+        // Score products based on profile using tags + metafields
         products = products.map(product => {
           let matchScore = 0;
           const searchText = (product.title + ' ' + (product.tags || []).join(' ') + ' ' + (product.body_html || '')).toLowerCase();
 
+          // --- Tag-based scoring (original) ---
           profile.keywords.forEach(keyword => {
             if (searchText.includes(keyword.toLowerCase())) {
               matchScore += 2;
@@ -1073,6 +1109,47 @@ document.addEventListener('DOMContentLoaded', function() {
                 matchScore += 3;
               }
             });
+          }
+
+          // --- Metafield-based scoring (enhanced) ---
+          var meta = window.__productMeta && window.__productMeta[product.handle];
+          if (meta) {
+            // Season match: +5 per overlapping season
+            if (meta.seasons && meta.seasons.length > 0 && profile.matchSeasons) {
+              meta.seasons.forEach(function(s) {
+                if (profile.matchSeasons.indexOf(s) !== -1) matchScore += 5;
+              });
+            }
+
+            // Occasion match: +5 per overlapping occasion
+            if (meta.occasion && meta.occasion.length > 0 && profile.matchOccasions) {
+              meta.occasion.forEach(function(o) {
+                profile.matchOccasions.forEach(function(po) {
+                  if (o.indexOf(po) !== -1 || po.indexOf(o) !== -1) matchScore += 5;
+                });
+              });
+            }
+
+            // Fragrance family match: +6 if family matches profile
+            if (meta.family && profile.matchFamilies) {
+              profile.matchFamilies.forEach(function(f) {
+                if (meta.family.indexOf(f) !== -1) matchScore += 6;
+              });
+            }
+
+            // Intensity match: +4 if within profile's preferred range
+            if (meta.intensity > 0 && profile.intensityRange) {
+              if (meta.intensity >= profile.intensityRange[0] && meta.intensity <= profile.intensityRange[1]) {
+                matchScore += 4;
+              }
+            }
+
+            // Note ingredients match: check metafield notes against profile keywords
+            if (meta.notes) {
+              profile.keywords.forEach(function(keyword) {
+                if (meta.notes.indexOf(keyword.toLowerCase()) !== -1) matchScore += 3;
+              });
+            }
           }
 
           return { ...product, matchScore };
