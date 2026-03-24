@@ -758,6 +758,25 @@
     color: var(--color-secondary);
   }
 
+  .quiz-product-card__plan-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    margin-top: 2px;
+  }
+
+  .quiz-product-card__add {
+    width: 100%;
+  }
+
+  .quiz-product-card__add:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
   .quiz-product-card__form {
     padding: 0 var(--spacing-md) var(--spacing-md);
   }
@@ -1076,11 +1095,9 @@ document.addEventListener('DOMContentLoaded', function() {
                   <a href="/products/${product.handle}">${product.title}</a>
                 </h4>
                 <span class="quiz-product-card__price">$20/mo</span>
+                <span class="quiz-product-card__plan-label">Monthly Subscription</span>
               </div>
-              <form action="/cart/add" method="post" class="quiz-product-card__form">
-                <input type="hidden" name="id" value="${variantId}">
-                <button type="submit" class="btn btn--outline btn--small btn--full">Add to Queue</button>
-              </form>
+              <button type="button" class="btn btn--outline btn--small btn--full quiz-product-card__add" data-variant-id="${variantId}" data-product-handle="${product.handle}">Add to Queue</button>
             </div>
           `;
         }).join('');
@@ -1090,6 +1107,54 @@ document.addEventListener('DOMContentLoaded', function() {
         container.innerHTML = '<p style="grid-column: span 3; text-align: center;">Unable to load recommendations. <a href="/collections/all">Browse all fragrances</a></p>';
       });
   }
+
+  // Quiz add-to-cart: fetch selling plan then add as subscription
+  document.addEventListener('click', function(e) {
+    const addBtn = e.target.closest('.quiz-product-card__add');
+    if (!addBtn) return;
+
+    const variantId = addBtn.dataset.variantId;
+    const handle = addBtn.dataset.productHandle;
+    if (!variantId || !handle) return;
+
+    addBtn.disabled = true;
+    addBtn.textContent = 'Adding...';
+
+    fetch('/products/' + handle + '.json')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var product = data.product;
+        var sellingPlan = null;
+        if (product.selling_plan_groups && product.selling_plan_groups.length > 0) {
+          var plans = product.selling_plan_groups[0].selling_plans;
+          if (plans && plans.length > 0) sellingPlan = plans[0].id;
+        }
+        var payload = { id: parseInt(variantId), quantity: 1 };
+        if (sellingPlan) payload.selling_plan = sellingPlan;
+
+        return fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      })
+      .then(function(r) { return r.json(); })
+      .then(function() {
+        addBtn.textContent = 'Added!';
+        if (window.refreshAndOpenCartDrawer) window.refreshAndOpenCartDrawer();
+        setTimeout(function() {
+          addBtn.textContent = 'Add to Queue';
+          addBtn.disabled = false;
+        }, 2000);
+      })
+      .catch(function() {
+        addBtn.textContent = 'Error - Try Again';
+        setTimeout(function() {
+          addBtn.textContent = 'Add to Queue';
+          addBtn.disabled = false;
+        }, 2000);
+      });
+  });
 
   // Event listeners
   quiz.querySelectorAll('.quiz__option').forEach(option => {

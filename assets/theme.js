@@ -87,10 +87,12 @@
         const variantId = this.dataset.quickAdd;
         if (!variantId) return;
 
+        const sellingPlan = this.dataset.sellingPlan;
+
         this.classList.add('loading');
         this.textContent = 'Adding...';
 
-        addToCart(variantId, 1)
+        addToCart(variantId, 1, sellingPlan)
           .then(() => {
             this.textContent = 'Added!';
             setTimeout(() => {
