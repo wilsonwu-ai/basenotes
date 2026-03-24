@@ -989,9 +989,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!active) active = contracts[0];
 
         // ── Update billing date from Appstle ──
-        // Try multiple possible field names for the next billing/order date
-        var rawDate = active.nextBillingDate || active.nextOrderDate || active.nextOrderDateLocal
-          || active.nextBillingDateLocal || active.billingDate || active.nextDeliveryDate || null;
+        // Prioritize nextOrderDate to match Appstle widget display
+        var rawDate = active.nextOrderDate || active.nextOrderDateLocal
+          || active.nextBillingDate || active.nextBillingDateLocal
+          || active.billingDate || active.nextDeliveryDate || null;
         var nextBill = rawDate ? new Date(rawDate) : null;
         if (nextBill && isValidDate(nextBill)) {
           var now = new Date();

@@ -194,10 +194,9 @@
         <div class="product-card__pricing">
           <span class="product-card__price">
             {{ settings.subscription_price | default: '$20' }}
-            <span class="product-card__price-period">/mo</span>
           </span>
-          <span class="product-card__plan-label">Monthly Subscription</span>
         </div>
+        <span class="product-card__plan-label">Monthly Subscription</span>
 
         {% comment %} Rating Stars (placeholder) {% endcomment %}
         {%- if product.metafields.reviews.rating != blank -%}
