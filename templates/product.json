@@ -40,7 +40,7 @@
         "accordion-3"
       ],
       "settings": {
-        "show_related": true
+        "show_related": false
       }
     },
     "related-products": {
