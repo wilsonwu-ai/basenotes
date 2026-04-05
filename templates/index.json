@@ -93,7 +93,7 @@
         "atomizer_price": "$20/month",
         "atomizer_badge": "What You Get",
         "button_label": "Start Your Subscription",
-        "button_link": "#subscribe"
+        "button_link": "/collections/fragrances"
       }
     },
     "featured-collection": {
@@ -150,7 +150,7 @@
         "heading": "How It Works",
         "description": "Luxury, simplified: one elite fragrance delivered monthly",
         "button_label": "Get Started",
-        "button_link": "#subscribe"
+        "button_link": "/collections/fragrances"
       }
     },
     "subscription-plans": {
