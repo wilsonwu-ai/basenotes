@@ -58,7 +58,20 @@
     <div class="delivery-benefits">
       {%- for block in section.blocks -%}
         <div class="delivery-benefit" {{ block.shopify_attributes }}>
-          <div class="delivery-benefit__icon">{{ block.settings.icon }}</div>
+          <div class="delivery-benefit__icon">
+            {%- case block.settings.icon -%}
+              {%- when '✈️' -%}
+                <img src="{{ 'icon-travel.png' | asset_url }}" alt="Travel Ready" width="48" height="48">
+              {%- when '💰' -%}
+                <img src="{{ 'icon-value.png' | asset_url }}" alt="Cost Effective" width="48" height="48">
+              {%- when '🔄' -%}
+                <img src="{{ 'icon-nowaste.png' | asset_url }}" alt="No Waste" width="48" height="48">
+              {%- when '📦' -%}
+                <img src="{{ 'icon-shipping.png' | asset_url }}" alt="Free Shipping" width="48" height="48">
+              {%- else -%}
+                {{ block.settings.icon }}
+            {%- endcase -%}
+          </div>
           <h4 class="delivery-benefit__title">{{ block.settings.title }}</h4>
           <p class="delivery-benefit__description">{{ block.settings.description }}</p>
         </div>
@@ -196,6 +209,11 @@
   .delivery-benefit__icon {
     font-size: 2.5rem;
     margin-bottom: var(--spacing-sm);
+  }
+  .delivery-benefit__icon img {
+    width: 48px;
+    height: 48px;
+    display: inline-block;
   }
 
   .delivery-benefit__title {
