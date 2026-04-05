@@ -247,15 +247,60 @@
         "button_label": "Join",
         "privacy_note": "We respect your privacy. Unsubscribe at any time."
       }
+    },
+    "promotional-banner": {
+      "type": "promotional-banner",
+      "settings": {
+        "enabled": true,
+        "eyebrow": "New",
+        "heading": "Stylish men don't settle for <em>just</em> one fragrance.",
+        "subheading": "A new luxury scent, every month",
+        "cta_text": "Subscribe Now — $20/mo"
+      }
+    },
+    "social-proof-locations": {
+      "type": "social-proof-locations",
+      "blocks": {
+        "loc-1": {
+          "type": "location",
+          "settings": {
+            "location_name": "Coffee Shops",
+            "city": "Chicago, IL"
+          }
+        },
+        "loc-2": {
+          "type": "location",
+          "settings": {
+            "location_name": "Barbershops",
+            "city": "Park Ridge, IL"
+          }
+        },
+        "loc-3": {
+          "type": "location",
+          "settings": {
+            "location_name": "Gyms & Lounges",
+            "city": "Chicagoland"
+          }
+        }
+      },
+      "block_order": ["loc-1", "loc-2", "loc-3"],
+      "settings": {
+        "eyebrow": "Find Us",
+        "heading": "As Seen Around Town",
+        "description": "Discover Base Note at these locations",
+        "cta_text": "Start Your Journey"
+      }
     }
   },
   "order": [
     "hero",
+    "promotional-banner",
     "delivery-explainer",
     "featured-collection",
     "how-it-works",
     "subscription-plans",
     "testimonials",
+    "social-proof-locations",
     "newsletter"
   ]
 }
