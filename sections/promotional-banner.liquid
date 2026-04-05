@@ -1,0 +1,194 @@
+{% comment %}
+  Promotional Banner Section
+  Full-width banner with flyer image and CTA
+  Configurable via theme customizer
+{% endcomment %}
+
+{%- if section.settings.enabled -%}
+<section class="promo-banner">
+  <div class="promo-banner__inner">
+    {%- if section.settings.image != blank -%}
+    <div class="promo-banner__image">
+      {{ section.settings.image | image_url: width: 600 | image_tag: alt: section.settings.heading, loading: 'lazy' }}
+    </div>
+    {%- else -%}
+    <div class="promo-banner__image promo-banner__image--placeholder">
+      <div class="promo-banner__bottle"></div>
+    </div>
+    {%- endif -%}
+
+    <div class="promo-banner__content">
+      <p class="promo-banner__eyebrow">{{ section.settings.eyebrow | default: 'New' }}</p>
+      <h2 class="promo-banner__heading">{{ section.settings.heading | default: "Stylish men don't settle for <em>just</em> one fragrance." }}</h2>
+      <div class="promo-banner__divider"></div>
+      <p class="promo-banner__subtext">{{ section.settings.subheading | default: 'A new luxury scent, every month' }}</p>
+      {%- if section.settings.cta_text != blank -%}
+      <a href="{{ section.settings.cta_link | default: '/collections/fragrances' }}" class="promo-banner__cta">
+        {{ section.settings.cta_text }}
+      </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<style>
+  .promo-banner {
+    background: linear-gradient(135deg, #2D4641 0%, #1a332e 100%);
+    overflow: hidden;
+  }
+  .promo-banner__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    padding: 64px 40px;
+  }
+  .promo-banner__image {
+    flex-shrink: 0;
+    width: 260px;
+  }
+  .promo-banner__image img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  }
+  .promo-banner__image--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 360px;
+  }
+  .promo-banner__bottle {
+    width: 100px;
+    height: 160px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 4px 4px 8px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .promo-banner__content {
+    max-width: 440px;
+  }
+  .promo-banner__eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: #C9A962;
+    margin: 0 0 16px;
+  }
+  .promo-banner__heading {
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: clamp(22px, 3vw, 28px);
+    font-weight: 400;
+    font-style: italic;
+    color: #fff;
+    line-height: 1.4;
+    margin: 0 0 20px;
+  }
+  .promo-banner__heading em {
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: #C9A962;
+  }
+  .promo-banner__divider {
+    width: 40px;
+    height: 2px;
+    background: #C9A962;
+    margin: 0 0 20px;
+  }
+  .promo-banner__subtext {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 28px;
+    line-height: 1.6;
+  }
+  .promo-banner__cta {
+    display: inline-block;
+    padding: 14px 36px;
+    background: #C9A962;
+    color: #2D4641;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  .promo-banner__cta:hover {
+    background: #d4b56e;
+  }
+  @media (max-width: 768px) {
+    .promo-banner__inner {
+      flex-direction: column;
+      text-align: center;
+      padding: 48px 24px;
+      gap: 32px;
+    }
+    .promo-banner__image {
+      width: 200px;
+    }
+    .promo-banner__divider {
+      margin: 0 auto 20px;
+    }
+  }
+</style>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Promotional Banner",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enabled",
+      "label": "Show banner",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner image"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "New"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Stylish men don't settle for <em>just</em> one fragrance."
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "A new luxury scent, every month"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button text",
+      "default": "Subscribe Now — $20/mo"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Promotional Banner"
+    }
+  ]
+}
+{% endschema %}
