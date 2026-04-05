@@ -12,6 +12,7 @@
     "hero": {
       "type": "hero",
       "settings": {
+        "image": "shopify://shop_images/case-forest-green.png",
         "image_url": "",
         "video": "",
         "eyebrow": "",
@@ -22,6 +23,18 @@
         "secondary_button_label": "Find Your Scent",
         "secondary_button_link": "/pages/find-your-scent",
         "show_scroll_indicator": true
+      }
+    },
+    "promotional-banner": {
+      "type": "promotional-banner",
+      "disabled": true,
+      "settings": {
+        "enabled": true,
+        "eyebrow": "New",
+        "heading": "Stylish men don't settle for just one fragrance.",
+        "subheading": "A new luxury scent, every month",
+        "cta_text": "Subscribe Now — $20/mo",
+        "cta_link": ""
       }
     },
     "delivery-explainer": {
@@ -70,11 +83,11 @@
         "eyebrow": "The Base Note Experience",
         "heading": "Full Luxury. Pocket Size.",
         "description": "The same elite fragrance found in $500 bottles -- crafted into a sleek, precision atomizer",
-        "full_bottle_image": "",
+        "full_bottle_image": "shopify://shop_images/Screenshot_2026-02-11_at_9.24.19_PM.png",
         "full_bottle_title": "The Full Bottle",
         "full_bottle_subtitle": "100ml · Retail Price",
         "full_bottle_price": "$500",
-        "atomizer_image": "",
+        "atomizer_image": "shopify://shop_images/Screenshot_2026-02-14_at_11.45.14_AM.png",
         "atomizer_title": "Your Monthly Vial",
         "atomizer_subtitle": "5ml · ~45 Sprays · 30 Days",
         "atomizer_price": "$20/month",
@@ -237,27 +250,6 @@
         "heading": "What Our Members Say"
       }
     },
-    "newsletter": {
-      "type": "newsletter",
-      "disabled": true,
-      "settings": {
-        "heading": "Where Class Lingers",
-        "description": "Join the inner circle. Get early access to new scents, member-only offers, and fragrance insights.",
-        "placeholder": "Enter your email",
-        "button_label": "Join",
-        "privacy_note": "We respect your privacy. Unsubscribe at any time."
-      }
-    },
-    "promotional-banner": {
-      "type": "promotional-banner",
-      "settings": {
-        "enabled": true,
-        "eyebrow": "New",
-        "heading": "Stylish men don't settle for <em>just</em> one fragrance.",
-        "subheading": "A new luxury scent, every month",
-        "cta_text": "Subscribe Now — $20/mo"
-      }
-    },
     "social-proof-locations": {
       "type": "social-proof-locations",
       "blocks": {
@@ -283,12 +275,29 @@
           }
         }
       },
-      "block_order": ["loc-1", "loc-2", "loc-3"],
+      "block_order": [
+        "loc-1",
+        "loc-2",
+        "loc-3"
+      ],
+      "disabled": true,
       "settings": {
         "eyebrow": "Find Us",
         "heading": "As Seen Around Town",
         "description": "Discover Base Note at these locations",
-        "cta_text": "Start Your Journey"
+        "cta_text": "Start Your Journey",
+        "cta_link": ""
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "disabled": true,
+      "settings": {
+        "heading": "Where Class Lingers",
+        "description": "Join the inner circle. Get early access to new scents, member-only offers, and fragrance insights.",
+        "placeholder": "Enter your email",
+        "button_label": "Join",
+        "privacy_note": "We respect your privacy. Unsubscribe at any time."
       }
     }
   },
