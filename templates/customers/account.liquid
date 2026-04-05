@@ -1157,9 +1157,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // ── Update payment button URL with contract ID ──
+        // Appstle customer portal handles payment updates via email flow
         var paymentBtn = document.getElementById('subUpdatePaymentBtn');
         if (paymentBtn && active.id) {
-          paymentBtn.href = '/apps/subscriptions/update-payment-method?contractId=' + active.id;
+          paymentBtn.href = serverSubData.portalUrl || '/apps/subscriptions';
         }
 
         // ── Update next shipment product from Appstle ──
