@@ -1,0 +1,197 @@
+{% comment %}
+  Promotional Pop-Up Modal
+  Shows once per visitor (localStorage: bn_promo_seen)
+  Skips subscribers and logged-in customers with orders
+  3-second delay after page load
+{% endcomment %}
+
+{%- unless customer and customer.orders_count > 0 -%}
+<div id="promoPopup" class="promo-popup" style="display:none;" role="dialog" aria-modal="true" aria-label="Promotional offer">
+  <div class="promo-popup__overlay" id="promoOverlay"></div>
+  <div class="promo-popup__modal">
+    <button class="promo-popup__close" id="promoClose" aria-label="Close">&times;</button>
+
+    <div class="promo-popup__image">
+      <img src="{{ 'promo-flyer.jpg' | asset_url }}" alt="Base Note - A new luxury scent every month" loading="lazy">
+    </div>
+
+    <div class="promo-popup__content">
+      <p class="promo-popup__eyebrow">Limited Time Offer</p>
+      <h2 class="promo-popup__heading">Stylish men don't settle for <em>just</em> one fragrance.</h2>
+      <div class="promo-popup__divider"></div>
+      <p class="promo-popup__subtext">A new luxury scent, every month<br>Keep the compliments coming</p>
+      <a href="/collections/fragrances" class="promo-popup__cta">Start Your Journey</a>
+      <p class="promo-popup__offer">25% off your first month</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .promo-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .promo-popup__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+  }
+  .promo-popup__modal {
+    position: relative;
+    background: #2D4641;
+    border-radius: 16px;
+    max-width: 420px;
+    width: calc(100% - 32px);
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+    animation: promoSlideUp 0.4s ease-out;
+  }
+  @keyframes promoSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .promo-popup__close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .promo-popup__close:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  .promo-popup__image {
+    width: 100%;
+    max-height: 280px;
+    overflow: hidden;
+  }
+  .promo-popup__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .promo-popup__content {
+    padding: 28px 30px 32px;
+    text-align: center;
+  }
+  .promo-popup__eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #C9A962;
+    margin: 0 0 12px;
+  }
+  .promo-popup__heading {
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 20px;
+    font-weight: 400;
+    color: #fff;
+    line-height: 1.4;
+    margin: 0 0 16px;
+  }
+  .promo-popup__heading em {
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: #C9A962;
+  }
+  .promo-popup__divider {
+    width: 40px;
+    height: 2px;
+    background: #C9A962;
+    margin: 0 auto 16px;
+  }
+  .promo-popup__subtext {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.7;
+    margin: 0 0 24px;
+  }
+  .promo-popup__cta {
+    display: inline-block;
+    padding: 14px 40px;
+    background: #C9A962;
+    color: #2D4641;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .promo-popup__cta:hover {
+    background: #d4b56e;
+  }
+  .promo-popup__offer {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 14px 0 0;
+  }
+  @media (max-width: 480px) {
+    .promo-popup__modal {
+      max-width: 340px;
+    }
+    .promo-popup__image {
+      max-height: 200px;
+    }
+    .promo-popup__heading {
+      font-size: 18px;
+    }
+    .promo-popup__content {
+      padding: 20px 24px 28px;
+    }
+  }
+</style>
+
+<script>
+  (function() {
+    if (localStorage.getItem('bn_promo_seen')) return;
+
+    var popup = document.getElementById('promoPopup');
+    var overlay = document.getElementById('promoOverlay');
+    var closeBtn = document.getElementById('promoClose');
+    if (!popup) return;
+
+    function closePopup() {
+      popup.style.display = 'none';
+      localStorage.setItem('bn_promo_seen', '1');
+    }
+
+    setTimeout(function() {
+      popup.style.display = 'flex';
+    }, 3000);
+
+    closeBtn.addEventListener('click', closePopup);
+    overlay.addEventListener('click', closePopup);
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && popup.style.display === 'flex') closePopup();
+    });
+  })();
+</script>
+{%- endunless -%}

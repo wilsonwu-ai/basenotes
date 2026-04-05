@@ -563,6 +563,40 @@
     ]
   },
   {
+    "name": "Fragrance of the Month",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Monthly Curated Pick"
+      },
+      {
+        "type": "checkbox",
+        "id": "fotm_enabled",
+        "label": "Enable Fragrance of the Month",
+        "default": true,
+        "info": "When enabled, subscribers who don't choose a fragrance will receive this month's curated pick"
+      },
+      {
+        "type": "product",
+        "id": "fotm_product",
+        "label": "Fragrance of the Month"
+      },
+      {
+        "type": "text",
+        "id": "fotm_display_name",
+        "label": "Display name override",
+        "info": "e.g., \"April's Pick: Green Irish Tweed\". Leave blank to use product title."
+      },
+      {
+        "type": "text",
+        "id": "fotm_month",
+        "label": "Month (YYYY-MM)",
+        "info": "e.g., 2026-04. Used to detect if FOTM is stale. Staff will be warned if this doesn't match the current month.",
+        "placeholder": "2026-04"
+      }
+    ]
+  },
+  {
     "name": "Subscription Plans",
     "settings": [
       {
