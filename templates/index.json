@@ -29,7 +29,7 @@
       "type": "promotional-banner",
       "disabled": true,
       "settings": {
-        "enabled": true,
+        "enabled": false,
         "eyebrow": "New",
         "heading": "Stylish men don't settle for just one fragrance.",
         "subheading": "A new luxury scent, every month",
