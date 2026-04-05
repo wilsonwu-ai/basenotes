@@ -16,13 +16,7 @@
               alt="Full size fragrance bottle"
             >
           {%- else -%}
-            <div class="delivery-item__placeholder">
-              <svg width="80" height="120" viewBox="0 0 80 120" fill="none" stroke="currentColor" stroke-width="1">
-                <rect x="20" y="30" width="40" height="80" rx="4"/>
-                <rect x="30" y="10" width="20" height="20"/>
-                <rect x="35" y="0" width="10" height="10"/>
-              </svg>
-            </div>
+            <img src="{{ 'fullbottle-product.jpg' | asset_url }}" alt="Full size fragrance bottle">
           {%- endif -%}
         </div>
         <h3 class="delivery-item__title">{{ section.settings.full_bottle_title }}</h3>
@@ -48,14 +42,7 @@
               alt="Base Note 5ml atomizer"
             >
           {%- else -%}
-            <div class="delivery-item__placeholder delivery-item__placeholder--light">
-              <svg width="50" height="120" viewBox="0 0 50 120" fill="none" stroke="currentColor" stroke-width="1.5">
-                <rect x="10" y="30" width="30" height="85" rx="4"/>
-                <rect x="15" y="12" width="20" height="18"/>
-                <rect x="19" y="0" width="12" height="12" rx="2"/>
-                <text x="25" y="78" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">BN</text>
-              </svg>
-            </div>
+            <img src="{{ 'atomizer-product.jpg' | asset_url }}" alt="Base Note 5ml atomizer">
           {%- endif -%}
           <div class="delivery-item__badge">
             <span class="badge badge--gold">{{ section.settings.atomizer_badge }}</span>
