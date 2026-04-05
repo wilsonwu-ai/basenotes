@@ -346,10 +346,10 @@
             </div>
             <div class="sub-actions">
               {%- comment -%}Change Plan hidden — monthly-only model. Re-enable if plans expand.{%- endcomment -%}
-              <a href="/account" id="subUpdatePaymentBtn" class="sub-action-btn">
+              <button class="sub-action-btn" id="subUpdatePaymentBtn" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                 Update Payment
-              </a>
+              </button>
               <button class="sub-action-btn" id="subSkipBtn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
                 Skip Next Month
@@ -1156,11 +1156,10 @@ document.addEventListener('DOMContentLoaded', function() {
           if (statEl) statEl.textContent = nextBill.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
 
-        // ── Update payment button URL with contract ID ──
-        // Appstle customer portal handles payment updates via email flow
+        // ── Store contract ID for payment update button ──
         var paymentBtn = document.getElementById('subUpdatePaymentBtn');
         if (paymentBtn && active.id) {
-          paymentBtn.href = serverSubData.portalUrl || '/apps/subscriptions';
+          paymentBtn.dataset.contractId = active.id;
         }
 
         // ── Update next shipment product from Appstle ──
@@ -1243,6 +1242,47 @@ document.addEventListener('DOMContentLoaded', function() {
     undoSkipBtn.addEventListener('click', function() {
       localStorage.removeItem('bn_next_shipment');
       renderNextShipment();
+    });
+  }
+
+  // Update Payment button — triggers Appstle payment update email
+  var subUpdatePaymentBtn = document.getElementById('subUpdatePaymentBtn');
+  if (subUpdatePaymentBtn) {
+    subUpdatePaymentBtn.addEventListener('click', function() {
+      var contractId = this.dataset.contractId;
+      var cpBase = '/apps/subscriptions/cp/api';
+      var originalText = this.textContent.trim();
+      this.textContent = 'Sending...';
+      this.disabled = true;
+
+      // Try Appstle's payment update endpoint
+      fetch(cpBase + '/subscription-contracts/' + contractId + '/send-update-payment-method-email', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(function(r) {
+        if (r.ok) {
+          subUpdatePaymentBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Email Sent!';
+          subUpdatePaymentBtn.style.background = '#E8F5E9';
+          subUpdatePaymentBtn.style.borderColor = '#4CAF50';
+          alert('Check your email! We\'ve sent a secure link to update your payment method. It may take a minute to arrive.');
+        } else {
+          throw new Error('api-failed');
+        }
+      })
+      .catch(function() {
+        // Fallback: open Appstle portal directly
+        window.location.href = (serverSubData.portalUrl || '/apps/subscriptions');
+      })
+      .finally(function() {
+        setTimeout(function() {
+          subUpdatePaymentBtn.disabled = false;
+          subUpdatePaymentBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Update Payment';
+          subUpdatePaymentBtn.style.background = '';
+          subUpdatePaymentBtn.style.borderColor = '';
+        }, 5000);
+      });
     });
   }
 
