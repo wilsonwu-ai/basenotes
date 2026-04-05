@@ -12,8 +12,8 @@
       {{ section.settings.image | image_url: width: 600 | image_tag: alt: section.settings.heading, loading: 'lazy' }}
     </div>
     {%- else -%}
-    <div class="promo-banner__image promo-banner__image--placeholder">
-      <div class="promo-banner__bottle"></div>
+    <div class="promo-banner__image">
+      <img src="{{ 'promo-bottle-hero.jpg' | asset_url }}" alt="Base Note luxury fragrance atomizer" loading="lazy">
     </div>
     {%- endif -%}
 
