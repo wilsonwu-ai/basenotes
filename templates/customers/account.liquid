@@ -1245,44 +1245,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Update Payment button — triggers Appstle payment update email
+  // Update Payment button — open Appstle portal contract details (has payment info section)
   var subUpdatePaymentBtn = document.getElementById('subUpdatePaymentBtn');
   if (subUpdatePaymentBtn) {
     subUpdatePaymentBtn.addEventListener('click', function() {
       var contractId = this.dataset.contractId;
-      var cpBase = '/apps/subscriptions/cp/api';
-      var originalText = this.textContent.trim();
-      this.textContent = 'Sending...';
-      this.disabled = true;
-
-      // Try Appstle's payment update endpoint
-      fetch(cpBase + '/subscription-contracts/' + contractId + '/send-update-payment-method-email', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: { 'Content-Type': 'application/json' }
-      })
-      .then(function(r) {
-        if (r.ok) {
-          subUpdatePaymentBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Email Sent!';
-          subUpdatePaymentBtn.style.background = '#E8F5E9';
-          subUpdatePaymentBtn.style.borderColor = '#4CAF50';
-          alert('Check your email! We\'ve sent a secure link to update your payment method. It may take a minute to arrive.');
-        } else {
-          throw new Error('api-failed');
-        }
-      })
-      .catch(function() {
-        // Fallback: open Appstle portal directly
-        window.location.href = (serverSubData.portalUrl || '/apps/subscriptions');
-      })
-      .finally(function() {
-        setTimeout(function() {
-          subUpdatePaymentBtn.disabled = false;
-          subUpdatePaymentBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Update Payment';
-          subUpdatePaymentBtn.style.background = '';
-          subUpdatePaymentBtn.style.borderColor = '';
-        }, 5000);
-      });
+      if (contractId) {
+        // Link to Appstle portal with contract-specific view where "Payment Info" tab exists
+        window.open(serverSubData.portalUrl + '?contractId=' + contractId, '_blank');
+      } else {
+        window.open(serverSubData.portalUrl || '/apps/subscriptions', '_blank');
+      }
     });
   }
 
