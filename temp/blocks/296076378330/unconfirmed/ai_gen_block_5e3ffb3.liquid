@@ -1,6 +1,996 @@
+{% doc %}
+  @prompt
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Cologne Subscription — Benefits</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+      <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+        :root {
+          --gold: #B8924A;
+          --gold-light: #D4A96A;
+          --gold-pale: #F5EDD8;
+          --ink: #1A1714;
+          --smoke: #6B6560;
+          --mist: #F2EDE6;
+          --border: rgba(184,146,74,0.25);
+        }
+    
+        body {
+          background: #FAF7F3;
+          font-family: 'Jost', sans-serif;
+          font-weight: 300;
+          color: var(--ink);
+        }
+    
+        .page {
+          padding: 4rem 2rem 5rem;
+          max-width: 860px;
+          margin: 0 auto;
+        }
+    
+        .eyebrow {
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: var(--gold);
+          text-align: center;
+          margin-bottom: 1rem;
+        }
+    
+        .headline {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(2.4rem, 6vw, 3.8rem);
+          font-weight: 300;
+          line-height: 1.1;
+          text-align: center;
+          color: var(--ink);
+          margin-bottom: 1.2rem;
+        }
+    
+        .headline em {
+          font-style: italic;
+          color: var(--gold);
+        }
+    
+        .subhead {
+          font-size: 15px;
+          line-height: 1.8;
+          color: var(--smoke);
+          text-align: center;
+          max-width: 480px;
+          margin: 0 auto 3.5rem;
+        }
+    
+        .divider {
+          width: 48px;
+          height: 1px;
+          background: var(--gold);
+          margin: 0 auto 3.5rem;
+          opacity: 0.5;
+        }
+    
+        .benefits-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1.5px;
+          background: var(--border);
+          border: 1px solid var(--border);
+          border-radius: 2px;
+          overflow: hidden;
+          margin-bottom: 3.5rem;
+        }
+    
+        .benefit-card {
+          background: #FAF7F3;
+          padding: 2.2rem 2rem;
+          transition: background 0.3s ease;
+          cursor: default;
+        }
+    
+        .benefit-card:hover {
+          background: #FFF8EF;
+        }
+    
+        .benefit-card:hover .benefit-icon-wrap {
+          transform: translateY(-2px);
+        }
+    
+        .benefit-icon-wrap {
+          transition: transform 0.3s ease;
+          margin-bottom: 1.2rem;
+        }
+    
+        .benefit-icon {
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+    
+        .benefit-label {
+          font-size: 10px;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: var(--gold);
+          font-weight: 500;
+          margin-bottom: 0.5rem;
+        }
+    
+        .benefit-title {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.45rem;
+          font-weight: 400;
+          color: var(--ink);
+          margin-bottom: 0.6rem;
+          line-height: 1.25;
+        }
+    
+        .benefit-desc {
+          font-size: 13.5px;
+          line-height: 1.75;
+          color: var(--smoke);
+        }
+    
+        .scent-strip {
+          display: flex;
+          gap: 0;
+          border: 1px solid var(--border);
+          border-radius: 2px;
+          overflow: hidden;
+          margin-bottom: 3.5rem;
+        }
+    
+        .season {
+          flex: 1;
+          padding: 1.6rem 1.2rem;
+          text-align: center;
+          transition: flex 0.4s ease, background 0.3s ease;
+          cursor: pointer;
+          border-right: 1px solid var(--border);
+          background: #FAF7F3;
+        }
+    
+        .season:last-child { border-right: none; }
+    
+        .season:hover, .season.active {
+          flex: 1.6;
+          background: #FFF8EF;
+        }
+    
+        .season-icon {
+          font-size: 20px;
+          display: block;
+          margin-bottom: 0.5rem;
+          line-height: 1;
+        }
+    
+        .season-name {
+          font-size: 10px;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: var(--gold);
+          font-weight: 500;
+          margin-bottom: 0.4rem;
+          display: block;
+        }
+    
+        .season-note {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.05rem;
+          font-style: italic;
+          color: var(--smoke);
+          line-height: 1.4;
+          display: none;
+        }
+    
+        .season:hover .season-note, .season.active .season-note {
+          display: block;
+        }
+    
+        .cta-row {
+          display: flex;
+          gap: 1rem;
+          justify-content: center;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+    
+        .btn-primary {
+          background: var(--gold);
+          color: #FAF7F3;
+          border: none;
+          padding: 0.85rem 2.4rem;
+          font-family: 'Jost', sans-serif;
+          font-size: 12px;
+          font-weight: 500;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          cursor: pointer;
+          border-radius: 1px;
+          transition: background 0.2s, transform 0.15s;
+        }
+    
+        .btn-primary:hover {
+          background: #A07838;
+          transform: translateY(-1px);
+        }
+    
+        .btn-ghost {
+          background: tr
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-sub-benefits-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    padding: 4rem 2rem 5rem;
+    background: {{ block.settings.background_color }};
+  }
+
+  .ai-sub-benefits__container-{{ ai_gen_id }} {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .ai-sub-benefits__eyebrow-{{ ai_gen_id }} {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: {{ block.settings.accent_color }};
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .ai-sub-benefits__headline-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-weight: {{ block.settings.heading_font.weight }};
+    font-size: clamp(2.4rem, 6vw, 3.8rem);
+    line-height: 1.1;
+    text-align: center;
+    color: {{ block.settings.heading_color }};
+    margin-bottom: 1.2rem;
+  }
+
+  .ai-sub-benefits__headline-{{ ai_gen_id }} em {
+    font-style: italic;
+    color: {{ block.settings.accent_color }};
+  }
+
+  .ai-sub-benefits__subhead-{{ ai_gen_id }} {
+    font-size: 15px;
+    line-height: 1.8;
+    color: {{ block.settings.text_color }};
+    text-align: center;
+    max-width: 480px;
+    margin: 0 auto 3.5rem;
+  }
+
+  .ai-sub-benefits__divider-{{ ai_gen_id }} {
+    width: 48px;
+    height: 1px;
+    background: {{ block.settings.accent_color }};
+    margin: 0 auto 3.5rem;
+    opacity: 0.5;
+  }
+
+  .ai-sub-benefits__grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5px;
+    background: {{ block.settings.border_color }};
+    border: 1px solid {{ block.settings.border_color }};
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 3.5rem;
+  }
+
+  .ai-sub-benefits__card-{{ ai_gen_id }} {
+    background: {{ block.settings.card_background }};
+    padding: 2.2rem 2rem;
+    cursor: default;
+  }
+
+  .ai-sub-benefits__card-{{ ai_gen_id }}:hover {
+    background: {{ block.settings.card_hover_background }};
+  }
+
+  .ai-sub-benefits__card-{{ ai_gen_id }}:hover .ai-sub-benefits__icon-wrap-{{ ai_gen_id }} {
+    transform: translateY(-2px);
+  }
+
+  .ai-sub-benefits__icon-wrap-{{ ai_gen_id }} {
+    transition: transform 0.3s ease;
+    margin-bottom: 1.2rem;
+  }
+
+  .ai-sub-benefits__icon-{{ ai_gen_id }} {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .ai-sub-benefits__label-{{ ai_gen_id }} {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: {{ block.settings.accent_color }};
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .ai-sub-benefits__title-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-weight: {{ block.settings.heading_font.weight }};
+    font-size: 1.45rem;
+    color: {{ block.settings.heading_color }};
+    margin-bottom: 0.6rem;
+    line-height: 1.25;
+  }
+
+  .ai-sub-benefits__desc-{{ ai_gen_id }} {
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-sub-benefits__scent-strip-{{ ai_gen_id }} {
+    display: flex;
+    gap: 0;
+    border: 1px solid {{ block.settings.border_color }};
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 3.5rem;
+  }
+
+  .ai-sub-benefits__season-{{ ai_gen_id }} {
+    flex: 1;
+    padding: 1.6rem 1.2rem;
+    text-align: center;
+    transition: flex 0.4s ease, background 0.3s ease;
+    cursor: pointer;
+    border-right: 1px solid {{ block.settings.border_color }};
+    background: {{ block.settings.card_background }};
+  }
+
+  .ai-sub-benefits__season-{{ ai_gen_id }}:last-child {
+    border-right: none;
+  }
+
+  .ai-sub-benefits__season-{{ ai_gen_id }}:hover,
+  .ai-sub-benefits__season-{{ ai_gen_id }}.active {
+    flex: 1.6;
+    background: {{ block.settings.card_hover_background }};
+  }
+
+  .ai-sub-benefits__season-icon-{{ ai_gen_id }} {
+    font-size: 20px;
+    display: block;
+    margin-bottom: 0.5rem;
+    line-height: 1;
+  }
+
+  .ai-sub-benefits__season-name-{{ ai_gen_id }} {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: {{ block.settings.accent_color }};
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+
+  .ai-sub-benefits__season-note-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-size: 1.05rem;
+    font-style: italic;
+    color: {{ block.settings.text_color }};
+    line-height: 1.4;
+    display: none;
+  }
+
+  .ai-sub-benefits__season-{{ ai_gen_id }}:hover .ai-sub-benefits__season-note-{{ ai_gen_id }},
+  .ai-sub-benefits__season-{{ ai_gen_id }}.active .ai-sub-benefits__season-note-{{ ai_gen_id }} {
+    display: block;
+  }
+
+  .ai-sub-benefits__cta-row-{{ ai_gen_id }} {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .ai-sub-benefits__btn-primary-{{ ai_gen_id }} {
+    background: {{ block.settings.button_background }};
+    color: {{ block.settings.button_text_color }};
+    border: none;
+    padding: 0.85rem 2.4rem;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 1px;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .ai-sub-benefits__btn-primary-{{ ai_gen_id }}:hover {
+    background: {{ block.settings.button_hover_background }};
+    transform: translateY(-1px);
+  }
+
+  .ai-sub-benefits__btn-ghost-{{ ai_gen_id }} {
+    background: transparent;
+    color: {{ block.settings.accent_color }};
+    border: 1px solid {{ block.settings.border_color }};
+    padding: 0.85rem 2.4rem;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 1px;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .ai-sub-benefits__btn-ghost-{{ ai_gen_id }}:hover {
+    background: {{ block.settings.card_hover_background }};
+    border-color: {{ block.settings.accent_color }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-sub-benefits-{{ ai_gen_id }} {
+      padding: 3rem 1.5rem 4rem;
+    }
+
+    .ai-sub-benefits__grid-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+    }
+
+    .ai-sub-benefits__scent-strip-{{ ai_gen_id }} {
+      flex-direction: column;
+    }
+
+    .ai-sub-benefits__season-{{ ai_gen_id }} {
+      border-right: none;
+      border-bottom: 1px solid {{ block.settings.border_color }};
+    }
+
+    .ai-sub-benefits__season-{{ ai_gen_id }}:last-child {
+      border-bottom: none;
+    }
+
+    .ai-sub-benefits__season-{{ ai_gen_id }}:hover,
+    .ai-sub-benefits__season-{{ ai_gen_id }}.active {
+      flex: 1;
+    }
+
+    .ai-sub-benefits__cta-row-{{ ai_gen_id }} {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .ai-sub-benefits__btn-primary-{{ ai_gen_id }},
+    .ai-sub-benefits__btn-ghost-{{ ai_gen_id }} {
+      width: 100%;
+      text-align: center;
+    }
+  }
+{% endstyle %}
+
+<subscription-benefits-{{ ai_gen_id }} class="ai-sub-benefits-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-sub-benefits__container-{{ ai_gen_id }}">
+    {% if block.settings.eyebrow != blank %}
+      <div class="ai-sub-benefits__eyebrow-{{ ai_gen_id }}">{{ block.settings.eyebrow }}</div>
+    {% endif %}
+
+    {% if block.settings.headline != blank %}
+      <h2 class="ai-sub-benefits__headline-{{ ai_gen_id }}">{{ block.settings.headline }}</h2>
+    {% endif %}
+
+    {% if block.settings.subhead != blank %}
+      <div class="ai-sub-benefits__subhead-{{ ai_gen_id }}">{{ block.settings.subhead }}</div>
+    {% endif %}
+
+    {% if block.settings.show_divider %}
+      <div class="ai-sub-benefits__divider-{{ ai_gen_id }}"></div>
+    {% endif %}
+
+    <div class="ai-sub-benefits__grid-{{ ai_gen_id }}">
+      {% for i in (1..4) %}
+        {% assign benefit_enabled_key = 'benefit_' | append: i | append: '_enabled' %}
+        {% assign benefit_icon_key = 'benefit_' | append: i | append: '_icon' %}
+        {% assign benefit_label_key = 'benefit_' | append: i | append: '_label' %}
+        {% assign benefit_title_key = 'benefit_' | append: i | append: '_title' %}
+        {% assign benefit_desc_key = 'benefit_' | append: i | append: '_description' %}
+
+        {% if block.settings[benefit_enabled_key] %}
+          <div class="ai-sub-benefits__card-{{ ai_gen_id }}">
+            <div class="ai-sub-benefits__icon-wrap-{{ ai_gen_id }}">
+              <div class="ai-sub-benefits__icon-{{ ai_gen_id }}">
+                {{ block.settings[benefit_icon_key] }}
+              </div>
+            </div>
+            {% if block.settings[benefit_label_key] != blank %}
+              <div class="ai-sub-benefits__label-{{ ai_gen_id }}">{{ block.settings[benefit_label_key] }}</div>
+            {% endif %}
+            {% if block.settings[benefit_title_key] != blank %}
+              <h3 class="ai-sub-benefits__title-{{ ai_gen_id }}">{{ block.settings[benefit_title_key] }}</h3>
+            {% endif %}
+            {% if block.settings[benefit_desc_key] != blank %}
+              <div class="ai-sub-benefits__desc-{{ ai_gen_id }}">{{ block.settings[benefit_desc_key] }}</div>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if block.settings.show_seasons %}
+      <div class="ai-sub-benefits__scent-strip-{{ ai_gen_id }}">
+        {% for i in (1..4) %}
+          {% assign season_enabled_key = 'season_' | append: i | append: '_enabled' %}
+          {% assign season_icon_key = 'season_' | append: i | append: '_icon' %}
+          {% assign season_name_key = 'season_' | append: i | append: '_name' %}
+          {% assign season_note_key = 'season_' | append: i | append: '_note' %}
+
+          {% if block.settings[season_enabled_key] %}
+            <div class="ai-sub-benefits__season-{{ ai_gen_id }}" data-season="{{ i }}">
+              <span class="ai-sub-benefits__season-icon-{{ ai_gen_id }}">{{ block.settings[season_icon_key] }}</span>
+              <span class="ai-sub-benefits__season-name-{{ ai_gen_id }}">{{ block.settings[season_name_key] }}</span>
+              <div class="ai-sub-benefits__season-note-{{ ai_gen_id }}">{{ block.settings[season_note_key] }}</div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="ai-sub-benefits__cta-row-{{ ai_gen_id }}">
+      {% if block.settings.primary_button_text != blank %}
+        <a href="{{ block.settings.primary_button_link }}" class="ai-sub-benefits__btn-primary-{{ ai_gen_id }}">
+          {{ block.settings.primary_button_text }}
+        </a>
+      {% endif %}
+      {% if block.settings.secondary_button_text != blank %}
+        <a href="{{ block.settings.secondary_button_link }}" class="ai-sub-benefits__btn-ghost-{{ ai_gen_id }}">
+          {{ block.settings.secondary_button_text }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</subscription-benefits-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class SubscriptionBenefits{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.seasons = this.querySelectorAll('.ai-sub-benefits__season-{{ ai_gen_id }}');
+        this.setupSeasonInteractions();
+      }
+
+      setupSeasonInteractions() {
+        this.seasons.forEach((season) => {
+          season.addEventListener('click', () => {
+            this.seasons.forEach((s) => s.classList.remove('active'));
+            season.classList.add('active');
+          });
+        });
+      }
+    }
+
+    customElements.define('subscription-benefits-{{ ai_gen_id }}', SubscriptionBenefits{{ ai_gen_id }});
+  })();
+</script>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Subscription benefits",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Membership Benefits"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "headline",
+      "label": "Headline",
+      "default": "A <em>curated</em> fragrance experience"
+    },
+    {
+      "type": "textarea",
+      "id": "subhead",
+      "label": "Subhead",
+      "default": "Discover rare, high-end fragrances delivered monthly. Pause, skip, or cancel anytime."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_divider",
+      "label": "Show divider",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Benefit 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "benefit_1_enabled",
+      "label": "Enable benefit 1",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "benefit_1_icon",
+      "label": "Icon",
+      "default": "✦"
+    },
+    {
+      "type": "text",
+      "id": "benefit_1_label",
+      "label": "Label",
+      "default": "Curated"
+    },
+    {
+      "type": "text",
+      "id": "benefit_1_title",
+      "label": "Title",
+      "default": "Expert Selection"
+    },
+    {
+      "type": "textarea",
+      "id": "benefit_1_description",
+      "label": "Description",
+      "default": "Each month, our fragrance experts handpick a rare, high-end scent tailored to the season."
+    },
+    {
+      "type": "header",
+      "content": "Benefit 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "benefit_2_enabled",
+      "label": "Enable benefit 2",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "benefit_2_icon",
+      "label": "Icon",
+      "default": "⚡"
+    },
+    {
+      "type": "text",
+      "id": "benefit_2_label",
+      "label": "Label",
+      "default": "Flexible"
+    },
+    {
+      "type": "text",
+      "id": "benefit_2_title",
+      "label": "Title",
+      "default": "Total Control"
+    },
+    {
+      "type": "textarea",
+      "id": "benefit_2_description",
+      "label": "Description",
+      "default": "Pause, skip, or cancel your subscription anytime from your account dashboard."
+    },
+    {
+      "type": "header",
+      "content": "Benefit 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "benefit_3_enabled",
+      "label": "Enable benefit 3",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "benefit_3_icon",
+      "label": "Icon",
+      "default": "🎁"
+    },
+    {
+      "type": "text",
+      "id": "benefit_3_label",
+      "label": "Label",
+      "default": "Exclusive"
+    },
+    {
+      "type": "text",
+      "id": "benefit_3_title",
+      "label": "Title",
+      "default": "Members-Only Access"
+    },
+    {
+      "type": "textarea",
+      "id": "benefit_3_description",
+      "label": "Description",
+      "default": "Get early access to limited releases and exclusive fragrances not available anywhere else."
+    },
+    {
+      "type": "header",
+      "content": "Benefit 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "benefit_4_enabled",
+      "label": "Enable benefit 4",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "benefit_4_icon",
+      "label": "Icon",
+      "default": "📦"
+    },
+    {
+      "type": "text",
+      "id": "benefit_4_label",
+      "label": "Label",
+      "default": "Delivered"
+    },
+    {
+      "type": "text",
+      "id": "benefit_4_title",
+      "label": "Title",
+      "default": "Free Shipping"
+    },
+    {
+      "type": "textarea",
+      "id": "benefit_4_description",
+      "label": "Description",
+      "default": "Enjoy complimentary shipping on all subscription orders, delivered right to your door."
+    },
+    {
+      "type": "header",
+      "content": "Seasonal scents"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_seasons",
+      "label": "Show seasonal scents",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "season_1_enabled",
+      "label": "Enable season 1",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "season_1_icon",
+      "label": "Icon",
+      "default": "🌸"
+    },
+    {
+      "type": "text",
+      "id": "season_1_name",
+      "label": "Name",
+      "default": "Spring"
+    },
+    {
+      "type": "text",
+      "id": "season_1_note",
+      "label": "Note",
+      "default": "Fresh florals & citrus"
+    },
+    {
+      "type": "checkbox",
+      "id": "season_2_enabled",
+      "label": "Enable season 2",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "season_2_icon",
+      "label": "Icon",
+      "default": "☀️"
+    },
+    {
+      "type": "text",
+      "id": "season_2_name",
+      "label": "Name",
+      "default": "Summer"
+    },
+    {
+      "type": "text",
+      "id": "season_2_note",
+      "label": "Note",
+      "default": "Aquatic & marine notes"
+    },
+    {
+      "type": "checkbox",
+      "id": "season_3_enabled",
+      "label": "Enable season 3",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "season_3_icon",
+      "label": "Icon",
+      "default": "🍂"
+    },
+    {
+      "type": "text",
+      "id": "season_3_name",
+      "label": "Name",
+      "default": "Autumn"
+    },
+    {
+      "type": "text",
+      "id": "season_3_note",
+      "label": "Note",
+      "default": "Warm spices & woods"
+    },
+    {
+      "type": "checkbox",
+      "id": "season_4_enabled",
+      "label": "Enable season 4",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "season_4_icon",
+      "label": "Icon",
+      "default": "❄️"
+    },
+    {
+      "type": "text",
+      "id": "season_4_name",
+      "label": "Name",
+      "default": "Winter"
+    },
+    {
+      "type": "text",
+      "id": "season_4_note",
+      "label": "Note",
+      "default": "Rich amber & leather"
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "text",
+      "id": "primary_button_text",
+      "label": "Primary button text",
+      "default": "Start Your Subscription"
+    },
+    {
+      "type": "url",
+      "id": "primary_button_link",
+      "label": "Primary button link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_text",
+      "label": "Secondary button text",
+      "default": "Learn More"
+    },
+    {
+      "type": "url",
+      "id": "secondary_button_link",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#FAF7F3"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#1A1714"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#6B6560"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#B8924A"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#D4A96A"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#FAF7F3"
+    },
+    {
+      "type": "color",
+      "id": "card_hover_background",
+      "label": "Card hover background",
+      "default": "#FFF8EF"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "#B8924A"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_background",
+      "label": "Button hover background",
+      "default": "#A07838"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#FAF7F3"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "serif"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Subscription benefits"
+    }
+  ]
+}
 {% endschema %}
