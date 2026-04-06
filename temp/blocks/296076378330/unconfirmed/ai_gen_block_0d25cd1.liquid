@@ -1,6 +1,1191 @@
+{% doc %}
+  @prompt
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Why Subscribe — Cologne Subscription Benefits</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+      <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+        body {
+          background: #fff;
+          color: #1a1a1a;
+        }
+    
+        .page {
+          font-family: 'Jost', sans-serif;
+          color: #1a1a1a;
+          max-width: 900px;
+          margin: 0 auto;
+          padding: 0 1.5rem 4rem;
+        }
+    
+        .hero {
+          text-align: center;
+          padding: 4rem 1rem 3rem;
+          border-bottom: 0.5px solid #e0e0e0;
+          margin-bottom: 4rem;
+        }
+    
+        .eyebrow {
+          font-family: 'Jost', sans-serif;
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 0.25em;
+          text-transform: uppercase;
+          color: #888;
+          margin-bottom: 1.25rem;
+          display: block;
+        }
+    
+        .hero h1 {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(2.4rem, 6vw, 4rem);
+          font-weight: 300;
+          font-style: italic;
+          line-height: 1.15;
+          color: #1a1a1a;
+          margin-bottom: 1.25rem;
+          letter-spacing: -0.01em;
+        }
+    
+        .hero p {
+          font-size: 15px;
+          font-weight: 300;
+          color: #555;
+          max-width: 520px;
+          margin: 0 auto;
+          line-height: 1.75;
+        }
+    
+        .section-label {
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: #888;
+          margin-bottom: 3rem;
+          text-align: center;
+        }
+    
+        .benefits-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+          gap: 1px;
+          background: #e0e0e0;
+          border: 0.5px solid #e0e0e0;
+          margin-bottom: 5rem;
+        }
+    
+        .benefit-card {
+          background: #fff;
+          padding: 2.5rem 2rem;
+          transition: background 0.2s;
+        }
+    
+        .benefit-card:hover {
+          background: #f8f8f6;
+        }
+    
+        .benefit-num {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 3.5rem;
+          font-weight: 300;
+          font-style: italic;
+          color: #ddd;
+          line-height: 1;
+          margin-bottom: 1rem;
+          display: block;
+        }
+    
+        .benefit-card h3 {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.35rem;
+          font-weight: 600;
+          color: #1a1a1a;
+          margin-bottom: 0.75rem;
+          line-height: 1.3;
+        }
+    
+        .benefit-card p {
+          font-size: 14px;
+          font-weight: 300;
+          color: #555;
+          line-height: 1.75;
+        }
+    
+        .benefit-tag {
+          display: inline-block;
+          margin-top: 1.25rem;
+          font-size: 10px;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: #aaa;
+          border-top: 0.5px solid #e0e0e0;
+          padding-top: 0.75rem;
+          width: 100%;
+        }
+    
+        .value-strip {
+          display: grid;
+          grid-template-columns: 1fr 0.5px 1fr 0.5px 1fr;
+          border: 0.5px solid #e0e0e0;
+          margin-bottom: 5rem;
+          text-align: center;
+        }
+    
+        .value-strip .divider {
+          background: #e0e0e0;
+        }
+    
+        .value-item {
+          padding: 2rem 1rem;
+        }
+    
+        .value-item .big {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 2.8rem;
+          font-weight: 300;
+          font-style: italic;
+          color: #1a1a1a;
+          display: block;
+          line-height: 1;
+          margin-bottom: 0.4rem;
+        }
+    
+        .value-item .small {
+          font-size: 11px;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          color: #888;
+          font-weight: 400;
+        }
+    
+        .rotation-section {
+          margin-bottom: 5rem;
+        }
+    
+        .rotation-section h2 {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(1.6rem, 4vw, 2.4rem);
+          font-weight: 300;
+          font-style: italic;
+          text-align: center;
+          margin-bottom: 0.5rem;
+          line-height: 1.3;
+        }
+    
+        .rotation-section .sub {
+          text-align: center;
+          font-size: 13px;
+          color: #888;
+          margin-bottom: 3rem;
+          font-weight: 300;
+        }
+    
+        .occasions {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          gap: 12px;
+        }
+    
+        .occasion-pill {
+          border: 0.5px solid #e0e0e0;
+          padding: 1.25rem 1rem;
+          text-align: center;
+          transition: border-color 0.2s, background 0.2s;
+        }
+    
+        .occasion-pill:hover {
+          border-color: #999;
+          background: #f8f8f6;
+        }
+    
+        .occasion-icon {
+          font-size: 20px;
+          display: block;
+          margin-bottom: 0.5rem;
+        }
+    
+        .occasion-pill span:last-child {
+          font-size: 12px;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: #888;
+          font-weight: 400;
+        }
+    
+        .price-compare {
+          border: 0.5px solid #e0e0e0;
+          margin-bottom: 5rem;
+          overflow: hidden;
+        }
+    
+        .price-compare-header {
+          padding, theme match overall theme of other pages
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-subscription-benefits-{{ ai_gen_id }} {
+    font-family: {{ settings.font_body.family }}, {{ settings.font_body.fallback_families }};
+    font-weight: {{ settings.font_body.weight }};
+    color: {{ settings.color_text }};
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+    width: {{ block.settings.desktop_width_percent }}%;
+  }
+
+  .ai-subscription-benefits-{{ ai_gen_id }} * {
+    box-sizing: border-box;
+  }
+
+  .ai-sub-hero-{{ ai_gen_id }} {
+    text-align: center;
+    padding: 4rem 1rem 3rem;
+    border-bottom: 0.5px solid {{ settings.color_border }};
+    margin-bottom: 4rem;
+  }
+
+  .ai-sub-eyebrow-{{ ai_gen_id }} {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: {{ settings.color_text_muted }};
+    margin-bottom: 1.25rem;
+    display: block;
+  }
+
+  .ai-sub-hero-{{ ai_gen_id }} h1 {
+    font-family: {{ settings.font_heading.family }}, {{ settings.font_heading.fallback_families }};
+    font-weight: {{ settings.font_heading.weight }};
+    font-size: clamp(2.4rem, 6vw, {{ block.settings.heading_size }}px);
+    line-height: 1.15;
+    color: {{ settings.color_primary }};
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.01em;
+  }
+
+  .ai-sub-hero-{{ ai_gen_id }} p {
+    font-size: {{ block.settings.body_size }}px;
+    font-weight: 300;
+    color: {{ settings.color_text_light }};
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.75;
+  }
+
+  .ai-sub-section-label-{{ ai_gen_id }} {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: {{ settings.color_text_muted }};
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+
+  .ai-sub-benefits-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1px;
+    background: {{ settings.color_border }};
+    border: 0.5px solid {{ settings.color_border }};
+    margin-bottom: 5rem;
+  }
+
+  .ai-sub-benefit-card-{{ ai_gen_id }} {
+    background: {{ settings.color_background }};
+    padding: 2.5rem 2rem;
+    transition: background 0.2s;
+  }
+
+  .ai-sub-benefit-card-{{ ai_gen_id }}:hover {
+    background: {{ settings.color_background_secondary }};
+  }
+
+  .ai-sub-benefit-num-{{ ai_gen_id }} {
+    font-family: {{ settings.font_heading.family }}, {{ settings.font_heading.fallback_families }};
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: {{ settings.color_border }};
+    line-height: 1;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .ai-sub-benefit-card-{{ ai_gen_id }} h3 {
+    font-family: {{ settings.font_heading.family }}, {{ settings.font_heading.fallback_families }};
+    font-weight: {{ settings.font_heading.weight }};
+    font-size: 1.35rem;
+    color: {{ settings.color_primary }};
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+  }
+
+  .ai-sub-benefit-card-{{ ai_gen_id }} p {
+    font-size: {{ block.settings.card_text_size }}px;
+    font-weight: 300;
+    color: {{ settings.color_text_light }};
+    line-height: 1.75;
+  }
+
+  .ai-sub-benefit-tag-{{ ai_gen_id }} {
+    display: inline-block;
+    margin-top: 1.25rem;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: {{ settings.color_text_muted }};
+    border-top: 0.5px solid {{ settings.color_border }};
+    padding-top: 0.75rem;
+    width: 100%;
+  }
+
+  .ai-sub-value-strip-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr 0.5px 1fr 0.5px 1fr;
+    border: 0.5px solid {{ settings.color_border }};
+    margin-bottom: 5rem;
+    text-align: center;
+  }
+
+  .ai-sub-value-strip-{{ ai_gen_id }} .ai-sub-divider-{{ ai_gen_id }} {
+    background: {{ settings.color_border }};
+  }
+
+  .ai-sub-value-item-{{ ai_gen_id }} {
+    padding: 2rem 1rem;
+  }
+
+  .ai-sub-value-item-{{ ai_gen_id }} .ai-sub-big-{{ ai_gen_id }} {
+    font-family: {{ settings.font_heading.family }}, {{ settings.font_heading.fallback_families }};
+    font-size: 2.8rem;
+    font-weight: 300;
+    color: {{ settings.color_primary }};
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+
+  .ai-sub-value-item-{{ ai_gen_id }} .ai-sub-small-{{ ai_gen_id }} {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: {{ settings.color_text_muted }};
+    font-weight: 400;
+  }
+
+  .ai-sub-rotation-section-{{ ai_gen_id }} {
+    margin-bottom: 5rem;
+  }
+
+  .ai-sub-rotation-section-{{ ai_gen_id }} h2 {
+    font-family: {{ settings.font_heading.family }}, {{ settings.font_heading.fallback_families }};
+    font-weight: {{ settings.font_heading.weight }};
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    text-align: center;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+    color: {{ settings.color_primary }};
+  }
+
+  .ai-sub-rotation-section-{{ ai_gen_id }} .ai-sub-rotation-sub-{{ ai_gen_id }} {
+    text-align: center;
+    font-size: 13px;
+    color: {{ settings.color_text_muted }};
+    margin-bottom: 3rem;
+    font-weight: 300;
+  }
+
+  .ai-sub-occasions-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .ai-sub-occasion-pill-{{ ai_gen_id }} {
+    border: 0.5px solid {{ settings.color_border }};
+    padding: 1.25rem 1rem;
+    text-align: center;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .ai-sub-occasion-pill-{{ ai_gen_id }}:hover {
+    border-color: {{ settings.color_text_light }};
+    background: {{ settings.color_background_secondary }};
+  }
+
+  .ai-sub-occasion-icon-{{ ai_gen_id }} {
+    font-size: 20px;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .ai-sub-occasion-pill-{{ ai_gen_id }} span:last-child {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: {{ settings.color_text_muted }};
+    font-weight: 400;
+  }
+
+  .ai-sub-price-compare-{{ ai_gen_id }} {
+    border: 0.5px solid {{ settings.color_border }};
+    margin-bottom: 5rem;
+    overflow: hidden;
+  }
+
+  .ai-sub-price-header-{{ ai_gen_id }} {
+    padding: 1.5rem;
+    background: {{ settings.color_background_secondary }};
+    border-bottom: 0.5px solid {{ settings.color_border }};
+    text-align: center;
+  }
+
+  .ai-sub-price-header-{{ ai_gen_id }} h3 {
+    font-family: {{ settings.font_heading.family }}, {{ settings.font_heading.fallback_families }};
+    font-weight: {{ settings.font_heading.weight }};
+    font-size: 1.4rem;
+    color: {{ settings.color_primary }};
+  }
+
+  .ai-sub-price-body-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr 0.5px 1fr;
+  }
+
+  .ai-sub-price-body-{{ ai_gen_id }} .ai-sub-divider-{{ ai_gen_id }} {
+    background: {{ settings.color_border }};
+  }
+
+  .ai-sub-price-col-{{ ai_gen_id }} {
+    padding: 2.5rem 2rem;
+  }
+
+  .ai-sub-price-col-{{ ai_gen_id }} h4 {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: {{ settings.color_text_muted }};
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+
+  .ai-sub-price-row-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 0.5px solid {{ settings.color_border }};
+    font-size: {{ block.settings.card_text_size }}px;
+  }
+
+  .ai-sub-price-row-{{ ai_gen_id }}:last-child {
+    border-bottom: none;
+    padding-top: 1.5rem;
+    font-weight: 500;
+  }
+
+  .ai-sub-price-row-{{ ai_gen_id }} .ai-sub-label-{{ ai_gen_id }} {
+    color: {{ settings.color_text }};
+  }
+
+  .ai-sub-price-row-{{ ai_gen_id }} .ai-sub-amount-{{ ai_gen_id }} {
+    color: {{ settings.color_primary }};
+    font-weight: 400;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-subscription-benefits-{{ ai_gen_id }} {
+      width: 100%;
+    }
+
+    .ai-sub-value-strip-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 0.5px auto 0.5px auto;
+    }
+
+    .ai-sub-value-strip-{{ ai_gen_id }} .ai-sub-divider-{{ ai_gen_id }} {
+      height: 0.5px;
+      width: 100%;
+    }
+
+    .ai-sub-price-body-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 0.5px auto;
+    }
+
+    .ai-sub-price-body-{{ ai_gen_id }} .ai-sub-divider-{{ ai_gen_id }} {
+      height: 0.5px;
+      width: 100%;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-subscription-benefits-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-sub-hero-{{ ai_gen_id }}">
+    {% if block.settings.eyebrow != blank %}
+      <span class="ai-sub-eyebrow-{{ ai_gen_id }}">{{ block.settings.eyebrow }}</span>
+    {% endif %}
+    {% if block.settings.heading != blank %}
+      <h1>{{ block.settings.heading }}</h1>
+    {% endif %}
+    {% if block.settings.subheading != blank %}
+      <p>{{ block.settings.subheading }}</p>
+    {% endif %}
+  </div>
+
+  {% if block.settings.show_benefits %}
+    {% if block.settings.benefits_label != blank %}
+      <div class="ai-sub-section-label-{{ ai_gen_id }}">{{ block.settings.benefits_label }}</div>
+    {% endif %}
+
+    <div class="ai-sub-benefits-grid-{{ ai_gen_id }}">
+      {% if block.settings.benefit_1_title != blank %}
+        <div class="ai-sub-benefit-card-{{ ai_gen_id }}">
+          <span class="ai-sub-benefit-num-{{ ai_gen_id }}">01</span>
+          <h3>{{ block.settings.benefit_1_title }}</h3>
+          <p>{{ block.settings.benefit_1_text }}</p>
+          {% if block.settings.benefit_1_tag != blank %}
+            <span class="ai-sub-benefit-tag-{{ ai_gen_id }}">{{ block.settings.benefit_1_tag }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if block.settings.benefit_2_title != blank %}
+        <div class="ai-sub-benefit-card-{{ ai_gen_id }}">
+          <span class="ai-sub-benefit-num-{{ ai_gen_id }}">02</span>
+          <h3>{{ block.settings.benefit_2_title }}</h3>
+          <p>{{ block.settings.benefit_2_text }}</p>
+          {% if block.settings.benefit_2_tag != blank %}
+            <span class="ai-sub-benefit-tag-{{ ai_gen_id }}">{{ block.settings.benefit_2_tag }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if block.settings.benefit_3_title != blank %}
+        <div class="ai-sub-benefit-card-{{ ai_gen_id }}">
+          <span class="ai-sub-benefit-num-{{ ai_gen_id }}">03</span>
+          <h3>{{ block.settings.benefit_3_title }}</h3>
+          <p>{{ block.settings.benefit_3_text }}</p>
+          {% if block.settings.benefit_3_tag != blank %}
+            <span class="ai-sub-benefit-tag-{{ ai_gen_id }}">{{ block.settings.benefit_3_tag }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if block.settings.benefit_4_title != blank %}
+        <div class="ai-sub-benefit-card-{{ ai_gen_id }}">
+          <span class="ai-sub-benefit-num-{{ ai_gen_id }}">04</span>
+          <h3>{{ block.settings.benefit_4_title }}</h3>
+          <p>{{ block.settings.benefit_4_text }}</p>
+          {% if block.settings.benefit_4_tag != blank %}
+            <span class="ai-sub-benefit-tag-{{ ai_gen_id }}">{{ block.settings.benefit_4_tag }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if block.settings.benefit_5_title != blank %}
+        <div class="ai-sub-benefit-card-{{ ai_gen_id }}">
+          <span class="ai-sub-benefit-num-{{ ai_gen_id }}">05</span>
+          <h3>{{ block.settings.benefit_5_title }}</h3>
+          <p>{{ block.settings.benefit_5_text }}</p>
+          {% if block.settings.benefit_5_tag != blank %}
+            <span class="ai-sub-benefit-tag-{{ ai_gen_id }}">{{ block.settings.benefit_5_tag }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if block.settings.benefit_6_title != blank %}
+        <div class="ai-sub-benefit-card-{{ ai_gen_id }}">
+          <span class="ai-sub-benefit-num-{{ ai_gen_id }}">06</span>
+          <h3>{{ block.settings.benefit_6_title }}</h3>
+          <p>{{ block.settings.benefit_6_text }}</p>
+          {% if block.settings.benefit_6_tag != blank %}
+            <span class="ai-sub-benefit-tag-{{ ai_gen_id }}">{{ block.settings.benefit_6_tag }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if block.settings.show_value_strip %}
+    <div class="ai-sub-value-strip-{{ ai_gen_id }}">
+      <div class="ai-sub-value-item-{{ ai_gen_id }}">
+        <span class="ai-sub-big-{{ ai_gen_id }}">{{ block.settings.value_1_number }}</span>
+        <span class="ai-sub-small-{{ ai_gen_id }}">{{ block.settings.value_1_label }}</span>
+      </div>
+      <div class="ai-sub-divider-{{ ai_gen_id }}"></div>
+      <div class="ai-sub-value-item-{{ ai_gen_id }}">
+        <span class="ai-sub-big-{{ ai_gen_id }}">{{ block.settings.value_2_number }}</span>
+        <span class="ai-sub-small-{{ ai_gen_id }}">{{ block.settings.value_2_label }}</span>
+      </div>
+      <div class="ai-sub-divider-{{ ai_gen_id }}"></div>
+      <div class="ai-sub-value-item-{{ ai_gen_id }}">
+        <span class="ai-sub-big-{{ ai_gen_id }}">{{ block.settings.value_3_number }}</span>
+        <span class="ai-sub-small-{{ ai_gen_id }}">{{ block.settings.value_3_label }}</span>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if block.settings.show_occasions %}
+    <div class="ai-sub-rotation-section-{{ ai_gen_id }}">
+      {% if block.settings.occasions_heading != blank %}
+        <h2>{{ block.settings.occasions_heading }}</h2>
+      {% endif %}
+      {% if block.settings.occasions_subtext != blank %}
+        <p class="ai-sub-rotation-sub-{{ ai_gen_id }}">{{ block.settings.occasions_subtext }}</p>
+      {% endif %}
+
+      <div class="ai-sub-occasions-{{ ai_gen_id }}">
+        {% if block.settings.occasion_1_label != blank %}
+          <div class="ai-sub-occasion-pill-{{ ai_gen_id }}">
+            <span class="ai-sub-occasion-icon-{{ ai_gen_id }}">{{ block.settings.occasion_1_icon }}</span>
+            <span>{{ block.settings.occasion_1_label }}</span>
+          </div>
+        {% endif %}
+
+        {% if block.settings.occasion_2_label != blank %}
+          <div class="ai-sub-occasion-pill-{{ ai_gen_id }}">
+            <span class="ai-sub-occasion-icon-{{ ai_gen_id }}">{{ block.settings.occasion_2_icon }}</span>
+            <span>{{ block.settings.occasion_2_label }}</span>
+          </div>
+        {% endif %}
+
+        {% if block.settings.occasion_3_label != blank %}
+          <div class="ai-sub-occasion-pill-{{ ai_gen_id }}">
+            <span class="ai-sub-occasion-icon-{{ ai_gen_id }}">{{ block.settings.occasion_3_icon }}</span>
+            <span>{{ block.settings.occasion_3_label }}</span>
+          </div>
+        {% endif %}
+
+        {% if block.settings.occasion_4_label != blank %}
+          <div class="ai-sub-occasion-pill-{{ ai_gen_id }}">
+            <span class="ai-sub-occasion-icon-{{ ai_gen_id }}">{{ block.settings.occasion_4_icon }}</span>
+            <span>{{ block.settings.occasion_4_label }}</span>
+          </div>
+        {% endif %}
+
+        {% if block.settings.occasion_5_label != blank %}
+          <div class="ai-sub-occasion-pill-{{ ai_gen_id }}">
+            <span class="ai-sub-occasion-icon-{{ ai_gen_id }}">{{ block.settings.occasion_5_icon }}</span>
+            <span>{{ block.settings.occasion_5_label }}</span>
+          </div>
+        {% endif %}
+
+        {% if block.settings.occasion_6_label != blank %}
+          <div class="ai-sub-occasion-pill-{{ ai_gen_id }}">
+            <span class="ai-sub-occasion-icon-{{ ai_gen_id }}">{{ block.settings.occasion_6_icon }}</span>
+            <span>{{ block.settings.occasion_6_label }}</span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if block.settings.show_price_compare %}
+    <div class="ai-sub-price-compare-{{ ai_gen_id }}">
+      <div class="ai-sub-price-header-{{ ai_gen_id }}">
+        <h3>{{ block.settings.price_compare_heading }}</h3>
+      </div>
+      <div class="ai-sub-price-body-{{ ai_gen_id }}">
+        <div class="ai-sub-price-col-{{ ai_gen_id }}">
+          <h4>{{ block.settings.price_col_1_title }}</h4>
+          <div class="ai-sub-price-row-{{ ai_gen_id }}">
+            <span class="ai-sub-label-{{ ai_gen_id }}">{{ block.settings.price_row_1_label }}</span>
+            <span class="ai-sub-amount-{{ ai_gen_id }}">{{ block.settings.price_col_1_row_1 }}</span>
+          </div>
+          <div class="ai-sub-price-row-{{ ai_gen_id }}">
+            <span class="ai-sub-label-{{ ai_gen_id }}">{{ block.settings.price_row_2_label }}</span>
+            <span class="ai-sub-amount-{{ ai_gen_id }}">{{ block.settings.price_col_1_row_2 }}</span>
+          </div>
+          <div class="ai-sub-price-row-{{ ai_gen_id }}">
+            <span class="ai-sub-label-{{ ai_gen_id }}">{{ block.settings.price_row_3_label }}</span>
+            <span class="ai-sub-amount-{{ ai_gen_id }}">{{ block.settings.price_col_1_row_3 }}</span>
+          </div>
+          <div class="ai-sub-price-row-{{ ai_gen_id }}">
+            <span class="ai-sub-label-{{ ai_gen_id }}">{{ block.settings.price_total_label }}</span>
+            <span class="ai-sub-amount-{{ ai_gen_id }}">{{ block.settings.price_col_1_total }}</span>
+          </div>
+        </div>
+        <div class="ai-sub-divider-{{ ai_gen_id }}"></div>
+        <div class="ai-sub-price-col-{{ ai_gen_id }}">
+          <h4>{{ block.settings.price_col_2_title }}</h4>
+          <div class="ai-sub-price-row-{{ ai_gen_id }}">
+            <span class="ai-sub-label-{{ ai_gen_id }}">{{ block.settings.price_row_1_label }}</span>
+            <span class="ai-sub-amount-{{ ai_gen_id }}">{{ block.settings.price_col_2_row_1 }}</span>
+          </div>
+          <div class="ai-sub-price-row-{{ ai_gen_id }}">
+            <span class="ai-sub-label-{{ ai_gen_id }}">{{ block.settings.price_row_2_label }}</span>
+            <span class="ai-sub-amount-{{ ai_gen_id }}">{{ block.settings.price_col_2_row_2 }}</span>
+          </div>
+          <div class="ai-sub-price-row-{{ ai_gen_id }}">
+            <span class="ai-sub-label-{{ ai_gen_id }}">{{ block.settings.price_row_3_label }}</span>
+            <span class="ai-sub-amount-{{ ai_gen_id }}">{{ block.settings.price_col_2_row_3 }}</span>
+          </div>
+          <div class="ai-sub-price-row-{{ ai_gen_id }}">
+            <span class="ai-sub-label-{{ ai_gen_id }}">{{ block.settings.price_total_label }}</span>
+            <span class="ai-sub-amount-{{ ai_gen_id }}">{{ block.settings.price_col_2_total }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Subscription benefits",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Maximum width",
+      "min": 800,
+      "max": 1400,
+      "step": 50,
+      "unit": "px",
+      "default": 900
+    },
+    {
+      "type": "header",
+      "content": "Hero section"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Subscription Benefits"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Why Subscribe to Base Note?"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Discover luxury fragrances without the luxury price tag. Our monthly subscription brings designer scents to your door for just $20."
+    },
+    {
+      "type": "header",
+      "content": "Benefits section"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_benefits",
+      "label": "Show benefits grid",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "benefits_label",
+      "label": "Section label",
+      "default": "What You Get"
+    },
+    {
+      "type": "text",
+      "id": "benefit_1_title",
+      "label": "Benefit 1 title",
+      "default": "Curated Selection"
+    },
+    {
+      "type": "textarea",
+      "id": "benefit_1_text",
+      "label": "Benefit 1 text",
+      "default": "Each month, our fragrance experts handpick premium scents from top designers and niche houses."
+    },
+    {
+      "type": "text",
+      "id": "benefit_1_tag",
+      "label": "Benefit 1 tag"
+    },
+    {
+      "type": "text",
+      "id": "benefit_2_title",
+      "label": "Benefit 2 title",
+      "default": "Full-Size Bottles"
+    },
+    {
+      "type": "textarea",
+      "id": "benefit_2_text",
+      "label": "Benefit 2 text",
+      "default": "No samples. Every delivery includes a genuine full-size bottle you can wear for weeks."
+    },
+    {
+      "type": "text",
+      "id": "benefit_2_tag",
+      "label": "Benefit 2 tag"
+    },
+    {
+      "type": "text",
+      "id": "benefit_3_title",
+      "label": "Benefit 3 title",
+      "default": "Free Shipping"
+    },
+    {
+      "type": "textarea",
+      "id": "benefit_3_text",
+      "label": "Benefit 3 text",
+      "default": "Enjoy complimentary shipping on every order. No hidden fees, no surprises."
+    },
+    {
+      "type": "text",
+      "id": "benefit_3_tag",
+      "label": "Benefit 3 tag"
+    },
+    {
+      "type": "text",
+      "id": "benefit_4_title",
+      "label": "Benefit 4 title",
+      "default": "Flexible Control"
+    },
+    {
+      "type": "textarea",
+      "id": "benefit_4_text",
+      "label": "Benefit 4 text",
+      "default": "Pause, skip, or cancel anytime from your account. You're always in control."
+    },
+    {
+      "type": "text",
+      "id": "benefit_4_tag",
+      "label": "Benefit 4 tag"
+    },
+    {
+      "type": "text",
+      "id": "benefit_5_title",
+      "label": "Benefit 5 title",
+      "default": "Exclusive Access"
+    },
+    {
+      "type": "textarea",
+      "id": "benefit_5_text",
+      "label": "Benefit 5 text",
+      "default": "Members get early access to limited releases and special edition fragrances."
+    },
+    {
+      "type": "text",
+      "id": "benefit_5_tag",
+      "label": "Benefit 5 tag"
+    },
+    {
+      "type": "text",
+      "id": "benefit_6_title",
+      "label": "Benefit 6 title",
+      "default": "Build Your Collection"
+    },
+    {
+      "type": "textarea",
+      "id": "benefit_6_text",
+      "label": "Benefit 6 text",
+      "default": "Expand your fragrance wardrobe with a rotating selection of scents for every season and occasion."
+    },
+    {
+      "type": "text",
+      "id": "benefit_6_tag",
+      "label": "Benefit 6 tag"
+    },
+    {
+      "type": "header",
+      "content": "Value strip"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_value_strip",
+      "label": "Show value strip",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "value_1_number",
+      "label": "Value 1 number",
+      "default": "50+"
+    },
+    {
+      "type": "text",
+      "id": "value_1_label",
+      "label": "Value 1 label",
+      "default": "Designer Brands"
+    },
+    {
+      "type": "text",
+      "id": "value_2_number",
+      "label": "Value 2 number",
+      "default": "$20"
+    },
+    {
+      "type": "text",
+      "id": "value_2_label",
+      "label": "Value 2 label",
+      "default": "Per Month"
+    },
+    {
+      "type": "text",
+      "id": "value_3_number",
+      "label": "Value 3 number",
+      "default": "100%"
+    },
+    {
+      "type": "text",
+      "id": "value_3_label",
+      "label": "Value 3 label",
+      "default": "Authentic"
+    },
+    {
+      "type": "header",
+      "content": "Occasions section"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_occasions",
+      "label": "Show occasions",
+      "default": true
+    },
+    {
+      "type": "inline_richtext",
+      "id": "occasions_heading",
+      "label": "Occasions heading",
+      "default": "A scent for every moment"
+    },
+    {
+      "type": "text",
+      "id": "occasions_subtext",
+      "label": "Occasions subtext",
+      "default": "Build a versatile fragrance wardrobe"
+    },
+    {
+      "type": "text",
+      "id": "occasion_1_icon",
+      "label": "Occasion 1 icon",
+      "default": "☀️"
+    },
+    {
+      "type": "text",
+      "id": "occasion_1_label",
+      "label": "Occasion 1 label",
+      "default": "Daily Wear"
+    },
+    {
+      "type": "text",
+      "id": "occasion_2_icon",
+      "label": "Occasion 2 icon",
+      "default": "💼"
+    },
+    {
+      "type": "text",
+      "id": "occasion_2_label",
+      "label": "Occasion 2 label",
+      "default": "Office"
+    },
+    {
+      "type": "text",
+      "id": "occasion_3_icon",
+      "label": "Occasion 3 icon",
+      "default": "🌙"
+    },
+    {
+      "type": "text",
+      "id": "occasion_3_label",
+      "label": "Occasion 3 label",
+      "default": "Evening"
+    },
+    {
+      "type": "text",
+      "id": "occasion_4_icon",
+      "label": "Occasion 4 icon",
+      "default": "🎉"
+    },
+    {
+      "type": "text",
+      "id": "occasion_4_label",
+      "label": "Occasion 4 label",
+      "default": "Special Events"
+    },
+    {
+      "type": "text",
+      "id": "occasion_5_icon",
+      "label": "Occasion 5 icon",
+      "default": "🏖️"
+    },
+    {
+      "type": "text",
+      "id": "occasion_5_label",
+      "label": "Occasion 5 label",
+      "default": "Weekend"
+    },
+    {
+      "type": "text",
+      "id": "occasion_6_icon",
+      "label": "Occasion 6 icon",
+      "default": "❄️"
+    },
+    {
+      "type": "text",
+      "id": "occasion_6_label",
+      "label": "Occasion 6 label",
+      "default": "Seasonal"
+    },
+    {
+      "type": "header",
+      "content": "Price comparison"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price_compare",
+      "label": "Show price comparison",
+      "default": true
+    },
+    {
+      "type": "inline_richtext",
+      "id": "price_compare_heading",
+      "label": "Comparison heading",
+      "default": "The Value Breakdown"
+    },
+    {
+      "type": "text",
+      "id": "price_col_1_title",
+      "label": "Column 1 title",
+      "default": "Retail Shopping"
+    },
+    {
+      "type": "text",
+      "id": "price_col_2_title",
+      "label": "Column 2 title",
+      "default": "Base Note Subscription"
+    },
+    {
+      "type": "text",
+      "id": "price_row_1_label",
+      "label": "Row 1 label",
+      "default": "Designer fragrance"
+    },
+    {
+      "type": "text",
+      "id": "price_col_1_row_1",
+      "label": "Column 1 row 1",
+      "default": "$85"
+    },
+    {
+      "type": "text",
+      "id": "price_col_2_row_1",
+      "label": "Column 2 row 1",
+      "default": "$20"
+    },
+    {
+      "type": "text",
+      "id": "price_row_2_label",
+      "label": "Row 2 label",
+      "default": "Shipping"
+    },
+    {
+      "type": "text",
+      "id": "price_col_1_row_2",
+      "label": "Column 1 row 2",
+      "default": "$8"
+    },
+    {
+      "type": "text",
+      "id": "price_col_2_row_2",
+      "label": "Column 2 row 2",
+      "default": "Free"
+    },
+    {
+      "type": "text",
+      "id": "price_row_3_label",
+      "label": "Row 3 label",
+      "default": "Expert curation"
+    },
+    {
+      "type": "text",
+      "id": "price_col_1_row_3",
+      "label": "Column 1 row 3",
+      "default": "—"
+    },
+    {
+      "type": "text",
+      "id": "price_col_2_row_3",
+      "label": "Column 2 row 3",
+      "default": "Included"
+    },
+    {
+      "type": "text",
+      "id": "price_total_label",
+      "label": "Total label",
+      "default": "Total"
+    },
+    {
+      "type": "text",
+      "id": "price_col_1_total",
+      "label": "Column 1 total",
+      "default": "$93"
+    },
+    {
+      "type": "text",
+      "id": "price_col_2_total",
+      "label": "Column 2 total",
+      "default": "$20"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 30,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "body_size",
+      "label": "Body text size",
+      "min": 13,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "card_text_size",
+      "label": "Card text size",
+      "min": 12,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    }
+  ],
+  "presets": [
+    {
+      "name": "Subscription benefits"
+    }
+  ]
+}
 {% endschema %}
