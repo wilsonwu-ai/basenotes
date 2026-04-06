@@ -1,6 +1,688 @@
+{% doc %}
+  @prompt
+    comparison page showing the benefits of subscribing to a cologne service. This would include updating scent according to season, fear of blind buying, insider angle
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-subscription-comparison-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.section_padding }}px 20px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-subscription-comparison__container-{{ ai_gen_id }} {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .ai-subscription-comparison__header-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .ai-subscription-comparison__title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.title_color }};
+    margin: 0 0 15px;
+    font-weight: 600;
+  }
+
+  .ai-subscription-comparison__subtitle-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subtitle_size }}px;
+    color: {{ block.settings.subtitle_color }};
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .ai-subscription-comparison__grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+
+  .ai-subscription-comparison__column-{{ ai_gen_id }} {
+    background-color: {{ block.settings.column_background }};
+    border-radius: {{ block.settings.border_radius }}px;
+    padding: 40px 30px;
+    border: 2px solid {{ block.settings.border_color }};
+  }
+
+  .ai-subscription-comparison__column-{{ ai_gen_id }}--highlight {
+    border-color: {{ block.settings.highlight_border_color }};
+    background-color: {{ block.settings.highlight_background }};
+    position: relative;
+  }
+
+  .ai-subscription-comparison__badge-{{ ai_gen_id }} {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: {{ block.settings.badge_background }};
+    color: {{ block.settings.badge_text_color }};
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .ai-subscription-comparison__column-title-{{ ai_gen_id }} {
+    font-size: 28px;
+    color: {{ block.settings.column_title_color }};
+    margin: 0 0 10px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .ai-subscription-comparison__column-subtitle-{{ ai_gen_id }} {
+    font-size: 16px;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 30px;
+    text-align: center;
+    opacity: 0.8;
+  }
+
+  .ai-subscription-comparison__features-{{ ai_gen_id }} {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .ai-subscription-comparison__feature-{{ ai_gen_id }} {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-subscription-comparison__icon-{{ ai_gen_id }} {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+
+  .ai-subscription-comparison__icon-{{ ai_gen_id }}--check {
+    background-color: {{ block.settings.check_icon_background }};
+    color: {{ block.settings.check_icon_color }};
+  }
+
+  .ai-subscription-comparison__icon-{{ ai_gen_id }}--cross {
+    background-color: {{ block.settings.cross_icon_background }};
+    color: {{ block.settings.cross_icon_color }};
+  }
+
+  .ai-subscription-comparison__icon-{{ ai_gen_id }} svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .ai-subscription-comparison__cta-{{ ai_gen_id }} {
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  .ai-subscription-comparison__button-{{ ai_gen_id }} {
+    display: inline-block;
+    padding: 16px 40px;
+    background-color: {{ block.settings.button_background }};
+    color: {{ block.settings.button_text_color }};
+    text-decoration: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .ai-subscription-comparison__button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_background }};
+    transform: translateY(-2px);
+  }
+
+  @media screen and (max-width: 768px) {
+    .ai-subscription-comparison__grid-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .ai-subscription-comparison__column-{{ ai_gen_id }} {
+      padding: 30px 20px;
+    }
+
+    .ai-subscription-comparison__title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size | times: 0.8 }}px;
+    }
+
+    .ai-subscription-comparison__column-title-{{ ai_gen_id }} {
+      font-size: 24px;
+    }
+  }
+{% endstyle %}
+
+<subscription-comparison-{{ ai_gen_id }}
+  class="ai-subscription-comparison-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-subscription-comparison__container-{{ ai_gen_id }}">
+    {% if block.settings.title != blank %}
+      <div class="ai-subscription-comparison__header-{{ ai_gen_id }}">
+        <h2 class="ai-subscription-comparison__title-{{ ai_gen_id }}">
+          {{ block.settings.title }}
+        </h2>
+        {% if block.settings.subtitle != blank %}
+          <p class="ai-subscription-comparison__subtitle-{{ ai_gen_id }}">
+            {{ block.settings.subtitle }}
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="ai-subscription-comparison__grid-{{ ai_gen_id }}">
+      <div class="ai-subscription-comparison__column-{{ ai_gen_id }}">
+        <h3 class="ai-subscription-comparison__column-title-{{ ai_gen_id }}">
+          {{ block.settings.left_column_title }}
+        </h3>
+        {% if block.settings.left_column_subtitle != blank %}
+          <p class="ai-subscription-comparison__column-subtitle-{{ ai_gen_id }}">
+            {{ block.settings.left_column_subtitle }}
+          </p>
+        {% endif %}
+        <ul class="ai-subscription-comparison__features-{{ ai_gen_id }}">
+          {% if block.settings.left_feature_1 != blank %}
+            <li class="ai-subscription-comparison__feature-{{ ai_gen_id }}">
+              <span class="ai-subscription-comparison__icon-{{ ai_gen_id }} ai-subscription-comparison__icon-{{ ai_gen_id }}--cross">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </span>
+              <span>{{ block.settings.left_feature_1 }}</span>
+            </li>
+          {% endif %}
+          {% if block.settings.left_feature_2 != blank %}
+            <li class="ai-subscription-comparison__feature-{{ ai_gen_id }}">
+              <span class="ai-subscription-comparison__icon-{{ ai_gen_id }} ai-subscription-comparison__icon-{{ ai_gen_id }}--cross">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </span>
+              <span>{{ block.settings.left_feature_2 }}</span>
+            </li>
+          {% endif %}
+          {% if block.settings.left_feature_3 != blank %}
+            <li class="ai-subscription-comparison__feature-{{ ai_gen_id }}">
+              <span class="ai-subscription-comparison__icon-{{ ai_gen_id }} ai-subscription-comparison__icon-{{ ai_gen_id }}--cross">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </span>
+              <span>{{ block.settings.left_feature_3 }}</span>
+            </li>
+          {% endif %}
+          {% if block.settings.left_feature_4 != blank %}
+            <li class="ai-subscription-comparison__feature-{{ ai_gen_id }}">
+              <span class="ai-subscription-comparison__icon-{{ ai_gen_id }} ai-subscription-comparison__icon-{{ ai_gen_id }}--cross">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </span>
+              <span>{{ block.settings.left_feature_4 }}</span>
+            </li>
+          {% endif %}
+          {% if block.settings.left_feature_5 != blank %}
+            <li class="ai-subscription-comparison__feature-{{ ai_gen_id }}">
+              <span class="ai-subscription-comparison__icon-{{ ai_gen_id }} ai-subscription-comparison__icon-{{ ai_gen_id }}--cross">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </span>
+              <span>{{ block.settings.left_feature_5 }}</span>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+
+      <div class="ai-subscription-comparison__column-{{ ai_gen_id }} ai-subscription-comparison__column-{{ ai_gen_id }}--highlight">
+        {% if block.settings.show_badge %}
+          <div class="ai-subscription-comparison__badge-{{ ai_gen_id }}">
+            {{ block.settings.badge_text }}
+          </div>
+        {% endif %}
+        <h3 class="ai-subscription-comparison__column-title-{{ ai_gen_id }}">
+          {{ block.settings.right_column_title }}
+        </h3>
+        {% if block.settings.right_column_subtitle != blank %}
+          <p class="ai-subscription-comparison__column-subtitle-{{ ai_gen_id }}">
+            {{ block.settings.right_column_subtitle }}
+          </p>
+        {% endif %}
+        <ul class="ai-subscription-comparison__features-{{ ai_gen_id }}">
+          {% if block.settings.right_feature_1 != blank %}
+            <li class="ai-subscription-comparison__feature-{{ ai_gen_id }}">
+              <span class="ai-subscription-comparison__icon-{{ ai_gen_id }} ai-subscription-comparison__icon-{{ ai_gen_id }}--check">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span>{{ block.settings.right_feature_1 }}</span>
+            </li>
+          {% endif %}
+          {% if block.settings.right_feature_2 != blank %}
+            <li class="ai-subscription-comparison__feature-{{ ai_gen_id }}">
+              <span class="ai-subscription-comparison__icon-{{ ai_gen_id }} ai-subscription-comparison__icon-{{ ai_gen_id }}--check">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span>{{ block.settings.right_feature_2 }}</span>
+            </li>
+          {% endif %}
+          {% if block.settings.right_feature_3 != blank %}
+            <li class="ai-subscription-comparison__feature-{{ ai_gen_id }}">
+              <span class="ai-subscription-comparison__icon-{{ ai_gen_id }} ai-subscription-comparison__icon-{{ ai_gen_id }}--check">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span>{{ block.settings.right_feature_3 }}</span>
+            </li>
+          {% endif %}
+          {% if block.settings.right_feature_4 != blank %}
+            <li class="ai-subscription-comparison__feature-{{ ai_gen_id }}">
+              <span class="ai-subscription-comparison__icon-{{ ai_gen_id }} ai-subscription-comparison__icon-{{ ai_gen_id }}--check">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span>{{ block.settings.right_feature_4 }}</span>
+            </li>
+          {% endif %}
+          {% if block.settings.right_feature_5 != blank %}
+            <li class="ai-subscription-comparison__feature-{{ ai_gen_id }}">
+              <span class="ai-subscription-comparison__icon-{{ ai_gen_id }} ai-subscription-comparison__icon-{{ ai_gen_id }}--check">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span>{{ block.settings.right_feature_5 }}</span>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+
+    {% if block.settings.button_text != blank %}
+      <div class="ai-subscription-comparison__cta-{{ ai_gen_id }}">
+        <a
+          href="{{ block.settings.button_link }}"
+          class="ai-subscription-comparison__button-{{ ai_gen_id }}"
+        >
+          {{ block.settings.button_text }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</subscription-comparison-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class SubscriptionComparison{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.style.display = 'block';
+      }
+    }
+
+    customElements.define('subscription-comparison-{{ ai_gen_id }}', SubscriptionComparison{{ ai_gen_id }});
+  })();
+</script>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Subscription comparison",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Why Subscribe to Base Note?"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Experience the difference between buying blind and discovering fragrances the smart way"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size",
+      "min": 24,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "label": "Subtitle size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "header",
+      "content": "Left column (Without subscription)"
+    },
+    {
+      "type": "text",
+      "id": "left_column_title",
+      "label": "Title",
+      "default": "Buying Blind"
+    },
+    {
+      "type": "text",
+      "id": "left_column_subtitle",
+      "label": "Subtitle",
+      "default": "The traditional way"
+    },
+    {
+      "type": "textarea",
+      "id": "left_feature_1",
+      "label": "Feature 1",
+      "default": "Risk wasting money on fragrances you've never smelled"
+    },
+    {
+      "type": "textarea",
+      "id": "left_feature_2",
+      "label": "Feature 2",
+      "default": "Stuck with the same scent year-round, regardless of season"
+    },
+    {
+      "type": "textarea",
+      "id": "left_feature_3",
+      "label": "Feature 3",
+      "default": "Miss out on exclusive and hard-to-find fragrances"
+    },
+    {
+      "type": "textarea",
+      "id": "left_feature_4",
+      "label": "Feature 4",
+      "default": "Pay full retail price for every bottle"
+    },
+    {
+      "type": "textarea",
+      "id": "left_feature_5",
+      "label": "Feature 5",
+      "default": "No expert guidance on what works for you"
+    },
+    {
+      "type": "header",
+      "content": "Right column (With subscription)"
+    },
+    {
+      "type": "text",
+      "id": "right_column_title",
+      "label": "Title",
+      "default": "Base Note Subscription"
+    },
+    {
+      "type": "text",
+      "id": "right_column_subtitle",
+      "label": "Subtitle",
+      "default": "The insider advantage"
+    },
+    {
+      "type": "textarea",
+      "id": "right_feature_1",
+      "label": "Feature 1",
+      "default": "Try before you commit—discover new scents risk-free"
+    },
+    {
+      "type": "textarea",
+      "id": "right_feature_2",
+      "label": "Feature 2",
+      "default": "Seasonal scent rotation curated by fragrance experts"
+    },
+    {
+      "type": "textarea",
+      "id": "right_feature_3",
+      "label": "Feature 3",
+      "default": "Access to exclusive, limited-edition fragrances"
+    },
+    {
+      "type": "textarea",
+      "id": "right_feature_4",
+      "label": "Feature 4",
+      "default": "Premium fragrances at a fraction of retail cost"
+    },
+    {
+      "type": "textarea",
+      "id": "right_feature_5",
+      "label": "Feature 5",
+      "default": "Personalized recommendations based on your preferences"
+    },
+    {
+      "type": "header",
+      "content": "Badge"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "Recommended"
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Start Your Subscription"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fafafa"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "column_background",
+      "label": "Column background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "highlight_background",
+      "label": "Highlight column background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "color",
+      "id": "highlight_border_color",
+      "label": "Highlight border",
+      "default": "#c9a86c"
+    },
+    {
+      "type": "color",
+      "id": "column_title_color",
+      "label": "Column title",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "badge_background",
+      "label": "Badge background",
+      "default": "#c9a86c"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Badge text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "check_icon_background",
+      "label": "Check icon background",
+      "default": "#4caf50"
+    },
+    {
+      "type": "color",
+      "id": "check_icon_color",
+      "label": "Check icon",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "cross_icon_background",
+      "label": "Cross icon background",
+      "default": "#f44336"
+    },
+    {
+      "type": "color",
+      "id": "cross_icon_color",
+      "label": "Cross icon",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_background",
+      "label": "Button hover background",
+      "default": "#c9a86c"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 6
+    }
+  ],
+  "presets": [
+    {
+      "name": "Subscription comparison"
+    }
+  ]
+}
 {% endschema %}
