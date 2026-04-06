@@ -96,6 +96,152 @@
         "button_link": "/collections/fragrances"
       }
     },
+    "1775502539958abd4e": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_e4e9960_nkVW7N": {
+          "type": "ai_gen_block_e4e9960",
+          "settings": {
+            "desktop_width_percent": 100,
+            "max_width": 900,
+            "eyebrow": "Subscription Benefits",
+            "heading": "Why Subscribe to Base Note?",
+            "subheading": "Discover luxury fragrances without the luxury price tag. Our monthly subscription brings designer scents to your door for just $20.",
+            "show_benefits": true,
+            "benefits_label": "What You Get",
+            "benefit_1_title": "Curated Selection",
+            "benefit_1_text": "Our fragrance experts handpick premium scents from top designers and niche houses.",
+            "benefit_1_tag": "",
+            "benefit_2_title": "Your Skin. Your Chemistry.",
+            "benefit_2_text": "A fragrance that smells extraordinary on someone else may read completely different on you. Wearing it on your skin — through real days and real situations — is the only true test.",
+            "benefit_2_tag": "",
+            "benefit_3_title": "Build a Rotation That Works",
+            "benefit_3_text": "Seasons shift. Occasions change. A first date calls for something different than a board meeting. A rotation means you always have the right scent for the moment.",
+            "benefit_3_tag": "",
+            "benefit_4_title": "",
+            "benefit_4_text": "",
+            "benefit_4_tag": "",
+            "benefit_5_title": "",
+            "benefit_5_text": "",
+            "benefit_5_tag": "",
+            "benefit_6_title": "",
+            "benefit_6_text": "",
+            "benefit_6_tag": "",
+            "show_value_strip": false,
+            "value_1_number": "20+",
+            "value_1_label": "Designer Brands",
+            "value_2_number": "$20",
+            "value_2_label": "Per Month",
+            "value_3_number": "100%",
+            "value_3_label": "Authentic",
+            "show_occasions": true,
+            "occasions_heading": "A scent for every moment",
+            "occasions_subtext": "Build a versatile fragrance wardrobe",
+            "occasion_1_icon": "☀️",
+            "occasion_1_label": "Daily Wear",
+            "occasion_2_icon": "💼",
+            "occasion_2_label": "Office",
+            "occasion_3_icon": "🌙",
+            "occasion_3_label": "Evening",
+            "occasion_4_icon": "🎉",
+            "occasion_4_label": "Special Events",
+            "occasion_5_icon": "🏖️",
+            "occasion_5_label": "Seasonal",
+            "occasion_6_icon": "",
+            "occasion_6_label": "",
+            "show_price_compare": false,
+            "price_compare_heading": "Transparent pricing. No inflated margins.",
+            "price_col_1_title": "FRAGRANCE",
+            "price_col_2_title": "Base Note Subscription",
+            "price_row_1_label": "Designer fragrance",
+            "price_col_1_row_1": "$85",
+            "price_col_2_row_1": "$20",
+            "price_row_2_label": "Shipping",
+            "price_col_1_row_2": "$8",
+            "price_col_2_row_2": "Free",
+            "price_row_3_label": "Expert curation",
+            "price_col_1_row_3": "—",
+            "price_col_2_row_3": "Included",
+            "price_total_label": "Total",
+            "price_col_1_total": "$93",
+            "price_col_2_total": "$20",
+            "heading_color": "#1a1a1a",
+            "text_color": "#1a1a1a",
+            "subtext_color": "#555555",
+            "muted_color": "#888888",
+            "border_color": "#e0e0e0",
+            "card_bg_color": "#ffffff",
+            "card_hover_bg": "#f8f8f6",
+            "number_color": "#dddddd",
+            "tag_color": "#aaaaaa",
+            "pill_hover_border": "#999999",
+            "heading_size": 48,
+            "body_size": 15,
+            "card_text_size": 14
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_e4e9960_nkVW7N"
+      ],
+      "name": "Subscription Benefits",
+      "settings": {}
+    },
+    "1775503735ef6a96df": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_9faa96e_EXAHBD": {
+          "type": "ai_gen_block_9faa96e",
+          "settings": {
+            "title": "Why Pay More?",
+            "subtitle": "One flat fee. No surprises. More money in your pocket.",
+            "title_size": 32,
+            "subtitle_size": 16,
+            "column_1_header": "Fragrance",
+            "column_2_header": "Competitors",
+            "column_3_header": "Our Price",
+            "row_1_product": "Creed Aventus 5ml",
+            "row_1_competitor": "$35–45",
+            "row_1_price": "$20 / month",
+            "row_2_product": "Parfums de Marly Layton 5ml",
+            "row_2_competitor": "$30–40",
+            "row_2_price": "$20 / month",
+            "row_3_product": "Tom Ford Oud Wood 5ml",
+            "row_3_competitor": "$25–32",
+            "row_3_price": "$20 / month",
+            "row_4_product": "Bond No. 9 Bleecker St. 5ml",
+            "row_4_competitor": "$32–42",
+            "row_4_price": "$20 / month",
+            "desktop_width_percent": 100,
+            "section_padding": 40,
+            "cell_padding": 16,
+            "border_radius": 8,
+            "header_font_size": 14,
+            "body_font_size": 15,
+            "background_color": "#fafafa",
+            "title_color": "#1a1a1a",
+            "subtitle_color": "#666666",
+            "table_background": "#ffffff",
+            "header_background": "#f5f5f5",
+            "header_text_color": "#1a1a1a",
+            "body_text_color": "#1a1a1a",
+            "border_color": "#e5e5e5",
+            "row_hover_color": "#f9f9f9",
+            "competitor_price_color": "#999999",
+            "show_checkmark": true,
+            "highlight_background": "#f0ead6",
+            "highlight_text_color": "#1a1a1a"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_9faa96e_EXAHBD"
+      ],
+      "name": "Price Comparison",
+      "settings": {}
+    },
     "featured-collection": {
       "type": "featured-collection",
       "settings": {
@@ -299,17 +445,24 @@
         "button_label": "Join",
         "privacy_note": "We respect your privacy. Unsubscribe at any time."
       }
+    },
+    "1775500679cb618b00": {
+      "type": "_blocks",
+      "settings": {}
     }
   },
   "order": [
     "hero",
     "promotional-banner",
     "delivery-explainer",
+    "1775502539958abd4e",
+    "1775503735ef6a96df",
     "featured-collection",
     "how-it-works",
     "subscription-plans",
     "testimonials",
     "social-proof-locations",
-    "newsletter"
+    "newsletter",
+    "1775500679cb618b00"
   ]
 }
