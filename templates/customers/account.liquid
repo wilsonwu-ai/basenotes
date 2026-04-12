@@ -1157,9 +1157,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // ── Store contract ID for payment update button ──
+        // Uses Shopify's subscriptionContractId (not Appstle's internal id)
         var paymentBtn = document.getElementById('subUpdatePaymentBtn');
-        if (paymentBtn && active.id) {
-          paymentBtn.dataset.contractId = active.id;
+        var bestContractId = active.subscriptionContractId || active.contractId || active.id;
+        if (paymentBtn && bestContractId) {
+          paymentBtn.dataset.contractId = bestContractId;
         }
 
         // ── Update next shipment product from Appstle ──
@@ -1245,18 +1247,53 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Update Payment button — open Appstle portal contract details (has payment info section)
+  // Update Payment — trigger Shopify payment-update email via Appstle customer portal API
   var subUpdatePaymentBtn = document.getElementById('subUpdatePaymentBtn');
   if (subUpdatePaymentBtn) {
-    subUpdatePaymentBtn.addEventListener('click', function() {
+    subUpdatePaymentBtn.addEventListener('click', async function() {
       var contractId = this.dataset.contractId;
-      if (contractId) {
-        // Link to Appstle portal with contract-specific view where "Payment Info" tab exists
-        window.open(serverSubData.portalUrl + '?contractId=' + contractId, '_blank');
-      } else {
-        window.open(serverSubData.portalUrl || '/apps/subscriptions', '_blank');
+      if (!contractId) {
+        alert('No active subscription found. Please contact hello@basenote.com for help.');
+        return;
+      }
+      var btn = this;
+      var originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="payment-spinner" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="31.4" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" dur="0.8s" from="0 12 12" to="360 12 12" repeatCount="indefinite"/></circle></svg> Sending\u2026';
+      try {
+        var res = await fetch(
+          '/apps/subscriptions/cp/api/subscription-contracts-update-payment-method?contractId=' + encodeURIComponent(contractId),
+          { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: '{}' }
+        );
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" width="20" height="20"><polyline points="20 6 9 17 4 12"/></svg> Email sent!';
+        btn.style.borderColor = '#4CAF50';
+        btn.style.background = 'rgba(76,175,80,0.04)';
+        showPaymentUpdateConfirmation();
+      } catch (err) {
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+        alert('Could not send the update email right now. Please try again or contact hello@basenote.com.');
       }
     });
+  }
+
+  function showPaymentUpdateConfirmation() {
+    var existing = document.getElementById('paymentUpdateOverlay');
+    if (existing) existing.remove();
+    var overlay = document.createElement('div');
+    overlay.id = 'paymentUpdateOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1rem;';
+    overlay.innerHTML = '<div style="background:#fff;border-radius:16px;padding:2.5rem;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);font-family:inherit;">'
+      + '<div style="width:56px;height:56px;border-radius:50%;background:rgba(76,175,80,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2.5" width="28" height="28"><polyline points="20 6 9 17 4 12"/></svg></div>'
+      + '<h3 style="font-family:Cormorant Garamond,Georgia,serif;font-size:1.4rem;color:#2D4641;margin:0 0 0.75rem;font-weight:600;">Check Your Email</h3>'
+      + '<p style="color:#555;font-size:14px;line-height:1.6;margin:0 0 1rem;">We\u2019ve sent you a secure link from Shopify to update your payment method. Check your inbox (and spam folder).</p>'
+      + '<p style="color:#888;font-size:13px;line-height:1.5;margin:0 0 1.5rem;">After you update your card, it will automatically apply to your next billing cycle.</p>'
+      + '<button onclick="this.closest(\'#paymentUpdateOverlay\').remove()" style="background:#2D4641;color:#fff;border:none;border-radius:8px;padding:12px 32px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.2s;">Got It</button>'
+      + '</div>';
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+    document.body.appendChild(overlay);
   }
 
   // Sub page skip/pause
