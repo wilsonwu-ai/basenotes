@@ -515,6 +515,9 @@
   .fh-entry { position: relative; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #F0EDE8; }
   .fh-entry:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
   .fh-entry__dot { position: absolute; left: -32px; top: 4px; width: 22px; height: 22px; background: #2D4641; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 2px #E8E6E3; }
+  .fh-month-group { position: relative; padding-left: 24px; margin-bottom: 2rem; }
+  .fh-month-group .fh-entry { margin-bottom: 1rem; }
+  .fh-month-group .fh-entry .fh-entry__dot { display: none; }
   .fh-entry__month { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #C9A962; margin-bottom: 12px; }
   .fh-entry__grid { display: grid; grid-template-columns: 120px 1fr; gap: 1.25rem; }
   .fh-entry__image { width: 120px; height: 120px; border-radius: 10px; overflow: hidden; background: #F5F3F0; }
@@ -740,43 +743,66 @@ document.addEventListener('DOMContentLoaded', function() {
     var ratings = getHistoryRatings();
     var notes = getHistoryNotes();
 
-    timelineEl.innerHTML = historyData.map(function(entry, i) {
-      var rating = ratings[i] || 0;
-      var note = notes[i] || '';
-      var stars = '';
-      for (var s = 1; s <= 5; s++) {
-        stars += '<svg class="fh-star' + (s <= rating ? ' is-filled' : '') + '" data-entry="' + i + '" data-star="' + s + '" viewBox="0 0 24 24" fill="' + (s <= rating ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+    // Group entries by month
+    var grouped = {};
+    var monthOrder = [];
+    historyData.forEach(function(entry, i) {
+      var monthKey = entry.month || 'Month ' + (i + 1);
+      if (!grouped[monthKey]) {
+        grouped[monthKey] = [];
+        monthOrder.push(monthKey);
       }
+      grouped[monthKey].push({ entry: entry, index: i });
+    });
 
-      var notesHtml = '';
-      if (entry.top_notes) notesHtml += '<strong>Top:</strong> ' + entry.top_notes + '<br>';
-      if (entry.heart_notes) notesHtml += '<strong>Heart:</strong> ' + entry.heart_notes + '<br>';
-      if (entry.base_notes) notesHtml += '<strong>Base:</strong> ' + entry.base_notes;
+    var html = '';
+    monthOrder.forEach(function(monthKey) {
+      html += '<div class="fh-month-group">';
+      html += '<div class="fh-entry__dot"></div>';
+      html += '<div class="fh-entry__month">' + monthKey + '</div>';
 
-      return '<div class="fh-entry">' +
-        '<div class="fh-entry__dot"></div>' +
-        '<div class="fh-entry__month">' + (entry.month || 'Month ' + (i + 1)) + '</div>' +
-        '<div class="fh-entry__grid">' +
-          '<div class="fh-entry__image">' +
-            (entry.product_image ? '<img src="' + entry.product_image + '" alt="' + entry.product_title + '" loading="lazy">' : '') +
-          '</div>' +
-          '<div>' +
-            '<h4 class="fh-entry__name">' + (entry.product_title || 'Unknown Fragrance') + '</h4>' +
-            (entry.family ? '<span class="fh-entry__family">' + entry.family + '</span>' : '') +
-            (notesHtml ? '<div class="fh-entry__notes">' + notesHtml + '</div>' : '') +
-            '<div class="fh-stars">' + stars + '</div>' +
-            '<div class="fh-user-note">' +
-              '<textarea placeholder="Add your notes..." data-note-entry="' + i + '">' + note + '</textarea>' +
-              '<button data-save-note="' + i + '">Save</button>' +
+      grouped[monthKey].forEach(function(item) {
+        var entry = item.entry;
+        var i = item.index;
+        var rating = ratings[i] || 0;
+        var note = notes[i] || '';
+        var stars = '';
+        for (var s = 1; s <= 5; s++) {
+          stars += '<svg class="fh-star' + (s <= rating ? ' is-filled' : '') + '" data-entry="' + i + '" data-star="' + s + '" viewBox="0 0 24 24" fill="' + (s <= rating ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+        }
+
+        var notesHtml = '';
+        if (entry.top_notes) notesHtml += '<strong>Top:</strong> ' + entry.top_notes + '<br>';
+        if (entry.heart_notes) notesHtml += '<strong>Heart:</strong> ' + entry.heart_notes + '<br>';
+        if (entry.base_notes) notesHtml += '<strong>Base:</strong> ' + entry.base_notes;
+
+        html += '<div class="fh-entry">' +
+          '<div class="fh-entry__grid">' +
+            '<div class="fh-entry__image">' +
+              (entry.product_image ? '<img src="' + entry.product_image + '" alt="' + entry.product_title + '" loading="lazy">' : '') +
             '</div>' +
-            '<div class="fh-entry__actions">' +
-              (entry.product_handle ? '<a href="/products/' + entry.product_handle + '" class="fh-action--again">Get This Again</a>' : '') +
-              (entry.product_handle ? '<a href="/products/' + entry.product_handle + '" class="fh-action--fullsize">Buy Full Size</a>' : '') +
+            '<div>' +
+              '<h4 class="fh-entry__name">' + (entry.product_title || 'Unknown Fragrance') + '</h4>' +
+              (entry.family ? '<span class="fh-entry__family">' + entry.family + '</span>' : '') +
+              (notesHtml ? '<div class="fh-entry__notes">' + notesHtml + '</div>' : '') +
+              '<div class="fh-stars">' + stars + '</div>' +
+              '<div class="fh-user-note">' +
+                '<textarea placeholder="Add your notes..." data-note-entry="' + i + '">' + note + '</textarea>' +
+                '<button data-save-note="' + i + '">Save</button>' +
+              '</div>' +
+              '<div class="fh-entry__actions">' +
+                (entry.product_handle ? '<a href="/products/' + entry.product_handle + '" class="fh-action--again">Get This Again</a>' : '') +
+                (entry.product_handle ? '<a href="/products/' + entry.product_handle + '" class="fh-action--fullsize">Buy Full Size</a>' : '') +
+              '</div>' +
             '</div>' +
           '</div>' +
-        '</div>' +
-      '</div>';
-    }).join('');
+        '</div>';
+      });
+
+      html += '</div>';
+    });
+
+    timelineEl.innerHTML = html;
 
     // Star click handlers
     timelineEl.querySelectorAll('.fh-star').forEach(function(star) {

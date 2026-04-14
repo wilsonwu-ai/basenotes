@@ -2,20 +2,6 @@
   assign current_variant = product.selected_or_first_available_variant
   assign featured_image = current_variant.featured_image | default: product.featured_image
 
-  # Get intensity from metafield or tags (1-5 scale)
-  assign intensity = product.metafields.fragrance.intensity | default: 0
-  if intensity == 0
-    for tag in product.tags
-      if tag contains 'intensity:'
-        assign intensity = tag | split: ':' | last | plus: 0
-        break
-      endif
-    endfor
-  endif
-  if intensity == 0
-    assign intensity = 3
-  endif
-
   # Get seasons from metafield or tags
   assign seasons = product.metafields.fragrance.season.value | default: nil
   assign season_spring = false
@@ -391,29 +377,10 @@
           </div>
         {%- endif -%}
 
-        {% comment %} Fragrance Characteristics - Intensity & Seasons {% endcomment %}
+        {% comment %} Fragrance Characteristics - Seasons {% endcomment %}
         <div class="fragrance-characteristics">
           <h3 class="fragrance-characteristics__title">Characteristics</h3>
           <div class="fragrance-characteristics__grid">
-            {% comment %} Intensity {% endcomment %}
-            <div class="fragrance-characteristic">
-              <span class="fragrance-characteristic__label">Intensity</span>
-              <div class="fragrance-characteristic__intensity">
-                {%- for i in (1..5) -%}
-                  <span class="intensity-dot{% if i <= intensity %} is-filled{% endif %}"></span>
-                {%- endfor -%}
-                <span class="intensity-level">
-                  {%- case intensity -%}
-                    {%- when 1 -%}Light
-                    {%- when 2 -%}Subtle
-                    {%- when 3 -%}Moderate
-                    {%- when 4 -%}Strong
-                    {%- when 5 -%}Powerful
-                  {%- endcase -%}
-                </span>
-              </div>
-            </div>
-
             {% comment %} Best Seasons {% endcomment %}
             <div class="fragrance-characteristic">
               <span class="fragrance-characteristic__label">Best For</span>
@@ -1133,31 +1100,6 @@
     letter-spacing: 0.1em;
     color: var(--color-text-muted);
     margin-bottom: var(--spacing-sm);
-  }
-
-  .fragrance-characteristic__intensity {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-  }
-
-  .intensity-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--color-border);
-    transition: background 0.2s;
-  }
-
-  .intensity-dot.is-filled {
-    background: var(--color-secondary);
-  }
-
-  .intensity-level {
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    color: var(--color-text);
-    margin-left: var(--spacing-xs);
   }
 
   .fragrance-characteristic__seasons {

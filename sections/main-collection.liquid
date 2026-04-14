@@ -188,6 +188,25 @@
               </details>
             {%- endfor -%}
 
+            {% comment %} Custom "Not Tried" filter — client-side, uses order history {% endcomment %}
+            {%- if customer -%}
+            <details class="collection__filter-group" open>
+              <summary class="collection__filter-heading">
+                Discovery
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </summary>
+              <div class="collection__filter-options">
+                <label class="collection__filter-option">
+                  <input type="checkbox" id="filterNotTried" data-custom-filter="not-tried">
+                  <span class="collection__filter-checkbox"></span>
+                  <span class="collection__filter-label">Not Tried Yet</span>
+                </label>
+              </div>
+            </details>
+            {%- endif -%}
+
             <div class="collection__filter-actions">
               <button type="submit" class="btn btn--primary btn--full">Apply Filters</button>
               {%- if active_filters_count > 0 -%}
@@ -956,6 +975,33 @@
             }
           });
         }
+      });
+    }
+
+    // "Not Tried" client-side filter
+    var notTriedCheckbox = document.getElementById('filterNotTried');
+    if (notTriedCheckbox) {
+      var triedHandles = [];
+      {%- if customer -%}
+        {%- for order in customer.orders -%}
+          {%- for item in order.line_items -%}
+            triedHandles.push({{ item.product.handle | json }});
+          {%- endfor -%}
+        {%- endfor -%}
+      {%- endif -%}
+      var triedSet = new Set(triedHandles.filter(Boolean));
+      notTriedCheckbox.addEventListener('change', function() {
+        var cards = document.querySelectorAll('[data-product-grid] .product-card');
+        cards.forEach(function(card) {
+          var link = card.querySelector('a[href*="/products/"]');
+          if (!link) return;
+          var handle = link.getAttribute('href').split('/products/')[1]?.split('?')[0];
+          if (notTriedCheckbox.checked && triedSet.has(handle)) {
+            card.style.display = 'none';
+          } else {
+            card.style.display = '';
+          }
+        });
       });
     }
 
