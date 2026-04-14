@@ -492,14 +492,20 @@
   /* Responsive */
   @media (max-width: 768px) {
     .sub-hero { padding: 100px 0 60px; }
+    .sub-section { padding: 48px 0; }
     .sub-steps { flex-direction: column; align-items: center; gap: 24px; }
     .sub-step__connector { display: none; }
     .sub-plans { grid-template-columns: 1fr; max-width: 400px; }
     .sub-plan--featured { order: -1; }
-    .sub-includes { grid-template-columns: 1fr 1fr; }
+    .sub-includes { grid-template-columns: 1fr 1fr; gap: 16px; }
+    .sub-include__icon svg { width: 40px; height: 40px; }
+    .sub-faq__item summary { font-size: 15px; padding: 14px 0; }
   }
   @media (max-width: 480px) {
+    .sub-hero { padding: 80px 0 40px; }
+    .sub-hero__title { font-size: 28px; }
     .sub-includes { grid-template-columns: 1fr; }
+    .sub-section { padding: 36px 0; }
   }
 </style>
 
