@@ -3,6 +3,7 @@
 {%- assign is_subscriber = false -%}
 {%- assign latest_sub_order = nil -%}
 {%- assign latest_sub_item = nil -%}
+{%- assign earliest_sub_order = nil -%}
 {%- for order in customer.orders -%}
   {%- for line_item in order.line_items -%}
     {%- if line_item.selling_plan_allocation -%}
@@ -11,13 +12,18 @@
         {%- assign latest_sub_order = order -%}
         {%- assign latest_sub_item = line_item -%}
       {%- endunless -%}
+      {%- assign earliest_sub_order = order -%}
     {%- endif -%}
   {%- endfor -%}
 {%- endfor -%}
 
-{%- assign member_since = customer.created_at | date: '%s' -%}
+{%- if earliest_sub_order -%}
+  {%- assign sub_start_ts = earliest_sub_order.created_at | date: '%s' -%}
+{%- else -%}
+  {%- assign sub_start_ts = customer.created_at | date: '%s' -%}
+{%- endif -%}
 {%- assign now_ts = 'now' | date: '%s' -%}
-{%- assign diff_seconds = now_ts | minus: member_since -%}
+{%- assign diff_seconds = now_ts | minus: sub_start_ts -%}
 {%- assign months_active = diff_seconds | divided_by: 2592000 -%}
 {%- if months_active < 1 -%}{%- assign months_active = 1 -%}{%- endif -%}
 
@@ -594,8 +600,10 @@
   .btn--primary:hover { background: #1a2927; }
   .btn--gold { background: #C9A962; color: #2D4641; border-color: #C9A962; }
   .btn--gold:hover { background: #b8963f; }
-  .btn--outline { background: transparent; color: #fff; border-color: rgba(255,255,255,0.4); }
-  .btn--outline:hover { border-color: #fff; }
+  .btn--outline { background: transparent; color: #2D4641; border-color: #D5D0C8; }
+  .btn--outline:hover { border-color: #C9A962; color: #C9A962; }
+  .acct__card--cta .btn--outline { color: #fff; border-color: rgba(255,255,255,0.4); }
+  .acct__card--cta .btn--outline:hover { border-color: #fff; color: #fff; }
   .btn--small { padding: 8px 18px; font-size: 12px; }
 
   /* ── Responsive ── */
