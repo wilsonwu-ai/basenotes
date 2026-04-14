@@ -83,11 +83,9 @@
         "eyebrow": "The Base Note Experience",
         "heading": "Full Luxury. Pocket Size.",
         "description": "The same elite fragrance found in $500 bottles -- crafted into a sleek, precision atomizer",
-        "full_bottle_image": "",
         "full_bottle_title": "The Full Bottle",
         "full_bottle_subtitle": "100ml · Retail Price",
         "full_bottle_price": "$500",
-        "atomizer_image": "",
         "atomizer_title": "Your Monthly Vial",
         "atomizer_subtitle": "5ml · ~45 Sprays · 30 Days",
         "atomizer_price": "$20/month",
@@ -266,8 +264,8 @@
         "step-2": {
           "type": "step",
           "settings": {
-            "title": "Choose Your Plan",
-            "description": "Choose monthly, quarterly or annual plans"
+            "title": "Select Your Fragrance",
+            "description": "Choose from our exclusive selection"
           }
         },
         "step-3": {
