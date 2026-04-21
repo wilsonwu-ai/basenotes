@@ -1,6 +1,3 @@
-liquid
-
-
 {%- layout 'theme' -%}
 {%- comment -%}
   ══════════════════════════════════════════════════════════════
@@ -38,9 +35,11 @@ liquid
 {%- assign diff_seconds = now_ts | minus: sub_start_ts -%}
 {%- assign months_active = diff_seconds | divided_by: 2592000 -%}
 {%- if months_active < 1 -%}{%- assign months_active = 1 -%}{%- endif -%}
+
 <section class="acct">
   <div class="container">
     <div class="acct__layout">
+
       <!-- ═══ Sidebar ═══ -->
       <aside class="acct__sidebar">
         <div class="acct__user">
@@ -88,23 +87,28 @@ liquid
           </a>
         </div>
       </aside>
+
       <!-- ═══ Main Content ═══ -->
       <main class="acct__main">
+
         <!-- Staff FOTM warning -->
-        <div id="staffFotmWarning" style="display:none;margin-bottom:1.5rem;padding:1rem 1.25rem;background:#FFF3CD;border:1px solid #FFD93D;border-radius:10px;color:#856404;">
+        <div id="staffFotmWarning" class="staff-fotm-warning" style="display:none;">
           <strong>Staff Alert:</strong> No Fragrance of the Month set for <span id="staffFotmMonth"></span>.
-          <a href="/admin/themes/current/editor" target="_blank" style="color:#2D4641;font-weight:600;text-decoration:underline;margin-left:4px;">Set it now &rarr;</a>
+          <a href="/admin/themes/current/editor" target="_blank" class="staff-fotm-warning__link">Set it now &rarr;</a>
         </div>
+
         <!-- API Error Banner -->
-        <div id="apiErrorBanner" style="display:none;margin-bottom:1.5rem;padding:1rem 1.25rem;background:#FFEBEE;border:1px solid #EF5350;border-radius:10px;color:#C62828;">
+        <div id="apiErrorBanner" class="api-error-banner" style="display:none;">
           <strong>Connection Issue:</strong> <span id="apiErrorMessage">Unable to load subscription data.</span>
-          <button onclick="window.AppstleAPI.refresh()" style="margin-left:12px;padding:4px 12px;background:#C62828;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px;">Retry</button>
+          <button id="apiRetryBtn" class="api-error-banner__btn">Retry</button>
         </div>
+
         <!-- Loading State -->
-        <div id="globalLoader" style="display:none;text-align:center;padding:3rem;">
+        <div id="globalLoader" class="global-loader" style="display:none;">
           <div class="loader-spinner"></div>
-          <p style="margin-top:1rem;color:#666;">Loading your subscription...</p>
+          <p>Loading your subscription...</p>
         </div>
+
         <!-- ────── Dashboard ────── -->
         <div data-view="dashboard" class="acct__view">
           <div class="acct__welcome-banner">
@@ -151,7 +155,6 @@ liquid
               </div>
             </div>
           </div>
-          <!-- Future Months Preview -->
           <div class="acct__card">
             <div class="acct__card-header">
               <h3 class="acct__card-title">Your Fragrance Queue</h3>
@@ -166,7 +169,7 @@ liquid
             <span class="acct__cta-badge">Start Your Journey</span>
             <h3 class="acct__cta-title">Join Base Note</h3>
             <p class="acct__cta-desc">Get a new luxury fragrance delivered every month for just $20 + free shipping.</p>
-            <a href="/collections/all" class="btn btn--gold">Subscribe Now</a>
+            <a href="{{ routes.all_products_collection_url }}" class="btn btn--gold">Subscribe Now</a>
           </div>
           {%- endif -%}
           <div class="acct__card">
@@ -193,11 +196,12 @@ liquid
             {%- else -%}
               <div class="acct__empty">
                 <p>No orders yet</p>
-                <a href="/collections/all" class="btn btn--primary btn--small">Start Shopping</a>
+                <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary btn--small">Start Shopping</a>
               </div>
             {%- endif -%}
           </div>
         </div>
+
         <!-- ────── Fragrance History ────── -->
         <div data-view="history" class="acct__view" style="display:none;">
           <div class="acct__card">
@@ -211,10 +215,11 @@ liquid
               </svg>
               <h4>Your journey starts soon!</h4>
               <p>Once you receive your first fragrance, your scent history will appear here.</p>
-              <a href="/collections/all" class="btn btn--primary btn--small">Browse Fragrances</a>
+              <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary btn--small">Browse Fragrances</a>
             </div>
           </div>
         </div>
+
         <!-- ────── Next Shipment ────── -->
         <div data-view="next-shipment" class="acct__view" style="display:none;">
           {%- if is_subscriber -%}
@@ -262,11 +267,12 @@ liquid
             <span class="acct__cta-badge">Get Started</span>
             <h3 class="acct__cta-title">Subscribe to Base Note</h3>
             <p class="acct__cta-desc">Choose your own fragrance each month or let us surprise you with our expert picks.</p>
-            <a href="/collections/all" class="btn btn--gold">Start Your Subscription</a>
+            <a href="{{ routes.all_products_collection_url }}" class="btn btn--gold">Start Your Subscription</a>
           </div>
           {%- endif -%}
         </div>
-        <!-- ────── Future Months (New Section) ────── -->
+
+        <!-- ────── Future Months ────── -->
         <div data-view="future-months" class="acct__view" style="display:none;">
           {%- if is_subscriber -%}
           <div class="acct__card">
@@ -274,9 +280,8 @@ liquid
               <h3 class="acct__card-title">Plan Your Future Fragrances</h3>
             </div>
             <p class="fm-intro">Pre-select your fragrances months in advance. We'll automatically ship your queued selection each month.</p>
-            <div class="fm-months" id="futureMonthsGrid">
-              <!-- Dynamically populated -->
-            </div>
+            <p class="fm-queue-notice">Note: Your queue is saved to this device. Sign in on another device to re-select.</p>
+            <div class="fm-months" id="futureMonthsGrid"></div>
           </div>
           <div class="acct__card">
             <div class="acct__card-header">
@@ -291,13 +296,14 @@ liquid
           </div>
           {%- else -%}
           <div class="acct__card acct__card--cta">
-            <span class="acct__cta-badge">Subscribe First</span>
-            <h3 class="acct__cta-title">Unlock Future Planning</h3>
-            <p class="acct__cta-desc">Subscribe to Base Note to pre-select fragrances months in advance.</p>
-            <a href="/collections/all" class="btn btn--gold">Subscribe Now</a>
+            <span class="acct__cta-badge">Get Started</span>
+            <h3 class="acct__cta-title">Join Base Note</h3>
+            <p class="acct__cta-desc">Plan your fragrance journey months in advance with a Base Note subscription.</p>
+            <a href="{{ routes.all_products_collection_url }}" class="btn btn--gold">Start Your Subscription</a>
           </div>
           {%- endif -%}
         </div>
+
         <!-- ────── Subscription Management ────── -->
         <div data-view="subscription" class="acct__view" style="display:none;">
           {%- if is_subscriber -%}
@@ -373,17 +379,17 @@ liquid
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 Update Address
               </button>
-              <button class="sub-action-btn" id="subSkipBtn">
+              <button class="sub-action-btn" id="subSkipBtn" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
                 Skip Next Month
               </button>
-              <button class="sub-action-btn" id="subPauseBtn">
+              <button class="sub-action-btn" id="subPauseBtn" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
                 Pause Subscription
               </button>
             </div>
             <div class="sub-cancel">
-              <button class="sub-cancel__link" id="subCancelBtn">Cancel subscription</button>
+              <button class="sub-cancel__link" id="subCancelBtn" type="button">Cancel subscription</button>
             </div>
           </div>
           {%- else -%}
@@ -391,13 +397,14 @@ liquid
             <span class="acct__cta-badge">Start Your Journey</span>
             <h3 class="acct__cta-title">Join Base Note</h3>
             <p class="acct__cta-desc">Discover a new luxury fragrance every month. Plans start at just $20/mo.</p>
-            <div style="display:flex;gap:12px;flex-wrap:wrap;">
-              <a href="/collections/all" class="btn btn--gold">Subscribe Now</a>
-              <a href="/pages/quiz" class="btn btn--outline">Take the Scent Quiz</a>
+            <div class="acct__cta-actions">
+              <a href="{{ routes.all_products_collection_url }}" class="btn btn--gold">Subscribe Now</a>
+              <a href="{{ pages['quiz'].url }}" class="btn btn--outline">Take the Scent Quiz</a>
             </div>
           </div>
           {%- endif -%}
         </div>
+
         <!-- ────── Order History ────── -->
         <div data-view="orders" class="acct__view" style="display:none;">
           <div class="acct__card">
@@ -426,19 +433,22 @@ liquid
                   <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
                 </svg>
                 <p>No orders yet</p>
-                <a href="/collections/all" class="btn btn--primary btn--small">Start Shopping</a>
+                <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary btn--small">Start Shopping</a>
               </div>
             {%- endif -%}
           </div>
         </div>
+
       </main>
     </div>
   </div>
 </section>
+
 {%- if is_subscriber -%}
   {% render 'fragrance-selector', mode: 'modal' %}
   {% render 'cancellation-flow' %}
 {%- endif -%}
+
 <!-- ═══════════════════════════════════════ -->
 <!-- STYLES                                  -->
 <!-- ═══════════════════════════════════════ -->
@@ -446,6 +456,7 @@ liquid
   /* ── Layout ── */
   .acct { padding-top: calc(var(--header-height, 110px) + 2.5rem); padding-bottom: 4rem; min-height: 100vh; background: #F5F3F0; }
   .acct__layout { display: grid; grid-template-columns: 280px 1fr; gap: 2rem; }
+
   /* ── Sidebar ── */
   .acct__sidebar { background: #fff; border-radius: 12px; padding: 1.5rem; height: fit-content; position: sticky; top: calc(var(--header-height, 110px) + 1.5rem); }
   .acct__user { display: flex; align-items: center; gap: 12px; padding-bottom: 1.25rem; border-bottom: 1px solid #E8E6E3; margin-bottom: 1.25rem; }
@@ -460,9 +471,19 @@ liquid
   .acct__sidebar-footer { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid #E8E6E3; }
   .acct__logout { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #999; text-decoration: none; }
   .acct__logout:hover { color: #2D4641; }
+
+  /* ── Banners ── */
+  .staff-fotm-warning { margin-bottom: 1.5rem; padding: 1rem 1.25rem; background: #FFF3CD; border: 1px solid #FFD93D; border-radius: 10px; color: #856404; }
+  .staff-fotm-warning__link { color: #2D4641; font-weight: 600; text-decoration: underline; margin-left: 4px; }
+  .api-error-banner { margin-bottom: 1.5rem; padding: 1rem 1.25rem; background: #FFEBEE; border: 1px solid #EF5350; border-radius: 10px; color: #C62828; }
+  .api-error-banner__btn { margin-left: 12px; padding: 4px 12px; background: #C62828; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
+  .global-loader { text-align: center; padding: 3rem; }
+  .global-loader p { margin-top: 1rem; color: #666; }
+
   /* ── Main ── */
   .acct__main { display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
   .acct__view { display: flex; flex-direction: column; gap: 1.5rem; }
+
   /* ── Welcome Banner ── */
   .acct__welcome-banner { background: linear-gradient(135deg, #2D4641 0%, #1a2927 100%); border-radius: 12px; padding: 2rem; color: #fff; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
   .acct__welcome-banner::before { content: ''; position: absolute; top: -40%; right: -20%; width: 60%; height: 180%; background: radial-gradient(ellipse, rgba(201,169,98,0.08) 0%, transparent 70%); pointer-events: none; }
@@ -474,22 +495,27 @@ liquid
   .acct__status-badge--active { background: rgba(76,175,80,0.15); color: #4CAF50; border: 1px solid rgba(76,175,80,0.3); }
   .acct__status-badge--paused { background: rgba(255,152,0,0.15); color: #FF9800; border: 1px solid rgba(255,152,0,0.3); }
   .acct__status-badge--cancelled { background: rgba(244,67,54,0.15); color: #F44336; border: 1px solid rgba(244,67,54,0.3); }
+
   /* ── Stats ── */
   .acct__stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
   .acct__stat { background: #fff; border-radius: 12px; padding: 1.25rem; text-align: center; }
   .acct__stat-num { display: block; font-size: 1.5rem; font-weight: 700; color: #C9A962; margin-bottom: 4px; font-family: 'Cormorant Garamond', Georgia, serif; }
   .acct__stat-label { font-size: 12px; color: #999; }
+
   /* ── Card ── */
   .acct__card { background: #fff; border-radius: 12px; padding: 1.5rem; }
   .acct__card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
   .acct__card-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.25rem; font-weight: 600; color: #2D4641; margin: 0; }
   .acct__text-link { color: #C9A962; font-size: 13px; font-weight: 600; text-decoration: none; }
   .acct__text-link:hover { text-decoration: underline; }
+
   /* ── CTA card ── */
   .acct__card--cta { background: linear-gradient(135deg, #2D4641 0%, #1a2927 100%); color: #fff; text-align: center; padding: 2.5rem; }
   .acct__cta-badge { display: inline-block; padding: 5px 16px; background: rgba(201,169,98,0.15); border: 1px solid rgba(201,169,98,0.4); border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #C9A962; margin-bottom: 16px; }
   .acct__cta-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.5rem; font-weight: 600; margin: 0 0 8px; }
   .acct__cta-desc { font-size: 14px; opacity: 0.75; margin: 0 0 24px; max-width: 400px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+  .acct__cta-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
   /* ── Orders ── */
   .acct__order-list { display: flex; flex-direction: column; }
   .acct__order-row { display: flex; align-items: center; gap: 1rem; padding: 12px 0; border-bottom: 1px solid #F0EDE8; text-decoration: none; color: inherit; transition: background 0.15s; }
@@ -502,14 +528,17 @@ liquid
   .acct__order-status--fulfilled { background: rgba(76,175,80,0.1); color: #4CAF50; }
   .acct__order-status--unfulfilled, .acct__order-status--processing { background: rgba(201,169,98,0.1); color: #C9A962; }
   .acct__order-total { font-weight: 700; font-size: 14px; color: #2D4641; }
+
   /* ── Empty ── */
   .acct__empty { text-align: center; padding: 2.5rem 1rem; }
   .acct__empty svg { color: #ccc; margin-bottom: 12px; }
   .acct__empty p { color: #999; font-size: 14px; margin: 0 0 16px; }
+
   /* ── Shipment Preview ── */
   .acct__shipment-placeholder { text-align: center; padding: 2rem; color: #999; }
   .acct__shipment-placeholder svg { margin-bottom: 12px; color: #ccc; }
   .acct__shipment-placeholder p { margin: 0 0 16px; font-size: 14px; }
+
   /* ── Dashboard Queue Preview ── */
   .dash-queue-preview { display: flex; gap: 12px; overflow-x: auto; padding: 4px 0; }
   .dash-queue-item { flex-shrink: 0; width: 80px; text-align: center; }
@@ -518,6 +547,7 @@ liquid
   .dash-queue-item__name { font-size: 11px; font-weight: 600; color: #2D4641; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .dash-queue-empty { color: #999; font-size: 13px; padding: 1rem 0; }
   .dash-queue-empty a { color: #C9A962; }
+
   /* ── Fragrance History Timeline ── */
   .fh-timeline { position: relative; padding-left: 32px; }
   .fh-timeline::before { content: ''; position: absolute; left: 11px; top: 0; bottom: 0; width: 2px; background: #E8E6E3; }
@@ -551,6 +581,7 @@ liquid
   .fh-empty svg { color: #ccc; margin-bottom: 16px; }
   .fh-empty h4 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.25rem; color: #2D4641; margin: 0 0 8px; }
   .fh-empty p { color: #999; font-size: 14px; margin: 0 0 20px; line-height: 1.5; }
+
   /* ── Next Shipment ── */
   .ns-status-badge { padding: 4px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; border-radius: 999px; }
   .ns-status-badge.ns-confirmed { background: rgba(76,175,80,0.1); color: #4CAF50; }
@@ -573,8 +604,10 @@ liquid
   .ns-skipped svg { color: #ccc; margin-bottom: 16px; }
   .ns-skipped h4 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; color: #2D4641; margin: 0 0 8px; }
   .ns-skipped p { font-size: 14px; color: #999; margin: 0 0 20px; }
+
   /* ── Future Months ── */
-  .fm-intro { font-size: 14px; color: #666; margin-bottom: 1.5rem; line-height: 1.6; }
+  .fm-intro { font-size: 14px; color: #666; margin-bottom: 1rem; line-height: 1.6; }
+  .fm-queue-notice { font-size: 12px; color: #999; margin-bottom: 1.5rem; font-style: italic; }
   .fm-months { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
   .fm-month-card { background: #FAF8F5; border: 2px solid #E8E6E3; border-radius: 12px; padding: 1.25rem; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; }
   .fm-month-card:hover { border-color: #C9A962; transform: translateY(-2px); }
@@ -603,6 +636,7 @@ liquid
   .fm-queue-item__btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid #E8E6E3; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
   .fm-queue-item__btn:hover { border-color: #C9A962; }
   .fm-queue-item__btn--remove:hover { border-color: #F44336; color: #F44336; }
+
   /* ── Subscription Details ── */
   .sub-details { display: flex; flex-direction: column; }
   .sub-details__row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #F0EDE8; }
@@ -617,6 +651,7 @@ liquid
   .sub-cancel { text-align: center; padding-top: 1rem; border-top: 1px solid #F0EDE8; }
   .sub-cancel__link { background: none; border: none; color: #999; font-size: 12px; cursor: pointer; font-family: inherit; text-decoration: underline; }
   .sub-cancel__link:hover { color: #c62828; }
+
   /* ── Billing Countdown ── */
   .billing-countdown__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
   .billing-countdown__days { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.5rem; font-weight: 700; color: #C9A962; }
@@ -626,6 +661,7 @@ liquid
   .billing-countdown__cancel-window { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(255,152,0,0.06); border: 1px solid rgba(255,152,0,0.2); border-radius: 8px; font-size: 12px; color: #666; }
   .billing-countdown__cancel-window svg { color: #FF9800; flex-shrink: 0; }
   .billing-countdown__cancel-window strong { color: #2D4641; }
+
   /* ── Buttons ── */
   .btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 24px; font-weight: 700; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em; font-size: 13px; border: 2px solid transparent; font-family: inherit; }
   .btn--primary { background: #2D4641; color: #fff; border-color: #2D4641; }
@@ -637,1132 +673,6 @@ liquid
   .acct__card--cta .btn--outline { color: #fff; border-color: rgba(255,255,255,0.4); }
   .acct__card--cta .btn--outline:hover { border-color: #fff; color: #fff; }
   .btn--small { padding: 8px 18px; font-size: 12px; }
-  /* ── Loader ── */
-  .loader-spinner { width: 40px; height: 40px; border: 3px solid #E8E6E3; border-top-color: #C9A962; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  /* ── Responsive ── */
-  @media (max-width: 992px) {
-    .acct__layout { grid-template-columns: 1fr; }
-    .acct__sidebar { position: static; }
-    .acct__nav { flex-direction: row; flex-wrap: wrap; gap: 6px; }
-    .acct__nav-link { padding: 8px 14px; font-size: 12px; }
-    .acct__stats { grid-template-columns: repeat(2, 1fr); }
-    .sub-actions { grid-template-columns: 1fr; }
-    .fm-months { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 768px) {
-    .acct { padding-top: calc(var(--header-height, 110px) + 1.5rem); }
-    .acct__welcome-banner { flex-direction: column; align-items: flex-start; gap: 12px; padding: 1.5rem; }
-    .acct__welcome-title { font-size: 1.35rem; }
-    .fh-entry__grid { grid-template-columns: 80px 1fr; gap: 1rem; }
-    .fh-entry__image { width: 80px; height: 80px; }
-    .ns-selected__card { flex-direction: column; text-align: center; }
-    .ns-actions { justify-content: center; }
-  }
-  @media (max-width: 576px) {
-    .acct__stats { grid-template-columns: 1fr 1fr; gap: 8px; }
-    .acct__stat { padding: 1rem; }
-    .acct__stat-num { font-size: 1.25rem; }
-    .fm-months { grid-template-columns: 1fr; }
-  }
-</style>
-<!-- ═══════════════════════════════════════ -->
-<!-- JAVASCRIPT                              -->
-<!-- ═══════════════════════════════════════ -->
-<script>
-(function() {
-  'use strict';
-  // ══════════════════════════════════════════
-  // CONFIGURATION
-  // ══════════════════════════════════════════
-  var CONFIG = {
-    appstleApiBase: '/apps/subscriptions/cp/api',
-    customerEmail: {{ customer.email | json }},
-    customerId: {{ customer.id | json }},
-    isSubscriberFromLiquid: {{ is_subscriber | json }},
-    portalUrl: {{ settings.appstle_portal_url | default: '/apps/subscriptions' | json }},
-    fotmEnabled: {{ settings.fotm_enabled | default: false | json }},
-    fotmMonth: {{ settings.fotm_month | json }},
-    {%- if settings.fotm_product -%}
-    fotmProduct: {
-      title: {{ settings.fotm_product.title | json }},
-      image: {{ settings.fotm_product.featured_image | image_url: width: 200 | json }},
-      vendor: {{ settings.fotm_product.vendor | json }},
-      handle: {{ settings.fotm_product.handle | json }},
-      variantId: {{ settings.fotm_product.selected_or_first_available_variant.id | json }}
-    },
-    {%- else -%}
-    fotmProduct: null,
-    {%- endif -%}
-    isStaff: {{ customer.tags | join: ',' | downcase | contains: 'staff' | json }},
-    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-  };
-  // ══════════════════════════════════════════
-  // STATE
-  // ══════════════════════════════════════════
-  var state = {
-    subscription: null,
-    contracts: [],
-    activeContract: null,
-    isLoading: true,
-    error: null,
-    fragranceHistory: [],
-    futureQueue: {}, // { 'YYYY-MM': { productId, title, image, handle, vendor } }
-    nextShipment: null
-  };
-  // ══════════════════════════════════════════
-  // UTILITIES
-  // ══════════════════════════════════════════
-  function $(selector) {
-    return document.querySelector(selector);
-  }
-  function $$(selector) {
-    return document.querySelectorAll(selector);
-  }
-  function isValidDate(d) {
-    return d instanceof Date && !isNaN(d.getTime());
-  }
-  function formatDate(date, format) {
-    if (!isValidDate(date)) return '—';
-    var opts = format === 'short' 
-      ? { month: 'short', day: 'numeric' }
-      : { month: 'long', day: 'numeric', year: 'numeric' };
-    return date.toLocaleDateString('en-US', opts);
-  }
-  function getMonthKey(date) {
-    return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
-  }
-  function getMonthLabel(monthKey) {
-    var parts = monthKey.split('-');
-    var monthIndex = parseInt(parts[1], 10) - 1;
-    return CONFIG.monthNames[monthIndex] + ' ' + parts[0];
-  }
-  function showError(message) {
-    var banner = $('#apiErrorBanner');
-    var msgEl = $('#apiErrorMessage');
-    if (banner && msgEl) {
-      msgEl.textContent = message;
-      banner.style.display = 'block';
-    }
-    state.error = message;
-  }
-  function hideError() {
-    var banner = $('#apiErrorBanner');
-    if (banner) banner.style.display = 'none';
-    state.error = null;
-  }
-  function showLoader() {
-    var loader = $('#globalLoader');
-    if (loader) loader.style.display = 'block';
-  }
-  function hideLoader() {
-    var loader = $('#globalLoader');
-    if (loader) loader.style.display = 'none';
-  }
-  // ══════════════════════════════════════════
-  // LOCAL STORAGE
-  // ══════════════════════════════════════════
-  var Storage = {
-    prefix: 'bn_',
-    get: function(key) {
-      try {
-        var data = localStorage.getItem(this.prefix + key);
-        return data ? JSON.parse(data) : null;
-      } catch (e) {
-        return null;
-      }
-    },
-    set: function(key, value) {
-      try {
-        localStorage.setItem(this.prefix + key, JSON.stringify(value));
-      } catch (e) {}
-    },
-    remove: function(key) {
-      try {
-        localStorage.removeItem(this.prefix + key);
-      } catch (e) {}
-    }
-  };
-  // ══════════════════════════════════════════
-  // APPSTLE API SERVICE
-  // ══════════════════════════════════════════
-  var AppstleAPI = {
-    /**
-     * Fetch with error handling
-     */
-    fetch: async function(endpoint, options) {
-      options = options || {};
-      options.credentials = 'same-origin';
-      options.headers = options.headers || {};
-      options.headers['Content-Type'] = 'application/json';
-      var response = await fetch(CONFIG.appstleApiBase + endpoint, options);
-      
-      if (!response.ok) {
-        throw new Error('API Error: ' + response.status);
-      }
-      var text = await response.text();
-      return text ? JSON.parse(text) : null;
-    },
-    /**
-     * Get logged-in customer ID from Appstle
-     */
-    getCustomerId: async function() {
-      return await this.fetch('/logged-in-customer');
-    },
-    /**
-     * Get all subscription contracts for a customer
-     */
-    getContracts: async function(appstleCustomerId) {
-      var data = await this.fetch('/subscription-customers-detail/valid/' + appstleCustomerId);
-      return Array.isArray(data) ? data : [];
-    },
-    /**
-     * Get contract details
-     */
-    getContractDetails: async function(contractId) {
-      return await this.fetch('/subscription-contracts/' + contractId);
-    },
-    /**
-     * Get order history for a contract
-     */
-    getOrderHistory: async function(contractId) {
-      return await this.fetch('/subscription-contracts/' + contractId + '/orders');
-    },
-    /**
-     * Skip next order
-     */
-    skipNextOrder: async function(contractId) {
-      return await this.fetch('/subscription-contracts/' + contractId + '/skip-next-order', {
-        method: 'POST'
-      });
-    },
-    /**
-     * Unskip order
-     */
-    unskipOrder: async function(contractId, billingAttemptId) {
-      return await this.fetch('/subscription-contracts/' + contractId + '/unskip/' + billingAttemptId, {
-        method: 'POST'
-      });
-    },
-    /**
-     * Pause subscription
-     */
-    pauseSubscription: async function(contractId) {
-      return await this.fetch('/subscription-contracts/' + contractId + '/pause', {
-        method: 'POST'
-      });
-    },
-    /**
-     * Resume subscription
-     */
-    resumeSubscription: async function(contractId) {
-      return await this.fetch('/subscription-contracts/' + contractId + '/activate', {
-        method: 'POST'
-      });
-    },
-    /**
-     * Update payment method (sends email)
-     */
-    updatePaymentMethod: async function(contractId) {
-      return await this.fetch('/subscription-contracts-update-payment-method?contractId=' + contractId, {
-        method: 'PUT',
-        body: '{}'
-      });
-    },
-    /**
-     * Update line item (swap product)
-     */
-    updateLineItem: async function(contractId, lineId, variantId, sellingPlanId) {
-      var body = {
-        variantId: variantId
-      };
-      if (sellingPlanId) {
-        body.sellingPlanId = sellingPlanId;
-      }
-      return await this.fetch('/subscription-contracts/' + contractId + '/lines/' + lineId, {
-        method: 'PATCH',
-        body: JSON.stringify(body)
-      });
-    },
-    /**
-     * Get customer metafields (for fragrance history)
-     */
-    getCustomerMetafields: async function(appstleCustomerId) {
-      return await this.fetch('/subscription-customers/' + appstleCustomerId + '/metafields');
-    },
-    /**
-     * Update customer metafield
-     */
-    updateCustomerMetafield: async function(appstleCustomerId, namespace, key, value, type) {
-      return await this.fetch('/subscription-customers/' + appstleCustomerId + '/metafields', {
-        method: 'POST',
-        body: JSON.stringify({
-          namespace: namespace,
-          key: key,
-          value: JSON.stringify(value),
-          type: type || 'json'
-        })
-      });
-    },
-    /**
-     * Refresh all data
-     */
-    refresh: async function() {
-      hideError();
-      showLoader();
-      try {
-        await loadSubscriptionData();
-        renderAll();
-      } catch (e) {
-        showError('Failed to refresh data. Please try again.');
-      } finally {
-        hideLoader();
-      }
-    }
-  };
-  // Expose for retry button
-  window.AppstleAPI = AppstleAPI;
-  // ══════════════════════════════════════════
-  // DATA LOADING
-  // ══════════════════════════════════════════
-  async function loadSubscriptionData() {
-    state.isLoading = true;
-    try {
-      // Step 1: Get Appstle customer ID
-      var appstleCustomerId = await AppstleAPI.getCustomerId();
-      
-      if (!appstleCustomerId) {
-        // Customer not logged in to Appstle portal
-        state.isLoading = false;
-        return;
-      }
-      // Step 2: Get all contracts
-      var contracts = await AppstleAPI.getContracts(appstleCustomerId);
-      state.contracts = contracts;
-      // Find active contract
-      state.activeContract = contracts.find(function(c) {
-        return c.status === 'ACTIVE';
-      }) || contracts[0] || null;
-      if (state.activeContract) {
-        // Store contract info
-        state.subscription = {
-          id: state.activeContract.id,
-          contractId: state.activeContract.subscriptionContractId || state.activeContract.contractId || state.activeContract.id,
-          status: state.activeContract.status,
-          nextBillingDate: parseNextDate(state.activeContract),
-          nextOrderDate: parseNextOrderDate(state.activeContract),
-          plan: extractPlanInfo(state.activeContract),
-          lines: state.activeContract.lines || state.activeContract.lineItems || [],
-          paymentMethod: extractPaymentMethod(state.activeContract),
-          shippingAddress: extractShippingAddress(state.activeContract),
-          appstleCustomerId: appstleCustomerId
-        };
-      }
-      // Load fragrance history from metafields or localStorage
-      await loadFragranceHistory(appstleCustomerId);
-      // Load future queue from localStorage (or Appstle metafields in future)
-      loadFutureQueue();
-      // Load next shipment state
-      loadNextShipmentState();
-    } catch (e) {
-      console.error('Error loading subscription data:', e);
-      showError('Unable to load subscription data. Some features may be limited.');
-    }
-    state.isLoading = false;
-  }
-  function parseNextDate(contract) {
-    var dateFields = [
-      'nextOrderDate', 'nextOrderDateLocal',
-      'nextBillingDate', 'nextBillingDateLocal',
-      'billingDate', 'nextDeliveryDate'
-    ];
-    
-    for (var i = 0; i < dateFields.length; i++) {
-      var val = contract[dateFields[i]];
-      if (val) {
-        var d = new Date(val);
-        if (isValidDate(d)) return d;
-      }
-    }
-    
-    // Fallback: first of next month
-    var now = new Date();
-    return new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  }
-  function parseNextOrderDate(contract) {
-    var val = contract.nextOrderDate || contract.nextOrderDateLocal;
-    if (val) {
-      var d = new Date(val);
-      if (isValidDate(d)) return d;
-    }
-    return parseNextDate(contract);
-  }
-  function extractPlanInfo(contract) {
-    var interval = contract.billingIntervalCount || 1;
-    var unit = contract.billingInterval || 'MONTH';
-    var price = contract.totalPrice || contract.price || 20;
-    
-    var planName = 'Monthly';
-    if (unit === 'MONTH' && interval === 1) planName = 'Monthly';
-    else if (unit === 'MONTH' && interval === 3) planName = 'Quarterly';
-    else if (unit === 'YEAR' && interval === 1) planName = 'Annual';
-    
-    return {
-      name: planName,
-      interval: interval,
-      unit: unit,
-      price: price,
-      priceFormatted: '$' + (price / 100).toFixed(2) + '/mo'
-    };
-  }
-  function extractPaymentMethod(contract) {
-    var pm = contract.paymentMethod || contract.paymentDetails || {};
-    var brand = pm.brand || pm.cardBrand || '';
-    var last4 = pm.last4 || pm.lastFourDigits || '';
-    
-    if (brand && last4) {
-      return brand.charAt(0).toUpperCase() + brand.slice(1) + ' •••• ' + last4;
-    }
-    return '•••• •••• •••• ——';
-  }
-  function extractShippingAddress(contract) {
-    var addr = contract.shippingAddress || contract.deliveryAddress || {};
-    var parts = [];
-    if (addr.address1) parts.push(addr.address1);
-    if (addr.city) parts.push(addr.city);
-    if (addr.provinceCode || addr.province) parts.push(addr.provinceCode || addr.province);
-    return parts.length > 0 ? parts.join(', ') : 'Not set';
-  }
-  async function loadFragranceHistory(appstleCustomerId) {
-    // Try Appstle metafields first
-    try {
-      var metafields = await AppstleAPI.getCustomerMetafields(appstleCustomerId);
-      var historyMeta = metafields && metafields.find(function(m) {
-        return m.namespace === 'subscription' && m.key === 'fragrance_history';
-      });
-      
-      if (historyMeta && historyMeta.value) {
-        state.fragranceHistory = JSON.parse(historyMeta.value);
-        return;
-      }
-    } catch (e) {}
-    // Fallback to localStorage
-    state.fragranceHistory = Storage.get('fragrance_history') || [];
-  }
-  function loadFutureQueue() {
-    state.futureQueue = Storage.get('future_queue') || {};
-  }
-  function saveFutureQueue() {
-    Storage.set('future_queue', state.futureQueue);
-    // TODO: Persist to Appstle metafields for cross-device sync
-  }
-  function loadNextShipmentState() {
-    state.nextShipment = Storage.get('next_shipment');
-  }
-  function saveNextShipmentState() {
-    Storage.set('next_shipment', state.nextShipment);
-  }
-  // ══════════════════════════════════════════
-  // HASH ROUTER
-  // ══════════════════════════════════════════
-  var validRoutes = ['dashboard', 'history', 'next-shipment', 'future-months', 'subscription', 'orders'];
-  function navigate(hash) {
-    var route = (hash || '').replace('#', '') || 'dashboard';
-    if (validRoutes.indexOf(route) === -1) route = 'dashboard';
-    $$('[data-view]').forEach(function(v) {
-      v.style.display = v.dataset.view === route ? '' : 'none';
-    });
-    $$('[data-nav]').forEach(function(link) {
-      link.classList.toggle('is-active', link.dataset.nav === route);
-    });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-  window.addEventListener('hashchange', function() {
-    navigate(location.hash);
-  });
-  // ══════════════════════════════════════════
-  // RENDER FUNCTIONS
-  // ══════════════════════════════════════════
-  function renderAll() {
-    renderDashboard();
-    renderFragranceHistory();
-    renderNextShipment();
-    renderFutureMonths();
-    renderSubscription();
-  }
-  function renderDashboard() {
-    var sub = state.subscription;
-    // Stats
-    var statFragrances = $('#statFragrances');
-    var statPlan = $('#statPlan');
-    var statNextShipment = $('#statNextShipment');
-    if (statFragrances) {
-      statFragrances.textContent = state.fragranceHistory.length || {{ customer.orders_count | json }};
-    }
-    if (statPlan) {
-      if (sub) {
-        statPlan.textContent = sub.plan ? sub.plan.name : 'Monthly';
-      } else {
-        statPlan.textContent = CONFIG.isSubscriberFromLiquid ? 'Monthly' : '—';
-      }
-    }
-    if (statNextShipment && sub && sub.nextOrderDate) {
-      statNextShipment.textContent = formatDate(sub.nextOrderDate, 'short');
-    }
-    // Dashboard shipment preview
-    renderDashShipmentPreview();
-    // Dashboard queue preview
-    renderDashQueuePreview();
-    // Status badge
-    var statusBadge = $('#subscriptionStatusBadge');
-    if (statusBadge && sub) {
-      var status = sub.status || 'ACTIVE';
-      statusBadge.textContent = status.charAt(0) + status.slice(1).toLowerCase();
-      statusBadge.className = 'acct__status-badge';
-      if (status === 'ACTIVE') statusBadge.classList.add('acct__status-badge--active');
-      else if (status === 'PAUSED') statusBadge.classList.add('acct__status-badge--paused');
-      else statusBadge.classList.add('acct__status-badge--cancelled');
-    }
-  }
-  function renderDashShipmentPreview() {
-    var preview = $('#dashShipmentPreview');
-    if (!preview) return;
-    var ns = state.nextShipment;
-    var sub = state.subscription;
-    // Priority: user selection > queue > current line item > FOTM
-    var fragrance = null;
-    var isAuto = false;
-    var source = '';
-    if (ns && ns.fragrance) {
-      fragrance = ns.fragrance;
-      isAuto = ns.autoSelected;
-      source = ns.source;
-    } else if (sub && sub.lines && sub.lines.length > 0) {
-      var line = sub.lines[0];
-      fragrance = {
-        title: line.title || line.productTitle || 'Subscription Item',
-        image: line.image || line.imageSrc || '',
-        family: line.variantTitle || line.vendor || ''
-      };
-    }
-    if (fragrance) {
-      preview.innerHTML = '<div style="display:flex;align-items:center;gap:16px;padding:8px;">' +
-        (fragrance.image ? '<img src="' + fragrance.image + '" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">' : '') +
-        '<div><strong style="color:#2D4641;">' + fragrance.title + '</strong>' +
-        '<br><span style="font-size:12px;color:#C9A962;">' + (fragrance.family || '') + '</span>' +
-        (isAuto ? '<br><span style="font-size:11px;color:#999;">Auto-selected' + (source === 'fotm' ? ' — Curated Pick' : '') + '</span>' : '') +
-        '</div></div>';
-    } else {
-      preview.innerHTML = '<div class="acct__shipment-placeholder">' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>' +
-        '<p>Choose your next fragrance</p>' +
-        '<a href="#next-shipment" class="btn btn--primary btn--small">Select Fragrance</a>' +
-        '</div>';
-    }
-  }
-  function renderDashQueuePreview() {
-    var preview = $('#dashQueuePreview');
-    if (!preview) return;
-    var queueKeys = Object.keys(state.futureQueue).sort();
-    
-    if (queueKeys.length === 0) {
-      preview.innerHTML = '<p class="dash-queue-empty">No fragrances queued. <a href="#future-months">Plan your next few months →</a></p>';
-      return;
-    }
-    var html = '';
-    queueKeys.slice(0, 4).forEach(function(monthKey) {
-      var item = state.futureQueue[monthKey];
-      html += '<div class="dash-queue-item">' +
-        (item.image ? '<img class="dash-queue-item__img" src="' + item.image + '">' : '<div class="dash-queue-item__img"></div>') +
-        '<div class="dash-queue-item__month">' + getMonthLabel(monthKey).split(' ')[0].slice(0, 3) + '</div>' +
-        '<div class="dash-queue-item__name">' + item.title + '</div>' +
-        '</div>';
-    });
-    if (queueKeys.length > 4) {
-      html += '<div class="dash-queue-item" style="opacity:0.5;">' +
-        '<div class="dash-queue-item__img" style="display:flex;align-items:center;justify-content:center;font-weight:700;color:#999;">+' + (queueKeys.length - 4) + '</div>' +
-        '<div class="dash-queue-item__month">more</div>' +
-        '</div>';
-    }
-    preview.innerHTML = html;
-  }
-  function renderFragranceHistory() {
-    var timeline = $('#fragranceTimeline');
-    var empty = $('#fragranceTimelineEmpty');
-    if (!timeline) return;
-    if (!state.fragranceHistory || state.fragranceHistory.length === 0) {
-      timeline.style.display = 'none';
-      if (empty) empty.style.display = 'block';
-      return;
-    }
-    timeline.style.display = 'block';
-    if (empty) empty.style.display = 'none';
-    var ratings = Storage.get('history_ratings') || {};
-    var notes = Storage.get('history_notes') || {};
-    // Group by month
-    var grouped = {};
-    var monthOrder = [];
-    state.fragranceHistory.forEach(function(entry, i) {
-      var monthKey = entry.month || 'Month ' + (i + 1);
-      if (!grouped[monthKey]) {
-        grouped[monthKey] = [];
-        monthOrder.push(monthKey);
-      }
-      grouped[monthKey].push({ entry: entry, index: i });
-    });
-    var html = '';
-    monthOrder.forEach(function(monthKey) {
-      html += '<div class="fh-month-group">';
-      html += '<div class="fh-entry__dot"></div>';
-      html += '<div class="fh-entry__month">' + monthKey + '</div>';
-      grouped[monthKey].forEach(function(item) {
-        var entry = item.entry;
-        var i = item.index;
-        var rating = ratings[i] || 0;
-        var note = notes[i] || '';
-        var stars = '';
-        for (var s = 1; s <= 5; s++) {
-          stars += '<svg class="fh-star' + (s <= rating ? ' is-filled' : '') + '" data-entry="' + i + '" data-star="' + s + '" viewBox="0 0 24 24" fill="' + (s <= rating ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
-        }
-        var notesHtml = '';
-        if (entry.top_notes) notesHtml += '<strong>Top:</strong> ' + entry.top_notes + '<br>';
-        if (entry.heart_notes) notesHtml += '<strong>Heart:</strong> ' + entry.heart_notes + '<br>';
-        if (entry.base_notes) notesHtml += '<strong>Base:</strong> ' + entry.base_notes;
-        html += '<div class="fh-entry">' +
-          '<div class="fh-entry__grid">' +
-          '<div class="fh-entry__image">' +
-          (entry.product_image ? '<img src="' + entry.product_image + '" alt="' + entry.product_title + '" loading="lazy">' : '') +
-          '</div>' +
-          '<div>' +
-          '<h4 class="fh-entry__name">' + (entry.product_title || 'Unknown Fragrance') + '</h4>' +
-          (entry.family ? '<span class="fh-entry__family">' + entry.family + '</span>' : '') +
-          (notesHtml ? '<div class="fh-entry__notes">' + notesHtml + '</div>' : '') +
-          '<div class="fh-stars">' + stars + '</div>' +
-          '<div class="fh-user-note">' +
-          '<textarea placeholder="Add your notes..." data-note-entry="' + i + '">' + note + '</textarea>' +
-          '<button data-save-note="' + i + '">Save</button>' +
-          '</div>' +
-          '<div class="fh-entry__actions">' +
-          (entry.product_handle ? '<a href="/products/' + entry.product_handle + '" class="fh-action--again">Get This Again</a>' : '') +
-          (entry.product_handle ? '<a href="/products/' + entry.product_handle + '" class="fh-action--fullsize">Buy Full Size</a>' : '') +
-          '</div></div></div></div>';
-      });
-      html += '</div>';
-    });
-    timeline.innerHTML = html;
-    // Attach event listeners
-    timeline.querySelectorAll('.fh-star').forEach(function(star) {
-      star.addEventListener('click', function() {
-        var entryIdx = this.dataset.entry;
-        var starVal = parseInt(this.dataset.star, 10);
-        var r = Storage.get('history_ratings') || {};
-        r[entryIdx] = starVal;
-        Storage.set('history_ratings', r);
-        renderFragranceHistory();
-      });
-    });
-    timeline.querySelectorAll('[data-save-note]').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        var idx = this.dataset.saveNote;
-        var textarea = timeline.querySelector('[data-note-entry="' + idx + '"]');
-        if (textarea) {
-          var n = Storage.get('history_notes') || {};
-          n[idx] = textarea.value;
-          Storage.set('history_notes', n);
-          btn.textContent = 'Saved!';
-          setTimeout(function() { btn.textContent = 'Save'; }, 1500);
-        }
-      });
-    });
-  }
-  function renderNextShipment() {
-    var statusBadge = $('#nsStatusBadge');
-    var selected = $('#nsSelected');
-    var choose = $('#nsChoose');
-    var skipped = $('#nsSkipped');
-    if (!statusBadge) return;
-    var ns = state.nextShipment;
-    var sub = state.subscription;
-    // Check if skipped
-    if (ns && ns.status === 'skipped') {
-      statusBadge.textContent = 'Skipped';
-      statusBadge.className = 'ns-status-badge ns-skipped';
-      if (selected) selected.style.display = 'none';
-      if (choose) choose.style.display = 'none';
-      if (skipped) skipped.style.display = 'block';
-      return;
-    }
-    // Determine what fragrance to show
-    var fragrance = null;
-    var isAuto = false;
-    var source = '';
-    if (ns && ns.fragrance) {
-      fragrance = ns.fragrance;
-      isAuto = ns.autoSelected;
-      source = ns.source;
-    } else if (sub && sub.lines && sub.lines.length > 0) {
-      var line = sub.lines[0];
-      fragrance = {
-        title: line.title || line.productTitle || 'Subscription Item',
-        image: line.image || line.imageSrc || '',
-        family: line.variantTitle || line.vendor || ''
-      };
-    }
-    if (fragrance) {
-      var badgeText = 'Confirmed';
-      var badgeClass = 'ns-confirmed';
-      
-      if (isAuto && source === 'fotm') {
-        badgeText = 'Curated Pick';
-        badgeClass = 'ns-auto';
-      } else if (isAuto) {
-        badgeText = 'Auto-Selected';
-        badgeClass = 'ns-auto';
-      }
-      statusBadge.textContent = badgeText;
-      statusBadge.className = 'ns-status-badge ' + badgeClass;
-      if (selected) {
-        selected.style.display = 'block';
-        var nsImage = $('#nsImage');
-        var nsName = $('#nsName');
-        var nsFamily = $('#nsFamily');
-        var nsShipDate = $('#nsShipDate');
-        if (nsImage) {
-          nsImage.innerHTML = fragrance.image 
-            ? '<img src="' + fragrance.image + '" alt="' + fragrance.title + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'
-            : '';
-        }
-        if (nsName) nsName.textContent = fragrance.title;
-        if (nsFamily) nsFamily.textContent = fragrance.family || '';
-        if (nsShipDate && sub && sub.nextOrderDate) {
-          nsShipDate.textContent = formatDate(sub.nextOrderDate, 'short');
-        }
-      }
-      if (choose) choose.style.display = 'none';
-      if (skipped) skipped.style.display = 'none';
-    } else {
-      statusBadge.textContent = 'Action Needed';
-      statusBadge.className = 'ns-status-badge ns-action';
-      if (selected) selected.style.display = 'none';
-      if (choose) choose.style.display = 'block';
-      if (skipped) skipped.style.display = 'none';
-    }
-  }
-  function renderFutureMonths() {
-    var grid = $('#futureMonthsGrid');
-    var queueEl = $('#futureQueue');
-    var countBadge = $('#queueCountBadge');
-    if (!grid) return;
-    // Generate next 6 months
-    var now = new Date();
-    var months = [];
-    for (var i = 1; i <= 6; i++) {
-      var d = new Date(now.getFullYear(), now.getMonth() + i, 1);
-      months.push({
-        key: getMonthKey(d),
-        label: getMonthLabel(getMonthKey(d)),
-        date: d
-      });
-    }
-    var html = '';
-    months.forEach(function(month) {
-      var selection = state.futureQueue[month.key];
-      var hasSelection = !!selection;
-      html += '<div class="fm-month-card' + (hasSelection ? ' is-selected' : '') + '" data-month="' + month.key + '">' +
-        (hasSelection ? '<button class="fm-month-card__clear" data-clear-month="' + month.key + '">×</button>' : '') +
-        '<div class="fm-month-card__label">Shipment</div>' +
-        '<div class="fm-month-card__month">' + month.label + '</div>' +
-        '<div class="fm-month-card__status' + (hasSelection ? ' has-selection' : '') + '">' +
-        (hasSelection ? '✓ Selected' : 'Not selected') +
-        '</div>';
-      if (hasSelection) {
-        html += '<div class="fm-month-card__frag">' +
-          (selection.image ? '<img class="fm-month-card__frag-img" src="' + selection.image + '">' : '') +
-          '<div class="fm-month-card__frag-name">' + selection.title + '</div>' +
-          '</div>';
-      }
-      html += '</div>';
-    });
-    grid.innerHTML = html;
-    // Render queue list
-    var queueKeys = Object.keys(state.futureQueue).sort();
-    if (countBadge) {
-      countBadge.textContent = queueKeys.length + ' queued';
-    }
-    if (queueEl) {
-      if (queueKeys.length === 0) {
-        queueEl.innerHTML = '<div class="fm-queue-empty"><p>No fragrances queued yet. Select a month above to start planning!</p></div>';
-      } else {
-        var queueHtml = '<div class="fm-queue-list">';
-        queueKeys.forEach(function(monthKey, idx) {
-          var item = state.futureQueue[monthKey];
-          queueHtml += '<div class="fm-queue-item">' +
-            '<div class="fm-queue-item__num">' + (idx + 1) + '</div>' +
-            (item.image ? '<img class="fm-queue-item__img" src="' + item.image + '">' : '<div class="fm-queue-item__img"></div>') +
-            '<div class="fm-queue-item__info">' +
-            '<div class="fm-queue-item__month">' + getMonthLabel(monthKey) + '</div>' +
-            '<div class="fm-queue-item__name">' + item.title + '</div>' +
-            '</div>' +
-            '<div class="fm-queue-item__actions">' +
-            '<button class="fm-queue-item__btn" data-edit-month="' + monthKey + '" title="Change">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
-            '</button>' +
-            '<button class="fm-queue-item__btn fm-queue-item__btn--remove" data-remove-month="' + monthKey + '" title="Remove">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
-            '</button>' +
-            '</div></div>';
-        });
-        queueHtml += '</div>';
-        queueEl.innerHTML = queueHtml;
-      }
-    }
-    // Attach event listeners
-    grid.querySelectorAll('.fm-month-card').forEach(function(card) {
-      card.addEventListener('click', function(e) {
-        if (e.target.closest('[data-clear-month]')) return;
-        var monthKey = this.dataset.month;
-        openFragranceSelector(monthKey);
-      });
-    });
-    grid.querySelectorAll('[data-clear-month]').forEach(function(btn) {
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        var monthKey = this.dataset.clearMonth;
-        delete state.futureQueue[monthKey];
-        saveFutureQueue();
-        renderFutureMonths();
-        renderDashQueuePreview();
-      });
-    });
-    if (queueEl) {
-      queueEl.querySelectorAll('[data-edit-month]').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          openFragranceSelector(this.dataset.editMonth);
-        });
-      });
-      queueEl.querySelectorAll('[data-remove-month]').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var monthKey = this.dataset.removeMonth;
-          delete state.futureQueue[monthKey];
-          saveFutureQueue();
-          renderFutureMonths();
-          renderDashQueuePreview();
-        });
-      });
-    }
-  }
-  function renderSubscription() {
-    var sub = state.subscription;
-    if (!sub) return;
-    // Update status badges
-    var subStatusBadge = $('#subStatusBadge');
-    if (subStatusBadge) {
-      var status = sub.status || 'ACTIVE';
-      subStatusBadge.textContent = status.charAt(0) + status.slice(1).toLowerCase();
-      subStatusBadge.className = 'acct__status-badge';
-      if (status === 'ACTIVE') subStatusBadge.classList.add('acct__status-badge--active');
-      else if (status === 'PAUSED') subStatusBadge.classList.add('acct__status-badge--paused');
-      else subStatusBadge.classList.add('acct__status-badge--cancelled');
-    }
-    // Plan info
-    var planTitle = $('#subPlanTitle');
-    var planPrice = $('#subPlanPrice');
-    var detailPlan = $('#subDetailPlan');
-    var detailPrice = $('#subDetailPrice');
-    if (sub.plan) {
-      if (planTitle) planTitle.textContent = sub.plan.name + ' Subscription';
-      if (planPrice) planPrice.textContent = sub.plan.priceFormatted;
-      if (detailPlan) detailPlan.textContent = sub.plan.name;
-      if (detailPrice) detailPrice.textContent = sub.plan.priceFormatted;
-    }
-    // Billing info
-    var subNextBilling = $('#subNextBilling');
-    if (subNextBilling && sub.nextBillingDate) {
-      subNextBilling.textContent = formatDate(sub.nextBillingDate, 'long');
-    }
-    // Payment method
-    var subPaymentMethod = $('#subPaymentMethod');
-    if (subPaymentMethod) {
-      subPaymentMethod.textContent = sub.paymentMethod;
-    }
-    // Shipping address
-    var subShippingAddress = $('#subShippingAddress');
-    if (subShippingAddress) {
-      subShippingAddress.textContent = sub.shippingAddress;
-    }
-    // Contract ID
-    var subContractId = $('#subContractId');
-    if (subContractId) {
-      subContractId.textContent = '#' + (sub.contractId || sub.id);
-    }
-    // Billing countdown
-    renderBillingCountdown();
-  }
-  function renderBillingCountdown() {
-    var sub = state.subscription;
-    if (!sub || !sub.nextBillingDate) return;
-    var now = new Date();
-    var nextBill = sub.nextBillingDate;
-    var msPerDay = 86400000;
-    var daysLeft = Math.max(0, Math.ceil((nextBill - now) / msPerDay));
-    var cycleDays = 30;
-    var elapsed = cycleDays - daysLeft;
-    var pct = Math.min(100, Math.max(0, (elapsed / cycleDays) * 100));
-    var daysEl = $('#billingDaysLeft');
-    var barEl = $('#billingBar');
-    var dateTextEl = $('#billingDateText');
-    var cancelDeadlineEl = $('#cancelDeadline');
-    if (daysEl) daysEl.textContent = daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
-    if (barEl) barEl.style.width = pct + '%';
-    if (dateTextEl) dateTextEl.textContent = 'Next charge on ' + formatDate(nextBill, 'long');
-    var cancelDate = new Date(nextBill);
-    cancelDate.setDate(cancelDate.getDate() - 1);
-    if (cancelDeadlineEl) cancelDeadlineEl.textContent = formatDate(cancelDate, 'long');
-  }
-  // ══════════════════════════════════════════
-  // EVENT HANDLERS
-  // ══════════════════════════════════════════
-  function openFragranceSelector(monthKey) {
-    var event = new CustomEvent('fragrance-selector:open', {
-      detail: { monthKey: monthKey || null }
-    });
-    document.dispatchEvent(event);
-  }
-  function setupEventListeners() {
-    // Next Shipment buttons
-    var chooseBtn = $('#nsChooseBtn');
-    var swapBtn = $('#nsSwapBtn');
-    var skipBtn = $('#nsSkipBtn');
-    var undoSkipBtn = $('#nsUndoSkip');
-    if (chooseBtn) {
-      chooseBtn.addEventListener('click', function() {
-        openFragranceSelector();
-      });
-    }
-    if (swapBtn) {
-      swapBtn.addEventListener('click', function() {
-        openFragranceSelector();
-      });
-    }
-    if (skipBtn) {
-      skipBtn.addEventListener('click', async function() {
-        if (!confirm('Skip this month\'s shipment?')) return;
-        var sub = state.subscription;
-        if (sub && sub.contractId) {
-          try {
-            await AppstleAPI.skipNextOrder(sub.contractId);
-            state.nextShipment = { status: 'skipped' };
-            saveNextShipmentState();
-            renderNextShipment();
-            renderDashShipmentPreview();
-          } catch (e) {
-            alert('Unable to skip. Please try again or contact support.');
-          }
-        } else {
-          state.nextShipment = { status: 'skipped' };
-          saveNextShipmentState();
-          renderNextShipment();
-          renderDashShipmentPreview();
-        }
-      });
-    }
-    if (undoSkipBtn) {
-      undoSkipBtn.addEventListener('click', function() {
-        state.nextShipment = null;
-        saveNextShipmentState();
-        renderNextShipment();
-        renderDashShipmentPreview();
-      });
-    }
-    // Fragrance selection listener
-    document.addEventListener('fragrance:selected', function(e) {
-      var frag = e.detail;
-      var monthKey = frag.monthKey;
-      if (monthKey) {
-        // Adding to future queue
-        state.futureQueue[monthKey] = {
-          productId: frag.id,
-          variantId: frag.variantId,
-          title: frag.title,
-          image: frag.image,
-          handle: frag.handle,
-          vendor: frag.vendor || frag.family
-        };
-        saveFutureQueue();
-        renderFutureMonths();
-        renderDashQueuePreview();
-      } else {
-        // Setting next shipment
-        state.nextShipment = {
-          fragrance: {
-            id: frag.id,
-            variantId: frag.variantId,
-            handle: frag.handle,
-            title: frag.title,
-            image: frag.image,
-            family: frag.vendor || frag.family
-          },
-          autoSelected: false,
-          status: 'confirmed',
-          timestamp: new Date().toISOString()
-        };
-        saveNextShipmentState();
-        renderNextShipment();
-        renderDashShipmentPreview();
-        // If we have an active contract, update the line item via API
-        var sub = state.subscription;
-        if (sub && sub.contractId && sub.lines && sub.lines.length > 0) {
-          var lineId = sub.lines[0].id;
-          AppstleAPI.updateLineItem(sub.contractId, lineId, frag.variantId, frag.sellingPlanId)
-            .catch(function(e) {
-              console.error('Failed to update line item:', e);
-            });
-        }
-      }
-    });
-    // Subscription action buttons
-    var subUpdatePaymentBtn = $('#subUpdatePaymentBtn');
-    var subUpdateAddressBtn = $('#subUpdateAddressBtn');
-    var subSkipBtn = $('#subSkipBtn');
-    var subPauseBtn = $('#subPauseBtn');
-    var subCancelBtn = $('#subCancelBtn');
-    if (subUpdatePaymentBtn) {
-      subUpdatePaymentBtn.addEventListener('click', async function() {
-        var sub = state.subscription;
-        if (!sub || !sub.contractId) {
-          alert('No active subscription found.');
-          return;
-        }
-        var btn = this;
-        var originalHtml = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="31.4"><animateTransform attributeName="transform" type="rotate" dur="0.8s" from="0 12 12" to="360 12 12" repeatCount="indefinite"/></circle></svg> Sending…';
-        try {
-          await AppstleAPI.updatePaymentMethod(sub.contractId);
-          btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" width="20" height="20"><polyline points="20 6 9 17 4 12"/></svg> Email sent!';
-          btn.style.borderColor = '#4CAF50';
-          showPaymentUpdateModal();
-        } catch (e) {
-          btn.innerHTML = originalHtml;
-          btn.disabled = false;
-          alert('Could not send email. Please try again.');
-        }
-      });
-    }
-    if (subUpdateAddressBtn) {
-      subUpdateAddressBtn.addEventListener('click', function() {
-        window.location.href = '{{ routes.account_addresses_url }}';
-      });
-    }
-    if (subSkipBtn) {
-      subSkipBtn.addEventListener('click', async function() {
-        if (!confirm('Skip next month\'s shipment?')) return;
-        var sub = state.subscription;
-        if (sub && sub.contractId) {
-          try {
-            await AppstleAPI.skipNextOrder(sub.contractId);
-            alert('Next month\'s shipment has been skipped.');
-            await AppstleAPI.refresh();
-          } catch (e) {
-            alert('Unable to skip. Please try again.');
-          }
-        }
-      });
-    }
-    if (subPauseBtn) {
-      subPauseBtn.addEventListener('click', async function() {
-        if (!confirm('Pause your subscription? You can resume anytime.')) return;
-        var sub = state.subscription;
-        if (sub && sub.contractId) {
-          try {
-            await AppstleAPI.pauseSubscription(sub.contractId);
-            alert('Your subscription has been paused.');
-            await AppstleAPI.refresh();
-          } catch (e) {
-            alert('Unable to pause. Please contact support.');
-          }
-        }
-      });
-    }
-    if (subCancelBtn) {
-      subCancelBtn.addEventListener('click', function() {
-        document.dispatchEvent(new Event('cancellation:open'));
-      });
-    }
-  }
-  function showPaymentUpdateModal() {
-    var existing = $('#paymentUpdateOverlay');
-    if (existing) existing.remove();
-    var overlay = document.createElement('div');
-    overlay.id = 'paymentUpdateOverlay';
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1rem;';
-    overlay.innerHTML = '<div style="background:#fff;border-radius:16px;padding:2.5rem;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">' +
-      '<div style="width:56px;height:56px;border-radius:50%;background:rgba(76,175,80,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2.5" width="28" height="28"><polyline points="20 6 9 17 4 12"/></svg></div>' +
-      '<h3 style="font-family:Cormorant Garamond,Georgia,serif;font-size:1.4rem;color:#2D4641;margin:0 0 0.75rem;">Check Your Email</h3>' +
-      '<p style="color:#555;font-size:14px;line-height:1.6;margin:0 0 1.5rem;">We\'ve sent you a secure link to update your payment method.</p>' +
-      '<button onclick="this.closest(\'#paymentUpdateOverlay\').remove()" style="background:#2D4641;color:#fff;border:none;border-radius:8px;padding:12px 32px;font-size:14px;font-weight:600;cursor:pointer;">Got It</button>' +
-      '</div>';
-    overlay.addEventListener('click', function(e) {
-      if (e.target === overlay) overlay.remove();
-    });
-    document.body.appendChild(overlay);
-  }
-  // ══════════════════════════════════════════
-  // AUTO-SELECTION LOGIC
-  // ══════════════════════════════════════════
-  function checkAutoSelection() {
-    if (!CONFIG.isSubscriberFromLiquid) return;
-    // Skip if user already made a selection
-    if (state.nextShipment && (state.nextShipment.fragrance || state.nextShipment.status === 'skipped')) {
-      return;
-    }
-    var sub = state.subscription;
-    if (!sub) return;
-    var now = new Date();
-    var nextBill = sub.nextBillingDate || sub.nextOrderDate;
-    if (!nextBill) return;
-    var daysUntilBill = Math.ceil((nextBill - now) / 86400000);
-    // Only auto-select within 3 days of billing
-    if (daysUntilBill > 3) return;
-    // Priority 1: Check future queue for this month
-    var currentMonthKey = getMonthKey(nextBill);
-    var queuedItem = state.futureQueue[currentMonthKey];
-    if (queuedItem) {
-      state.nextShipment = {
-        fragrance: {
-          id: queuedItem.productId,
-          variantId: queuedItem.variantId,
-          handle: queuedItem.handle,
-          title: queuedItem.title,
-          image: queuedItem.image,
-          family: queuedItem.vendor
-        },
-        autoSelected: true,
-        source: 'queue',
-        timestamp: new Date().toISOString()
-      };
-      // Remove from queue
-      delete state.futureQueue[currentMonthKey];
-      saveFutureQueue();
-      saveNextShipmentState();
-      renderAll();
-      return;
-    }
-    // Priority 2: Fragrance of the Month
-    var fotmMonthKey = CONFIG.fotmMonth;
-    if (CONFIG.fotmEnabled && CONFIG.fotmProduct && fotmMonthKey === currentMonthKey) {
-      state.nextShipment = {
-        fragrance: {
-          id: CONFIG.fotmProduct.variantId,
-          handle: CONFIG.fotmProduct.handle,
-          title: CONFIG.fotmProduct.title,
-          image: CONFIG.fotmProduct.image,
-          family: CONFIG.fotmProduct.vendor
-        },
-        autoSelected: true,
-        source: 'fotm',
-        timestamp: new Date().toISOString()
-      };
-      s
-$$
+
+  /* ── Confirm Modal ── */
+  .bn-modal-overlay { position: fixed; inset: 0__
