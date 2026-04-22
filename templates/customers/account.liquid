@@ -1359,6 +1359,23 @@ document.addEventListener('DOMContentLoaded', function() {
   // Listen for fragrance selection
   document.addEventListener('fragrance:selected', function(e) {
     var frag = e.detail;
+
+    // PRD-01 fix (Apr 23): if user opened the selector from an empty queue slot,
+    // route the selection to the queue (not to Next Shipment / cart).
+    var pendingMonth = window.__bqPendingTargetMonth;
+    if (pendingMonth && window.BasenoteQueue) {
+      window.BasenoteQueue.setSlot(pendingMonth, {
+        productId: frag.id,
+        title: frag.title,
+        url: frag.handle ? ('/products/' + frag.handle) : '#',
+        image: frag.image,
+        family: frag.family
+      });
+      window.__bqPendingTargetMonth = null;
+      // No redirect needed — user stays on account page; queue re-renders via BQ.on('change')
+      return;
+    }
+
     saveNextShipment({
       fragrance: {
         id: frag.id,
@@ -1692,7 +1709,6 @@ document.addEventListener('DOMContentLoaded', function() {
         card.setAttribute('data-month', monthStr);
         card.setAttribute('data-position', String(idx));
         card.setAttribute('role', 'listitem');
-        var pickUrl = '/collections/all?queue_target_month=' + encodeURIComponent(monthStr);
         card.innerHTML =
           '<button type="button" class="bq-card__drag-handle" aria-label="Drag to reorder" disabled>' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true">' +
@@ -1701,7 +1717,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '</svg>' +
           '</button>' +
           '<div class="bq-card__empty-slot">' +
-            '<a href="' + escapeAttr(pickUrl) + '" class="bq-card__empty-link">' +
+            '<button type="button" class="bq-card__empty-link" data-queue-pick-month="' + escapeAttr(monthStr) + '">' +
               '<div class="bq-card__plus" aria-hidden="true">' +
                 '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28">' +
                   '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>' +
@@ -1709,12 +1725,18 @@ document.addEventListener('DOMContentLoaded', function() {
               '</div>' +
               '<p class="bq-card__empty-title">Pick Your Next Scent</p>' +
               '<p class="bq-card__empty-sub">Empty on ship day → we send our Fragrance of the Month.</p>' +
-            '</a>' +
+            '</button>' +
           '</div>' +
           '<p class="bq-card__month-label">' +
             '<span class="bq-card__month">' + escapeHtml(BQ.monthLabel(monthStr, { withYear: true })) + '</span>' +
             '<span class="bq-card__ship-status">Select fragrance</span>' +
           '</p>';
+        // Open the in-page fragrance selector modal with queue-target context
+        var pickBtn = card.querySelector('[data-queue-pick-month]');
+        pickBtn.addEventListener('click', function() {
+          window.__bqPendingTargetMonth = monthStr;
+          document.dispatchEvent(new Event('fragrance-selector:open'));
+        });
         return card;
       }
 
