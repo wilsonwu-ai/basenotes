@@ -14,11 +14,10 @@
       <h1 class="sub-hero__title">Discover a New Signature Scent Every Month</h1>
       <p class="sub-hero__subtitle">Get a hand-picked, luxury fragrance delivered to your door in our sleek 5ml atomizer. Try before you commit to a full bottle.</p>
       <div class="sub-hero__price">
-        <span class="sub-hero__price-amount">{{ monthly_price }}</span>
-        <span class="sub-hero__price-period">/ month</span>
+        {% render 'subscription-pricing-summary', surface: 'landing' %}
       </div>
       <a href="#plans" class="sub-hero__cta">Choose Your Plan</a>
-      <p class="sub-hero__terms-link">Cancel anytime. <a href="/pages/subscription-terms">View full terms</a></p>
+      <p class="sub-hero__terms-link"><a href="/pages/subscription-terms">View full terms</a></p>
     </div>
   </div>
 
