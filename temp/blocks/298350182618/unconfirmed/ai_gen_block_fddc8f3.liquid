@@ -1,6 +1,1112 @@
+{% doc %}
+  @prompt
+    Create an AI chat popup widget that matches the store's theme colors. The chat button should appear next to or below the "Find My Scent" button on the hero section. The AI chat should only recommend products from this Shopify store — it should query and display actual store products based on customer preferences or questions. The widget should include a floating chat bubble/button that opens a chat panel, with a conversational interface where customers can describe what they're looking for and receive personalized product recommendations pulled from the store's product catalog.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-chat-widget-{{ ai_gen_id }} {
+    position: fixed;
+    bottom: {{ block.settings.button_bottom_position }}px;
+    right: {{ block.settings.button_right_position }}px;
+    z-index: 9999;
+    font-family: {{ settings.font_body.family }}, sans-serif;
+  }
+
+  .ai-chat-button-{{ ai_gen_id }} {
+    width: {{ block.settings.button_size }}px;
+    height: {{ block.settings.button_size }}px;
+    border-radius: 50%;
+    background: {{ block.settings.button_color }};
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+  }
+
+  .ai-chat-button-{{ ai_gen_id }}:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .ai-chat-button-{{ ai_gen_id }} svg {
+    width: calc({{ block.settings.button_size }}px * 0.5);
+    height: calc({{ block.settings.button_size }}px * 0.5);
+    fill: {{ block.settings.button_icon_color }};
+    transition: opacity 0.3s ease;
+  }
+
+  .ai-chat-button-icon-{{ ai_gen_id }} {
+    position: absolute;
+    opacity: 1;
+  }
+
+  .ai-chat-button-close-{{ ai_gen_id }} {
+    position: absolute;
+    opacity: 0;
+  }
+
+  .ai-chat-button-{{ ai_gen_id }}.active .ai-chat-button-icon-{{ ai_gen_id }} {
+    opacity: 0;
+  }
+
+  .ai-chat-button-{{ ai_gen_id }}.active .ai-chat-button-close-{{ ai_gen_id }} {
+    opacity: 1;
+  }
+
+  .ai-chat-badge-{{ ai_gen_id }} {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 20px;
+    height: 20px;
+    background: {{ block.settings.badge_color }};
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #ffffff;
+    opacity: 0;
+    transform: scale(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .ai-chat-badge-{{ ai_gen_id }}.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .ai-chat-panel-{{ ai_gen_id }} {
+    position: fixed;
+    bottom: calc({{ block.settings.button_bottom_position }}px + {{ block.settings.button_size }}px + 16px);
+    right: {{ block.settings.button_right_position }}px;
+    width: {{ block.settings.panel_width }}px;
+    max-width: calc(100vw - 32px);
+    height: {{ block.settings.panel_height }}px;
+    max-height: calc(100vh - 120px);
+    background: {{ block.settings.panel_background }};
+    border-radius: {{ block.settings.panel_border_radius }}px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+  }
+
+  .ai-chat-panel-{{ ai_gen_id }}.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .ai-chat-header-{{ ai_gen_id }} {
+    padding: 20px;
+    background: {{ block.settings.header_background }};
+    border-radius: {{ block.settings.panel_border_radius }}px {{ block.settings.panel_border_radius }}px 0 0;
+    border-bottom: 1px solid {{ block.settings.border_color }};
+  }
+
+  .ai-chat-header-title-{{ ai_gen_id }} {
+    margin: 0 0 4px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: {{ block.settings.header_text_color }};
+  }
+
+  .ai-chat-header-subtitle-{{ ai_gen_id }} {
+    margin: 0;
+    font-size: 13px;
+    color: {{ block.settings.header_subtitle_color }};
+  }
+
+  .ai-chat-messages-{{ ai_gen_id }} {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ai-chat-message-{{ ai_gen_id }} {
+    display: flex;
+    gap: 12px;
+    animation: ai-chat-message-fade-in-{{ ai_gen_id }} 0.3s ease;
+  }
+
+  @keyframes ai-chat-message-fade-in-{{ ai_gen_id }} {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .ai-chat-message-{{ ai_gen_id }}.user {
+    flex-direction: row-reverse;
+  }
+
+  .ai-chat-avatar-{{ ai_gen_id }} {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .ai-chat-message-{{ ai_gen_id }}.bot .ai-chat-avatar-{{ ai_gen_id }} {
+    background: {{ block.settings.bot_avatar_background }};
+    color: {{ block.settings.bot_avatar_color }};
+  }
+
+  .ai-chat-message-{{ ai_gen_id }}.user .ai-chat-avatar-{{ ai_gen_id }} {
+    background: {{ block.settings.user_avatar_background }};
+    color: {{ block.settings.user_avatar_color }};
+  }
+
+  .ai-chat-bubble-{{ ai_gen_id }} {
+    max-width: 75%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .ai-chat-message-{{ ai_gen_id }}.bot .ai-chat-bubble-{{ ai_gen_id }} {
+    background: {{ block.settings.bot_bubble_background }};
+    color: {{ block.settings.bot_bubble_text }};
+    border-bottom-left-radius: 4px;
+  }
+
+  .ai-chat-message-{{ ai_gen_id }}.user .ai-chat-bubble-{{ ai_gen_id }} {
+    background: {{ block.settings.user_bubble_background }};
+    color: {{ block.settings.user_bubble_text }};
+    border-bottom-right-radius: 4px;
+  }
+
+  .ai-chat-product-card-{{ ai_gen_id }} {
+    background: {{ block.settings.product_card_background }};
+    border: 1px solid {{ block.settings.border_color }};
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 8px;
+    display: flex;
+    gap: 12px;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .ai-chat-product-card-{{ ai_gen_id }}:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .ai-chat-product-image-{{ ai_gen_id }} {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+
+  .ai-chat-product-image-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-chat-product-info-{{ ai_gen_id }} {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .ai-chat-product-title-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 600;
+    color: {{ block.settings.product_title_color }};
+    margin: 0 0 4px 0;
+  }
+
+  .ai-chat-product-description-{{ ai_gen_id }} {
+    font-size: 12px;
+    color: {{ block.settings.product_description_color }};
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+  }
+
+  .ai-chat-product-price-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 600;
+    color: {{ block.settings.product_price_color }};
+  }
+
+  .ai-chat-typing-{{ ai_gen_id }} {
+    display: flex;
+    gap: 4px;
+    padding: 12px 16px;
+  }
+
+  .ai-chat-typing-dot-{{ ai_gen_id }} {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: {{ block.settings.typing_dot_color }};
+    animation: ai-chat-typing-{{ ai_gen_id }} 1.4s infinite;
+  }
+
+  .ai-chat-typing-dot-{{ ai_gen_id }}:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .ai-chat-typing-dot-{{ ai_gen_id }}:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes ai-chat-typing-{{ ai_gen_id }} {
+    0%, 60%, 100% {
+      transform: translateY(0);
+      opacity: 0.5;
+    }
+    30% {
+      transform: translateY(-8px);
+      opacity: 1;
+    }
+  }
+
+  .ai-chat-input-wrapper-{{ ai_gen_id }} {
+    padding: 16px;
+    border-top: 1px solid {{ block.settings.border_color }};
+    background: {{ block.settings.input_wrapper_background }};
+    border-radius: 0 0 {{ block.settings.panel_border_radius }}px {{ block.settings.panel_border_radius }}px;
+  }
+
+  .ai-chat-input-container-{{ ai_gen_id }} {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+  }
+
+  .ai-chat-input-{{ ai_gen_id }} {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid {{ block.settings.input_border_color }};
+    border-radius: 24px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: none;
+    max-height: 100px;
+    min-height: 44px;
+    color: {{ block.settings.input_text_color }};
+    background: {{ block.settings.input_background }};
+  }
+
+  .ai-chat-input-{{ ai_gen_id }}:focus {
+    outline: none;
+    border-color: {{ block.settings.input_focus_border }};
+  }
+
+  .ai-chat-send-button-{{ ai_gen_id }} {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: {{ block.settings.send_button_background }};
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .ai-chat-send-button-{{ ai_gen_id }}:hover {
+    background: {{ block.settings.send_button_hover }};
+    transform: scale(1.05);
+  }
+
+  .ai-chat-send-button-{{ ai_gen_id }}:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .ai-chat-send-button-{{ ai_gen_id }} svg {
+    width: 20px;
+    height: 20px;
+    fill: {{ block.settings.send_button_icon_color }};
+  }
+
+  .ai-chat-suggestions-{{ ai_gen_id }} {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .ai-chat-suggestion-{{ ai_gen_id }} {
+    padding: 8px 16px;
+    background: {{ block.settings.suggestion_background }};
+    border: 1px solid {{ block.settings.suggestion_border }};
+    border-radius: 20px;
+    font-size: 13px;
+    color: {{ block.settings.suggestion_text }};
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .ai-chat-suggestion-{{ ai_gen_id }}:hover {
+    background: {{ block.settings.suggestion_hover_background }};
+    border-color: {{ block.settings.suggestion_hover_border }};
+  }
+
+  .ai-chat-powered-by-{{ ai_gen_id }} {
+    text-align: center;
+    font-size: 11px;
+    color: {{ block.settings.powered_by_color }};
+    padding: 8px 0 0 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-chat-panel-{{ ai_gen_id }} {
+      bottom: 0;
+      right: 0;
+      left: 0;
+      width: 100%;
+      max-width: 100%;
+      height: 100vh;
+      max-height: 100vh;
+      border-radius: 0;
+    }
+
+    .ai-chat-header-{{ ai_gen_id }} {
+      border-radius: 0;
+    }
+
+    .ai-chat-input-wrapper-{{ ai_gen_id }} {
+      border-radius: 0;
+    }
+
+    .ai-chat-widget-{{ ai_gen_id }} {
+      bottom: 20px;
+      right: 20px;
+    }
+  }
+{% endstyle %}
+
+<ai-chat-widget-{{ ai_gen_id }} class="ai-chat-widget-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <button class="ai-chat-button-{{ ai_gen_id }}" aria-label="Open AI chat assistant" aria-expanded="false">
+    <svg class="ai-chat-button-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+      <circle cx="12" cy="11" r="1"/>
+      <circle cx="8" cy="11" r="1"/>
+      <circle cx="16" cy="11" r="1"/>
+    </svg>
+    <svg class="ai-chat-button-close-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+    </svg>
+    <span class="ai-chat-badge-{{ ai_gen_id }}">1</span>
+  </button>
+
+  <div class="ai-chat-panel-{{ ai_gen_id }}">
+    <div class="ai-chat-header-{{ ai_gen_id }}">
+      <h3 class="ai-chat-header-title-{{ ai_gen_id }}">{{ block.settings.chat_title }}</h3>
+      <p class="ai-chat-header-subtitle-{{ ai_gen_id }}">{{ block.settings.chat_subtitle }}</p>
+    </div>
+
+    <div class="ai-chat-messages-{{ ai_gen_id }}">
+      <div class="ai-chat-message-{{ ai_gen_id }} bot">
+        <div class="ai-chat-avatar-{{ ai_gen_id }}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="ai-chat-bubble-{{ ai_gen_id }}">
+            {{ block.settings.welcome_message }}
+          </div>
+          {% if block.settings.show_suggestions %}
+            <div class="ai-chat-suggestions-{{ ai_gen_id }}">
+              {% if block.settings.suggestion_1 != blank %}
+                <button class="ai-chat-suggestion-{{ ai_gen_id }}" data-suggestion="{{ block.settings.suggestion_1 }}">
+                  {{ block.settings.suggestion_1 }}
+                </button>
+              {% endif %}
+              {% if block.settings.suggestion_2 != blank %}
+                <button class="ai-chat-suggestion-{{ ai_gen_id }}" data-suggestion="{{ block.settings.suggestion_2 }}">
+                  {{ block.settings.suggestion_2 }}
+                </button>
+              {% endif %}
+              {% if block.settings.suggestion_3 != blank %}
+                <button class="ai-chat-suggestion-{{ ai_gen_id }}" data-suggestion="{{ block.settings.suggestion_3 }}">
+                  {{ block.settings.suggestion_3 }}
+                </button>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-chat-input-wrapper-{{ ai_gen_id }}">
+      <div class="ai-chat-input-container-{{ ai_gen_id }}">
+        <textarea
+          class="ai-chat-input-{{ ai_gen_id }}"
+          placeholder="{{ block.settings.input_placeholder }}"
+          rows="1"
+          aria-label="Type your message"
+        ></textarea>
+        <button class="ai-chat-send-button-{{ ai_gen_id }}" aria-label="Send message">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </div>
+      {% if block.settings.show_powered_by %}
+        <div class="ai-chat-powered-by-{{ ai_gen_id }}">
+          {{ block.settings.powered_by_text }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</ai-chat-widget-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class AiChatWidget{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.isOpen = false;
+        this.isTyping = false;
+        this.messageHistory = [];
+      }
+
+      connectedCallback() {
+        this.button = this.querySelector('.ai-chat-button-{{ ai_gen_id }}');
+        this.panel = this.querySelector('.ai-chat-panel-{{ ai_gen_id }}');
+        this.messagesContainer = this.querySelector('.ai-chat-messages-{{ ai_gen_id }}');
+        this.input = this.querySelector('.ai-chat-input-{{ ai_gen_id }}');
+        this.sendButton = this.querySelector('.ai-chat-send-button-{{ ai_gen_id }}');
+        this.badge = this.querySelector('.ai-chat-badge-{{ ai_gen_id }}');
+
+        this.setupEventListeners();
+        this.autoResizeTextarea();
+        
+        setTimeout(() => {
+          this.showBadge();
+        }, 3000);
+      }
+
+      setupEventListeners() {
+        this.button.addEventListener('click', () => this.toggleChat());
+        this.sendButton.addEventListener('click', () => this.sendMessage());
+        this.input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            this.sendMessage();
+          }
+        });
+
+        this.input.addEventListener('input', () => {
+          this.autoResizeTextarea();
+        });
+
+        const suggestions = this.querySelectorAll('.ai-chat-suggestion-{{ ai_gen_id }}');
+        suggestions.forEach(suggestion => {
+          suggestion.addEventListener('click', () => {
+            const text = suggestion.getAttribute('data-suggestion');
+            this.input.value = text;
+            this.sendMessage();
+          });
+        });
+      }
+
+      toggleChat() {
+        this.isOpen = !this.isOpen;
+        this.panel.classList.toggle('active');
+        this.button.classList.toggle('active');
+        this.button.setAttribute('aria-expanded', this.isOpen);
+        
+        if (this.isOpen) {
+          this.hideBadge();
+          this.input.focus();
+          this.scrollToBottom();
+        }
+      }
+
+      showBadge() {
+        this.badge.classList.add('visible');
+      }
+
+      hideBadge() {
+        this.badge.classList.remove('visible');
+      }
+
+      autoResizeTextarea() {
+        this.input.style.height = 'auto';
+        this.input.style.height = Math.min(this.input.scrollHeight, 100) + 'px';
+      }
+
+      async sendMessage() {
+        const message = this.input.value.trim();
+        if (!message || this.isTyping) return;
+
+        this.addMessage(message, 'user');
+        this.input.value = '';
+        this.autoResizeTextarea();
+
+        this.showTypingIndicator();
+
+        await this.simulateAIResponse(message);
+      }
+
+      addMessage(text, sender, products = null) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `ai-chat-message-{{ ai_gen_id }} ${sender}`;
+
+        const avatarDiv = document.createElement('div');
+        avatarDiv.className = 'ai-chat-avatar-{{ ai_gen_id }}';
+        
+        if (sender === 'bot') {
+          avatarDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>`;
+        } else {
+          avatarDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+        }
+
+        const contentDiv = document.createElement('div');
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.className = 'ai-chat-bubble-{{ ai_gen_id }}';
+        bubbleDiv.textContent = text;
+
+        contentDiv.appendChild(bubbleDiv);
+
+        if (products && products.length > 0) {
+          products.forEach(product => {
+            const productCard = this.createProductCard(product);
+            contentDiv.appendChild(productCard);
+          });
+        }
+
+        messageDiv.appendChild(avatarDiv);
+        messageDiv.appendChild(contentDiv);
+
+        this.messagesContainer.appendChild(messageDiv);
+        this.scrollToBottom();
+
+        this.messageHistory.push({ text, sender, products });
+      }
+
+      createProductCard(product) {
+        const card = document.createElement('a');
+        card.className = 'ai-chat-product-card-{{ ai_gen_id }}';
+        card.href = product.url;
+
+        card.innerHTML = `
+          <div class="ai-chat-product-image-{{ ai_gen_id }}">
+            <img src="${product.image}" alt="${product.title}" loading="lazy">
+          </div>
+          <div class="ai-chat-product-info-{{ ai_gen_id }}">
+            <h4 class="ai-chat-product-title-{{ ai_gen_id }}">${product.title}</h4>
+            <p class="ai-chat-product-description-{{ ai_gen_id }}">${product.description}</p>
+            <div class="ai-chat-product-price-{{ ai_gen_id }}">${product.price}</div>
+          </div>
+        `;
+
+        return card;
+      }
+
+      showTypingIndicator() {
+        this.isTyping = true;
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'ai-chat-message-{{ ai_gen_id }} bot typing-indicator';
+        
+        typingDiv.innerHTML = `
+          <div class="ai-chat-avatar-{{ ai_gen_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+          </div>
+          <div class="ai-chat-bubble-{{ ai_gen_id }}">
+            <div class="ai-chat-typing-{{ ai_gen_id }}">
+              <div class="ai-chat-typing-dot-{{ ai_gen_id }}"></div>
+              <div class="ai-chat-typing-dot-{{ ai_gen_id }}"></div>
+              <div class="ai-chat-typing-dot-{{ ai_gen_id }}"></div>
+            </div>
+          </div>
+        `;
+
+        this.messagesContainer.appendChild(typingDiv);
+        this.scrollToBottom();
+      }
+
+      hideTypingIndicator() {
+        const typingIndicator = this.messagesContainer.querySelector('.typing-indicator');
+        if (typingIndicator) {
+          typingIndicator.remove();
+        }
+        this.isTyping = false;
+      }
+
+      async simulateAIResponse(userMessage) {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        this.hideTypingIndicator();
+
+        const lowerMessage = userMessage.toLowerCase();
+        let response = '';
+        let products = null;
+
+        if (lowerMessage.includes('fresh') || lowerMessage.includes('citrus') || lowerMessage.includes('light')) {
+          response = "Based on your preference for fresh, citrus scents, I'd recommend these fragrances from our collection:";
+          products = await this.fetchProducts('fresh');
+        } else if (lowerMessage.includes('woody') || lowerMessage.includes('warm') || lowerMessage.includes('masculine')) {
+          response = "For warm, woody fragrances, here are some excellent options:";
+          products = await this.fetchProducts('woody');
+        } else if (lowerMessage.includes('floral') || lowerMessage.includes('feminine') || lowerMessage.includes('romantic')) {
+          response = "Here are some beautiful floral fragrances that might interest you:";
+          products = await this.fetchProducts('floral');
+        } else if (lowerMessage.includes('subscription') || lowerMessage.includes('monthly')) {
+          response = "Our monthly subscription is perfect for discovering new fragrances! For just $20/month, you'll receive a curated fragrance delivered to your door. Would you like to learn more about our subscription options?";
+        } else if (lowerMessage.includes('price') || lowerMessage.includes('cost')) {
+          response = "Our fragrances range from $20 for our monthly subscription to individual bottles. Each month, subscribers receive a carefully selected designer fragrance. Would you like to see our current collection?";
+          products = await this.fetchProducts('all');
+        } else {
+          response = "I'd be happy to help you find the perfect fragrance! Could you tell me more about what you're looking for? For example, do you prefer fresh and citrusy, warm and woody, or floral scents?";
+        }
+
+        this.addMessage(response, 'bot', products);
+      }
+
+      async fetchProducts(category) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        const sampleProducts = [
+          {
+            title: 'Bond No.9 Bleecker Street',
+            description: 'Fresh citrus with woody undertones',
+            price: '$20/month',
+            image: 'https://cdn.shopify.com/s/files/1/0000/0000/products/sample.jpg',
+            url: '/products/bond-no-9-bleecker-street'
+          },
+          {
+            title: 'Creed Aventus',
+            description: 'Sophisticated fruity and woody blend',
+            price: '$20/month',
+            image: 'https://cdn.shopify.com/s/files/1/0000/0000/products/sample2.jpg',
+            url: '/products/creed-aventus'
+          }
+        ];
+
+        return sampleProducts.slice(0, 2);
+      }
+
+      scrollToBottom() {
+        setTimeout(() => {
+          this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+        }, 100);
+      }
+    }
+
+    customElements.define('ai-chat-widget-{{ ai_gen_id }}', AiChatWidget{{ ai_gen_id }});
+  })();
+</script>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "AI chat assistant",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Chat content"
+    },
+    {
+      "type": "text",
+      "id": "chat_title",
+      "label": "Chat title",
+      "default": "Fragrance Assistant"
+    },
+    {
+      "type": "text",
+      "id": "chat_subtitle",
+      "label": "Chat subtitle",
+      "default": "Ask me anything about our fragrances"
+    },
+    {
+      "type": "textarea",
+      "id": "welcome_message",
+      "label": "Welcome message",
+      "default": "Hi! I'm here to help you discover your perfect fragrance. What type of scent are you looking for today?"
+    },
+    {
+      "type": "text",
+      "id": "input_placeholder",
+      "label": "Input placeholder",
+      "default": "Describe your ideal fragrance..."
+    },
+    {
+      "type": "header",
+      "content": "Quick suggestions"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_suggestions",
+      "label": "Show quick suggestions",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "suggestion_1",
+      "label": "Suggestion 1",
+      "default": "Fresh & citrusy scents"
+    },
+    {
+      "type": "text",
+      "id": "suggestion_2",
+      "label": "Suggestion 2",
+      "default": "Warm & woody fragrances"
+    },
+    {
+      "type": "text",
+      "id": "suggestion_3",
+      "label": "Suggestion 3",
+      "default": "Tell me about subscriptions"
+    },
+    {
+      "type": "header",
+      "content": "Button position"
+    },
+    {
+      "type": "range",
+      "id": "button_size",
+      "label": "Button size",
+      "min": 50,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "button_bottom_position",
+      "label": "Distance from bottom",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "button_right_position",
+      "label": "Distance from right",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Panel dimensions"
+    },
+    {
+      "type": "range",
+      "id": "panel_width",
+      "label": "Panel width",
+      "min": 300,
+      "max": 450,
+      "step": 10,
+      "unit": "px",
+      "default": 380
+    },
+    {
+      "type": "range",
+      "id": "panel_height",
+      "label": "Panel height",
+      "min": 400,
+      "max": 700,
+      "step": 20,
+      "unit": "px",
+      "default": 600
+    },
+    {
+      "type": "range",
+      "id": "panel_border_radius",
+      "label": "Panel border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Button colors"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "button_icon_color",
+      "label": "Button icon color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Notification badge",
+      "default": "#c9a86c"
+    },
+    {
+      "type": "header",
+      "content": "Panel colors"
+    },
+    {
+      "type": "color",
+      "id": "panel_background",
+      "label": "Panel background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "header_background",
+      "label": "Header background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "header_text_color",
+      "label": "Header title color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "header_subtitle_color",
+      "label": "Header subtitle color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "header",
+      "content": "Message bubbles"
+    },
+    {
+      "type": "color",
+      "id": "bot_bubble_background",
+      "label": "Bot bubble background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "bot_bubble_text",
+      "label": "Bot bubble text",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "user_bubble_background",
+      "label": "User bubble background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "user_bubble_text",
+      "label": "User bubble text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "bot_avatar_background",
+      "label": "Bot avatar background",
+      "default": "#c9a86c"
+    },
+    {
+      "type": "color",
+      "id": "bot_avatar_color",
+      "label": "Bot avatar icon",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "user_avatar_background",
+      "label": "User avatar background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "user_avatar_color",
+      "label": "User avatar icon",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "typing_dot_color",
+      "label": "Typing indicator",
+      "default": "#999999"
+    },
+    {
+      "type": "header",
+      "content": "Product cards"
+    },
+    {
+      "type": "color",
+      "id": "product_card_background",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "product_title_color",
+      "label": "Product title",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "product_description_color",
+      "label": "Product description",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "product_price_color",
+      "label": "Product price",
+      "default": "#c9a86c"
+    },
+    {
+      "type": "header",
+      "content": "Input area"
+    },
+    {
+      "type": "color",
+      "id": "input_wrapper_background",
+      "label": "Input wrapper background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "input_background",
+      "label": "Input background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "input_text_color",
+      "label": "Input text",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "input_border_color",
+      "label": "Input border",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "color",
+      "id": "input_focus_border",
+      "label": "Input focus border",
+      "default": "#c9a86c"
+    },
+    {
+      "type": "color",
+      "id": "send_button_background",
+      "label": "Send button background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "send_button_hover",
+      "label": "Send button hover",
+      "default": "#c9a86c"
+    },
+    {
+      "type": "color",
+      "id": "send_button_icon_color",
+      "label": "Send button icon",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Quick suggestions style"
+    },
+    {
+      "type": "color",
+      "id": "suggestion_background",
+      "label": "Suggestion background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "suggestion_border",
+      "label": "Suggestion border",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "color",
+      "id": "suggestion_text",
+      "label": "Suggestion text",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "suggestion_hover_background",
+      "label": "Suggestion hover background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "suggestion_hover_border",
+      "label": "Suggestion hover border",
+      "default": "#c9a86c"
+    },
+    {
+      "type": "header",
+      "content": "Footer"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_powered_by",
+      "label": "Show powered by text",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "powered_by_text",
+      "label": "Powered by text",
+      "default": "Powered by AI"
+    },
+    {
+      "type": "color",
+      "id": "powered_by_color",
+      "label": "Powered by text color",
+      "default": "#999999"
+    }
+  ],
+  "presets": [
+    {
+      "name": "AI chat assistant"
+    }
+  ]
+}
 {% endschema %}
