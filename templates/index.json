@@ -25,6 +25,120 @@
         "show_scroll_indicator": true
       }
     },
+    "17768546331d8577f5": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_a81385d_E7zgtD": {
+          "type": "ai_gen_block_a81385d",
+          "disabled": true,
+          "settings": {
+            "fragrance_collection": "fragrances",
+            "title": "Fragrance Finder",
+            "subtitle": "Ask me for personalized recommendations",
+            "welcome_message": "Hi! I'm your fragrance expert. Tell me about a cologne you love, and I'll recommend similar scents you might enjoy.",
+            "input_placeholder": "e.g., I like fresh citrus scents...",
+            "send_button_text": "Send",
+            "quick_suggestions": "I like fresh citrus scents|Recommend something woody|What's good for summer?|Show me luxury fragrances",
+            "bot_avatar_icon": "🌿",
+            "user_avatar_icon": "👤",
+            "show_disclaimer": true,
+            "disclaimer_text": "AI-powered recommendations. Results may vary.",
+            "desktop_width_percent": 100,
+            "chat_height": 600,
+            "border_radius": 12,
+            "bubble_radius": 16,
+            "input_radius": 8,
+            "title_size": 20,
+            "subtitle_size": 14,
+            "message_size": 14,
+            "background_color": "#ffffff",
+            "border_color": "#e5e5e5",
+            "text_color": "#1a1a1a",
+            "accent_color": "#c9a86c",
+            "header_bg_color": "#1a1a1a",
+            "header_text_color": "#ffffff",
+            "messages_bg_color": "#fafafa",
+            "bot_bubble_bg": "#ffffff",
+            "bot_bubble_color": "#1a1a1a",
+            "bot_avatar_bg": "#c9a86c",
+            "bot_avatar_color": "#ffffff",
+            "user_bubble_bg": "#1a1a1a",
+            "user_bubble_color": "#ffffff",
+            "user_avatar_bg": "#666666",
+            "user_avatar_color": "#ffffff",
+            "input_bg": "#ffffff",
+            "send_btn_bg": "#1a1a1a",
+            "send_btn_color": "#ffffff",
+            "send_btn_hover_bg": "#c9a86c",
+            "suggestion_bg": "#ffffff",
+            "suggestion_color": "#1a1a1a",
+            "suggestion_hover_bg": "#f5f5f5",
+            "typing_dot_color": "#999999",
+            "link_color": "#c9a86c",
+            "disclaimer_color": "#999999"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_a81385d_E7zgtD"
+      ],
+      "settings": {}
+    },
+    "1775503735ef6a96df": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_9faa96e_EXAHBD": {
+          "type": "ai_gen_block_9faa96e",
+          "settings": {
+            "title": "No surcharges. Ever.",
+            "subtitle": "Most fragrance subscriptions charge $5–15 extra on luxury brands like Creed and Parfums de Marly. Base Note doesn't. Every fragrance is $20 flat.",
+            "title_size": 32,
+            "subtitle_size": 16,
+            "column_1_header": "Fragrance",
+            "column_2_header": "Typical sub with luxury surcharge",
+            "column_3_header": "Base Note",
+            "row_1_product": "Creed Aventus 5ml",
+            "row_1_competitor": "$45",
+            "row_1_price": "$20 / month",
+            "row_2_product": "Parfums de Marly Layton 5ml",
+            "row_2_competitor": "$40",
+            "row_2_price": "$20 / month",
+            "row_3_product": "Tom Ford Oud Wood 5ml",
+            "row_3_competitor": "$32",
+            "row_3_price": "$20 / month",
+            "row_4_product": "Bond No. 9 Bleecker St. 5ml",
+            "row_4_competitor": "$42",
+            "row_4_price": "$20 / month",
+            "desktop_width_percent": 100,
+            "section_padding": 40,
+            "cell_padding": 16,
+            "border_radius": 8,
+            "header_font_size": 14,
+            "body_font_size": 15,
+            "background_color": "#f5f5f5",
+            "title_color": "#1a1a1a",
+            "subtitle_color": "#666666",
+            "table_background": "#ffffff",
+            "header_background": "#f5f5f5",
+            "header_text_color": "#1a1a1a",
+            "body_text_color": "#1a1a1a",
+            "border_color": "#e5e5e5",
+            "row_hover_color": "#f9f9f9",
+            "competitor_price_color": "#999999",
+            "show_checkmark": true,
+            "highlight_background": "#f0ead6",
+            "highlight_text_color": "#1a1a1a"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_9faa96e_EXAHBD"
+      ],
+      "name": "Price Comparison",
+      "settings": {}
+    },
     "delivery-explainer": {
       "type": "delivery-explainer",
       "blocks": {
@@ -174,71 +288,6 @@
       "name": "Subscription Benefits",
       "settings": {}
     },
-    "1775503735ef6a96df": {
-      "type": "_blocks",
-      "blocks": {
-        "ai_gen_block_9faa96e_EXAHBD": {
-          "type": "ai_gen_block_9faa96e",
-          "settings": {
-            "title": "No surcharges. Ever.",
-            "subtitle": "Most fragrance subscriptions charge $5–15 extra on luxury brands like Creed and Parfums de Marly. Base Note doesn't. Every fragrance is $20 flat.",
-            "title_size": 32,
-            "subtitle_size": 16,
-            "column_1_header": "Fragrance",
-            "column_2_header": "Typical sub with luxury surcharge",
-            "column_3_header": "Base Note",
-            "row_1_product": "Creed Aventus 5ml",
-            "row_1_competitor": "$45",
-            "row_1_price": "$20 / month",
-            "row_2_product": "Parfums de Marly Layton 5ml",
-            "row_2_competitor": "$40",
-            "row_2_price": "$20 / month",
-            "row_3_product": "Tom Ford Oud Wood 5ml",
-            "row_3_competitor": "$32",
-            "row_3_price": "$20 / month",
-            "row_4_product": "Bond No. 9 Bleecker St. 5ml",
-            "row_4_competitor": "$42",
-            "row_4_price": "$20 / month",
-            "desktop_width_percent": 100,
-            "section_padding": 40,
-            "cell_padding": 16,
-            "border_radius": 8,
-            "header_font_size": 14,
-            "body_font_size": 15,
-            "background_color": "#f5f5f5",
-            "title_color": "#1a1a1a",
-            "subtitle_color": "#666666",
-            "table_background": "#ffffff",
-            "header_background": "#f5f5f5",
-            "header_text_color": "#1a1a1a",
-            "body_text_color": "#1a1a1a",
-            "border_color": "#e5e5e5",
-            "row_hover_color": "#f9f9f9",
-            "competitor_price_color": "#999999",
-            "show_checkmark": true,
-            "highlight_background": "#f0ead6",
-            "highlight_text_color": "#1a1a1a"
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "ai_gen_block_9faa96e_EXAHBD"
-      ],
-      "name": "Price Comparison",
-      "settings": {}
-    },
-    "featured-collection": {
-      "type": "featured-collection",
-      "settings": {
-        "eyebrow": "Presence Without Noise",
-        "heading": "Featured Fragrances",
-        "description": "",
-        "collection": "fragrances",
-        "products_to_show": 4,
-        "show_view_all": true
-      }
-    },
     "how-it-works": {
       "type": "how-it-works",
       "blocks": {
@@ -283,6 +332,17 @@
         "description": "Luxury, simplified: one elite fragrance delivered monthly",
         "button_label": "Get Started",
         "button_link": "/collections/fragrances"
+      }
+    },
+    "featured-collection": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "Presence Without Noise",
+        "heading": "Featured Fragrances",
+        "description": "",
+        "collection": "fragrances",
+        "products_to_show": 4,
+        "show_view_all": true
       }
     },
     "subscription-plans": {
@@ -435,6 +495,7 @@
   },
   "order": [
     "hero",
+    "17768546331d8577f5",
     "1775503735ef6a96df",
     "delivery-explainer",
     "1775502539958abd4e",
