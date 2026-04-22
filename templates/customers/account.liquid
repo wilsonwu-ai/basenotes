@@ -87,7 +87,11 @@
                 {%- if is_subscriber -%}Active Member{%- else -%}Welcome{%- endif -%}
               </p>
               <h2 class="acct__welcome-title">Welcome back, {{ customer.first_name }}!</h2>
-              <p class="acct__welcome-meta">Member since {{ customer.created_at | date: '%B %Y' }}</p>
+              {%- if customer.created_at != blank -%}
+                <p class="acct__welcome-meta">Member since {{ customer.created_at | date: '%B %Y' }}</p>
+              {%- elsif earliest_sub_order -%}
+                <p class="acct__welcome-meta">Member since {{ earliest_sub_order.created_at | date: '%B %Y' }}</p>
+              {%- endif -%}
             </div>
             {%- if is_subscriber -%}
               <span class="acct__status-badge acct__status-badge--active">Active</span>
@@ -719,6 +723,9 @@
   .bq-card__month { font-weight: 700; color: #2D4641; font-size: 13px; }
   .bq-card__ship-status { color: #8a918e; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
   .bq-card__ship-status--immediate { color: #C9A962; }
+  .bq-card__swap { display: inline-flex; align-items: center; justify-content: center; gap: 4px; margin-top: 4px; padding: 6px 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: transparent; border: 1px solid #EEE9DF; border-radius: 6px; color: #2D4641; cursor: pointer; font-family: inherit; transition: border-color 0.15s, color 0.15s, background 0.15s; }
+  .bq-card__swap:hover { border-color: #C9A962; color: #C9A962; background: #FAF8F5; }
+  .bq-card__swap svg { color: currentColor; }
   .bq-card__remove { position: absolute; top: 10px; left: 10px; width: 24px; height: 24px; background: rgba(255,255,255,0.9); border: 1px solid #EEE9DF; border-radius: 50%; cursor: pointer; color: #8a918e; display: flex; align-items: center; justify-content: center; padding: 0; transition: color 0.15s, border-color 0.15s; opacity: 0; }
   .bq-card:hover .bq-card__remove { opacity: 1; }
   .bq-card__remove:hover { color: #c62828; border-color: #c62828; }
@@ -1690,7 +1697,13 @@ document.addEventListener('DOMContentLoaded', function() {
           '<p class="bq-card__month-label">' +
             '<span class="bq-card__month">' + escapeHtml(BQ.monthLabel(monthStr, { withYear: true })) + '</span>' +
             '<span class="bq-card__ship-status ' + statusClass + '">' + shipStatus + '</span>' +
-          '</p>';
+          '</p>' +
+          '<button type="button" class="bq-card__swap" data-queue-swap-month="' + escapeAttr(monthStr) + '">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12" aria-hidden="true">' +
+              '<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>' +
+            '</svg>' +
+            'Swap' +
+          '</button>';
 
         var removeBtn = card.querySelector('.bq-card__remove');
         removeBtn.addEventListener('click', function(e) {
@@ -1698,6 +1711,14 @@ document.addEventListener('DOMContentLoaded', function() {
           e.stopPropagation();
           BQ.clearSlot(monthStr);
           render();
+        });
+
+        var swapBtn = card.querySelector('.bq-card__swap');
+        swapBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          window.__bqPendingTargetMonth = monthStr;
+          document.dispatchEvent(new Event('fragrance-selector:open'));
         });
 
         return card;
