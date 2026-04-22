@@ -181,14 +181,9 @@
             </div>
 
             <div class="subscription-box__pricing">
-              <div class="price-main">
-                <span class="price-amount">{{ settings.subscription_price | default: '$20' }}</span>
-                <span class="price-period">/ month</span>
-              </div>
+              {% render 'subscription-pricing-summary', surface: 'pdp' %}
               {%- if product.compare_at_price > product.price -%}
-                <p class="price-note">Retail: {{ product.compare_at_price | money }} — yours for {{ settings.subscription_price | default: '$20' }}/month</p>
-              {%- else -%}
-                <p class="price-note">Month-to-month subscription. Cancel anytime.</p>
+                <p class="price-note">Retail: {{ product.compare_at_price | money }} for a full bottle.</p>
               {%- endif -%}
             </div>
           </div>
@@ -301,7 +296,7 @@
           <button type="submit" class="add-to-queue-btn" id="addToCartButton" {% unless current_variant.available %}disabled{% endunless %} data-add-to-cart>
             {%- if current_variant.available -%}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-              <span id="addToCartText">Add to My Queue</span>
+              <span id="addToCartText">Start My Subscription — $20/month</span>
             {%- else -%}
               <span id="addToCartText">Sold Out</span>
             {%- endif -%}
@@ -1404,6 +1399,20 @@
     const variantIdInput = document.getElementById('variantId');
     const addToCartBtn = document.getElementById('addToCartButton');
     const addToCartText = document.getElementById('addToCartText');
+
+    // PRD-01: If arrived via empty-slot from account page, re-label CTA to the target month
+    (function labelCTAForQueueTarget() {
+      var params = new URLSearchParams(window.location.search);
+      var m = params.get('queue_target_month');
+      if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(m || '')) return;
+      if (!addToCartText) return;
+      var parts = m.split('-');
+      var d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, 1);
+      var monthName = d.toLocaleString('en-US', { month: 'long' });
+      addToCartText.textContent = 'Add to ' + monthName + ' Slot';
+      // Persist for originalText recapture during async flows
+      addToCartText.dataset.queueTargetLabel = 'Add to ' + monthName + ' Slot';
+    })();
     const purchasePrice = document.getElementById('purchasePrice');
     const comparePrice = document.getElementById('comparePrice');
     const savingsBadge = document.getElementById('savingsBadge');
@@ -1464,7 +1473,7 @@
 
       // Update button text
       if (addToCartText && variant.available) {
-        addToCartText.textContent = 'Add to My Queue';
+        addToCartText.textContent = 'Start My Subscription — $20/month';
       }
 
       // Update purchase view pricing (for full-bottle variants)
@@ -1530,8 +1539,15 @@
       });
     });
 
-    // ─── Queue / Rotation System ───
+    // ─── Queue / Rotation System (PRD-01: month-indexed) ───
     const QUEUE_KEY = 'basenotes_queue';
+
+    function getQueueTargetMonth() {
+      var params = new URLSearchParams(window.location.search);
+      var m = params.get('queue_target_month');
+      // Validate format YYYY-MM
+      return /^\d{4}-(0[1-9]|1[0-2])$/.test(m || '') ? m : null;
+    }
 
     function getRotationQueue() {
       try { return JSON.parse(localStorage.getItem(QUEUE_KEY)) || []; }
@@ -1542,11 +1558,35 @@
       localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
     }
 
+    function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+    function monthStrFromOffset(offset) {
+      var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + offset);
+      return d.getFullYear() + '-' + pad2(d.getMonth() + 1);
+    }
+
     function addToRotationQueue(productData) {
       var queue = getRotationQueue();
-      // Don't add duplicates
-      if (queue.some(function(item) { return item.productId === productData.productId; })) return false;
-      queue.push(productData);
+      var targetMonth = getQueueTargetMonth();
+
+      if (targetMonth) {
+        // Targeted insert: upsert at that month (replaces any existing slot at same month)
+        var idx = queue.findIndex(function(e){ return e.shipMonth === targetMonth; });
+        var entry = Object.assign({ shipMonth: targetMonth, locked: false }, productData);
+        if (idx >= 0) queue[idx] = entry;
+        else queue.push(entry);
+      } else {
+        // No target → assign next available future month slot (first 5 not already filled)
+        if (queue.some(function(item) { return item.productId === productData.productId; })) return false;
+        var filledMonths = {};
+        queue.forEach(function(e){ if (e.shipMonth) filledMonths[e.shipMonth] = true; });
+        var targetMonthFallback = null;
+        for (var i = 0; i < 5; i++) {
+          var m = monthStrFromOffset(i);
+          if (!filledMonths[m]) { targetMonthFallback = m; break; }
+        }
+        queue.push(Object.assign({ shipMonth: targetMonthFallback, locked: false }, productData));
+      }
+
       saveRotationQueue(queue);
       return true;
     }
@@ -1594,6 +1634,25 @@
 
         const formData = new FormData(productForm);
         const variantId = formData.get('id');
+
+        // PRD-01: Queue-target flow — skip cart entirely, write to queue localStorage, bounce back to account
+        var queueTarget = getQueueTargetMonth();
+        if (queueTarget) {
+          var qTitle = {{ product.title | json }};
+          var qId = {{ product.id }};
+          var qUrl = {{ product.url | json }};
+          var qImg = {{ product.featured_image | image_url: width: 200 | json }};
+          var qFamily = {{ product.vendor | json }};
+          addToRotationQueue({
+            productId: qId, title: qTitle, url: qUrl, image: qImg, family: qFamily,
+            variantId: parseInt(variantId), addedAt: new Date().toISOString()
+          });
+          if (addToCartText) addToCartText.textContent = 'Added!';
+          addToCartBtn.classList.add('is-added');
+          setTimeout(function(){ window.location.href = '/account#next-shipment'; }, 600);
+          return;
+        }
+
         // Auto-select first selling plan if none chosen (all purchases are subscriptions)
         var sellingPlan = formData.get('selling_plan');
         if (!sellingPlan) {
@@ -1610,7 +1669,7 @@
         const productImage = {{ product.featured_image | image_url: width: 200 | json }};
 
         addToCartBtn.classList.add('is-loading');
-        const originalText = addToCartText ? addToCartText.textContent : 'Add to My Queue';
+        const originalText = addToCartText ? addToCartText.textContent : 'Start My Subscription — $20/month';
 
         // For subscription items, enforce single-item cart
         if (isSubscription) {
