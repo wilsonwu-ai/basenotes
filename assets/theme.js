@@ -97,7 +97,7 @@
             this.textContent = 'Added!';
             setTimeout(() => {
               this.classList.remove('loading');
-              this.textContent = 'Quick Add to Queue';
+              this.textContent = 'Quick Subscribe — $20/mo';
             }, 1500);
 
             // Refresh and open cart drawer with updated content
