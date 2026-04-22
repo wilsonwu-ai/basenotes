@@ -15,26 +15,14 @@
         "image": "shopify://shop_images/case-forest-green.png",
         "image_url": "",
         "video": "",
-        "eyebrow": "",
-        "heading": "Your Signatures Start Here",
-        "description": "<b>Luxury fragrances. Perfectly portioned. <br>\nA new signature scent every month—no commitment to full bottles</b>",
-        "button_label": "Find Your Scent",
+        "eyebrow": "$20 Flat · No Surcharges · Cancel Anytime",
+        "heading": "One flat price. Every luxury fragrance. Build your signature rotation.",
+        "description": "<b>A 5ml atomizer of a designer or niche luxury fragrance — Creed, Tom Ford, Xerjoff, Parfums de Marly, Bond No. 9 — delivered every month for $20. No per-brand surcharges. No upcharge games.</b>",
+        "button_label": "Find My Scent",
         "button_link": "/pages/find-your-scent",
         "secondary_button_label": "",
         "secondary_button_link": "/pages/find-your-scent",
         "show_scroll_indicator": true
-      }
-    },
-    "promotional-banner": {
-      "type": "promotional-banner",
-      "disabled": true,
-      "settings": {
-        "enabled": false,
-        "eyebrow": "New",
-        "heading": "Stylish men don't settle for just one fragrance.",
-        "subheading": "A new luxury scent, every month",
-        "cta_text": "Subscribe Now — $20/mo",
-        "cta_link": ""
       }
     },
     "delivery-explainer": {
@@ -192,13 +180,13 @@
         "ai_gen_block_9faa96e_EXAHBD": {
           "type": "ai_gen_block_9faa96e",
           "settings": {
-            "title": "Why Pay More?",
-            "subtitle": "One flat fee. No surprises. More money in your pocket.",
+            "title": "No surcharges. Ever.",
+            "subtitle": "Most fragrance subscriptions charge $5–15 extra on luxury brands like Creed and Parfums de Marly. Base Note doesn't. Every fragrance is $20 flat.",
             "title_size": 32,
             "subtitle_size": 16,
             "column_1_header": "Fragrance",
-            "column_2_header": "Other Subscription Services",
-            "column_3_header": "Our Price",
+            "column_2_header": "Typical sub with luxury surcharge",
+            "column_3_header": "Base Note",
             "row_1_product": "Creed Aventus 5ml",
             "row_1_competitor": "$45",
             "row_1_price": "$20 / month",
@@ -443,24 +431,18 @@
         "button_label": "Join",
         "privacy_note": "We respect your privacy. Unsubscribe at any time."
       }
-    },
-    "1775500679cb618b00": {
-      "type": "_blocks",
-      "settings": {}
     }
   },
   "order": [
     "hero",
-    "promotional-banner",
+    "1775503735ef6a96df",
     "delivery-explainer",
     "1775502539958abd4e",
-    "1775503735ef6a96df",
-    "featured-collection",
     "how-it-works",
+    "featured-collection",
     "subscription-plans",
     "testimonials",
     "social-proof-locations",
-    "newsletter",
-    "1775500679cb618b00"
+    "newsletter"
   ]
 }
