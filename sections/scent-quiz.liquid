@@ -12,7 +12,7 @@
     <div class="container">
       <div class="quiz-intro__content">
         <span class="quiz-intro__eyebrow">Personalized Recommendations</span>
-        <h1 class="quiz-intro__title">Find Your Signature Scent</h1>
+        <h1 class="quiz-intro__title">Find Your Signature Scents</h1>
         <p class="quiz-intro__description">
           Answer 5 quick questions and we'll match you with fragrances that fit your style,
           lifestyle, and preferences. Our algorithm analyzes your responses to find your
@@ -103,7 +103,7 @@
           {% comment %} Question 2: Season/Climate {% endcomment %}
           <div class="quiz__slide" data-question="2" style="display: none;">
             <div class="quiz__question">
-              <h2 class="quiz__question-text">What's your preferred season or climate?</h2>
+              <h2 class="quiz__question-text">What's your preferred season or climate to wear fragrances?</h2>
               <p class="quiz__question-hint">Different notes perform better in different temperatures</p>
             </div>
             <div class="quiz__options quiz__options--grid">
@@ -180,7 +180,7 @@
           <div class="quiz__slide" data-question="4" style="display: none;">
             <div class="quiz__question">
               <h2 class="quiz__question-text">How do you want to be noticed?</h2>
-              <p class="quiz__question-hint">This determines projection and sillage</p>
+              <p class="quiz__question-hint">This determines projection and scent trail</p>
             </div>
             <div class="quiz__options quiz__options--list">
               <button class="quiz__option" data-value="intimate">
@@ -249,6 +249,32 @@
                 <span class="quiz__option-label">Cedar & Clean Musk</span>
                 <span class="quiz__option-desc">Modern, clean, versatile, crowd-pleaser</span>
               </button>
+            </div>
+          </div>
+
+          {% comment %} Email Gate — captures high-intent lead BEFORE revealing results {% endcomment %}
+          <div class="quiz__slide quiz__email-gate" data-question="email-gate" style="display: none;">
+            <div class="quiz__email-gate-content">
+              <div class="quiz__results-badge" style="margin: 0 auto 20px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <span class="quiz__results-eyebrow">Your scent profile is ready.</span>
+              <h2 class="quiz-email-gate__title">See your top fragrance matches</h2>
+              <p class="quiz-email-gate__subtitle">Enter your email to reveal your scent profile and top 3 matches — plus 25% off your first month.</p>
+              <form class="quiz-email-gate__form" id="quizEmailForm" novalidate>
+                <input
+                  type="email"
+                  required
+                  placeholder="you@example.com"
+                  autocomplete="email"
+                  name="email"
+                  class="quiz-email-gate__input"
+                  aria-label="Email address"
+                >
+                <button type="submit" class="btn btn--primary btn--large quiz-email-gate__submit">See My Matches</button>
+              </form>
+              <p class="quiz-email-gate__microcopy">No spam. Unsubscribe in one click.</p>
+              <button type="button" class="quiz-email-gate__skip" id="quizEmailSkip">See results without email</button>
             </div>
           </div>
 
@@ -849,6 +875,83 @@
       max-width: 280px;
     }
   }
+
+  /* ─── Email Gate ──────────────────────────────────────────── */
+  .quiz__email-gate-content {
+    max-width: 540px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 48px 20px;
+  }
+  .quiz-email-gate__title {
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    letter-spacing: -0.01em;
+    margin: 16px 0 12px;
+    line-height: 1.2;
+  }
+  .quiz-email-gate__subtitle {
+    color: #555;
+    font-size: 1.02rem;
+    line-height: 1.55;
+    margin: 0 0 28px;
+  }
+  .quiz-email-gate__form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .quiz-email-gate__input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 1rem;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    background: #fff;
+    color: #1a1a1a;
+    font-family: inherit;
+  }
+  .quiz-email-gate__input:focus {
+    outline: none;
+    border-color: #1a1a1a;
+    box-shadow: 0 0 0 3px rgba(26,26,26,0.08);
+  }
+  .quiz-email-gate__submit {
+    width: 100%;
+  }
+  .quiz-email-gate__microcopy {
+    color: #888;
+    font-size: 0.82rem;
+    margin: 14px 0 0;
+  }
+  .quiz-email-gate__skip {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 0.85rem;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-top: 18px;
+    padding: 8px;
+    font-family: inherit;
+  }
+  .quiz-email-gate__skip:hover {
+    color: #1a1a1a;
+  }
+  @media (min-width: 640px) {
+    .quiz-email-gate__form {
+      flex-direction: row;
+      align-items: stretch;
+    }
+    .quiz-email-gate__input {
+      flex: 1;
+    }
+    .quiz-email-gate__submit {
+      width: auto;
+      white-space: nowrap;
+    }
+  }
 </style>
 
 <script>
@@ -1038,6 +1141,92 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function showResults() {
+    // Route through the email gate first — captures high-intent lead.
+    showEmailGate();
+  }
+
+  function showEmailGate() {
+    showQuestion('email-gate');
+    const form = document.getElementById('quizEmailForm');
+    const skipBtn = document.getElementById('quizEmailSkip');
+    if (!form || form.dataset.bound === 'true') return;
+    form.dataset.bound = 'true';
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const emailInput = form.elements['email'];
+      const email = (emailInput.value || '').trim();
+      if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+        emailInput.focus();
+        emailInput.setCustomValidity('Please enter a valid email address');
+        emailInput.reportValidity();
+        return;
+      }
+      emailInput.setCustomValidity('');
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.textContent = 'Revealing matches…';
+      submitBtn.disabled = true;
+      submitQuizEmailToKlaviyo(email).finally(function() {
+        revealResults();
+      });
+    });
+
+    if (skipBtn) {
+      skipBtn.addEventListener('click', function() {
+        revealResults();
+      });
+    }
+  }
+
+  function submitQuizEmailToKlaviyo(email) {
+    var profileKey = calculateProfile();
+    return fetch('https://a.klaviyo.com/client/events/?company_id=VbjRT8', {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        'revision': '2024-10-15'
+      },
+      body: JSON.stringify({
+        data: {
+          type: 'event',
+          attributes: {
+            profile: {
+              data: {
+                type: 'profile',
+                attributes: {
+                  email: email,
+                  properties: {
+                    quiz_completed: true,
+                    scent_profile: profileKey
+                  }
+                }
+              }
+            },
+            metric: {
+              data: {
+                type: 'metric',
+                attributes: { name: 'Completed Scent Quiz' }
+              }
+            },
+            properties: {
+              scent_profile: profileKey,
+              q1_setting: answers[1] || '',
+              q2_season: answers[2] || '',
+              q3_profile: answers[3] || '',
+              q4_projection: answers[4] || '',
+              q5_notes: answers[5] || ''
+            }
+          }
+        }
+      })
+    }).catch(function(err) {
+      // Soft-fail: never block the user from seeing their results over a Klaviyo hiccup.
+      console.error('Klaviyo quiz event failed:', err);
+    });
+  }
+
+  function revealResults() {
     showQuestion('results');
 
     const profileKey = calculateProfile();
@@ -1054,6 +1243,7 @@ document.addEventListener('DOMContentLoaded', function() {
     localStorage.setItem('basenotes_quiz_answers', JSON.stringify(answers));
 
     loadRecommendations(profile);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function loadRecommendations(profile) {
