@@ -25,18 +25,6 @@
         "show_scroll_indicator": true
       }
     },
-    "promotional-banner": {
-      "type": "promotional-banner",
-      "disabled": true,
-      "settings": {
-        "enabled": false,
-        "eyebrow": "New",
-        "heading": "Stylish men don't settle for just one fragrance.",
-        "subheading": "A new luxury scent, every month",
-        "cta_text": "Subscribe Now — $20/mo",
-        "cta_link": ""
-      }
-    },
     "delivery-explainer": {
       "type": "delivery-explainer",
       "blocks": {
@@ -443,10 +431,6 @@
         "button_label": "Join",
         "privacy_note": "We respect your privacy. Unsubscribe at any time."
       }
-    },
-    "1775500679cb618b00": {
-      "type": "_blocks",
-      "settings": {}
     }
   },
   "order": [
