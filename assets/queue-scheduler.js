@@ -110,10 +110,21 @@
     return load().find(function (e) { return e.shipMonth === month; }) || null;
   }
 
+  function emitKlaviyo(eventName, properties) {
+    // Fire a Klaviyo "Viewed Product" style event so marketing can build flows off queue activity.
+    // Safe no-op if Klaviyo onsite JS is not present (logged-out visitors or unsubscribed envs).
+    try {
+      if (!window._learnq) return;
+      window._learnq.push(['track', eventName, properties || {}]);
+    } catch (e) { /* swallow — analytics failures must not break UX */ }
+  }
+
   function setSlot(month, product) {
     if (!month || !product || !product.productId) return load();
     var queue = load();
     var existingIdx = queue.findIndex(function (e) { return e.shipMonth === month; });
+    var isReplace = existingIdx >= 0;
+    var previous = isReplace ? queue[existingIdx] : null;
     var entry = {
       shipMonth: month,
       productId: product.productId,
@@ -125,15 +136,33 @@
       addedAt: new Date().toISOString(),
       locked: false
     };
-    if (existingIdx >= 0) queue[existingIdx] = entry;
+    if (isReplace) queue[existingIdx] = entry;
     else queue.push(entry);
     save(queue);
+    emitKlaviyo(isReplace ? 'Swapped Queue Slot' : 'Added to Queue', {
+      ShipMonth: month,
+      ProductId: product.productId,
+      ProductTitle: product.title,
+      ProductFamily: product.family || null,
+      QueueLength: queue.length,
+      PreviousTitle: previous ? previous.title : null
+    });
     return queue;
   }
 
   function clearSlot(month) {
-    var queue = load().filter(function (e) { return e.shipMonth !== month; });
+    var before = load();
+    var cleared = before.find(function (e) { return e.shipMonth === month; });
+    var queue = before.filter(function (e) { return e.shipMonth !== month; });
     save(queue);
+    if (cleared) {
+      emitKlaviyo('Removed from Queue', {
+        ShipMonth: month,
+        ProductId: cleared.productId,
+        ProductTitle: cleared.title,
+        QueueLength: queue.length
+      });
+    }
     return queue;
   }
 
