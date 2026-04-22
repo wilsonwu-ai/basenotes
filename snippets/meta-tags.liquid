@@ -3,8 +3,9 @@
 {%- endcomment -%}
 
 {%- liquid
+  assign default_social_description = 'Luxury fragrance subscription — $20/month for a 5ml atomizer of a designer or niche fragrance. No surcharges, cancel anytime.'
   assign og_title = page_title | default: shop.name
-  assign og_description = page_description | default: shop.description
+  assign og_description = page_description | default: shop.description | default: default_social_description
   assign og_type = 'website'
 
   if template.name == 'product'
@@ -48,6 +49,9 @@
       "name": {{ product.title | json }},
       "description": {{ product.description | strip_html | json }},
       "image": {{ product.featured_image | image_url: width: 1200 | prepend: 'https:' | json }},
+      "sku": {{ product.selected_or_first_available_variant.sku | default: product.id | json }},
+      "mpn": {{ product.handle | json }},
+      "category": "Beauty > Personal Care > Cosmetics > Fragrance",
       "brand": {
         "@type": "Brand",
         "name": {{ product.vendor | json }}
