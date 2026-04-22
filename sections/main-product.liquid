@@ -181,14 +181,9 @@
             </div>
 
             <div class="subscription-box__pricing">
-              <div class="price-main">
-                <span class="price-amount">{{ settings.subscription_price | default: '$20' }}</span>
-                <span class="price-period">/ month</span>
-              </div>
+              {% render 'subscription-pricing-summary', surface: 'pdp' %}
               {%- if product.compare_at_price > product.price -%}
-                <p class="price-note">Retail: {{ product.compare_at_price | money }} — yours for {{ settings.subscription_price | default: '$20' }}/month</p>
-              {%- else -%}
-                <p class="price-note">Month-to-month subscription. Cancel anytime.</p>
+                <p class="price-note">Retail: {{ product.compare_at_price | money }} for a full bottle.</p>
               {%- endif -%}
             </div>
           </div>
@@ -301,12 +296,24 @@
           <button type="submit" class="add-to-queue-btn" id="addToCartButton" {% unless current_variant.available %}disabled{% endunless %} data-add-to-cart>
             {%- if current_variant.available -%}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-              <span id="addToCartText">Add to My Queue</span>
+              <span id="addToCartText">Start My Subscription — $20/month</span>
             {%- else -%}
               <span id="addToCartText">Sold Out</span>
             {%- endif -%}
           </button>
         {%- endform -%}
+
+        {%- comment -%} PRD-01 follow-up (Apr 23): logged-in subscribers can queue a future-month pick directly from PDP without hitting cart {%- endcomment -%}
+        {%- if customer -%}
+          <button type="button" class="add-to-queue-btn add-to-queue-btn--secondary" id="queueForFutureBtn" data-queue-for-future>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+            <span>Queue for a Future Month</span>
+          </button>
+          <style>
+            .add-to-queue-btn--secondary { margin-top: 0.5rem; background: transparent; color: #2D4641; border: 2px solid #2D4641; }
+            .add-to-queue-btn--secondary:hover { background: #2D4641; color: #fff; }
+          </style>
+        {%- endif -%}
 
         <p class="subscription-box__note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -1404,6 +1411,20 @@
     const variantIdInput = document.getElementById('variantId');
     const addToCartBtn = document.getElementById('addToCartButton');
     const addToCartText = document.getElementById('addToCartText');
+
+    // PRD-01: If arrived via empty-slot from account page, re-label CTA to the target month
+    (function labelCTAForQueueTarget() {
+      var params = new URLSearchParams(window.location.search);
+      var m = params.get('queue_target_month');
+      if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(m || '')) return;
+      if (!addToCartText) return;
+      var parts = m.split('-');
+      var d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, 1);
+      var monthName = d.toLocaleString('en-US', { month: 'long' });
+      addToCartText.textContent = 'Add to ' + monthName + ' Slot';
+      // Persist for originalText recapture during async flows
+      addToCartText.dataset.queueTargetLabel = 'Add to ' + monthName + ' Slot';
+    })();
     const purchasePrice = document.getElementById('purchasePrice');
     const comparePrice = document.getElementById('comparePrice');
     const savingsBadge = document.getElementById('savingsBadge');
@@ -1464,7 +1485,7 @@
 
       // Update button text
       if (addToCartText && variant.available) {
-        addToCartText.textContent = 'Add to My Queue';
+        addToCartText.textContent = 'Start My Subscription — $20/month';
       }
 
       // Update purchase view pricing (for full-bottle variants)
@@ -1530,8 +1551,15 @@
       });
     });
 
-    // ─── Queue / Rotation System ───
+    // ─── Queue / Rotation System (PRD-01: month-indexed) ───
     const QUEUE_KEY = 'basenotes_queue';
+
+    function getQueueTargetMonth() {
+      var params = new URLSearchParams(window.location.search);
+      var m = params.get('queue_target_month');
+      // Validate format YYYY-MM
+      return /^\d{4}-(0[1-9]|1[0-2])$/.test(m || '') ? m : null;
+    }
 
     function getRotationQueue() {
       try { return JSON.parse(localStorage.getItem(QUEUE_KEY)) || []; }
@@ -1542,11 +1570,35 @@
       localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
     }
 
+    function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+    function monthStrFromOffset(offset) {
+      var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + offset);
+      return d.getFullYear() + '-' + pad2(d.getMonth() + 1);
+    }
+
     function addToRotationQueue(productData) {
       var queue = getRotationQueue();
-      // Don't add duplicates
-      if (queue.some(function(item) { return item.productId === productData.productId; })) return false;
-      queue.push(productData);
+      var targetMonth = getQueueTargetMonth();
+
+      if (targetMonth) {
+        // Targeted insert: upsert at that month (replaces any existing slot at same month)
+        var idx = queue.findIndex(function(e){ return e.shipMonth === targetMonth; });
+        var entry = Object.assign({ shipMonth: targetMonth, locked: false }, productData);
+        if (idx >= 0) queue[idx] = entry;
+        else queue.push(entry);
+      } else {
+        // No target → assign next available future month slot (first 5 not already filled)
+        if (queue.some(function(item) { return item.productId === productData.productId; })) return false;
+        var filledMonths = {};
+        queue.forEach(function(e){ if (e.shipMonth) filledMonths[e.shipMonth] = true; });
+        var targetMonthFallback = null;
+        for (var i = 0; i < 5; i++) {
+          var m = monthStrFromOffset(i);
+          if (!filledMonths[m]) { targetMonthFallback = m; break; }
+        }
+        queue.push(Object.assign({ shipMonth: targetMonthFallback, locked: false }, productData));
+      }
+
       saveRotationQueue(queue);
       return true;
     }
@@ -1587,6 +1639,102 @@
       });
     }
 
+    // ─── Queue for Future Month (Apr 23 follow-up) ───
+    var queueForFutureBtn = document.getElementById('queueForFutureBtn');
+    if (queueForFutureBtn) {
+      queueForFutureBtn.addEventListener('click', function() {
+        openMonthPickerModal();
+      });
+    }
+
+    function openMonthPickerModal() {
+      var existing = document.getElementById('monthPickerModal');
+      if (existing) existing.remove();
+
+      function pad2(n){ return n < 10 ? '0'+n : ''+n; }
+      var now = new Date();
+      var months = [];
+      for (var i = 0; i < 5; i++) {
+        var d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+        var monthStr = d.getFullYear() + '-' + pad2(d.getMonth()+1);
+        var label = d.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+        months.push({ str: monthStr, label: label, isCurrent: i === 0 });
+      }
+
+      // Get existing queue to show which slots are filled
+      var existingQueue = [];
+      try { existingQueue = JSON.parse(localStorage.getItem('basenotes_queue') || '[]'); } catch(e) {}
+      var filledByMonth = {};
+      existingQueue.forEach(function(entry){ if (entry.shipMonth) filledByMonth[entry.shipMonth] = entry; });
+
+      var pTitle = {{ product.title | json }};
+
+      var modal = document.createElement('div');
+      modal.id = 'monthPickerModal';
+      modal.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);backdrop-filter:blur(3px);padding:1rem;';
+
+      var monthListHtml = months.map(function(m) {
+        var filled = filledByMonth[m.str];
+        var sub = filled ? 'Currently: ' + (filled.title || '—') : (m.isCurrent ? 'Ships Immediately' : 'Empty slot');
+        var cls = filled ? 'mpm-slot mpm-slot--filled' : 'mpm-slot';
+        return '<button type="button" class="' + cls + '" data-month="' + m.str + '">' +
+          '<div class="mpm-slot__month">' + m.label + '</div>' +
+          '<div class="mpm-slot__sub">' + sub + '</div>' +
+          '</button>';
+      }).join('');
+
+      modal.innerHTML =
+        '<div class="mpm-box">' +
+          '<button type="button" class="mpm-close" aria-label="Close">✕</button>' +
+          '<h3 class="mpm-title">Queue ' + pTitle + '</h3>' +
+          '<p class="mpm-desc">Pick a month to add this fragrance to your queue. You will not be charged now — this schedules the shipment.</p>' +
+          '<div class="mpm-list">' + monthListHtml + '</div>' +
+        '</div>' +
+        '<style>' +
+          '.mpm-box { background:#fff; border-radius:14px; padding:1.75rem; max-width:460px; width:100%; box-shadow:0 16px 48px rgba(0,0,0,0.25); max-height:90vh; overflow-y:auto; position:relative; }' +
+          '.mpm-close { position:absolute; top:12px; right:12px; width:32px; height:32px; background:#F5F3EF; border:none; border-radius:50%; cursor:pointer; font-size:14px; color:#666; }' +
+          '.mpm-close:hover { background:#EEE9DF; color:#2D4641; }' +
+          '.mpm-title { margin:0 0 0.5rem; font-size:1.25rem; color:#2D4641; padding-right:2rem; }' +
+          '.mpm-desc { margin:0 0 1.25rem; color:#666; font-size:0.875rem; line-height:1.45; }' +
+          '.mpm-list { display:flex; flex-direction:column; gap:0.5rem; }' +
+          '.mpm-slot { text-align:left; padding:0.85rem 1rem; background:#FAF8F5; border:1px solid #EEE9DF; border-radius:10px; cursor:pointer; transition:all 0.15s; font-family:inherit; }' +
+          '.mpm-slot:hover { border-color:#C9A962; background:#fff; transform:translateX(2px); }' +
+          '.mpm-slot--filled { background:#fff; border-color:#C9A962; }' +
+          '.mpm-slot--filled::after { content:"Replace"; float:right; font-size:10px; color:#C9A962; text-transform:uppercase; letter-spacing:0.08em; font-weight:700; }' +
+          '.mpm-slot__month { font-weight:700; color:#2D4641; font-size:0.95rem; }' +
+          '.mpm-slot__sub { font-size:0.8125rem; color:#8a918e; margin-top:2px; }' +
+        '</style>';
+
+      document.body.appendChild(modal);
+
+      modal.querySelectorAll('[data-month]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var monthStr = btn.getAttribute('data-month');
+          var variantEl = document.getElementById('variantId');
+          var productData = {
+            productId: {{ product.id }},
+            title: {{ product.title | json }},
+            url: {{ product.url | json }},
+            image: {{ product.featured_image | image_url: width: 200 | json }},
+            family: {{ product.vendor | json }},
+            variantId: variantEl ? parseInt(variantEl.value, 10) : 0,
+            addedAt: new Date().toISOString()
+          };
+          var queue = [];
+          try { queue = JSON.parse(localStorage.getItem('basenotes_queue') || '[]'); } catch(e) {}
+          var idx = queue.findIndex(function(q){ return q.shipMonth === monthStr; });
+          var entry = Object.assign({ shipMonth: monthStr, locked: false }, productData);
+          if (idx >= 0) queue[idx] = entry;
+          else queue.push(entry);
+          localStorage.setItem('basenotes_queue', JSON.stringify(queue));
+          window.location.href = '/account#next-shipment';
+        });
+      });
+
+      modal.querySelector('.mpm-close').addEventListener('click', function(){ modal.remove(); });
+      modal.addEventListener('click', function(e){ if (e.target === modal) modal.remove(); });
+    }
+
     // ─── Add to Cart ───
     if (productForm && addToCartBtn) {
       productForm.addEventListener('submit', function(e) {
@@ -1594,6 +1742,25 @@
 
         const formData = new FormData(productForm);
         const variantId = formData.get('id');
+
+        // PRD-01: Queue-target flow — skip cart entirely, write to queue localStorage, bounce back to account
+        var queueTarget = getQueueTargetMonth();
+        if (queueTarget) {
+          var qTitle = {{ product.title | json }};
+          var qId = {{ product.id }};
+          var qUrl = {{ product.url | json }};
+          var qImg = {{ product.featured_image | image_url: width: 200 | json }};
+          var qFamily = {{ product.vendor | json }};
+          addToRotationQueue({
+            productId: qId, title: qTitle, url: qUrl, image: qImg, family: qFamily,
+            variantId: parseInt(variantId), addedAt: new Date().toISOString()
+          });
+          if (addToCartText) addToCartText.textContent = 'Added!';
+          addToCartBtn.classList.add('is-added');
+          setTimeout(function(){ window.location.href = '/account#next-shipment'; }, 600);
+          return;
+        }
+
         // Auto-select first selling plan if none chosen (all purchases are subscriptions)
         var sellingPlan = formData.get('selling_plan');
         if (!sellingPlan) {
@@ -1610,7 +1777,7 @@
         const productImage = {{ product.featured_image | image_url: width: 200 | json }};
 
         addToCartBtn.classList.add('is-loading');
-        const originalText = addToCartText ? addToCartText.textContent : 'Add to My Queue';
+        const originalText = addToCartText ? addToCartText.textContent : 'Start My Subscription — $20/month';
 
         // For subscription items, enforce single-item cart
         if (isSubscription) {
