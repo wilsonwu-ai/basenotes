@@ -486,6 +486,20 @@
       },
       {
         "type": "text",
+        "id": "subscription_first_order_price",
+        "label": "First-order price (after discount)",
+        "default": "$18",
+        "info": "Displayed first-month price reflecting the Appstle first-order discount. Update this if the discount % changes."
+      },
+      {
+        "type": "text",
+        "id": "subscription_first_order_discount_pct",
+        "label": "First-order discount %",
+        "default": "10",
+        "info": "Discount percentage shown next to the first-order price (e.g. '10' renders '10% off')."
+      },
+      {
+        "type": "text",
         "id": "subscription_description",
         "label": "Subscription tagline",
         "default": "One new fragrance every month"
