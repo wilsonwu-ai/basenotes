@@ -1,0 +1,100 @@
+<style>
+  .article { max-width: 780px; margin: 0 auto; padding: 60px 24px 80px; }
+  .article__breadcrumb { font-size: 0.85rem; color: #888; margin-bottom: 20px; }
+  .article__breadcrumb a { color: #888; text-decoration: none; }
+  .article__breadcrumb a:hover { color: #1a1a1a; text-decoration: underline; }
+  .article__hero-image { width: 100%; height: auto; aspect-ratio: 16/9; object-fit: cover; border-radius: 6px; margin-bottom: 32px; }
+  .article__header { margin-bottom: 40px; border-bottom: 1px solid #e5e5e5; padding-bottom: 24px; }
+  .article__title { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 16px; }
+  .article__meta { color: #888; font-size: 0.92rem; margin: 0; }
+  .article__body { font-size: 1.08rem; line-height: 1.7; color: #2a2a2a; }
+  .article__body p { margin: 0 0 1.25em; }
+  .article__body h2 { font-size: 1.6rem; margin: 2em 0 0.6em; letter-spacing: -0.01em; }
+  .article__body h3 { font-size: 1.25rem; margin: 1.6em 0 0.5em; }
+  .article__body ul, .article__body ol { padding-left: 1.4em; margin: 0 0 1.25em; }
+  .article__body li { margin-bottom: 0.4em; }
+  .article__body img { max-width: 100%; height: auto; border-radius: 4px; margin: 1.5em 0; }
+  .article__body a { color: #1a1a1a; text-decoration: underline; text-underline-offset: 3px; }
+  .article__body blockquote { border-left: 3px solid #c9a86c; padding-left: 20px; margin: 1.5em 0; color: #555; font-style: italic; }
+  .article__body table { width: 100%; border-collapse: collapse; margin: 1.5em 0; font-size: 0.95rem; }
+  .article__body th, .article__body td { border: 1px solid #e5e5e5; padding: 10px 12px; text-align: left; }
+  .article__body th { background: #f8f8f6; }
+  .article__tags { margin-top: 48px; padding-top: 24px; border-top: 1px solid #e5e5e5; }
+  .article__tag { display: inline-block; padding: 6px 12px; margin: 0 8px 8px 0; border: 1px solid #e5e5e5; border-radius: 999px; color: #666; text-decoration: none; font-size: 0.82rem; }
+  .article__tag:hover { border-color: #1a1a1a; color: #1a1a1a; }
+  .article__cta { margin-top: 56px; padding: 32px; background: #f8f8f6; border-radius: 6px; text-align: center; }
+  .article__cta h3 { font-size: 1.35rem; margin: 0 0 8px; }
+  .article__cta p { color: #555; margin: 0 0 18px; }
+  .article__cta a { display: inline-block; padding: 14px 28px; background: #1a1a1a; color: #fff; text-decoration: none; border-radius: 4px; font-weight: 600; }
+</style>
+
+<article class="article">
+  <nav class="article__breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Home</a> · <a href="{{ blog.url }}">{{ blog.title }}</a> · <span>{{ article.title }}</span>
+  </nav>
+
+  {% if article.image %}
+    <img
+      class="article__hero-image"
+      src="{{ article.image | image_url: width: 1600 }}"
+      srcset="{{ article.image | image_url: width: 800 }} 800w, {{ article.image | image_url: width: 1200 }} 1200w, {{ article.image | image_url: width: 1600 }} 1600w"
+      sizes="(max-width: 780px) 100vw, 780px"
+      alt="{{ article.image.alt | default: article.title }}"
+      width="1600"
+      height="900"
+    >
+  {% endif %}
+
+  <header class="article__header">
+    <h1 class="article__title">{{ article.title }}</h1>
+    <p class="article__meta">
+      <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: '%B %-d, %Y' }}</time>
+      {% if article.author %} · by {{ article.author }}{% endif %}
+    </p>
+  </header>
+
+  <div class="article__body rte">
+    {{ article.content }}
+  </div>
+
+  {% if article.tags.size > 0 %}
+    <div class="article__tags">
+      {% for tag in article.tags %}
+        <a href="{{ blog.url }}/tagged/{{ tag | handle }}" class="article__tag">{{ tag }}</a>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <aside class="article__cta">
+    <h3>Ready to try a luxury fragrance?</h3>
+    <p>$20/month. 5ml atomizer. Creed, Tom Ford, Parfums de Marly, Xerjoff, and more. No surcharges, cancel anytime.</p>
+    <a href="/pages/find-your-scent">Find My Scent</a>
+  </aside>
+</article>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ article.title | json }},
+  {% if article.image %}"image": {{ article.image | image_url: width: 1200 | prepend: 'https:' | json }},{% endif %}
+  "datePublished": {{ article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},
+  "dateModified": {{ article.updated_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},
+  "author": {
+    "@type": "Person",
+    "name": {{ article.author | json }}
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    "logo": {
+      "@type": "ImageObject",
+      "url": {% if settings.logo %}{{ settings.logo | image_url: width: 600 | prepend: 'https:' | json }}{% else %}{{ shop.url | append: '/cdn/shop/t/5/assets/favicon.svg' | json }}{% endif %}
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ shop.url }}{{ article.url }}"
+  }
+}
+</script>

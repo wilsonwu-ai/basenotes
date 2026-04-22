@@ -6,38 +6,87 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0">
   <meta name="theme-color" content="{{ settings.color_primary | default: '#1a1a1a' }}">
 
+  {%- liquid
+    assign seo_title = page_title
+    if template.name == 'product' and product
+      assign seo_title = product.title | append: ' — 5ml Luxury Fragrance Subscription'
+    elsif template.name == 'collection' and collection
+      assign seo_title = collection.title | append: ' — Designer & Niche Fragrance Samples'
+    elsif template.name == 'index'
+      assign seo_title = 'Luxury Fragrance Subscription — $20/Month Designer Samples'
+    elsif template.name == 'blog' and blog
+      assign seo_title = blog.title | append: ' — Fragrance Guides & Reviews'
+    elsif template.name == 'article' and article
+      assign seo_title = article.title
+    endif
+    if seo_title == blank
+      assign seo_title = shop.name
+    endif
+  -%}
   <title>
-    {{ page_title }}
+    {{ seo_title }}
     {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
     {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
-    {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+    {%- unless seo_title contains shop.name %} | {{ shop.name }}{% endunless -%}
   </title>
 
   {%- liquid
     assign default_description = settings.default_meta_description | default: 'Discover luxury fragrances with Base Note. Get a new designer fragrance delivered monthly for just $20. Free shipping, cancel anytime.'
     assign meta_description = page_description | default: shop.description | default: default_description
+    assign brand_description = 'Base Note is a monthly luxury fragrance subscription. For $20/month, members receive a 5ml travel atomizer of a designer or niche fragrance (Creed, Tom Ford, Parfums de Marly, Bond No. 9, Xerjoff). Free US shipping, cancel anytime.'
   -%}
   <meta name="description" content="{{ meta_description | truncate: 160, '' | escape }}">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 
   {% render 'meta-tags' %}
 
-  {% comment %} Organization Schema for SEO {% endcomment %}
+  {% comment %} Organization Schema — hardcoded brand description so it can't be overwritten by per-page meta_description. {% endcomment %}
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": {{ shop.name | json }},
       "url": {{ shop.url | json }},
-      "logo": {% if settings.logo %}{{ settings.logo | image_url: width: 600 | prepend: 'https:' | json }}{% else %}""{% endif %},
-      "description": {{ meta_description | json }},
+      "logo": {% if settings.logo %}{{ settings.logo | image_url: width: 600 | prepend: 'https:' | json }}{% else %}{{ shop.url | append: '/cdn/shop/t/5/assets/favicon.svg' | json }}{% endif %},
+      "description": {{ brand_description | json }},
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "customer service",
+        "email": "hello@basenotescent.com",
         "url": "{{ shop.url }}/pages/contact"
       }
     }
   </script>
+
+  {% comment %} WebSite schema with SearchAction — helps Google and LLMs treat the site as a queryable entity. {% endcomment %}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": {{ shop.name | json }},
+      "url": {{ shop.url | json }},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ shop.url }}/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+  </script>
+
+  {% comment %} BreadcrumbList schema on product pages {% endcomment %}
+  {%- if template.name == 'product' and product -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": {{ shop.url | json }} },
+        { "@type": "ListItem", "position": 2, "name": "Fragrances", "item": "{{ shop.url }}/collections/all" },
+        { "@type": "ListItem", "position": 3, "name": {{ product.title | json }}, "item": "{{ shop.url }}{{ product.url }}" }
+      ]
+    }
+  </script>
+  {%- endif -%}
 
   <link rel="canonical" href="{{ canonical_url }}">
 
