@@ -151,15 +151,20 @@
           </div>
         </div>
 
+        {%- assign drawer_has_subscription = false -%}
+        {%- for item in cart.items -%}
+          {%- if item.selling_plan_allocation -%}
+            {%- assign drawer_has_subscription = true -%}
+            {%- break -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if drawer_has_subscription -%}
+          {% render 'subscription-pricing-summary', surface: 'drawer' %}
+        {%- endif -%}
+
         <div class="cart-drawer__actions">
           <a href="{{ routes.cart_url }}" class="btn btn--outline btn--full">View Cart</a>
-          {%- assign drawer_has_subscription = false -%}
-          {%- for item in cart.items -%}
-            {%- if item.selling_plan_allocation -%}
-              {%- assign drawer_has_subscription = true -%}
-              {%- break -%}
-            {%- endif -%}
-          {%- endfor -%}
           {%- if drawer_has_subscription -%}
             <a href="{{ routes.cart_url }}" class="btn btn--primary btn--full" data-checkout-btn>
               Review Subscription

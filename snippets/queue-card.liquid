@@ -1,0 +1,29 @@
+{%- comment -%}
+  queue-card — empty-state placeholder template rendered server-side.
+  Filled cards are rendered client-side by queue-scheduler.js using the same markup shape.
+  Usage: {% render 'queue-card', month: 'YYYY-MM', state: 'empty', position: 0 %}
+{%- endcomment -%}
+
+<article class="bq-card bq-card--empty" data-month="{{ month }}" data-position="{{ position }}">
+  <button type="button" class="bq-card__drag-handle" aria-label="Drag to reorder" tabindex="-1">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true">
+      <circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/>
+      <circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/>
+    </svg>
+  </button>
+  <div class="bq-card__empty-slot">
+    <a href="{{ routes.all_products_collection_url }}?queue_target_month={{ month }}" class="bq-card__empty-link">
+      <div class="bq-card__plus" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </div>
+      <p class="bq-card__empty-title">Pick Your Next Scent</p>
+      <p class="bq-card__empty-sub">If this slot is empty on ship day, we'll send our Fragrance of the Month.</p>
+    </a>
+  </div>
+  <p class="bq-card__month-label">
+    <span class="bq-card__month">{{ month_label | default: '—' }}</span>
+    <span class="bq-card__ship-status bq-card__ship-status--empty">{{ ship_status | default: 'Select fragrance' }}</span>
+  </p>
+</article>

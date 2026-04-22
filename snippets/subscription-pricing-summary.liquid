@@ -1,0 +1,96 @@
+{%- comment -%}
+  subscription-pricing-summary
+  ----------------------------
+  Single source of truth for subscription pricing copy.
+  Usage: {% render 'subscription-pricing-summary', surface: 'pdp' %}
+
+  Surfaces:
+    - 'pdp'     → PDP subscription box (full pricing + "How it works" 3-line)
+    - 'landing' → subscription landing page (full pricing + "How it works" 3-line)
+    - 'hero'    → homepage hero strip (terse pricing badge)
+    - 'cart'    → cart page above Checkout button (pricing + reassurance)
+    - 'drawer'  → cart drawer footer (terse pricing + reassurance)
+
+  Theme settings consumed:
+    settings.subscription_price                   (default: '$20')
+    settings.subscription_first_order_price       (default: '$18')
+    settings.subscription_first_order_discount_pct (default: '10')
+{%- endcomment -%}
+
+{%- assign price = settings.subscription_price | default: '$20' -%}
+{%- assign first_price = settings.subscription_first_order_price | default: '$18' -%}
+{%- assign first_pct = settings.subscription_first_order_discount_pct | default: '10' -%}
+
+{%- case surface -%}
+
+{%- when 'pdp' -%}
+  <div class="sub-pricing sub-pricing--pdp">
+    <div class="sub-pricing__primary">
+      <span class="sub-pricing__price">{{ price }}</span>
+      <span class="sub-pricing__period">/ month</span>
+    </div>
+    <p class="sub-pricing__first-order">First month {{ first_price }} ({{ first_pct }}% off) · Cancel anytime</p>
+    <ul class="sub-pricing__how">
+      <li>One 5ml vial (~30 sprays, a month's supply)</li>
+      <li>Ships automatically every month</li>
+      <li>Swap, pause, or cancel anytime from your account</li>
+    </ul>
+  </div>
+
+{%- when 'landing' -%}
+  <div class="sub-pricing sub-pricing--landing">
+    <div class="sub-pricing__primary">
+      <span class="sub-pricing__price">{{ price }}</span>
+      <span class="sub-pricing__period">/ month</span>
+    </div>
+    <p class="sub-pricing__first-order">First month {{ first_price }} ({{ first_pct }}% off) · Cancel anytime</p>
+    <ul class="sub-pricing__how">
+      <li>One 5ml vial (~30 sprays, a month's supply)</li>
+      <li>Ships automatically every month</li>
+      <li>Swap, pause, or cancel anytime from your account</li>
+    </ul>
+  </div>
+
+{%- when 'hero' -%}
+  <div class="sub-pricing sub-pricing--hero">
+    <span class="sub-pricing__price">{{ price }}</span>
+    <span class="sub-pricing__period">/ month</span>
+    <span class="sub-pricing__hero-note">First month {{ first_price }}</span>
+  </div>
+
+{%- when 'cart' -%}
+  <div class="sub-pricing sub-pricing--cart">
+    <p class="sub-pricing__first-order"><strong>{{ price }}/month</strong> · First month {{ first_price }} ({{ first_pct }}% off) · Cancel anytime</p>
+    <p class="sub-pricing__reassurance">You'll pick your next months' fragrances from your account after checkout. Or let us curate — we'll send our Fragrance of the Month.</p>
+  </div>
+
+{%- when 'drawer' -%}
+  <div class="sub-pricing sub-pricing--drawer">
+    <p class="sub-pricing__first-order"><strong>{{ price }}/month</strong> · First month {{ first_price }}</p>
+    <p class="sub-pricing__reassurance">You'll pick your next months' fragrances from your account after checkout.</p>
+  </div>
+
+{%- else -%}
+  <div class="sub-pricing">
+    <span class="sub-pricing__price">{{ price }}</span>
+    <span class="sub-pricing__period">/ month</span>
+  </div>
+
+{%- endcase -%}
+
+<style>
+  .sub-pricing { display: flex; flex-direction: column; gap: 0.4rem; }
+  .sub-pricing__primary { display: flex; align-items: baseline; gap: 0.3rem; }
+  .sub-pricing__price { font-size: 2rem; font-weight: 700; color: var(--color-primary, #2D4641); letter-spacing: -0.01em; }
+  .sub-pricing__period { font-size: 1rem; color: var(--color-text-muted, #5a6a63); }
+  .sub-pricing__first-order { font-size: 0.875rem; color: var(--color-text, #1a1a1a); margin: 0; line-height: 1.5; }
+  .sub-pricing__first-order strong { color: var(--color-primary, #2D4641); }
+  .sub-pricing__how { list-style: none; padding: 0; margin: 0.6rem 0 0; display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.875rem; color: var(--color-text, #1a1a1a); }
+  .sub-pricing__how li { position: relative; padding-left: 1.1rem; line-height: 1.45; }
+  .sub-pricing__how li::before { content: "•"; position: absolute; left: 0.2rem; color: var(--color-primary, #2D4641); font-weight: 700; }
+  .sub-pricing__reassurance { font-size: 0.8125rem; color: var(--color-text-muted, #5a6a63); margin: 0.4rem 0 0; line-height: 1.45; }
+  .sub-pricing--hero { flex-direction: row; align-items: baseline; gap: 0.4rem; flex-wrap: wrap; }
+  .sub-pricing--hero .sub-pricing__hero-note { font-size: 0.8125rem; color: var(--color-text-muted, #5a6a63); margin-left: 0.3rem; }
+  .sub-pricing--cart, .sub-pricing--drawer { padding: 0.8rem; background: var(--color-surface-muted, #f5f3ef); border-radius: 6px; }
+  .sub-pricing--drawer .sub-pricing__first-order { font-size: 0.8125rem; }
+</style>

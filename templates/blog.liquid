@@ -1,0 +1,60 @@
+<style>
+  .blog-list { max-width: 1100px; margin: 0 auto; padding: 60px 24px; }
+  .blog-list__header { text-align: center; margin-bottom: 48px; border-bottom: 1px solid #e5e5e5; padding-bottom: 32px; }
+  .blog-list__header h1 { font-size: clamp(2.2rem, 5vw, 3.2rem); margin: 0 0 12px; letter-spacing: -0.02em; }
+  .blog-list__header p { color: #666; font-size: 1.05rem; max-width: 640px; margin: 0 auto; }
+  .blog-list__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; }
+  .blog-card { display: flex; flex-direction: column; }
+  .blog-card img { width: 100%; aspect-ratio: 16/10; object-fit: cover; border-radius: 6px; margin-bottom: 16px; }
+  .blog-card__title { font-size: 1.4rem; margin: 0 0 8px; letter-spacing: -0.01em; line-height: 1.25; }
+  .blog-card__title a { color: #1a1a1a; text-decoration: none; }
+  .blog-card__title a:hover { text-decoration: underline; }
+  .blog-card__meta { color: #999; font-size: 0.85rem; margin: 0 0 12px; }
+  .blog-card__excerpt { color: #444; font-size: 0.95rem; line-height: 1.55; margin: 0 0 12px; }
+  .blog-card__link { color: #1a1a1a; font-size: 0.9rem; font-weight: 600; text-decoration: none; }
+  .blog-card__link:hover { text-decoration: underline; }
+  .blog-list__pagination { margin-top: 56px; text-align: center; }
+  .blog-list__pagination a, .blog-list__pagination span { display: inline-block; padding: 8px 14px; margin: 0 2px; color: #1a1a1a; text-decoration: none; }
+  .blog-list__pagination .current { font-weight: 700; border-bottom: 2px solid #1a1a1a; }
+</style>
+
+<section class="blog-list">
+  <header class="blog-list__header">
+    <h1>{{ blog.title }}</h1>
+    {% if blog.description != blank %}<p>{{ blog.description }}</p>{% endif %}
+  </header>
+
+  {% paginate blog.articles by 10 %}
+    {% if blog.articles.size > 0 %}
+      <div class="blog-list__grid">
+        {% for article in blog.articles %}
+          <article class="blog-card">
+            {% if article.image %}
+              <a href="{{ article.url }}">
+                <img src="{{ article.image | image_url: width: 800 }}" alt="{{ article.image.alt | default: article.title }}" loading="lazy" width="800" height="500">
+              </a>
+            {% endif %}
+            <div class="blog-card__body">
+              <h2 class="blog-card__title"><a href="{{ article.url }}">{{ article.title }}</a></h2>
+              <p class="blog-card__meta">
+                <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: '%b %-d, %Y' }}</time>
+                {% if article.author %} · {{ article.author }}{% endif %}
+              </p>
+              <div class="blog-card__excerpt">
+                {% if article.excerpt != blank %}{{ article.excerpt }}{% else %}{{ article.content | strip_html | truncatewords: 35 }}{% endif %}
+              </div>
+              <a href="{{ article.url }}" class="blog-card__link">Read more →</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+      {% if paginate.pages > 1 %}
+        <nav class="blog-list__pagination" aria-label="Blog pagination">
+          {{ paginate | default_pagination }}
+        </nav>
+      {% endif %}
+    {% else %}
+      <p style="text-align:center;color:#666;padding:48px 0;">No posts yet. Check back soon.</p>
+    {% endif %}
+  {% endpaginate %}
+</section>

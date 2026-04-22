@@ -316,6 +316,11 @@
                 <div class="cart-promo__message" id="promoMessage" style="display:none;"></div>
               </div>
 
+              {%- comment -%} Pricing Clarity (PRD-03) — shows $20/mo + first-month discount + post-checkout queue reassurance {%- endcomment -%}
+              {%- if has_subscription -%}
+                {% render 'subscription-pricing-summary', surface: 'cart' %}
+              {%- endif -%}
+
               {%- comment -%} Subscription Disclosure (FTC Compliant) {%- endcomment -%}
               <div class="cart-disclosure">
                 <div class="cart-disclosure__icon">
@@ -394,7 +399,7 @@
         <p class="cart-empty__text">Start your fragrance journey with Base Note. Discover luxury scents curated just for you.</p>
         <div class="cart-empty__actions">
           <a href="/collections/all" class="btn btn--primary btn--large">Browse Fragrances</a>
-          <a href="/pages/quiz" class="btn btn--outline btn--large">Take the Scent Quiz</a>
+          <a href="/pages/find-your-scent" class="btn btn--outline btn--large">Take the Scent Quiz</a>
         </div>
 
         <div class="cart-empty__featured">
