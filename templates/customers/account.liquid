@@ -1,15 +1,5 @@
 {%- layout 'theme' -%}
-{%- comment -%}
-  ══════════════════════════════════════════════════════════════
-  BASE NOTE — ACCOUNT PAGE
-  Features:
-  - Dashboard with subscription stats
-  - Fragrance history with ratings/notes
-  - Next shipment management
-  - Multi-month advance queue pre-selection
-  - Subscription management via Appstle API
-  ══════════════════════════════════════════════════════════════
-{%- endcomment -%}
+
 {%- assign is_subscriber = false -%}
 {%- assign latest_sub_order = nil -%}
 {%- assign latest_sub_item = nil -%}
@@ -26,15 +16,6 @@
     {%- endif -%}
   {%- endfor -%}
 {%- endfor -%}
-{%- if earliest_sub_order -%}
-  {%- assign sub_start_ts = earliest_sub_order.created_at | date: '%s' -%}
-{%- else -%}
-  {%- assign sub_start_ts = customer.created_at | date: '%s' -%}
-{%- endif -%}
-{%- assign now_ts = 'now' | date: '%s' -%}
-{%- assign diff_seconds = now_ts | minus: sub_start_ts -%}
-{%- assign months_active = diff_seconds | divided_by: 2592000 -%}
-{%- if months_active < 1 -%}{%- assign months_active = 1 -%}{%- endif -%}
 
 <section class="acct">
   <div class="container">
@@ -50,6 +31,7 @@
             <p class="acct__user-email">{{ customer.email }}</p>
           </div>
         </div>
+
         <nav class="acct__nav">
           <a href="#dashboard" class="acct__nav-link is-active" data-nav="dashboard">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
@@ -60,12 +42,8 @@
             Fragrance History
           </a>
           <a href="#next-shipment" class="acct__nav-link" data-nav="next-shipment">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-            Next Shipment
-          </a>
-          <a href="#future-months" class="acct__nav-link" data-nav="future-months">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Future Months
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+            My Queue
           </a>
           <a href="#subscription" class="acct__nav-link" data-nav="subscription">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
@@ -80,6 +58,7 @@
             Addresses
           </a>
         </nav>
+
         <div class="acct__sidebar-footer">
           <a href="{{ routes.account_logout_url }}" class="acct__logout">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -91,26 +70,17 @@
       <!-- ═══ Main Content ═══ -->
       <main class="acct__main">
 
-        <!-- Staff FOTM warning -->
-        <div id="staffFotmWarning" class="staff-fotm-warning" style="display:none;">
-          <strong>Staff Alert:</strong> No Fragrance of the Month set for <span id="staffFotmMonth"></span>.
-          <a href="/admin/themes/current/editor" target="_blank" class="staff-fotm-warning__link">Set it now &rarr;</a>
-        </div>
-
-        <!-- API Error Banner -->
-        <div id="apiErrorBanner" class="api-error-banner" style="display:none;">
-          <strong>Connection Issue:</strong> <span id="apiErrorMessage">Unable to load subscription data.</span>
-          <button id="apiRetryBtn" class="api-error-banner__btn">Retry</button>
-        </div>
-
-        <!-- Loading State -->
-        <div id="globalLoader" class="global-loader" style="display:none;">
-          <div class="loader-spinner"></div>
-          <p>Loading your subscription...</p>
-        </div>
+        {%- comment -%}Staff FOTM warning — only shown to staff-tagged customers{%- endcomment -%}
+          <div id="staffFotmWarning" style="display:none;margin-bottom:1.5rem;padding:1rem 1.25rem;background:#FFF3CD;border:1px solid #FFD93D;border-radius:10px;color:#856404;">
+            <strong>Staff Alert:</strong> No Fragrance of the Month set for <span id="staffFotmMonth"></span>.
+            Subscribers with empty queues won't receive an auto-selection.
+            <a href="https://base-note.myshopify.com/admin/themes/158692901082/editor" target="_blank" style="color:#2D4641;font-weight:600;text-decoration:underline;margin-left:4px;">Set it now in Theme Customizer &rarr;</a>
+          </div>
 
         <!-- ────── Dashboard ────── -->
         <div data-view="dashboard" class="acct__view">
+
+          <!-- Welcome Banner -->
           <div class="acct__welcome-banner">
             <div class="acct__welcome-content">
               <p class="acct__welcome-eyebrow">
@@ -120,28 +90,44 @@
               <p class="acct__welcome-meta">Member since {{ customer.created_at | date: '%B %Y' }}</p>
             </div>
             {%- if is_subscriber -%}
-              <span class="acct__status-badge acct__status-badge--active" id="subscriptionStatusBadge">Active</span>
+              <span class="acct__status-badge acct__status-badge--active">Active</span>
             {%- endif -%}
           </div>
+
+          <!-- Quick Stats -->
           <div class="acct__stats">
             <div class="acct__stat">
-              <span class="acct__stat-num" id="statFragrances">—</span>
+              <span class="acct__stat-num" id="statFragrances">{{ customer.orders_count }}</span>
               <span class="acct__stat-label">Fragrances Discovered</span>
             </div>
             <div class="acct__stat">
-              <span class="acct__stat-num" id="statPlan">—</span>
+              <span class="acct__stat-num">
+                {%- if is_subscriber -%}Monthly{%- else -%}—{%- endif -%}
+              </span>
               <span class="acct__stat-label">Current Plan</span>
             </div>
             <div class="acct__stat">
               <span class="acct__stat-num" id="statNextShipment">—</span>
               <span class="acct__stat-label">Next Shipment</span>
             </div>
-            <div class="acct__stat">
-              <span class="acct__stat-num" id="statMonthsActive">{{ months_active }}</span>
-              <span class="acct__stat-label">Months Active</span>
+          </div>
+
+          <!-- PRD-05: Your Fragrance Journey — horizontal timeline (past + future) -->
+          {%- if is_subscriber -%}
+          <div class="acct__card">
+            <div class="acct__card-header">
+              <h3 class="acct__card-title">Your Fragrance Journey</h3>
+              <a href="#history" class="acct__text-link">View history</a>
+            </div>
+            <div class="fj-timeline" id="fragranceJourney" role="list" aria-label="Your fragrance journey timeline">
+              <!-- Hydrated client-side: merges past Appstle/Shopify orders + upcoming queue slots -->
             </div>
           </div>
+          {%- endif -%}
+
+          <!-- PRD-05: Dashboard cards — Upcoming Shipment + Your Queue preview, side-by-side on desktop -->
           {%- if is_subscriber -%}
+          <div class="acct__card-grid">
           <div class="acct__card">
             <div class="acct__card-header">
               <h3 class="acct__card-title">Upcoming Shipment</h3>
@@ -157,21 +143,24 @@
           </div>
           <div class="acct__card">
             <div class="acct__card-header">
-              <h3 class="acct__card-title">Your Fragrance Queue</h3>
-              <a href="#future-months" class="acct__text-link">Plan Ahead</a>
+              <h3 class="acct__card-title">Your Queue</h3>
+              <a href="#next-shipment" class="acct__text-link">Manage queue</a>
             </div>
-            <div id="dashQueuePreview" class="dash-queue-preview">
-              <p class="dash-queue-empty">No fragrances queued. <a href="#future-months">Plan your next few months →</a></p>
+            <div class="dash-queue-preview" id="dashQueuePreview" role="list" aria-label="Upcoming queue preview">
+              <!-- Hydrated client-side: first 3 queue slots -->
             </div>
+          </div>
           </div>
           {%- else -%}
           <div class="acct__card acct__card--cta">
             <span class="acct__cta-badge">Start Your Journey</span>
             <h3 class="acct__cta-title">Join Base Note</h3>
             <p class="acct__cta-desc">Get a new luxury fragrance delivered every month for just $20 + free shipping.</p>
-            <a href="{{ routes.all_products_collection_url }}" class="btn btn--gold">Subscribe Now</a>
+            <a href="/collections/all" class="btn btn--gold">Subscribe Now</a>
           </div>
           {%- endif -%}
+
+          <!-- Recent Orders (condensed) -->
           <div class="acct__card">
             <div class="acct__card-header">
               <h3 class="acct__card-title">Recent Activity</h3>
@@ -196,45 +185,61 @@
             {%- else -%}
               <div class="acct__empty">
                 <p>No orders yet</p>
-                <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary btn--small">Start Shopping</a>
+                <a href="/collections/all" class="btn btn--primary btn--small">Start Shopping</a>
               </div>
             {%- endif -%}
           </div>
+
         </div>
 
         <!-- ────── Fragrance History ────── -->
         <div data-view="history" class="acct__view" style="display:none;">
+
           <div class="acct__card">
             <div class="acct__card-header">
               <h3 class="acct__card-title">Your Fragrance Journey</h3>
             </div>
-            <div class="fh-timeline" id="fragranceTimeline"></div>
+
+            {%- comment -%}
+              Data source: customer.metafields.subscription.fragrance_history
+              Expected JSON array: [{ "month":"March 2026", "product_title":"Midnight Oud", "product_handle":"midnight-oud", "product_image":"...", "family":"Woody", "top_notes":"Bergamot, Saffron", "heart_notes":"Oud, Rose", "base_notes":"Sandalwood, Musk" }, ...]
+            {%- endcomment -%}
+            {%- assign fh_json = customer.metafields.subscription.fragrance_history -%}
+
+            <div class="fh-timeline" id="fragranceTimeline">
+              <!-- Populated by JS from metafield or localStorage fallback -->
+            </div>
+
             <div class="fh-empty" id="fragranceTimelineEmpty" style="display:none;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
                 <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
               </svg>
               <h4>Your journey starts soon!</h4>
               <p>Once you receive your first fragrance, your scent history will appear here.</p>
-              <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary btn--small">Browse Fragrances</a>
+              <a href="/collections/all" class="btn btn--primary btn--small">Browse Fragrances</a>
             </div>
           </div>
+
         </div>
 
         <!-- ────── Next Shipment ────── -->
         <div data-view="next-shipment" class="acct__view" style="display:none;">
+
           {%- if is_subscriber -%}
           <div class="acct__card">
             <div class="acct__card-header">
               <h3 class="acct__card-title">Next Shipment</h3>
-              <span class="ns-status-badge ns-action" id="nsStatusBadge">Loading...</span>
+              <span class="ns-status-badge" id="nsStatusBadge">Action Needed</span>
             </div>
+
+            <!-- Selected fragrance display -->
             <div class="ns-selected" id="nsSelected" style="display:none;">
               <div class="ns-selected__card">
                 <div class="ns-selected__image" id="nsImage"></div>
                 <div class="ns-selected__info">
                   <h4 class="ns-selected__name" id="nsName"></h4>
                   <span class="ns-selected__family" id="nsFamily"></span>
-                  <p class="ns-selected__ship">Ships <span id="nsShipDate">—</span></p>
+                  <p class="ns-selected__ship">Ships in <span id="nsShipDays">—</span> days</p>
                 </div>
               </div>
               <div class="ns-actions">
@@ -242,6 +247,8 @@
                 <button class="btn btn--outline btn--small ns-skip-btn" id="nsSkipBtn">Skip This Month</button>
               </div>
             </div>
+
+            <!-- No selection / action needed -->
             <div class="ns-choose" id="nsChoose">
               <div class="ns-choose__content">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
@@ -253,6 +260,8 @@
                 <button class="btn btn--primary" id="nsChooseBtn">Choose Now</button>
               </div>
             </div>
+
+            <!-- Skipped state -->
             <div class="ns-skipped" id="nsSkipped" style="display:none;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40">
                 <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
@@ -261,60 +270,59 @@
               <p>You've skipped this month's shipment. Your subscription will resume next month.</p>
               <button class="btn btn--outline btn--small" id="nsUndoSkip">Undo Skip</button>
             </div>
+
+            {%- if latest_sub_item -%}
+            <!-- Fallback: show last subscription item from order history -->
+            <div class="ns-sub-fallback" id="nsSubFallback" style="margin-top:1.25rem;padding:1.25rem;background:#FAF8F5;border-radius:12px;">
+              <p style="font-size:14px;color:#2D4641;margin:0 0 8px;">Your current subscription: <strong>{{ latest_sub_item.product.title }}</strong></p>
+              <p style="font-size:13px;color:#666;margin:0;">Want a different fragrance next month? <a href="{{ settings.appstle_portal_url | default: '/apps/subscriptions' }}" style="color:#C9A962;font-weight:600;">Swap Now &rarr;</a></p>
+            </div>
+            {%- endif -%}
           </div>
+
+          <!-- ═══ My Subscription List (PRD-01: Scentbird-style month-by-month queue) ═══ -->
+          <div class="acct__card">
+            <div class="acct__card-header">
+              <div>
+                <h3 class="acct__card-title">My Subscription List</h3>
+                <p class="bq-sublabel">Drag to reorder. Tap a month to pick a fragrance.</p>
+              </div>
+              <span class="bq-count-badge" id="bqCountBadge" aria-live="polite">0 of 5 picked</span>
+            </div>
+            <div class="bq-strip" id="bqStrip" role="list" aria-label="Your upcoming fragrance shipments">
+              <!-- Hydrated client-side by queue-scheduler.js -->
+            </div>
+            <p class="bq-footnote">
+              Your queue is saved on this device. Shipments auto-select from our Fragrance of the Month if a slot is empty on ship day.
+            </p>
+          </div>
+
           {%- else -%}
           <div class="acct__card acct__card--cta">
             <span class="acct__cta-badge">Get Started</span>
             <h3 class="acct__cta-title">Subscribe to Base Note</h3>
             <p class="acct__cta-desc">Choose your own fragrance each month or let us surprise you with our expert picks.</p>
-            <a href="{{ routes.all_products_collection_url }}" class="btn btn--gold">Start Your Subscription</a>
+            <a href="/collections/all" class="btn btn--gold">Start Your Subscription</a>
           </div>
           {%- endif -%}
-        </div>
 
-        <!-- ────── Future Months ────── -->
-        <div data-view="future-months" class="acct__view" style="display:none;">
-          {%- if is_subscriber -%}
-          <div class="acct__card">
-            <div class="acct__card-header">
-              <h3 class="acct__card-title">Plan Your Future Fragrances</h3>
-            </div>
-            <p class="fm-intro">Pre-select your fragrances months in advance. We'll automatically ship your queued selection each month.</p>
-            <p class="fm-queue-notice">Note: Your queue is saved to this device. Sign in on another device to re-select.</p>
-            <div class="fm-months" id="futureMonthsGrid"></div>
-          </div>
-          <div class="acct__card">
-            <div class="acct__card-header">
-              <h3 class="acct__card-title">Your Queue</h3>
-              <span class="queue-count-badge" id="queueCountBadge">0 queued</span>
-            </div>
-            <div class="fm-queue" id="futureQueue">
-              <div class="fm-queue-empty">
-                <p>No fragrances queued yet. Select a month above to start planning!</p>
-              </div>
-            </div>
-          </div>
-          {%- else -%}
-          <div class="acct__card acct__card--cta">
-            <span class="acct__cta-badge">Get Started</span>
-            <h3 class="acct__cta-title">Join Base Note</h3>
-            <p class="acct__cta-desc">Plan your fragrance journey months in advance with a Base Note subscription.</p>
-            <a href="{{ routes.all_products_collection_url }}" class="btn btn--gold">Start Your Subscription</a>
-          </div>
-          {%- endif -%}
         </div>
 
         <!-- ────── Subscription Management ────── -->
         <div data-view="subscription" class="acct__view" style="display:none;">
+
           {%- if is_subscriber -%}
+          <!-- Featured card -->
           <div class="acct__welcome-banner">
             <div class="acct__welcome-content">
-              <span class="acct__status-badge acct__status-badge--active" id="subStatusBadge" style="margin-bottom:12px;">Active</span>
-              <h2 class="acct__welcome-title" style="font-size:1.5rem;" id="subPlanTitle">Monthly Subscription</h2>
-              <p class="acct__welcome-meta" id="subPlanPrice">$20/mo</p>
+              <span class="acct__status-badge acct__status-badge--active" style="margin-bottom:12px;">Active</span>
+              <h2 class="acct__welcome-title" style="font-size:1.5rem;">Monthly Subscription</h2>
+              <p class="acct__welcome-meta">{{ settings.sub_plan_monthly_per_month | default: '$20/mo' }}</p>
             </div>
             <p class="acct__welcome-meta">Member since {{ customer.created_at | date: '%B %Y' }}</p>
           </div>
+
+          <!-- Billing Countdown -->
           <div class="acct__card billing-countdown" id="billingCountdown">
             <div class="billing-countdown__header">
               <h3 class="acct__card-title">Next Billing</h3>
@@ -329,6 +337,8 @@
               <span>Cancel before <strong id="cancelDeadline">—</strong> to avoid the next charge</span>
             </div>
           </div>
+
+          <!-- Plan Details -->
           <div class="acct__card">
             <div class="acct__card-header">
               <h3 class="acct__card-title">Plan Details</h3>
@@ -336,11 +346,11 @@
             <div class="sub-details">
               <div class="sub-details__row">
                 <span class="sub-details__label">Plan</span>
-                <span class="sub-details__value" id="subDetailPlan">Monthly</span>
+                <span class="sub-details__value">Monthly</span>
               </div>
               <div class="sub-details__row">
                 <span class="sub-details__label">Price</span>
-                <span class="sub-details__value" id="subDetailPrice">$20/mo</span>
+                <span class="sub-details__value">{{ settings.sub_plan_monthly_per_month | default: '$20/mo' }}</span>
               </div>
               <div class="sub-details__row">
                 <span class="sub-details__label">Next Billing</span>
@@ -348,11 +358,11 @@
               </div>
               <div class="sub-details__row">
                 <span class="sub-details__label">Payment Method</span>
-                <span class="sub-details__value" id="subPaymentMethod">•••• •••• •••• ——</span>
+                <span class="sub-details__value">•••• •••• •••• ——</span>
               </div>
               <div class="sub-details__row">
                 <span class="sub-details__label">Shipping Address</span>
-                <span class="sub-details__value" id="subShippingAddress">
+                <span class="sub-details__value">
                   {%- if customer.default_address -%}
                     {{ customer.default_address.address1 }}, {{ customer.default_address.city }}
                   {%- else -%}
@@ -360,36 +370,31 @@
                   {%- endif -%}
                 </span>
               </div>
-              <div class="sub-details__row">
-                <span class="sub-details__label">Subscription ID</span>
-                <span class="sub-details__value" id="subContractId">—</span>
-              </div>
             </div>
           </div>
+
+          <!-- Actions -->
           <div class="acct__card">
             <div class="acct__card-header">
               <h3 class="acct__card-title">Subscription Actions</h3>
             </div>
             <div class="sub-actions">
+              {%- comment -%}Change Plan hidden — monthly-only model. Re-enable if plans expand.{%- endcomment -%}
               <button class="sub-action-btn" id="subUpdatePaymentBtn" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                 Update Payment
               </button>
-              <button class="sub-action-btn" id="subUpdateAddressBtn" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                Update Address
-              </button>
-              <button class="sub-action-btn" id="subSkipBtn" type="button">
+              <button class="sub-action-btn" id="subSkipBtn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
                 Skip Next Month
               </button>
-              <button class="sub-action-btn" id="subPauseBtn" type="button">
+              <button class="sub-action-btn" id="subPauseBtn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
                 Pause Subscription
               </button>
             </div>
             <div class="sub-cancel">
-              <button class="sub-cancel__link" id="subCancelBtn" type="button">Cancel subscription</button>
+              <button class="sub-cancel__link" id="subCancelBtn">Cancel subscription</button>
             </div>
           </div>
           {%- else -%}
@@ -397,20 +402,23 @@
             <span class="acct__cta-badge">Start Your Journey</span>
             <h3 class="acct__cta-title">Join Base Note</h3>
             <p class="acct__cta-desc">Discover a new luxury fragrance every month. Plans start at just $20/mo.</p>
-            <div class="acct__cta-actions">
-              <a href="{{ routes.all_products_collection_url }}" class="btn btn--gold">Subscribe Now</a>
-              <a href="{{ pages['quiz'].url }}" class="btn btn--outline">Take the Scent Quiz</a>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <a href="/collections/all" class="btn btn--gold">Subscribe Now</a>
+              <a href="/pages/find-your-scent" class="btn btn--outline">Take the Scent Quiz</a>
             </div>
           </div>
           {%- endif -%}
+
         </div>
 
         <!-- ────── Order History ────── -->
         <div data-view="orders" class="acct__view" style="display:none;">
+
           <div class="acct__card">
             <div class="acct__card-header">
               <h3 class="acct__card-title">Order History</h3>
             </div>
+
             {%- if customer.orders.size > 0 -%}
               <div class="acct__order-list">
                 {%- for order in customer.orders -%}
@@ -433,10 +441,11 @@
                   <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
                 </svg>
                 <p>No orders yet</p>
-                <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary btn--small">Start Shopping</a>
+                <a href="/collections/all" class="btn btn--primary btn--small">Start Shopping</a>
               </div>
             {%- endif -%}
           </div>
+
         </div>
 
       </main>
@@ -472,14 +481,6 @@
   .acct__logout { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #999; text-decoration: none; }
   .acct__logout:hover { color: #2D4641; }
 
-  /* ── Banners ── */
-  .staff-fotm-warning { margin-bottom: 1.5rem; padding: 1rem 1.25rem; background: #FFF3CD; border: 1px solid #FFD93D; border-radius: 10px; color: #856404; }
-  .staff-fotm-warning__link { color: #2D4641; font-weight: 600; text-decoration: underline; margin-left: 4px; }
-  .api-error-banner { margin-bottom: 1.5rem; padding: 1rem 1.25rem; background: #FFEBEE; border: 1px solid #EF5350; border-radius: 10px; color: #C62828; }
-  .api-error-banner__btn { margin-left: 12px; padding: 4px 12px; background: #C62828; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
-  .global-loader { text-align: center; padding: 3rem; }
-  .global-loader p { margin-top: 1rem; color: #666; }
-
   /* ── Main ── */
   .acct__main { display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
   .acct__view { display: flex; flex-direction: column; gap: 1.5rem; }
@@ -493,8 +494,6 @@
   .acct__welcome-meta { font-size: 13px; opacity: 0.6; margin: 0; }
   .acct__status-badge { display: inline-block; padding: 5px 14px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
   .acct__status-badge--active { background: rgba(76,175,80,0.15); color: #4CAF50; border: 1px solid rgba(76,175,80,0.3); }
-  .acct__status-badge--paused { background: rgba(255,152,0,0.15); color: #FF9800; border: 1px solid rgba(255,152,0,0.3); }
-  .acct__status-badge--cancelled { background: rgba(244,67,54,0.15); color: #F44336; border: 1px solid rgba(244,67,54,0.3); }
 
   /* ── Stats ── */
   .acct__stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
@@ -514,7 +513,6 @@
   .acct__cta-badge { display: inline-block; padding: 5px 16px; background: rgba(201,169,98,0.15); border: 1px solid rgba(201,169,98,0.4); border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #C9A962; margin-bottom: 16px; }
   .acct__cta-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.5rem; font-weight: 600; margin: 0 0 8px; }
   .acct__cta-desc { font-size: 14px; opacity: 0.75; margin: 0 0 24px; max-width: 400px; margin-left: auto; margin-right: auto; line-height: 1.6; }
-  .acct__cta-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 
   /* ── Orders ── */
   .acct__order-list { display: flex; flex-direction: column; }
@@ -539,15 +537,6 @@
   .acct__shipment-placeholder svg { margin-bottom: 12px; color: #ccc; }
   .acct__shipment-placeholder p { margin: 0 0 16px; font-size: 14px; }
 
-  /* ── Dashboard Queue Preview ── */
-  .dash-queue-preview { display: flex; gap: 12px; overflow-x: auto; padding: 4px 0; }
-  .dash-queue-item { flex-shrink: 0; width: 80px; text-align: center; }
-  .dash-queue-item__img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; margin: 0 auto 6px; background: #F0EDE8; }
-  .dash-queue-item__month { font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.05em; }
-  .dash-queue-item__name { font-size: 11px; font-weight: 600; color: #2D4641; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .dash-queue-empty { color: #999; font-size: 13px; padding: 1rem 0; }
-  .dash-queue-empty a { color: #C9A962; }
-
   /* ── Fragrance History Timeline ── */
   .fh-timeline { position: relative; padding-left: 32px; }
   .fh-timeline::before { content: ''; position: absolute; left: 11px; top: 0; bottom: 0; width: 2px; background: #E8E6E3; }
@@ -565,18 +554,25 @@
   .fh-entry__family { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #2D4641; background: #F0EDE8; padding: 3px 10px; border-radius: 999px; margin-bottom: 10px; }
   .fh-entry__notes { font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 12px; }
   .fh-entry__notes strong { color: #2D4641; font-weight: 700; }
+
+  /* Star rating */
   .fh-stars { display: flex; gap: 4px; margin-bottom: 10px; }
   .fh-star { cursor: pointer; width: 22px; height: 22px; color: #ddd; transition: color 0.15s; }
   .fh-star.is-filled { color: #C9A962; }
   .fh-star:hover { color: #C9A962; }
+
+  /* User notes */
   .fh-user-note { display: flex; gap: 8px; margin-bottom: 12px; }
   .fh-user-note textarea { flex: 1; border: 1px solid #E8E6E3; border-radius: 8px; padding: 8px 12px; font-size: 13px; font-family: inherit; resize: vertical; min-height: 40px; }
   .fh-user-note textarea:focus { outline: none; border-color: #C9A962; }
   .fh-user-note button { padding: 8px 16px; background: #2D4641; color: #fff; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+
+  /* Action buttons */
   .fh-entry__actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .fh-entry__actions a, .fh-entry__actions button { padding: 6px 14px; font-size: 12px; font-weight: 600; border-radius: 6px; text-decoration: none; cursor: pointer; transition: all 0.2s; }
   .fh-action--again { background: #2D4641; color: #fff; border: none; }
   .fh-action--fullsize { background: transparent; color: #2D4641; border: 1px solid #E8E6E3; }
+
   .fh-empty { text-align: center; padding: 3rem 1rem; }
   .fh-empty svg { color: #ccc; margin-bottom: 16px; }
   .fh-empty h4 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.25rem; color: #2D4641; margin: 0 0 8px; }
@@ -605,38 +601,6 @@
   .ns-skipped h4 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; color: #2D4641; margin: 0 0 8px; }
   .ns-skipped p { font-size: 14px; color: #999; margin: 0 0 20px; }
 
-  /* ── Future Months ── */
-  .fm-intro { font-size: 14px; color: #666; margin-bottom: 1rem; line-height: 1.6; }
-  .fm-queue-notice { font-size: 12px; color: #999; margin-bottom: 1.5rem; font-style: italic; }
-  .fm-months { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
-  .fm-month-card { background: #FAF8F5; border: 2px solid #E8E6E3; border-radius: 12px; padding: 1.25rem; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; }
-  .fm-month-card:hover { border-color: #C9A962; transform: translateY(-2px); }
-  .fm-month-card.is-selected { border-color: #2D4641; background: #fff; }
-  .fm-month-card.is-locked { opacity: 0.6; cursor: not-allowed; }
-  .fm-month-card__label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #999; margin-bottom: 4px; }
-  .fm-month-card__month { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.25rem; font-weight: 600; color: #2D4641; margin-bottom: 8px; }
-  .fm-month-card__status { font-size: 12px; color: #666; }
-  .fm-month-card__status.has-selection { color: #4CAF50; font-weight: 600; }
-  .fm-month-card__frag { margin-top: 10px; }
-  .fm-month-card__frag-img { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; margin: 0 auto 6px; }
-  .fm-month-card__frag-name { font-size: 11px; font-weight: 600; color: #2D4641; }
-  .fm-month-card__clear { position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; border-radius: 50%; background: #F44336; color: #fff; border: none; cursor: pointer; font-size: 12px; line-height: 1; display: none; }
-  .fm-month-card.is-selected .fm-month-card__clear { display: block; }
-  .queue-count-badge { background: #2D4641; color: #fff; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; }
-  .fm-queue { min-height: 100px; }
-  .fm-queue-empty { text-align: center; padding: 2rem; color: #999; font-size: 14px; }
-  .fm-queue-list { display: flex; flex-direction: column; gap: 12px; }
-  .fm-queue-item { display: flex; align-items: center; gap: 1rem; padding: 12px; background: #FAF8F5; border-radius: 10px; }
-  .fm-queue-item__num { width: 28px; height: 28px; background: #2D4641; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
-  .fm-queue-item__img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
-  .fm-queue-item__info { flex: 1; min-width: 0; }
-  .fm-queue-item__month { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.05em; }
-  .fm-queue-item__name { font-weight: 600; color: #2D4641; font-size: 14px; }
-  .fm-queue-item__actions { display: flex; gap: 6px; }
-  .fm-queue-item__btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid #E8E6E3; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-  .fm-queue-item__btn:hover { border-color: #C9A962; }
-  .fm-queue-item__btn--remove:hover { border-color: #F44336; color: #F44336; }
-
   /* ── Subscription Details ── */
   .sub-details { display: flex; flex-direction: column; }
   .sub-details__row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #F0EDE8; }
@@ -647,7 +611,6 @@
   .sub-actions .sub-action-btn:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .sub-action-btn { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: #FAF8F5; border: 1px solid #E8E6E3; border-radius: 10px; font-size: 13px; font-weight: 600; color: #2D4641; text-decoration: none; cursor: pointer; transition: all 0.2s; font-family: inherit; }
   .sub-action-btn:hover { border-color: #C9A962; background: rgba(201,169,98,0.04); }
-  .sub-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .sub-cancel { text-align: center; padding-top: 1rem; border-top: 1px solid #F0EDE8; }
   .sub-cancel__link { background: none; border: none; color: #999; font-size: 12px; cursor: pointer; font-family: inherit; text-decoration: underline; }
   .sub-cancel__link:hover { color: #c62828; }
@@ -674,5 +637,1144 @@
   .acct__card--cta .btn--outline:hover { border-color: #fff; color: #fff; }
   .btn--small { padding: 8px 18px; font-size: 12px; }
 
-  /* ── Confirm Modal ── */
-  .bn-modal-overlay { position: fixed; inset: 0__
+  /* ── Responsive ── */
+  @media (max-width: 992px) {
+    .acct__layout { grid-template-columns: 1fr; }
+    .acct__sidebar { position: static; }
+    .acct__nav { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+    .acct__nav-link { padding: 8px 14px; font-size: 12px; }
+    .acct__stats { grid-template-columns: repeat(2, 1fr); }
+    .sub-actions { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    .acct { padding-top: calc(var(--header-height, 110px) + 1.5rem); }
+    .acct__welcome-banner { flex-direction: column; align-items: flex-start; gap: 12px; padding: 1.5rem; }
+    .acct__welcome-title { font-size: 1.35rem; }
+    .fh-entry__grid { grid-template-columns: 80px 1fr; gap: 1rem; }
+    .fh-entry__image { width: 80px; height: 80px; }
+    .ns-selected__card { flex-direction: column; text-align: center; }
+    .ns-actions { justify-content: center; }
+  }
+  @media (max-width: 576px) {
+    .acct__stats { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .acct__stat { padding: 1rem; }
+    .acct__stat-num { font-size: 1.25rem; }
+  }
+
+  /* ═══ Dashboard Card Grid (PRD-05) ═══ */
+  .acct__card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 860px) { .acct__card-grid { grid-template-columns: 1fr; } }
+
+  /* ═══ Fragrance Journey Timeline (PRD-05) ═══ */
+  .fj-timeline { display: flex; gap: 20px; overflow-x: auto; padding: 20px 2px; position: relative; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+  .fj-timeline::after { content: ''; position: absolute; top: 50%; left: 12px; right: 12px; height: 2px; background: repeating-linear-gradient(90deg, #EEE9DF 0, #EEE9DF 6px, transparent 6px, transparent 12px); z-index: 0; }
+  .fj-stop { flex: 0 0 auto; min-width: 100px; display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; z-index: 1; scroll-snap-align: start; }
+  .fj-stop__dot { width: 52px; height: 52px; border-radius: 50%; background: #fff; border: 2px solid #EEE9DF; display: flex; align-items: center; justify-content: center; overflow: hidden; color: #C9A962; transition: border-color 0.2s, transform 0.2s; }
+  .fj-stop--past .fj-stop__dot { border-color: #2D4641; background: #2D4641; color: #fff; }
+  .fj-stop--current .fj-stop__dot { border-color: #C9A962; box-shadow: 0 0 0 4px rgba(201,169,98,0.18); transform: scale(1.08); }
+  .fj-stop--future .fj-stop__dot { border-style: dashed; }
+  .fj-stop__dot img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .fj-stop__month { font-size: 11px; font-weight: 700; color: #2D4641; text-transform: uppercase; letter-spacing: 0.07em; }
+  .fj-stop__label { font-size: 11px; color: #8a918e; text-align: center; max-width: 92px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* ═══ Dashboard Queue Preview (PRD-05) ═══ */
+  .dash-queue-preview { display: flex; flex-direction: column; gap: 10px; padding: 4px 0; min-height: 120px; }
+  .dash-qp-row { display: flex; align-items: center; gap: 12px; padding: 10px; background: #FAF8F5; border-radius: 10px; text-decoration: none; color: inherit; transition: background 0.15s, transform 0.15s; }
+  .dash-qp-row:hover { background: #F5F3EF; transform: translateX(2px); }
+  .dash-qp-row__img { width: 40px; height: 40px; border-radius: 6px; background: #fff; object-fit: cover; flex-shrink: 0; border: 1px solid #EEE9DF; }
+  .dash-qp-row__info { flex: 1; min-width: 0; }
+  .dash-qp-row__month { font-size: 10px; color: #C9A962; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+  .dash-qp-row__title { font-size: 13px; font-weight: 700; color: #2D4641; margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dash-qp-row__chev { color: #B8B0A0; flex-shrink: 0; }
+  .dash-qp-row--empty { background: #fff; border: 1px dashed #EEE9DF; color: #8a918e; }
+  .dash-qp-row--empty .dash-qp-row__img { background: #F5F3EF; display: flex; align-items: center; justify-content: center; color: #C9A962; }
+  .dash-qp-empty-wrap { text-align: center; padding: 1.25rem; color: #8a918e; font-size: 13px; }
+  .dash-qp-empty-wrap a { color: #C9A962; font-weight: 700; text-decoration: none; }
+  .dash-qp-empty-wrap a:hover { text-decoration: underline; }
+
+  /* ═══ My Subscription List / Queue (PRD-01) ═══ */
+  .bq-sublabel { font-size: 13px; color: #8a918e; margin: 4px 0 0; font-weight: 400; }
+  .bq-count-badge { background: #2D4641; color: #fff; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; }
+  .bq-strip { display: flex; gap: 14px; overflow-x: auto; padding: 16px 2px 20px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+  .bq-strip::-webkit-scrollbar { height: 6px; }
+  .bq-strip::-webkit-scrollbar-track { background: #F5F3EF; border-radius: 3px; }
+  .bq-strip::-webkit-scrollbar-thumb { background: #D5CFC3; border-radius: 3px; }
+  .bq-strip::-webkit-scrollbar-thumb:hover { background: #C9A962; }
+
+  .bq-card { flex: 0 0 180px; scroll-snap-align: start; background: #fff; border: 1px solid #EEE9DF; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 12px; position: relative; transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s; cursor: default; }
+  .bq-card:hover { border-color: #C9A962; box-shadow: 0 6px 18px rgba(45,70,65,0.06); }
+  .bq-card.is-dragging { opacity: 0.4; transform: scale(0.98); }
+  .bq-card.is-ghost { border-style: dashed; background: #FAF8F5; }
+  .bq-card__drag-handle { position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; background: transparent; border: none; cursor: grab; color: #B8B0A0; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: color 0.15s, background 0.15s; }
+  .bq-card__drag-handle:hover { color: #2D4641; background: #F5F3EF; }
+  .bq-card__drag-handle:active { cursor: grabbing; }
+  .bq-card--empty .bq-card__drag-handle { opacity: 0.35; }
+  .bq-card__drag-handle[disabled] { display: none; }
+
+  .bq-card__image { width: 100%; aspect-ratio: 1/1.1; background: #F5F3EF url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23D5CFC3" stroke-width="1.5"><path d="M9 2h6v4h-6z"/><path d="M7 6h10v16H7z"/></svg>') center/35% no-repeat; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .bq-card__image img { width: 100%; height: 100%; object-fit: cover; }
+  .bq-card__title { font-size: 14px; font-weight: 700; color: #2D4641; margin: 0; line-height: 1.3; letter-spacing: -0.005em; }
+  .bq-card__family { font-size: 11px; color: #8a918e; text-transform: uppercase; letter-spacing: 0.08em; margin: 2px 0 0; }
+  .bq-card__month-label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; margin: 0; padding-top: 8px; border-top: 1px dashed #EEE9DF; }
+  .bq-card__month { font-weight: 700; color: #2D4641; font-size: 13px; }
+  .bq-card__ship-status { color: #8a918e; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .bq-card__ship-status--immediate { color: #C9A962; }
+  .bq-card__remove { position: absolute; top: 10px; left: 10px; width: 24px; height: 24px; background: rgba(255,255,255,0.9); border: 1px solid #EEE9DF; border-radius: 50%; cursor: pointer; color: #8a918e; display: flex; align-items: center; justify-content: center; padding: 0; transition: color 0.15s, border-color 0.15s; opacity: 0; }
+  .bq-card:hover .bq-card__remove { opacity: 1; }
+  .bq-card__remove:hover { color: #c62828; border-color: #c62828; }
+  .bq-card__remove:focus-visible { opacity: 1; outline: 2px solid #C9A962; outline-offset: 2px; }
+
+  .bq-card__empty-slot { display: flex; align-items: center; justify-content: center; flex: 1; }
+  .bq-card__empty-link { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; text-decoration: none; color: inherit; padding: 12px 4px; width: 100%; border-radius: 10px; transition: background 0.15s; }
+  .bq-card__empty-link:hover { background: #FAF8F5; }
+  .bq-card__plus { width: 48px; height: 48px; border-radius: 50%; background: #F5F3EF; color: #C9A962; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+  .bq-card__empty-link:hover .bq-card__plus { background: #fff; border: 1px solid #C9A962; }
+  .bq-card__empty-title { font-size: 13px; font-weight: 700; color: #2D4641; margin: 0; letter-spacing: -0.005em; }
+  .bq-card__empty-sub { font-size: 10.5px; color: #8a918e; margin: 0; line-height: 1.35; max-width: 140px; }
+
+  .bq-footnote { font-size: 12px; color: #8a918e; margin: 12px 0 0; line-height: 1.45; font-style: italic; }
+
+  /* Mobile: cards a hair smaller, snap harder */
+  @media (max-width: 640px) {
+    .bq-card { flex: 0 0 160px; padding: 12px; }
+    .bq-strip { scroll-snap-type: x mandatory; gap: 10px; }
+    .bq-card__empty-sub { max-width: 120px; }
+  }
+</style>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- JAVASCRIPT                              -->
+<!-- ═══════════════════════════════════════ -->
+<script src="{{ 'sortable.min.js' | asset_url }}" defer></script>
+<script src="{{ 'queue-scheduler.js' | asset_url }}" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  'use strict';
+
+  // Subscription data from server (Liquid)
+  var serverSubData = {
+    isSubscriber: {{ is_subscriber | json }},
+    {% if latest_sub_order %}
+    orderDate: {{ latest_sub_order.created_at | json }},
+    orderName: {{ latest_sub_order.name | json }},
+    orderFulfilled: {{ latest_sub_order.fulfillment_status | json }},
+    {% endif %}
+    {% if latest_sub_item %}
+    productTitle: {{ latest_sub_item.product.title | json }},
+    productImage: {{ latest_sub_item.image | image_url: width: 200 | json }},
+    productVendor: {{ latest_sub_item.product.vendor | json }},
+    {% endif %}
+    portalUrl: {{ settings.appstle_portal_url | default: '/apps/subscriptions' | json }},
+    fotmEnabled: {{ settings.fotm_enabled | default: false | json }},
+    fotmMonth: {{ settings.fotm_month | json }},
+    {%- if settings.fotm_product -%}
+    fotmProduct: {
+      title: {{ settings.fotm_product.title | json }},
+      image: {{ settings.fotm_product.featured_image | image_url: width: 200 | json }},
+      vendor: {{ settings.fotm_product.vendor | json }},
+      handle: {{ settings.fotm_product.handle | json }},
+      variantId: {{ settings.fotm_product.selected_or_first_available_variant.id | json }},
+      {%- if settings.fotm_product.selling_plan_groups.size > 0 -%}
+      sellingPlanId: {{ settings.fotm_product.selling_plan_groups[0].selling_plans[0].id | json }},
+      {%- endif -%}
+    },
+    {%- endif -%}
+    fotmDisplayName: {{ settings.fotm_display_name | json }},
+    isStaff: {{ customer.tags | join: ',' | downcase | contains: 'staff' | json }}
+  };
+
+  function isValidDate(d) {
+    return d instanceof Date && !isNaN(d.getTime());
+  }
+
+  /* ── Hash Router ── */
+  var views = document.querySelectorAll('[data-view]');
+  var navLinks = document.querySelectorAll('[data-nav]');
+  var validRoutes = ['dashboard', 'history', 'next-shipment', 'subscription', 'orders'];
+
+  function navigate(hash) {
+    var route = (hash || '').replace('#', '') || 'dashboard';
+    if (validRoutes.indexOf(route) === -1) route = 'dashboard';
+
+    views.forEach(function(v) {
+      v.style.display = v.dataset.view === route ? '' : 'none';
+    });
+
+    navLinks.forEach(function(link) {
+      if (link.dataset.nav === route) {
+        link.classList.add('is-active');
+      } else {
+        link.classList.remove('is-active');
+      }
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  window.addEventListener('hashchange', function() {
+    navigate(location.hash);
+  });
+
+  navigate(location.hash);
+
+  /* ── Fragrance History ── */
+  var timelineEl = document.getElementById('fragranceTimeline');
+  var timelineEmptyEl = document.getElementById('fragranceTimelineEmpty');
+
+  // Try metafield data first, fall back to localStorage
+  var historyData = null;
+  {% if fh_json != blank %}
+    try { historyData = {{ fh_json }}; } catch(e) {}
+  {% endif %}
+
+  if (!historyData) {
+    try { historyData = JSON.parse(localStorage.getItem('bn_fragrance_history') || 'null'); } catch(e) {}
+  }
+
+  function getHistoryRatings() {
+    try { return JSON.parse(localStorage.getItem('bn_history_ratings') || '{}'); } catch(e) { return {}; }
+  }
+
+  function getHistoryNotes() {
+    try { return JSON.parse(localStorage.getItem('bn_history_notes') || '{}'); } catch(e) { return {}; }
+  }
+
+  function renderTimeline() {
+    if (!timelineEl) return;
+    if (!historyData || !historyData.length) {
+      if (timelineEl) timelineEl.style.display = 'none';
+      if (timelineEmptyEl) timelineEmptyEl.style.display = 'block';
+      return;
+    }
+
+    if (timelineEmptyEl) timelineEmptyEl.style.display = 'none';
+    timelineEl.style.display = 'block';
+
+    var ratings = getHistoryRatings();
+    var notes = getHistoryNotes();
+
+    // Group entries by month
+    var grouped = {};
+    var monthOrder = [];
+    historyData.forEach(function(entry, i) {
+      var monthKey = entry.month || 'Month ' + (i + 1);
+      if (!grouped[monthKey]) {
+        grouped[monthKey] = [];
+        monthOrder.push(monthKey);
+      }
+      grouped[monthKey].push({ entry: entry, index: i });
+    });
+
+    var html = '';
+    monthOrder.forEach(function(monthKey) {
+      html += '<div class="fh-month-group">';
+      html += '<div class="fh-entry__dot"></div>';
+      html += '<div class="fh-entry__month">' + monthKey + '</div>';
+
+      grouped[monthKey].forEach(function(item) {
+        var entry = item.entry;
+        var i = item.index;
+        var rating = ratings[i] || 0;
+        var note = notes[i] || '';
+        var stars = '';
+        for (var s = 1; s <= 5; s++) {
+          stars += '<svg class="fh-star' + (s <= rating ? ' is-filled' : '') + '" data-entry="' + i + '" data-star="' + s + '" viewBox="0 0 24 24" fill="' + (s <= rating ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+        }
+
+        var notesHtml = '';
+        if (entry.top_notes) notesHtml += '<strong>Top:</strong> ' + entry.top_notes + '<br>';
+        if (entry.heart_notes) notesHtml += '<strong>Heart:</strong> ' + entry.heart_notes + '<br>';
+        if (entry.base_notes) notesHtml += '<strong>Base:</strong> ' + entry.base_notes;
+
+        html += '<div class="fh-entry">' +
+          '<div class="fh-entry__grid">' +
+            '<div class="fh-entry__image">' +
+              (entry.product_image ? '<img src="' + entry.product_image + '" alt="' + entry.product_title + '" loading="lazy">' : '') +
+            '</div>' +
+            '<div>' +
+              '<h4 class="fh-entry__name">' + (entry.product_title || 'Unknown Fragrance') + '</h4>' +
+              (entry.family ? '<span class="fh-entry__family">' + entry.family + '</span>' : '') +
+              (notesHtml ? '<div class="fh-entry__notes">' + notesHtml + '</div>' : '') +
+              '<div class="fh-stars">' + stars + '</div>' +
+              '<div class="fh-user-note">' +
+                '<textarea placeholder="Add your notes..." data-note-entry="' + i + '">' + note + '</textarea>' +
+                '<button data-save-note="' + i + '">Save</button>' +
+              '</div>' +
+              '<div class="fh-entry__actions">' +
+                (entry.product_handle ? '<a href="/products/' + entry.product_handle + '" class="fh-action--again">Get This Again</a>' : '') +
+                (entry.product_handle ? '<a href="/products/' + entry.product_handle + '" class="fh-action--fullsize">Buy Full Size</a>' : '') +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      });
+
+      html += '</div>';
+    });
+
+    timelineEl.innerHTML = html;
+
+    // Star click handlers
+    timelineEl.querySelectorAll('.fh-star').forEach(function(star) {
+      star.addEventListener('click', function() {
+        var entryIdx = this.dataset.entry;
+        var starVal = parseInt(this.dataset.star);
+        var r = getHistoryRatings();
+        r[entryIdx] = starVal;
+        localStorage.setItem('bn_history_ratings', JSON.stringify(r));
+        // TODO: Appstle API — persist rating server-side
+        renderTimeline();
+      });
+    });
+
+    // Note save handlers
+    timelineEl.querySelectorAll('[data-save-note]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var idx = this.dataset.saveNote;
+        var textarea = timelineEl.querySelector('[data-note-entry="' + idx + '"]');
+        if (textarea) {
+          var n = getHistoryNotes();
+          n[idx] = textarea.value;
+          localStorage.setItem('bn_history_notes', JSON.stringify(n));
+          // TODO: Appstle API — persist notes server-side
+          btn.textContent = 'Saved!';
+          setTimeout(function() { btn.textContent = 'Save'; }, 1500);
+        }
+      });
+    });
+  }
+
+  renderTimeline();
+
+
+  /* ── Next Shipment ── */
+  var nsStatusBadge = document.getElementById('nsStatusBadge');
+  var nsSelected = document.getElementById('nsSelected');
+  var nsChoose = document.getElementById('nsChoose');
+  var nsSkipped = document.getElementById('nsSkipped');
+  var nsImage = document.getElementById('nsImage');
+  var nsName = document.getElementById('nsName');
+  var nsFamily = document.getElementById('nsFamily');
+
+  function getNextShipment() {
+    try { return JSON.parse(localStorage.getItem('bn_next_shipment') || 'null'); } catch(e) { return null; }
+  }
+
+  function saveNextShipment(data) {
+    localStorage.setItem('bn_next_shipment', JSON.stringify(data));
+    // TODO: Appstle API — update next shipment server-side
+    renderNextShipment();
+  }
+
+  function renderNextShipment() {
+    if (!nsStatusBadge) return;
+    var data = getNextShipment();
+
+    if (data && data.status === 'skipped') {
+      nsStatusBadge.textContent = 'Skipped';
+      nsStatusBadge.className = 'ns-status-badge ns-skipped';
+      if (nsSelected) nsSelected.style.display = 'none';
+      if (nsChoose) nsChoose.style.display = 'none';
+      if (nsSkipped) nsSkipped.style.display = 'block';
+      return;
+    }
+
+    if (data && data.fragrance) {
+      var isAuto = data.autoSelected;
+      var badgeText = 'Confirmed';
+      var badgeClass = 'ns-confirmed';
+      if (isAuto && data.source === 'fotm') {
+        badgeText = 'Curated Pick';
+        badgeClass = 'ns-auto';
+      } else if (isAuto) {
+        badgeText = 'Auto-Selected';
+        badgeClass = 'ns-auto';
+      }
+      nsStatusBadge.textContent = badgeText;
+      nsStatusBadge.className = 'ns-status-badge ' + badgeClass;
+      if (nsSelected) {
+        nsSelected.style.display = 'block';
+        if (nsImage) nsImage.innerHTML = data.fragrance.image ? '<img src="' + data.fragrance.image + '" alt="' + data.fragrance.title + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">' : '';
+        if (nsName) nsName.textContent = data.fragrance.title;
+        if (nsFamily) nsFamily.textContent = data.fragrance.family || '';
+      }
+      if (nsChoose) nsChoose.style.display = 'none';
+      if (nsSkipped) nsSkipped.style.display = 'none';
+
+      // Also update dashboard preview
+      var dashPreview = document.getElementById('dashShipmentPreview');
+      if (dashPreview) {
+        dashPreview.innerHTML = '<div style="display:flex;align-items:center;gap:16px;padding:8px;">' +
+          (data.fragrance.image ? '<img src="' + data.fragrance.image + '" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">' : '') +
+          '<div><strong style="color:#2D4641;">' + data.fragrance.title + '</strong>' +
+          '<br><span style="font-size:12px;color:#C9A962;">' + (data.fragrance.family || '') + '</span></div></div>';
+      }
+    } else if (serverSubData.productTitle && serverSubData.orderFulfilled !== 'fulfilled') {
+      // Default to the subscription product from order history (only if not yet fulfilled)
+      nsStatusBadge.textContent = 'Confirmed';
+      nsStatusBadge.className = 'ns-status-badge ns-confirmed';
+      if (nsSelected) {
+        nsSelected.style.display = 'block';
+        if (nsImage && serverSubData.productImage) nsImage.innerHTML = '<img src="' + serverSubData.productImage + '" alt="' + serverSubData.productTitle + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">';
+        if (nsName) nsName.textContent = serverSubData.productTitle;
+        if (nsFamily) nsFamily.textContent = serverSubData.productVendor || '';
+      }
+      if (nsChoose) nsChoose.style.display = 'none';
+      if (nsSkipped) nsSkipped.style.display = 'none';
+    } else {
+      nsStatusBadge.textContent = 'Action Needed';
+      nsStatusBadge.className = 'ns-status-badge ns-action';
+      if (nsSelected) nsSelected.style.display = 'none';
+      if (nsChoose) nsChoose.style.display = 'block';
+      if (nsSkipped) nsSkipped.style.display = 'none';
+    }
+
+    // Update "Ships in X days" and dashboard stat
+    var now = new Date();
+    var shipDate = null;
+
+    // Calculate next ship date from order anniversary or billing date
+    if (serverSubData.orderDate) {
+      var orderD = new Date(serverSubData.orderDate);
+      if (!isNaN(orderD.getTime())) {
+        shipDate = new Date(now.getFullYear(), now.getMonth(), orderD.getDate());
+        if (shipDate <= now) shipDate.setMonth(shipDate.getMonth() + 1);
+      }
+    }
+    if (!shipDate) {
+      shipDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    }
+
+    // Update "Ships in X days" on the next shipment card
+    var nsShipDaysEl = document.getElementById('nsShipDays');
+    if (nsShipDaysEl) {
+      var daysUntilShip = Math.max(0, Math.ceil((shipDate - now) / 86400000));
+      nsShipDaysEl.textContent = daysUntilShip;
+    }
+
+    // Update dashboard stat
+    var statEl = document.getElementById('statNextShipment');
+    if (statEl) {
+      statEl.textContent = shipDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+  }
+
+  renderNextShipment();
+
+  /* ── Auto-Selection Logic ── */
+  function autoSelectFragrance() {
+    if (!serverSubData.isSubscriber) return;
+
+    // Skip if user already chose or skipped
+    var existing = null;
+    try { existing = JSON.parse(localStorage.getItem('bn_next_shipment') || 'null'); } catch(e) {}
+    if (existing && (existing.fragrance || existing.status === 'skipped')) return;
+
+    // Only auto-select within 3 days of billing
+    var nextBill = getNextBillingDate();
+    var now = new Date();
+    var daysUntilBill = Math.ceil((nextBill - now) / 86400000);
+    if (daysUntilBill > 3) return;
+
+    // Priority 1: Rotation queue
+    var queue = [];
+    try { queue = JSON.parse(localStorage.getItem('basenotes_queue') || '[]'); } catch(e) {}
+    if (queue.length > 0) {
+      var nextItem = queue.shift();
+      localStorage.setItem('basenotes_queue', JSON.stringify(queue));
+      var selection = {
+        fragrance: {
+          title: nextItem.title || nextItem.name,
+          image: nextItem.image || nextItem.featured_image,
+          family: nextItem.vendor || nextItem.family || '',
+          handle: nextItem.handle || ''
+        },
+        autoSelected: true,
+        source: 'queue',
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('bn_next_shipment', JSON.stringify(selection));
+      renderNextShipment();
+      var queueCountEl = document.querySelector('[data-queue-count]');
+      if (queueCountEl) queueCountEl.textContent = queue.length;
+      return;
+    }
+
+    // Priority 2: Fragrance of the Month
+    var currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+    if (serverSubData.fotmEnabled && serverSubData.fotmProduct && serverSubData.fotmMonth === currentMonth) {
+      var fotm = serverSubData.fotmProduct;
+      var selection = {
+        fragrance: {
+          title: serverSubData.fotmDisplayName || fotm.title,
+          image: fotm.image,
+          family: fotm.vendor || '',
+          handle: fotm.handle || ''
+        },
+        autoSelected: true,
+        source: 'fotm',
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('bn_next_shipment', JSON.stringify(selection));
+      renderNextShipment();
+      return;
+    }
+
+    // Priority 3: Safety net — first product from fragrances collection
+    fetch('/collections/fragrances/products.json?limit=1')
+      .then(function(r) { return r.ok ? r.json() : Promise.reject('no-collection'); })
+      .then(function(data) {
+        if (!data.products || !data.products.length) return;
+        var prod = data.products[0];
+        var selection = {
+          fragrance: {
+            title: prod.title,
+            image: prod.images && prod.images.length ? prod.images[0].src : '',
+            family: prod.vendor || '',
+            handle: prod.handle || ''
+          },
+          autoSelected: true,
+          source: 'popular',
+          timestamp: new Date().toISOString()
+        };
+        localStorage.setItem('bn_next_shipment', JSON.stringify(selection));
+        renderNextShipment();
+      })
+      .catch(function() {});
+  }
+
+  autoSelectFragrance();
+
+  /* ── Staff FOTM Warning ── */
+  (function checkFotmStaleness() {
+    if (!serverSubData.isStaff) return;
+    var now = new Date();
+    var currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+    var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    if (!serverSubData.fotmMonth || serverSubData.fotmMonth !== currentMonth) {
+      var warningEl = document.getElementById('staffFotmWarning');
+      var monthEl = document.getElementById('staffFotmMonth');
+      if (warningEl) {
+        warningEl.style.display = 'block';
+        if (monthEl) monthEl.textContent = monthNames[now.getMonth()] + ' ' + now.getFullYear();
+      }
+    }
+  })();
+
+  /* ── Billing Countdown ── */
+  function getNextBillingDate() {
+    var now = new Date();
+    var nextBill = null;
+
+    // Try 1: localStorage (set during checkout on this device)
+    try {
+      var subData = JSON.parse(localStorage.getItem('bn_active_subscription') || 'null');
+      if (subData && subData.nextBillDate) {
+        var d = new Date(subData.nextBillDate);
+        if (isValidDate(d)) nextBill = d;
+      }
+    } catch(e) {}
+
+    // Try 2: Anniversary billing from server order date
+    if (!nextBill && serverSubData.orderDate) {
+      var orderDate = new Date(serverSubData.orderDate);
+      if (isValidDate(orderDate)) {
+        var billingDay = orderDate.getDate();
+        nextBill = new Date(now.getFullYear(), now.getMonth(), billingDay);
+      }
+    }
+
+    // Try 3: Fallback to first of next month
+    if (!nextBill) {
+      nextBill = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    }
+
+    // Advance to future if in the past
+    while (nextBill <= now) {
+      nextBill.setMonth(nextBill.getMonth() + 1);
+    }
+
+    return nextBill;
+  }
+
+  function renderBillingCountdown() {
+    var countdownEl = document.getElementById('billingCountdown');
+    if (!countdownEl) return;
+
+    var now = new Date();
+    var nextBill = getNextBillingDate();
+
+    // Days remaining
+    var msPerDay = 86400000;
+    var daysLeft = Math.max(0, Math.ceil((nextBill - now) / msPerDay));
+
+    // Progress bar (30-day cycle)
+    var cycleDays = 30;
+    var elapsed = cycleDays - daysLeft;
+    var pct = Math.min(100, Math.max(0, (elapsed / cycleDays) * 100));
+
+    // Update DOM
+    var daysEl = document.getElementById('billingDaysLeft');
+    var barEl = document.getElementById('billingBar');
+    var dateTextEl = document.getElementById('billingDateText');
+    var cancelDeadlineEl = document.getElementById('cancelDeadline');
+
+    if (daysEl) daysEl.textContent = daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
+    if (barEl) barEl.style.width = pct + '%';
+
+    var dateOpts = { month: 'long', day: 'numeric', year: 'numeric' };
+    if (dateTextEl) dateTextEl.textContent = 'Next charge on ' + nextBill.toLocaleDateString('en-US', dateOpts);
+
+    // Cancel deadline = 1 day before billing
+    var cancelDate = new Date(nextBill);
+    cancelDate.setDate(cancelDate.getDate() - 1);
+    if (cancelDeadlineEl) cancelDeadlineEl.textContent = cancelDate.toLocaleDateString('en-US', dateOpts);
+
+    // Also update the plan details billing field
+    var subBillingEl = document.getElementById('subNextBilling');
+    if (subBillingEl) subBillingEl.textContent = nextBill.toLocaleDateString('en-US', dateOpts);
+  }
+
+  renderBillingCountdown();
+
+  /* ── Appstle API Integration ── */
+  // Fetch real subscription data from Appstle's customer portal API (app proxy)
+  // This overrides the Shopify order-history fallback with live Appstle data
+  (function fetchAppstleData() {
+    if (!serverSubData.isSubscriber) return;
+
+    var cpBase = '/apps/subscriptions/cp/api';
+
+    fetch(cpBase + '/logged-in-customer', { credentials: 'same-origin' })
+      .then(function(r) { return r.ok ? r.json() : Promise.reject('no-session'); })
+      .then(function(customerId) {
+        if (!customerId) return Promise.reject('no-id');
+        return fetch(cpBase + '/subscription-customers-detail/valid/' + customerId, { credentials: 'same-origin' });
+      })
+      .then(function(r) { return r.ok ? r.json() : Promise.reject('no-contracts'); })
+      .then(function(contracts) {
+        if (!contracts || !contracts.length) return;
+
+        // Find the first ACTIVE contract
+        var active = null;
+        for (var i = 0; i < contracts.length; i++) {
+          if (contracts[i].status === 'ACTIVE') { active = contracts[i]; break; }
+        }
+        if (!active) active = contracts[0];
+
+        // ── Update billing date from Appstle ──
+        // Prioritize nextOrderDate to match Appstle widget display
+        var rawDate = active.nextOrderDate || active.nextOrderDateLocal
+          || active.nextBillingDate || active.nextBillingDateLocal
+          || active.billingDate || active.nextDeliveryDate || null;
+        var nextBill = rawDate ? new Date(rawDate) : null;
+        if (nextBill && isValidDate(nextBill)) {
+          var now = new Date();
+          var msPerDay = 86400000;
+          var daysLeft = Math.max(0, Math.ceil((nextBill - now) / msPerDay));
+          var cycleDays = 30;
+          var elapsed = cycleDays - daysLeft;
+          var pct = Math.min(100, Math.max(0, (elapsed / cycleDays) * 100));
+          var dateOpts = { month: 'long', day: 'numeric', year: 'numeric' };
+
+          var daysEl = document.getElementById('billingDaysLeft');
+          var barEl = document.getElementById('billingBar');
+          var dateTextEl = document.getElementById('billingDateText');
+          var cancelDeadlineEl = document.getElementById('cancelDeadline');
+          var subBillingEl = document.getElementById('subNextBilling');
+          var nsShipDaysEl = document.getElementById('nsShipDays');
+
+          if (daysEl) daysEl.textContent = daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
+          if (barEl) barEl.style.width = pct + '%';
+          if (dateTextEl) dateTextEl.textContent = 'Next charge on ' + nextBill.toLocaleDateString('en-US', dateOpts);
+          if (subBillingEl) subBillingEl.textContent = nextBill.toLocaleDateString('en-US', dateOpts);
+          if (nsShipDaysEl) nsShipDaysEl.textContent = daysLeft;
+
+          var cancelDate = new Date(nextBill);
+          cancelDate.setDate(cancelDate.getDate() - 1);
+          if (cancelDeadlineEl) cancelDeadlineEl.textContent = cancelDate.toLocaleDateString('en-US', dateOpts);
+
+          // Update dashboard stat
+          var statEl = document.getElementById('statNextShipment');
+          if (statEl) statEl.textContent = nextBill.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        // ── Store contract ID for payment update button ──
+        // Uses Shopify's subscriptionContractId (not Appstle's internal id)
+        var paymentBtn = document.getElementById('subUpdatePaymentBtn');
+        var bestContractId = active.subscriptionContractId || active.contractId || active.id;
+        if (paymentBtn && bestContractId) {
+          paymentBtn.dataset.contractId = bestContractId;
+        }
+
+        // ── Update next shipment product from Appstle ──
+        var lines = active.lines || active.lineItems || [];
+        if (lines.length > 0) {
+          var line = lines[0];
+          var prodTitle = line.title || line.productTitle || '';
+          var prodVendor = line.variantTitle || line.vendor || '';
+          var prodImage = line.image || line.imageSrc || '';
+
+          // Only update if we have a product title from Appstle
+          if (prodTitle && nsStatusBadge) {
+            nsStatusBadge.textContent = 'Confirmed';
+            nsStatusBadge.className = 'ns-status-badge ns-confirmed';
+            if (nsSelected) {
+              nsSelected.style.display = 'block';
+              if (nsImage && prodImage) nsImage.innerHTML = '<img src="' + prodImage + '" alt="' + prodTitle + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">';
+              if (nsName) nsName.textContent = prodTitle;
+              if (nsFamily) nsFamily.textContent = prodVendor;
+            }
+            if (nsChoose) nsChoose.style.display = 'none';
+            if (nsSkipped) nsSkipped.style.display = 'none';
+
+            // Update dashboard preview
+            var dashPreview = document.getElementById('dashShipmentPreview');
+            if (dashPreview) {
+              dashPreview.innerHTML = '<div style="display:flex;align-items:center;gap:16px;padding:8px;">' +
+                (prodImage ? '<img src="' + prodImage + '" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">' : '') +
+                '<div><strong style="color:#2D4641;">' + prodTitle + '</strong>' +
+                '<br><span style="font-size:12px;color:#C9A962;">' + prodVendor + '</span></div></div>';
+            }
+          }
+        }
+      })
+      .catch(function(err) {
+        // Silently fail — the page already has fallback data from Shopify order history
+      });
+  })();
+
+  // Choose / Swap button → open fragrance selector
+  var chooseBtn = document.getElementById('nsChooseBtn');
+  var swapBtn = document.getElementById('nsSwapBtn');
+
+  function openFragranceSelector() {
+    document.dispatchEvent(new Event('fragrance-selector:open'));
+  }
+
+  if (chooseBtn) chooseBtn.addEventListener('click', openFragranceSelector);
+  if (swapBtn) swapBtn.addEventListener('click', openFragranceSelector);
+
+  // Listen for fragrance selection
+  document.addEventListener('fragrance:selected', function(e) {
+    var frag = e.detail;
+    saveNextShipment({
+      fragrance: {
+        id: frag.id,
+        handle: frag.handle,
+        title: frag.title,
+        image: frag.image,
+        family: frag.family
+      },
+      autoSelected: false,
+      status: 'confirmed'
+    });
+  });
+
+  // Skip
+  var skipBtn = document.getElementById('nsSkipBtn');
+  if (skipBtn) {
+    skipBtn.addEventListener('click', function() {
+      if (confirm('Skip this month\'s shipment? You can undo this anytime.')) {
+        saveNextShipment({ status: 'skipped' });
+      }
+    });
+  }
+
+  // Undo skip
+  var undoSkipBtn = document.getElementById('nsUndoSkip');
+  if (undoSkipBtn) {
+    undoSkipBtn.addEventListener('click', function() {
+      localStorage.removeItem('bn_next_shipment');
+      renderNextShipment();
+    });
+  }
+
+  // Update Payment — trigger Shopify payment-update email via Appstle customer portal API
+  var subUpdatePaymentBtn = document.getElementById('subUpdatePaymentBtn');
+  if (subUpdatePaymentBtn) {
+    subUpdatePaymentBtn.addEventListener('click', async function() {
+      var contractId = this.dataset.contractId;
+      if (!contractId) {
+        alert('No active subscription found. Please contact hello@basenote.com for help.');
+        return;
+      }
+      var btn = this;
+      var originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="payment-spinner" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="31.4" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" dur="0.8s" from="0 12 12" to="360 12 12" repeatCount="indefinite"/></circle></svg> Sending\u2026';
+      try {
+        var res = await fetch(
+          '/apps/subscriptions/cp/api/subscription-contracts-update-payment-method?contractId=' + encodeURIComponent(contractId),
+          { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: '{}' }
+        );
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" width="20" height="20"><polyline points="20 6 9 17 4 12"/></svg> Email sent!';
+        btn.style.borderColor = '#4CAF50';
+        btn.style.background = 'rgba(76,175,80,0.04)';
+        showPaymentUpdateConfirmation();
+      } catch (err) {
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+        alert('Could not send the update email right now. Please try again or contact hello@basenote.com.');
+      }
+    });
+  }
+
+  function showPaymentUpdateConfirmation() {
+    var existing = document.getElementById('paymentUpdateOverlay');
+    if (existing) existing.remove();
+    var overlay = document.createElement('div');
+    overlay.id = 'paymentUpdateOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1rem;';
+    overlay.innerHTML = '<div style="background:#fff;border-radius:16px;padding:2.5rem;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);font-family:inherit;">'
+      + '<div style="width:56px;height:56px;border-radius:50%;background:rgba(76,175,80,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2.5" width="28" height="28"><polyline points="20 6 9 17 4 12"/></svg></div>'
+      + '<h3 style="font-family:Cormorant Garamond,Georgia,serif;font-size:1.4rem;color:#2D4641;margin:0 0 0.75rem;font-weight:600;">Check Your Email</h3>'
+      + '<p style="color:#555;font-size:14px;line-height:1.6;margin:0 0 1rem;">We\u2019ve sent you a secure link from Shopify to update your payment method. Check your inbox (and spam folder).</p>'
+      + '<p style="color:#888;font-size:13px;line-height:1.5;margin:0 0 1.5rem;">After you update your card, it will automatically apply to your next billing cycle.</p>'
+      + '<button onclick="this.closest(\'#paymentUpdateOverlay\').remove()" style="background:#2D4641;color:#fff;border:none;border-radius:8px;padding:12px 32px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.2s;">Got It</button>'
+      + '</div>';
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+    document.body.appendChild(overlay);
+  }
+
+  // Sub page skip/pause
+  var subSkipBtn = document.getElementById('subSkipBtn');
+  if (subSkipBtn) {
+    subSkipBtn.addEventListener('click', function() {
+      if (confirm('Skip next month\'s shipment?')) {
+        saveNextShipment({ status: 'skipped' });
+        // TODO: Appstle API
+        alert('Next month\'s shipment has been skipped.');
+      }
+    });
+  }
+
+  var subPauseBtn = document.getElementById('subPauseBtn');
+  if (subPauseBtn) {
+    subPauseBtn.addEventListener('click', function() {
+      // TODO: Appstle API — pause subscription
+      alert('To pause your subscription, please contact us at hello@basenote.com or use the subscription portal in your account.');
+    });
+  }
+
+  // Cancel button → open cancellation flow
+  var subCancelBtn = document.getElementById('subCancelBtn');
+  if (subCancelBtn) {
+    subCancelBtn.addEventListener('click', function() {
+      document.dispatchEvent(new Event('cancellation:open'));
+    });
+  }
+
+  // ═══ Dashboard Fragrance Journey + Queue preview (PRD-05) ═══
+  initFragranceJourney();
+  initDashboardQueuePreview();
+
+  function initFragranceJourney() {
+    var el = document.getElementById('fragranceJourney');
+    if (!el) return;
+
+    // Wait for BasenoteQueue
+    function whenReady(cb, tries) {
+      tries = tries || 0;
+      if (window.BasenoteQueue) return cb();
+      if (tries > 40) return;
+      setTimeout(function(){ whenReady(cb, tries + 1); }, 50);
+    }
+    whenReady(function() {
+      var BQ = window.BasenoteQueue;
+
+      // Past orders: pull from server-rendered customer.orders via data we have in scope
+      var pastOrders = [];
+      {%- if is_subscriber -%}
+        {%- for order in customer.orders reversed limit: 6 -%}
+          {%- for line in order.line_items -%}
+            {%- if line.selling_plan_allocation -%}
+              pastOrders.push({
+                shipMonth: {{ order.created_at | date: '%Y-%m' | json }},
+                title: {{ line.product.title | json }},
+                image: {%- if line.image -%}{{ line.image | image_url: width: 120 | json }}{%- else -%}null{%- endif -%}
+              });
+              {%- break -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endfor -%}
+      {%- endif -%}
+
+      // De-dup past by month (most recent wins), cap at last 3 for timeline fit
+      var pastByMonth = {};
+      pastOrders.forEach(function(p){ pastByMonth[p.shipMonth] = p; });
+      var pastMonths = Object.keys(pastByMonth).sort().slice(-3);
+
+      // Future: next 4 queue slots (including current/immediate)
+      var futureMonths = BQ.slotsFromNow(4);
+      var filled = BQ.load();
+      var filledByMonth = {};
+      filled.forEach(function(e){ filledByMonth[e.shipMonth] = e; });
+
+      var curMonth = BQ.currentMonth();
+      el.innerHTML = '';
+
+      function appendStop(monthStr, data, kind) {
+        var stop = document.createElement('div');
+        stop.className = 'fj-stop fj-stop--' + kind;
+        stop.setAttribute('role', 'listitem');
+        var inner = '<div class="fj-stop__dot">';
+        if (data && data.image) inner += '<img src="' + data.image + '" alt="" loading="lazy">';
+        else inner += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22"><path d="M9 2h6v4h-6z"/><path d="M7 6h10v16H7z"/></svg>';
+        inner += '</div>';
+        inner += '<div class="fj-stop__month">' + BQ.monthLabel(monthStr, { short: true }) + '</div>';
+        inner += '<div class="fj-stop__label">' + (data && data.title ? escapeText(data.title) : (kind === 'future' ? 'Unpicked' : '—')) + '</div>';
+        stop.innerHTML = inner;
+        el.appendChild(stop);
+      }
+
+      pastMonths.forEach(function(m){ appendStop(m, pastByMonth[m], 'past'); });
+      futureMonths.forEach(function(m, i) {
+        var kind = (m === curMonth || i === 0) ? 'current' : 'future';
+        appendStop(m, filledByMonth[m] || null, kind);
+      });
+
+      function escapeText(s) {
+        var div = document.createElement('div');
+        div.textContent = String(s || '');
+        return div.innerHTML;
+      }
+
+      BQ.on('change', function() { initFragranceJourney(); });
+    });
+  }
+
+  function initDashboardQueuePreview() {
+    var el = document.getElementById('dashQueuePreview');
+    if (!el) return;
+
+    function whenReady(cb, tries) {
+      tries = tries || 0;
+      if (window.BasenoteQueue) return cb();
+      if (tries > 40) return;
+      setTimeout(function(){ whenReady(cb, tries + 1); }, 50);
+    }
+    whenReady(function() {
+      var BQ = window.BasenoteQueue;
+      function render() {
+        var months = BQ.slotsFromNow(3);
+        var filled = BQ.load();
+        var byMonth = {};
+        filled.forEach(function(e){ byMonth[e.shipMonth] = e; });
+        var anyFilled = months.some(function(m){ return !!byMonth[m]; });
+
+        if (!anyFilled) {
+          el.innerHTML = '<div class="dash-qp-empty-wrap">' +
+            '<p>No fragrances queued yet.</p>' +
+            '<a href="#next-shipment">Plan your next 3 months →</a>' +
+            '</div>';
+          return;
+        }
+
+        el.innerHTML = '';
+        months.forEach(function(monthStr) {
+          var entry = byMonth[monthStr];
+          var row = document.createElement('a');
+          row.href = '#next-shipment';
+          row.className = entry ? 'dash-qp-row' : 'dash-qp-row dash-qp-row--empty';
+          var img = entry && entry.image
+            ? '<img class="dash-qp-row__img" src="' + entry.image + '" alt="" loading="lazy">'
+            : '<span class="dash-qp-row__img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>';
+          var title = entry ? (function(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; })(entry.title) : 'Pick a fragrance';
+          row.innerHTML = img +
+            '<div class="dash-qp-row__info">' +
+              '<div class="dash-qp-row__month">' + BQ.monthLabel(monthStr, { withYear: true }) + '</div>' +
+              '<div class="dash-qp-row__title">' + title + '</div>' +
+            '</div>' +
+            '<svg class="dash-qp-row__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>';
+          el.appendChild(row);
+        });
+      }
+      render();
+      BQ.on('change', function() { render(); });
+    });
+  }
+
+  // ═══ My Subscription List — Scentbird-style queue (PRD-01) ═══
+  initSubscriptionQueue();
+
+  function initSubscriptionQueue() {
+    var strip = document.getElementById('bqStrip');
+    var badge = document.getElementById('bqCountBadge');
+    if (!strip) return;
+
+    // Wait for BasenoteQueue module (loaded async via asset_url + defer)
+    function whenReady(cb, tries) {
+      tries = tries || 0;
+      if (window.BasenoteQueue) return cb();
+      if (tries > 40) return;
+      setTimeout(function(){ whenReady(cb, tries + 1); }, 50);
+    }
+
+    whenReady(function() {
+      var SLOT_COUNT = 5;
+      var BQ = window.BasenoteQueue;
+
+      function render() {
+        var months = BQ.slotsFromNow(SLOT_COUNT);
+        var filled = BQ.load();
+        var byMonth = {};
+        filled.forEach(function(e){ byMonth[e.shipMonth] = e; });
+
+        strip.innerHTML = '';
+        months.forEach(function(monthStr, idx) {
+          var entry = byMonth[monthStr];
+          var card;
+          if (entry) card = buildFilledCard(monthStr, entry, idx);
+          else card = buildEmptyCard(monthStr, idx);
+          strip.appendChild(card);
+        });
+
+        if (badge) {
+          var pickedCount = Math.min(filled.length, SLOT_COUNT);
+          badge.textContent = pickedCount + ' of ' + SLOT_COUNT + ' picked';
+        }
+
+        initSortable();
+      }
+
+      function buildFilledCard(monthStr, entry, idx) {
+        var card = document.createElement('article');
+        card.className = 'bq-card';
+        card.setAttribute('data-month', monthStr);
+        card.setAttribute('data-position', String(idx));
+        card.setAttribute('role', 'listitem');
+
+        var shipStatus = idx === 0 ? 'Ships Immediately' : 'Ships in ' + BQ.monthLabel(monthStr, { short: true });
+        var statusClass = idx === 0 ? 'bq-card__ship-status--immediate' : '';
+
+        card.innerHTML =
+          '<button type="button" class="bq-card__drag-handle" aria-label="Drag to reorder">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true">' +
+              '<circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/>' +
+              '<circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/>' +
+            '</svg>' +
+          '</button>' +
+          '<button type="button" class="bq-card__remove" aria-label="Remove ' + escapeHtml(entry.title || 'fragrance') + ' from ' + BQ.monthLabel(monthStr) + '">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="12" height="12" aria-hidden="true">' +
+              '<line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/>' +
+            '</svg>' +
+          '</button>' +
+          '<a href="' + escapeAttr(entry.url || '#') + '" class="bq-card__image" aria-label="View ' + escapeAttr(entry.title || '') + '">' +
+            (entry.image ? '<img src="' + escapeAttr(entry.image) + '" alt="' + escapeAttr(entry.title || '') + '" loading="lazy">' : '') +
+          '</a>' +
+          '<div>' +
+            '<h4 class="bq-card__title">' + escapeHtml(entry.title || '—') + '</h4>' +
+            (entry.family ? '<p class="bq-card__family">' + escapeHtml(entry.family) + '</p>' : '') +
+          '</div>' +
+          '<p class="bq-card__month-label">' +
+            '<span class="bq-card__month">' + escapeHtml(BQ.monthLabel(monthStr, { withYear: true })) + '</span>' +
+            '<span class="bq-card__ship-status ' + statusClass + '">' + shipStatus + '</span>' +
+          '</p>';
+
+        var removeBtn = card.querySelector('.bq-card__remove');
+        removeBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          BQ.clearSlot(monthStr);
+          render();
+        });
+
+        return card;
+      }
+
+      function buildEmptyCard(monthStr, idx) {
+        var card = document.createElement('article');
+        card.className = 'bq-card bq-card--empty';
+        card.setAttribute('data-month', monthStr);
+        card.setAttribute('data-position', String(idx));
+        card.setAttribute('role', 'listitem');
+        var pickUrl = '/collections/all?queue_target_month=' + encodeURIComponent(monthStr);
+        card.innerHTML =
+          '<button type="button" class="bq-card__drag-handle" aria-label="Drag to reorder" disabled>' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true">' +
+              '<circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/>' +
+              '<circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/>' +
+            '</svg>' +
+          '</button>' +
+          '<div class="bq-card__empty-slot">' +
+            '<a href="' + escapeAttr(pickUrl) + '" class="bq-card__empty-link">' +
+              '<div class="bq-card__plus" aria-hidden="true">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28">' +
+                  '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>' +
+                '</svg>' +
+              '</div>' +
+              '<p class="bq-card__empty-title">Pick Your Next Scent</p>' +
+              '<p class="bq-card__empty-sub">Empty on ship day → we send our Fragrance of the Month.</p>' +
+            '</a>' +
+          '</div>' +
+          '<p class="bq-card__month-label">' +
+            '<span class="bq-card__month">' + escapeHtml(BQ.monthLabel(monthStr, { withYear: true })) + '</span>' +
+            '<span class="bq-card__ship-status">Select fragrance</span>' +
+          '</p>';
+        return card;
+      }
+
+      function initSortable() {
+        if (typeof window.Sortable === 'undefined') return;
+        if (strip.__sortable) { strip.__sortable.destroy(); }
+        strip.__sortable = window.Sortable.create(strip, {
+          animation: 180,
+          handle: '.bq-card__drag-handle',
+          draggable: '.bq-card',
+          filter: '.bq-card__drag-handle[disabled]',
+          preventOnFilter: false,
+          ghostClass: 'is-ghost',
+          dragClass: 'is-dragging',
+          onEnd: function(evt) {
+            // Determine the old + new month slots from the DOM ordering
+            var months = BQ.slotsFromNow(SLOT_COUNT);
+            var cards = Array.prototype.slice.call(strip.querySelectorAll('.bq-card'));
+            // cards are now in visual order; map each card's CURRENT data-month to the month it's visually in
+            var updates = [];
+            cards.forEach(function(card, visualIdx) {
+              var originalMonth = card.getAttribute('data-month');
+              var targetMonth = months[visualIdx];
+              if (originalMonth !== targetMonth) {
+                updates.push({ from: originalMonth, to: targetMonth });
+              }
+            });
+            // Apply updates all at once by rewriting the queue array based on the new visual order
+            var filled = BQ.load();
+            var byMonth = {};
+            filled.forEach(function(e){ byMonth[e.shipMonth] = e; });
+            var newQueue = [];
+            cards.forEach(function(card, visualIdx) {
+              var originalMonth = card.getAttribute('data-month');
+              var entry = byMonth[originalMonth];
+              if (entry) {
+                newQueue.push(Object.assign({}, entry, { shipMonth: months[visualIdx] }));
+              }
+            });
+            BQ.save(newQueue);
+            render();
+          }
+        });
+      }
+
+      function escapeHtml(s) {
+        return String(s || '').replace(/[&<>"']/g, function(c){
+          return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+        });
+      }
+      function escapeAttr(s) { return escapeHtml(s); }
+
+      // Subscribe to queue changes (other tabs / PDP → queue_target_month → back here)
+      BQ.on('change', function() { render(); });
+      window.addEventListener('storage', function(e){
+        if (e.key === 'basenotes_queue') render();
+      });
+
+      render();
+    });
+  }
+});
+</script>
