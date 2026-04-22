@@ -1,6 +1,989 @@
+{% doc %}
+  @prompt
+    Create a "Fragrance Finder" section for a perfume/fragrance brand called Base Note. The section should feature an AI-powered chatbot interface embedded directly on the page (not a popup widget) where customers can describe fragrances they already love (e.g., "I like YSL Y, what else would I like?") and receive personalized fragrance recommendations from the store's product catalog. The section should have an elegant, editorial design that fits a luxury fragrance brand — think dark/moody tones or clean minimalist aesthetic. It should include a heading like "Find Your Scent", a short description inviting customers to describe their preferences, a chat input area where users can type their question, a conversation display area showing the back-and-forth, and recommendation cards that surface matching products with name, image, and a link to buy. The chatbot responses should be powered by an AI API call (e.g., OpenAI) that is given context about the store's fragrance products to make relevant recommendations., could the fragrances recommended only be for this store. Using themes of store, can we make the conversation box 1/4 the size
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-fragrance-finder-{{ ai_gen_id }} {
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    margin: 0 auto;
+    background: {{ block.settings.background_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    overflow: hidden;
+    display: block;
+  }
+
+  .ai-fragrance-finder__inner-{{ ai_gen_id }} {
+    padding: {{ block.settings.section_padding }}px;
+  }
+
+  .ai-fragrance-finder__header-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .ai-fragrance-finder__heading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-weight: {{ block.settings.heading_font.weight }};
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 16px 0;
+    letter-spacing: 0.5px;
+  }
+
+  .ai-fragrance-finder__description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.description_size }}px;
+    color: {{ block.settings.description_color }};
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .ai-fragrance-finder__chat-container-{{ ai_gen_id }} {
+    background: {{ block.settings.chat_background }};
+    border-radius: {{ block.settings.chat_border_radius }}px;
+    border: 1px solid {{ block.settings.chat_border_color }};
+    overflow: hidden;
+  }
+
+  .ai-fragrance-finder__messages-{{ ai_gen_id }} {
+    padding: 24px;
+    min-height: {{ block.settings.chat_height | divided_by: 4 }}px;
+    max-height: {{ block.settings.chat_height | divided_by: 4 }}px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ai-fragrance-finder__messages-{{ ai_gen_id }}::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .ai-fragrance-finder__messages-{{ ai_gen_id }}::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .ai-fragrance-finder__messages-{{ ai_gen_id }}::-webkit-scrollbar-thumb {
+    background: {{ block.settings.chat_border_color }};
+    border-radius: 3px;
+  }
+
+  .ai-fragrance-finder__message-{{ ai_gen_id }} {
+    display: flex;
+    gap: 12px;
+    animation: ai-fragrance-finder-fade-in-{{ ai_gen_id }} 0.3s ease;
+  }
+
+  @keyframes ai-fragrance-finder-fade-in-{{ ai_gen_id }} {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .ai-fragrance-finder__message--user-{{ ai_gen_id }} {
+    flex-direction: row-reverse;
+  }
+
+  .ai-fragrance-finder__message-avatar-{{ ai_gen_id }} {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .ai-fragrance-finder__message-avatar--bot-{{ ai_gen_id }} {
+    background: {{ block.settings.accent_color }};
+    color: {{ block.settings.background_color }};
+  }
+
+  .ai-fragrance-finder__message-avatar--user-{{ ai_gen_id }} {
+    background: {{ block.settings.user_message_bg }};
+    color: {{ block.settings.user_message_text }};
+  }
+
+  .ai-fragrance-finder__message-content-{{ ai_gen_id }} {
+    flex: 1;
+    max-width: 70%;
+  }
+
+  .ai-fragrance-finder__message--user-{{ ai_gen_id }} .ai-fragrance-finder__message-content-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .ai-fragrance-finder__message-bubble-{{ ai_gen_id }} {
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .ai-fragrance-finder__message-bubble--bot-{{ ai_gen_id }} {
+    background: {{ block.settings.bot_message_bg }};
+    color: {{ block.settings.bot_message_text }};
+    border-bottom-left-radius: 4px;
+  }
+
+  .ai-fragrance-finder__message-bubble--user-{{ ai_gen_id }} {
+    background: {{ block.settings.user_message_bg }};
+    color: {{ block.settings.user_message_text }};
+    border-bottom-right-radius: 4px;
+  }
+
+  .ai-fragrance-finder__empty-state-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: {{ block.settings.description_color }};
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .ai-fragrance-finder__empty-icon-{{ ai_gen_id }} {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+  }
+
+  .ai-fragrance-finder__empty-text-{{ ai_gen_id }} {
+    font-size: 14px;
+    max-width: 300px;
+  }
+
+  .ai-fragrance-finder__input-container-{{ ai_gen_id }} {
+    padding: 20px 24px;
+    border-top: 1px solid {{ block.settings.chat_border_color }};
+    background: {{ block.settings.input_background }};
+  }
+
+  .ai-fragrance-finder__input-wrapper-{{ ai_gen_id }} {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+  }
+
+  .ai-fragrance-finder__input-{{ ai_gen_id }} {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid {{ block.settings.input_border_color }};
+    border-radius: {{ block.settings.input_border_radius }}px;
+    font-size: 15px;
+    font-family: {{ block.settings.body_font.family }}, {{ block.settings.body_font.fallback_families }};
+    background: {{ block.settings.chat_background }};
+    color: {{ block.settings.heading_color }};
+    resize: none;
+    min-height: 44px;
+    max-height: 120px;
+    line-height: 1.5;
+  }
+
+  .ai-fragrance-finder__input-{{ ai_gen_id }}::placeholder {
+    color: {{ block.settings.description_color }};
+    opacity: 0.6;
+  }
+
+  .ai-fragrance-finder__input-{{ ai_gen_id }}:focus {
+    outline: none;
+    border-color: {{ block.settings.accent_color }};
+  }
+
+  .ai-fragrance-finder__send-button-{{ ai_gen_id }} {
+    padding: 12px 24px;
+    background: {{ block.settings.button_color }};
+    color: {{ block.settings.button_text_color }};
+    border: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    height: 44px;
+  }
+
+  .ai-fragrance-finder__send-button-{{ ai_gen_id }}:hover {
+    background: {{ block.settings.button_hover_color }};
+    transform: translateY(-1px);
+  }
+
+  .ai-fragrance-finder__send-button-{{ ai_gen_id }}:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .ai-fragrance-finder__loading-{{ ai_gen_id }} {
+    display: flex;
+    gap: 4px;
+    padding: 8px 0;
+  }
+
+  .ai-fragrance-finder__loading-dot-{{ ai_gen_id }} {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: {{ block.settings.accent_color }};
+    animation: ai-fragrance-finder-bounce-{{ ai_gen_id }} 1.4s infinite ease-in-out both;
+  }
+
+  .ai-fragrance-finder__loading-dot-{{ ai_gen_id }}:nth-child(1) {
+    animation-delay: -0.32s;
+  }
+
+  .ai-fragrance-finder__loading-dot-{{ ai_gen_id }}:nth-child(2) {
+    animation-delay: -0.16s;
+  }
+
+  @keyframes ai-fragrance-finder-bounce-{{ ai_gen_id }} {
+    0%, 80%, 100% {
+      transform: scale(0);
+      opacity: 0.5;
+    }
+    40% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .ai-fragrance-finder__products-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .ai-fragrance-finder__product-card-{{ ai_gen_id }} {
+    background: {{ block.settings.chat_background }};
+    border: 1px solid {{ block.settings.chat_border_color }};
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: block;
+  }
+
+  .ai-fragrance-finder__product-card-{{ ai_gen_id }}:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: {{ block.settings.accent_color }};
+  }
+
+  .ai-fragrance-finder__product-image-{{ ai_gen_id }} {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    background: {{ block.settings.bot_message_bg }};
+  }
+
+  .ai-fragrance-finder__product-info-{{ ai_gen_id }} {
+    padding: 12px;
+  }
+
+  .ai-fragrance-finder__product-title-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 600;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 4px 0;
+    line-height: 1.3;
+  }
+
+  .ai-fragrance-finder__product-price-{{ ai_gen_id }} {
+    font-size: 13px;
+    color: {{ block.settings.accent_color }};
+    font-weight: 600;
+  }
+
+  .ai-fragrance-finder__error-{{ ai_gen_id }} {
+    padding: 12px 16px;
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    border-radius: 8px;
+    color: #d32f2f;
+    font-size: 14px;
+    margin-top: 12px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-fragrance-finder__inner-{{ ai_gen_id }} {
+      padding: {{ block.settings.section_padding | times: 0.6 }}px;
+    }
+
+    .ai-fragrance-finder__heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.8 }}px;
+    }
+
+    .ai-fragrance-finder__description-{{ ai_gen_id }} {
+      font-size: {{ block.settings.description_size | times: 0.9 }}px;
+    }
+
+    .ai-fragrance-finder__messages-{{ ai_gen_id }} {
+      padding: 16px;
+      min-height: {{ block.settings.chat_height | divided_by: 4 | times: 0.7 }}px;
+      max-height: {{ block.settings.chat_height | divided_by: 4 | times: 0.7 }}px;
+    }
+
+    .ai-fragrance-finder__message-content-{{ ai_gen_id }} {
+      max-width: 85%;
+    }
+
+    .ai-fragrance-finder__products-{{ ai_gen_id }} {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    .ai-fragrance-finder__input-wrapper-{{ ai_gen_id }} {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ai-fragrance-finder__send-button-{{ ai_gen_id }} {
+      width: 100%;
+    }
+  }
+{% endstyle %}
+
+<fragrance-finder-{{ ai_gen_id }}
+  class="ai-fragrance-finder-{{ ai_gen_id }}"
+  data-api-endpoint="{{ block.settings.api_endpoint }}"
+  data-shop-name="{{ shop.name }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-fragrance-finder__inner-{{ ai_gen_id }}">
+    <div class="ai-fragrance-finder__header-{{ ai_gen_id }}">
+      {% if block.settings.heading != blank %}
+        <h2 class="ai-fragrance-finder__heading-{{ ai_gen_id }}">
+          {{ block.settings.heading }}
+        </h2>
+      {% endif %}
+      {% if block.settings.description != blank %}
+        <div class="ai-fragrance-finder__description-{{ ai_gen_id }}">
+          {{ block.settings.description }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="ai-fragrance-finder__chat-container-{{ ai_gen_id }}">
+      <div class="ai-fragrance-finder__messages-{{ ai_gen_id }}" data-messages>
+        <div class="ai-fragrance-finder__empty-state-{{ ai_gen_id }}" data-empty-state>
+          <svg class="ai-fragrance-finder__empty-icon-{{ ai_gen_id }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <div class="ai-fragrance-finder__empty-text-{{ ai_gen_id }}">
+            {{ block.settings.empty_state_text }}
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-fragrance-finder__input-container-{{ ai_gen_id }}">
+        <div class="ai-fragrance-finder__input-wrapper-{{ ai_gen_id }}">
+          <textarea
+            class="ai-fragrance-finder__input-{{ ai_gen_id }}"
+            placeholder="{{ block.settings.input_placeholder }}"
+            rows="1"
+            data-input
+            aria-label="Ask about fragrances"
+          ></textarea>
+          <button
+            class="ai-fragrance-finder__send-button-{{ ai_gen_id }}"
+            data-send-button
+            aria-label="Send message"
+          >
+            {{ block.settings.button_text }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</fragrance-finder-{{ ai_gen_id }}>
+
+<script type="application/json" data-product-catalog-{{ ai_gen_id }}>
+  {
+    "products": [
+      {% if block.settings.fragrance_collection %}
+        {% assign collection = block.settings.fragrance_collection %}
+      {% else %}
+        {% assign collection = collections.all %}
+      {% endif %}
+      
+      {% for product in collection.products limit: 50 %}
+        {
+          "id": {{ product.id | json }},
+          "title": {{ product.title | json }},
+          "handle": {{ product.handle | json }},
+          "url": {{ product.url | json }},
+          "price": {{ product.price | money | json }},
+          "vendor": {{ product.vendor | json }},
+          "type": {{ product.type | json }},
+          "tags": {{ product.tags | json }},
+          "description": {{ product.description | strip_html | truncate: 200 | json }},
+          "image": {% if product.featured_image %}{{ product.featured_image | image_url: width: 400 | json }}{% else %}null{% endif %}
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ],
+    "shopName": {{ shop.name | json }},
+    "brandTheme": {
+      "primaryColor": {{ block.settings.accent_color | json }},
+      "style": "luxury fragrance brand"
+    }
+  }
+</script>
+
+<script>
+  (function() {
+    class FragranceFinder{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.messages = [];
+        this.isLoading = false;
+        this.productCatalog = null;
+      }
+
+      connectedCallback() {
+        this.messagesContainer = this.querySelector('[data-messages]');
+        this.emptyState = this.querySelector('[data-empty-state]');
+        this.input = this.querySelector('[data-input]');
+        this.sendButton = this.querySelector('[data-send-button]');
+        this.apiEndpoint = this.dataset.apiEndpoint;
+        this.shopName = this.dataset.shopName;
+
+        this.loadProductCatalog();
+        this.setupEventListeners();
+        this.autoResizeTextarea();
+      }
+
+      loadProductCatalog() {
+        const catalogScript = document.querySelector('[data-product-catalog-{{ ai_gen_id }}]');
+        if (catalogScript) {
+          try {
+            this.productCatalog = JSON.parse(catalogScript.textContent);
+          } catch (e) {
+            console.error('Failed to parse product catalog:', e);
+          }
+        }
+      }
+
+      setupEventListeners() {
+        this.sendButton.addEventListener('click', () => this.handleSend());
+        
+        this.input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            this.handleSend();
+          }
+        });
+
+        this.input.addEventListener('input', () => {
+          this.autoResizeTextarea();
+        });
+      }
+
+      autoResizeTextarea() {
+        this.input.style.height = 'auto';
+        this.input.style.height = this.input.scrollHeight + 'px';
+      }
+
+      async handleSend() {
+        const message = this.input.value.trim();
+        if (!message || this.isLoading) return;
+
+        this.addMessage(message, 'user');
+        this.input.value = '';
+        this.autoResizeTextarea();
+
+        this.isLoading = true;
+        this.sendButton.disabled = true;
+        this.showLoadingIndicator();
+
+        try {
+          const response = await this.sendToAPI(message);
+          this.removeLoadingIndicator();
+          this.addMessage(response.message, 'bot', response.products);
+        } catch (error) {
+          this.removeLoadingIndicator();
+          this.addMessage('Sorry, I encountered an error. Please try again.', 'bot', null, true);
+          console.error('Fragrance Finder error:', error);
+        } finally {
+          this.isLoading = false;
+          this.sendButton.disabled = false;
+        }
+      }
+
+      async sendToAPI(message) {
+        if (!this.apiEndpoint) {
+          return {
+            message: 'API endpoint not configured. Please add your OpenAI API endpoint in the block settings to enable AI-powered recommendations from ' + this.shopName + "'s catalog.",
+            products: []
+          };
+        }
+
+        const payload = {
+          message: message,
+          conversation: this.messages,
+          productCatalog: this.productCatalog.products,
+          shopContext: {
+            name: this.productCatalog.shopName,
+            theme: this.productCatalog.brandTheme
+          }
+        };
+
+        const response = await fetch(this.apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error('API request failed');
+        }
+
+        const data = await response.json();
+        
+        if (data.productHandles && Array.isArray(data.productHandles)) {
+          data.products = this.mapHandlesToProducts(data.productHandles);
+        }
+
+        return data;
+      }
+
+      mapHandlesToProducts(handles) {
+        if (!this.productCatalog || !this.productCatalog.products) {
+          return [];
+        }
+
+        return handles
+          .map(handle => {
+            const product = this.productCatalog.products.find(p => p.handle === handle);
+            return product;
+          })
+          .filter(p => p !== undefined);
+      }
+
+      addMessage(text, sender, products = null, isError = false) {
+        if (this.emptyState && this.emptyState.style.display !== 'none') {
+          this.emptyState.style.display = 'none';
+        }
+
+        this.messages.push({ text, sender, products });
+
+        const messageEl = document.createElement('div');
+        messageEl.className = `ai-fragrance-finder__message-{{ ai_gen_id }} ai-fragrance-finder__message--${sender}-{{ ai_gen_id }}`;
+
+        const avatar = document.createElement('div');
+        avatar.className = `ai-fragrance-finder__message-avatar-{{ ai_gen_id }} ai-fragrance-finder__message-avatar--${sender}-{{ ai_gen_id }}`;
+        avatar.textContent = sender === 'user' ? '👤' : '🌸';
+
+        const content = document.createElement('div');
+        content.className = 'ai-fragrance-finder__message-content-{{ ai_gen_id }}';
+
+        const bubble = document.createElement('div');
+        bubble.className = `ai-fragrance-finder__message-bubble-{{ ai_gen_id }} ai-fragrance-finder__message-bubble--${sender}-{{ ai_gen_id }}`;
+        bubble.textContent = text;
+
+        content.appendChild(bubble);
+
+        if (products && products.length > 0) {
+          const productsGrid = this.createProductsGrid(products);
+          content.appendChild(productsGrid);
+        }
+
+        if (isError) {
+          const errorEl = document.createElement('div');
+          errorEl.className = 'ai-fragrance-finder__error-{{ ai_gen_id }}';
+          errorEl.textContent = text;
+          content.innerHTML = '';
+          content.appendChild(errorEl);
+        }
+
+        messageEl.appendChild(avatar);
+        messageEl.appendChild(content);
+
+        this.messagesContainer.appendChild(messageEl);
+        this.scrollToBottom();
+      }
+
+      createProductsGrid(products) {
+        const grid = document.createElement('div');
+        grid.className = 'ai-fragrance-finder__products-{{ ai_gen_id }}';
+
+        products.forEach(product => {
+          const card = document.createElement('a');
+          card.href = product.url || '#';
+          card.className = 'ai-fragrance-finder__product-card-{{ ai_gen_id }}';
+
+          if (product.image) {
+            const img = document.createElement('img');
+            img.src = product.image;
+            img.alt = product.title || 'Product image';
+            img.className = 'ai-fragrance-finder__product-image-{{ ai_gen_id }}';
+            img.loading = 'lazy';
+            card.appendChild(img);
+          }
+
+          const info = document.createElement('div');
+          info.className = 'ai-fragrance-finder__product-info-{{ ai_gen_id }}';
+
+          if (product.title) {
+            const title = document.createElement('h3');
+            title.className = 'ai-fragrance-finder__product-title-{{ ai_gen_id }}';
+            title.textContent = product.title;
+            info.appendChild(title);
+          }
+
+          if (product.price) {
+            const price = document.createElement('div');
+            price.className = 'ai-fragrance-finder__product-price-{{ ai_gen_id }}';
+            price.textContent = product.price;
+            info.appendChild(price);
+          }
+
+          card.appendChild(info);
+          grid.appendChild(card);
+        });
+
+        return grid;
+      }
+
+      showLoadingIndicator() {
+        const loadingEl = document.createElement('div');
+        loadingEl.className = 'ai-fragrance-finder__message-{{ ai_gen_id }}';
+        loadingEl.dataset.loading = 'true';
+
+        const avatar = document.createElement('div');
+        avatar.className = 'ai-fragrance-finder__message-avatar-{{ ai_gen_id }} ai-fragrance-finder__message-avatar--bot-{{ ai_gen_id }}';
+        avatar.textContent = '🌸';
+
+        const content = document.createElement('div');
+        content.className = 'ai-fragrance-finder__message-content-{{ ai_gen_id }}';
+
+        const loading = document.createElement('div');
+        loading.className = 'ai-fragrance-finder__loading-{{ ai_gen_id }}';
+        loading.innerHTML = '<div class="ai-fragrance-finder__loading-dot-{{ ai_gen_id }}"></div><div class="ai-fragrance-finder__loading-dot-{{ ai_gen_id }}"></div><div class="ai-fragrance-finder__loading-dot-{{ ai_gen_id }}"></div>';
+
+        content.appendChild(loading);
+        loadingEl.appendChild(avatar);
+        loadingEl.appendChild(content);
+
+        this.messagesContainer.appendChild(loadingEl);
+        this.scrollToBottom();
+      }
+
+      removeLoadingIndicator() {
+        const loadingEl = this.messagesContainer.querySelector('[data-loading]');
+        if (loadingEl) {
+          loadingEl.remove();
+        }
+      }
+
+      scrollToBottom() {
+        this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+      }
+    }
+
+    customElements.define('fragrance-finder-{{ ai_gen_id }}', FragranceFinder{{ ai_gen_id }});
+  })();
+</script>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Fragrance finder",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Find Your Scent"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Tell us about fragrances you love, and our AI will recommend the perfect scent from our collection."
+    },
+    {
+      "type": "text",
+      "id": "input_placeholder",
+      "label": "Input placeholder",
+      "default": "e.g., I like YSL Y, what else would I like?"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Send"
+    },
+    {
+      "type": "textarea",
+      "id": "empty_state_text",
+      "label": "Empty state text",
+      "default": "Start a conversation by describing your fragrance preferences or asking for recommendations."
+    },
+    {
+      "type": "header",
+      "content": "Product catalog"
+    },
+    {
+      "type": "collection",
+      "id": "fragrance_collection",
+      "label": "Fragrance collection",
+      "info": "Select a collection to limit recommendations to specific products. Leave empty to use all products."
+    },
+    {
+      "type": "header",
+      "content": "API configuration"
+    },
+    {
+      "type": "paragraph",
+      "content": "Your API endpoint will receive the store's product catalog automatically. It should return a JSON response with 'message' (string) and 'productHandles' (array of product handles) or 'products' (array of product objects)."
+    },
+    {
+      "type": "text",
+      "id": "api_endpoint",
+      "label": "API endpoint URL",
+      "info": "Example: https://your-function.netlify.app/api/fragrance-finder"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "chat_height",
+      "label": "Chat height",
+      "min": 300,
+      "max": 600,
+      "step": 50,
+      "unit": "px",
+      "default": 400
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "inter_n6"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 24,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Description size",
+      "min": 14,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description",
+      "default": "#cccccc"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#c9a86c"
+    },
+    {
+      "type": "header",
+      "content": "Chat style"
+    },
+    {
+      "type": "color",
+      "id": "chat_background",
+      "label": "Chat background",
+      "default": "#0f0f0f"
+    },
+    {
+      "type": "color",
+      "id": "chat_border_color",
+      "label": "Chat border",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "chat_border_radius",
+      "label": "Chat border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "bot_message_bg",
+      "label": "Bot message background",
+      "default": "#2a2a2a"
+    },
+    {
+      "type": "color",
+      "id": "bot_message_text",
+      "label": "Bot message text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "user_message_bg",
+      "label": "User message background",
+      "default": "#c9a86c"
+    },
+    {
+      "type": "color",
+      "id": "user_message_text",
+      "label": "User message text",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Input style"
+    },
+    {
+      "type": "color",
+      "id": "input_background",
+      "label": "Input area background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "input_border_color",
+      "label": "Input border",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "input_border_radius",
+      "label": "Input border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Button style"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Background",
+      "default": "#c9a86c"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Text",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Hover background",
+      "default": "#d4b87a"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Section border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Fragrance finder"
+    }
+  ]
+}
 {% endschema %}
