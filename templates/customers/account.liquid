@@ -50,10 +50,6 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
             Dashboard
           </a>
-          <a href="#history" class="acct__nav-link" data-nav="history">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Fragrance History
-          </a>
           <a href="#next-shipment" class="acct__nav-link" data-nav="next-shipment">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
             My Queue
@@ -129,20 +125,7 @@
             </div>
           </div>
 
-          <!-- PRD-05: Your Fragrance Journey — horizontal timeline (past + future) -->
-          {%- if is_subscriber -%}
-          <div class="acct__card">
-            <div class="acct__card-header">
-              <h3 class="acct__card-title">Your Fragrance Journey</h3>
-              <a href="#history" class="acct__text-link">View history</a>
-            </div>
-            <div class="fj-timeline" id="fragranceJourney" role="list" aria-label="Your fragrance journey timeline">
-              <!-- Hydrated client-side: merges past Appstle/Shopify orders + upcoming queue slots -->
-            </div>
-          </div>
-          {%- endif -%}
-
-          <!-- Subscription summary — billing cycle + queue-filled nudge -->
+          <!-- Your Fragrance Journey: past + upcoming + billing cycle auto-compute -->
           {%- if is_subscriber -%}
           <div class="acct__card" id="dashSubscriptionSummary">
             <div class="acct__card-header">
@@ -150,8 +133,8 @@
               <a href="#next-shipment" class="acct__text-link">Manage queue</a>
             </div>
             <div class="dash-journey" id="dashJourney"
-                 data-shipped-through="{%- if latest_shipped_sub_order -%}{{ latest_shipped_sub_order.created_at | date: '%Y-%m' }}{%- endif -%}">
-              <!-- Hydrated client-side: past shipments + upcoming queue with billing dates -->
+                 data-shipped-through="{%- if latest_shipped_sub_order -%}{{ latest_shipped_sub_order.created_at | date: '%Y-%m' }}{%- endif -%}"
+                 data-last-order-date="{%- if latest_sub_order -%}{{ latest_sub_order.created_at | date: '%Y-%m-%d' }}{%- endif -%}">
               <p class="dash-journey__loading" style="padding:2rem 0;text-align:center;color:#999;font-size:14px;">Loading your journey…</p>
             </div>
           </div>
@@ -164,35 +147,12 @@
           </div>
           {%- endif -%}
 
-          <!-- Recent Orders (condensed) -->
-          <div class="acct__card">
-            <div class="acct__card-header">
-              <h3 class="acct__card-title">Recent Activity</h3>
-              <a href="#orders" class="acct__text-link">View All</a>
-            </div>
-            {%- if customer.orders.size > 0 -%}
-              <div class="acct__order-list">
-                {%- for order in customer.orders limit: 3 -%}
-                <a href="{{ order.customer_url }}" class="acct__order-row">
-                  <div class="acct__order-info">
-                    <span class="acct__order-num">{{ order.name }}</span>
-                    <span class="acct__order-date">{{ order.created_at | date: '%b %d, %Y' }}</span>
-                  </div>
-                  <span class="acct__order-status acct__order-status--{{ order.fulfillment_status | default: 'processing' }}">
-                    {{ order.fulfillment_status_label | default: 'Processing' }}
-                  </span>
-                  <span class="acct__order-total">{{ order.total_price | money }}</span>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>
-                </a>
-                {%- endfor -%}
-              </div>
-            {%- else -%}
-              <div class="acct__empty">
-                <p>No orders yet</p>
-                <a href="/collections/all" class="btn btn--primary btn--small">Start Shopping</a>
-              </div>
-            {%- endif -%}
+          {%- if customer.orders.size == 0 and is_subscriber == false -%}
+          <div class="acct__empty">
+            <p>No orders yet</p>
+            <a href="/collections/all" class="btn btn--primary btn--small">Start Shopping</a>
           </div>
+          {%- endif -%}
 
         </div>
 
@@ -629,6 +589,16 @@
   .acct__card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
   /* ═══ Dashboard: Your Fragrance Journey ═══ */
+  .dash-journey__next { margin-bottom: 1.25rem; padding: 14px 16px; background: linear-gradient(135deg, #2D4641 0%, #3A5A53 100%); border-radius: 12px; color: #fff; }
+  .dash-journey__next-eyebrow { font: 700 10px/1 system-ui, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; color: #C9A961; margin-bottom: 10px; }
+  .dash-journey__next-row { display: grid; grid-template-columns: 56px 1fr auto; gap: 14px; align-items: center; }
+  .dash-journey__next .dash-journey__img { width: 56px; height: 56px; background: rgba(255,255,255,0.1); border: 1px solid rgba(201,169,97,0.4); color: #C9A961; }
+  .dash-journey__next-date { font: 700 16px/1.2 'Cormorant Garamond', Georgia, serif; color: #fff; margin: 0 0 2px; }
+  .dash-journey__next-frag { font: 400 13px/1.3 system-ui, sans-serif; color: rgba(255,255,255,0.85); margin: 0; }
+  .dash-journey__next-frag em { color: rgba(255,255,255,0.7); font-style: italic; }
+  .dash-journey__next-cta { display: inline-block; padding: 8px 14px; background: #C9A961; color: #2D4641; border-radius: 6px; font: 700 12px/1 system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; white-space: nowrap; }
+  .dash-journey__next-cta:hover { background: #D4B76E; }
+
   .dash-journey__section { margin-top: 1rem; }
   .dash-journey__section:first-child { margin-top: 0; }
   .dash-journey__section-title { font: 700 11px/1 system-ui, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; color: #8a918e; margin: 0 0 10px; }
@@ -744,27 +714,30 @@
   "billingDay": {%- if latest_sub_order -%}{{ latest_sub_order.created_at | date: '%-d' | json }}{%- else -%}null{%- endif -%},
   "priceLabel": {{ settings.sub_plan_monthly_per_month | default: '$20/mo' | json }},
   "pastShipments": [
-    {%- if is_subscriber -%}
     {%- assign past_count = 0 -%}
     {%- for order in customer.orders reversed limit: 24 -%}
-      {%- if order.fulfillment_status == 'fulfilled' -%}
+      {%- if order.fulfillment_status == 'fulfilled' and past_count < 12 -%}
+        {%- assign primary_line = order.line_items.first -%}
         {%- for line in order.line_items -%}
-          {%- if line.selling_plan_allocation and past_count < 12 -%}
-            {%- if past_count > 0 -%},{%- endif -%}
-            {
-              "shipMonth": {{ order.created_at | date: '%Y-%m' | json }},
-              "shippedAt": {{ order.created_at | date: '%b %-d, %Y' | json }},
-              "title": {{ line.product.title | json }},
-              "image": {%- if line.image -%}{{ line.image | image_url: width: 160 | json }}{%- else -%}null{%- endif -%},
-              "handle": {{ line.product.handle | json }}
-            }
-            {%- assign past_count = past_count | plus: 1 -%}
+          {%- if line.selling_plan_allocation -%}
+            {%- assign primary_line = line -%}
             {%- break -%}
           {%- endif -%}
         {%- endfor -%}
+        {%- if past_count > 0 -%},{%- endif -%}
+        {
+          "orderName": {{ order.name | json }},
+          "orderUrl": {{ order.customer_url | json }},
+          "orderTotal": {{ order.total_price | money | json }},
+          "shipMonth": {{ order.created_at | date: '%Y-%m' | json }},
+          "shippedAt": {{ order.created_at | date: '%b %-d, %Y' | json }},
+          "title": {{ primary_line.product.title | json }},
+          "image": {%- if primary_line.image -%}{{ primary_line.image | image_url: width: 160 | json }}{%- elsif primary_line.product.featured_image -%}{{ primary_line.product.featured_image | image_url: width: 160 | json }}{%- else -%}null{%- endif -%},
+          "handle": {{ primary_line.product.handle | json }}
+        }
+        {%- assign past_count = past_count | plus: 1 -%}
       {%- endif -%}
     {%- endfor -%}
-    {%- endif -%}
   ]
 }
 </script>
@@ -841,20 +814,53 @@
         return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       }
 
+      // ── Auto-compute Next Ship date: last order + 1 month (Appstle handles the actual renewal) ──
+      var nextShipDate = null;
+      var lastOrderDateStr = el.getAttribute('data-last-order-date');
+      if (lastOrderDateStr) {
+        var lo = new Date(lastOrderDateStr + 'T00:00:00');
+        if (!isNaN(lo.getTime())) {
+          nextShipDate = new Date(lo.getFullYear(), lo.getMonth() + 1, lo.getDate());
+        }
+      }
+      var nextShipMonth = nextShipDate ? (nextShipDate.getFullYear() + '-' + (nextShipDate.getMonth() + 1 < 10 ? '0' : '') + (nextShipDate.getMonth() + 1)) : null;
+      var nextFragrance = nextShipMonth ? byMonth[nextShipMonth] : (upcomingEntries[0] || null);
+      var nextShipLabel = nextShipDate ? nextShipDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+
+      // Populate the welcome-banner stat tile
+      var statEl = document.getElementById('statNextShipment');
+      if (statEl) statEl.textContent = nextShipDate ? nextShipDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—';
+
       var html = '';
+
+      // ═══ Next Ship banner ═══
+      if (nextShipDate) {
+        html += '<div class="dash-journey__next">' +
+          '<div class="dash-journey__next-eyebrow">Next ship + charge</div>' +
+          '<div class="dash-journey__next-row">' +
+            (nextFragrance && nextFragrance.image ? '<img class="dash-journey__img" src="' + esc(nextFragrance.image) + '" alt="' + esc(nextFragrance.title) + '" loading="lazy">' :
+             '<div class="dash-journey__img dash-journey__img--placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>') +
+            '<div class="dash-journey__body">' +
+              '<p class="dash-journey__next-date">' + esc(nextShipLabel) + '</p>' +
+              '<p class="dash-journey__next-frag">' + (nextFragrance ? esc(nextFragrance.title) : '<em>No fragrance queued — Fragrance of the Month auto-ships</em>') + '</p>' +
+            '</div>' +
+            '<a href="#next-shipment" class="dash-journey__next-cta">' + (nextFragrance ? 'Swap' : 'Pick now') + '</a>' +
+          '</div>' +
+        '</div>';
+      }
 
       // Past shipments
       if (past.length) {
         html += '<section class="dash-journey__section"><h4 class="dash-journey__section-title">Shipped</h4><div class="dash-journey__rows">';
         past.forEach(function(p){
-          html += '<div class="dash-journey__row dash-journey__row--past">' +
+          html += '<a href="' + esc(p.orderUrl || '#') + '" class="dash-journey__row dash-journey__row--past">' +
             (p.image ? '<img class="dash-journey__img" src="' + esc(p.image) + '" alt="' + esc(p.title) + '" loading="lazy">' : '<div class="dash-journey__img dash-journey__img--placeholder"></div>') +
             '<div class="dash-journey__body">' +
-              '<p class="dash-journey__title">' + esc(p.title) + '</p>' +
-              '<p class="dash-journey__meta">Shipped ' + esc(p.shippedAt) + '</p>' +
+              '<p class="dash-journey__title">' + esc(p.title || '—') + '</p>' +
+              '<p class="dash-journey__meta">' + esc(p.orderName || '') + (p.orderName ? ' · ' : '') + 'Shipped ' + esc(p.shippedAt) + (p.orderTotal ? ' · ' + esc(p.orderTotal) : '') + '</p>' +
             '</div>' +
             '<span class="dash-journey__badge dash-journey__badge--past">Delivered</span>' +
-          '</div>';
+          '</a>';
         });
         html += '</div></section>';
       }
