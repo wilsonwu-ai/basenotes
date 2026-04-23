@@ -916,6 +916,46 @@
       setTimeout(function(){ waitForBQ(tries + 1); }, 50);
     })();
 
+    // ── Next Billing hydrator for the #subscription view (standalone, no big-script dep) ──
+    (function hydrateBilling(){
+      var subDataEl = document.getElementById('bn-subscriber-data');
+      if (!subDataEl) return;
+      var subData = {};
+      try { subData = JSON.parse(subDataEl.textContent); } catch(e) { return; }
+      if (!subData.isSubscriber) return;
+
+      var journeyEl = document.getElementById('dashJourney');
+      var lastOrderDateStr = journeyEl && journeyEl.getAttribute('data-last-order-date');
+      if (!lastOrderDateStr) return;
+
+      var lo = new Date(lastOrderDateStr + 'T00:00:00');
+      if (isNaN(lo.getTime())) return;
+      var next = new Date(lo.getFullYear(), lo.getMonth() + 1, lo.getDate());
+      var now = new Date();
+      var msPerDay = 1000 * 60 * 60 * 24;
+      var daysLeft = Math.max(0, Math.ceil((next.getTime() - now.getTime()) / msPerDay));
+      var dateLabel = next.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+      var shortLabel = next.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+      var daysEl = document.getElementById('billingDaysLeft');
+      var dateTextEl = document.getElementById('billingDateText');
+      var cancelEl = document.getElementById('cancelDeadline');
+      var barEl = document.getElementById('billingBar');
+      var subNextBillEl = document.getElementById('subNextBilling');
+
+      if (daysEl) daysEl.textContent = daysLeft + (daysLeft === 1 ? ' day' : ' days');
+      if (dateTextEl) dateTextEl.textContent = 'Next charge on ' + dateLabel;
+      if (cancelEl) cancelEl.textContent = shortLabel;
+      if (subNextBillEl) subNextBillEl.textContent = shortLabel;
+      if (barEl) {
+        // Percentage through the billing cycle (0 at charge → 100 at next charge)
+        var cycle = next.getTime() - lo.getTime();
+        var elapsed = now.getTime() - lo.getTime();
+        var pct = Math.max(0, Math.min(100, (elapsed / cycle) * 100));
+        barEl.style.width = pct.toFixed(0) + '%';
+      }
+    })();
+
     // ── Safety-net: queue strip hydration (full renderer, independent of big script) ──
     function hydrateQueueStrip() {
       var strip = document.getElementById('bqStrip');
