@@ -772,6 +772,50 @@
 <!-- ═══════════════════════════════════════ -->
 <script src="{{ 'sortable.min.js' | asset_url }}" defer></script>
 <script src="{{ 'queue-scheduler.js' | asset_url }}" defer></script>
+
+<!-- ═══ STANDALONE ROUTER — isolated from the big <script> so it can't be broken by Liquid emits ═══ -->
+<script>
+(function(){
+  'use strict';
+  var validRoutes = ['dashboard','history','next-shipment','subscription','orders'];
+
+  function navigate(hash) {
+    var route = (hash || '').replace(/^#/, '') || 'dashboard';
+    if (validRoutes.indexOf(route) === -1) route = 'dashboard';
+    var viewEls = document.querySelectorAll('[data-view]');
+    var navLinkEls = document.querySelectorAll('[data-nav]');
+    viewEls.forEach(function(v){ v.style.display = v.dataset.view === route ? '' : 'none'; });
+    navLinkEls.forEach(function(l){ if (l.dataset.nav === route) l.classList.add('is-active'); else l.classList.remove('is-active'); });
+    if (location.hash.replace(/^#/, '') !== route) { try { history.replaceState(null, '', '#' + route); } catch(e){} }
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e){ window.scrollTo(0,0); }
+  }
+
+  function init() {
+    var b = document.getElementById('bn-diag-banner');
+    if (b) { b.style.background = '#16a34a'; b.textContent = '[ROUTER DIAG] Standalone router LIVE — clicks should work now.'; }
+
+    document.addEventListener('click', function(e) {
+      var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+      if (!a) return;
+      var hash = a.getAttribute('href') || '';
+      var route = hash.replace(/^#/, '');
+      if (validRoutes.indexOf(route) === -1) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if (b) { b.style.background = '#2563eb'; b.textContent = '[ROUTER DIAG] Click → #' + route; }
+      navigate(hash);
+    }, true);
+
+    window.addEventListener('hashchange', function(){ navigate(location.hash); });
+    navigate(location.hash);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+
+<!-- ═══ BIG APP SCRIPT — may still have parse issues; router above is isolated ═══ -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   'use strict';
@@ -781,8 +825,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.title = 'Base Note · Account [v4]';
     console.log('[bn-router] stage 1: DOMContentLoaded fired');
     window.__bnStage = 1;
-    var __bnBanner = document.getElementById('bn-diag-banner');
-    if (__bnBanner) { __bnBanner.style.background = '#f59e0b'; __bnBanner.textContent = '[ROUTER DIAG] Stage 1: DOMContentLoaded fired — continuing…'; }
   } catch (e) { console.error('[bn-router] stage 1 FAIL', e); }
 
   // Subscription data from server (Liquid)
@@ -824,64 +866,12 @@ document.addEventListener('DOMContentLoaded', function() {
   // ═══ DIAGNOSTIC stage 2 — proves we made it past serverSubData + isValidDate ═══
   try {
     document.title = 'Base Note · Account [v4 · stage 2]';
-    console.log('[bn-router] stage 2: past serverSubData, router attaching');
+    console.log('[bn-router] stage 2: past serverSubData');
     window.__bnStage = 2;
-    if (__bnBanner) { __bnBanner.style.background = '#eab308'; __bnBanner.textContent = '[ROUTER DIAG] Stage 2: serverSubData parsed OK — attaching router…'; }
   } catch (e) { console.error('[bn-router] stage 2 FAIL', e); }
 
-  /* ── Hash Router (event-delegation, capture-phase to beat theme.js smooth-scroll) ── */
-  var validRoutes = ['dashboard', 'history', 'next-shipment', 'subscription', 'orders'];
-
-  function navigate(hash) {
-    var route = (hash || '').replace(/^#/, '') || 'dashboard';
-    if (validRoutes.indexOf(route) === -1) route = 'dashboard';
-
-    var viewEls = document.querySelectorAll('[data-view]');
-    var navLinkEls = document.querySelectorAll('[data-nav]');
-
-    viewEls.forEach(function(v) {
-      v.style.display = v.dataset.view === route ? '' : 'none';
-    });
-
-    navLinkEls.forEach(function(link) {
-      if (link.dataset.nav === route) link.classList.add('is-active');
-      else link.classList.remove('is-active');
-    });
-
-    if (location.hash.replace(/^#/, '') !== route) {
-      try { history.replaceState(null, '', '#' + route); } catch(e) {}
-    }
-
-    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) { window.scrollTo(0, 0); }
-  }
-
-  // Event delegation: catch EVERY click on any in-page hash link anywhere on the page.
-  // Using capture phase (third arg true) so we run BEFORE theme.js's a[href^="#"] smooth-scroll
-  // handler. stopImmediatePropagation prevents theme.js from then preventDefault'ing on
-  // a non-existent id selector and leaving the browser in a stuck state.
-  document.addEventListener('click', function(e) {
-    var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
-    if (!a) return;
-    var hash = a.getAttribute('href') || '';
-    var route = hash.replace(/^#/, '');
-    if (validRoutes.indexOf(route) === -1) return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    if (__bnBanner) { __bnBanner.style.background = '#2563eb'; __bnBanner.textContent = '[ROUTER DIAG] Click intercepted → navigating to #' + route; }
-    console.log('[bn-router] click intercepted, navigating to', route);
-    navigate(hash);
-  }, true);
-
-  window.addEventListener('hashchange', function() { navigate(location.hash); });
-  navigate(location.hash);
-
-  // ═══ DIAGNOSTIC stage 3 — router fully attached ═══
-  try {
-    document.title = 'Base Note · Account [v4 · stage 3]';
-    console.log('[bn-router] stage 3: click delegation LIVE');
-    window.__bnStage = 3;
-    if (__bnBanner) { __bnBanner.style.background = '#16a34a'; __bnBanner.textContent = '[ROUTER DIAG] Stage 3: router LIVE — clicks should now work. If they still don\'t, nav links are the issue.'; }
-  } catch (e) { console.error('[bn-router] stage 3 FAIL', e); }
+  // Router lives in the standalone <script> tag above — removed from here so this big block
+  // can't break routing if it has a parse error.
 
   /* ── Fragrance History ── */
   var timelineEl = document.getElementById('fragranceTimeline');
