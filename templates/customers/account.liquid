@@ -311,7 +311,8 @@
               </div>
               <span class="bq-count-badge" id="bqCountBadge" aria-live="polite">0 of 5 picked</span>
             </div>
-            <div class="bq-strip" id="bqStrip" role="list" aria-label="Your upcoming fragrance shipments">
+            <div class="bq-strip" id="bqStrip" role="list" aria-label="Your upcoming fragrance shipments"
+                 data-shipped-through="{%- if latest_shipped_sub_order -%}{{ latest_shipped_sub_order.created_at | date: '%Y-%m' }}{%- endif -%}">
               <!-- Hydrated client-side by queue-scheduler.js -->
             </div>
             <p class="bq-footnote">
@@ -819,13 +820,109 @@
       }
     }, false);
 
-    // ── Safety-net: handle fragrance selection from the modal ──
+    // ── Safety-net: queue strip hydration (full renderer, independent of big script) ──
+    function hydrateQueueStrip() {
+      var strip = document.getElementById('bqStrip');
+      var badge = document.getElementById('bqCountBadge');
+      if (!strip) return;
+
+      function whenReady(cb, tries) {
+        tries = tries || 0;
+        if (window.BasenoteQueue) return cb();
+        if (tries > 40) return;
+        setTimeout(function(){ whenReady(cb, tries + 1); }, 50);
+      }
+
+      whenReady(function() {
+        var BQ = window.BasenoteQueue;
+        var SLOT_COUNT = 5;
+        var shippedThrough = strip.getAttribute('data-shipped-through');
+        if (shippedThrough) BQ.setShippedThrough(shippedThrough);
+
+        function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); }
+
+        function render() {
+          var months = BQ.slotsFromNow(SLOT_COUNT);
+          var filled = BQ.load();
+          var byMonth = {};
+          filled.forEach(function(e){ byMonth[e.shipMonth] = e; });
+
+          strip.innerHTML = '';
+          months.forEach(function(monthStr, idx) {
+            var entry = byMonth[monthStr];
+            var card = document.createElement('article');
+            card.className = 'bq-card' + (entry ? '' : ' bq-card--empty');
+            card.setAttribute('data-month', monthStr);
+            card.setAttribute('data-position', String(idx));
+            card.setAttribute('role', 'listitem');
+
+            var isImmediate = idx === 0 && monthStr === BQ.currentMonth();
+            var shipStatus = isImmediate ? 'Ships Immediately' : 'Ships in ' + BQ.monthLabel(monthStr, { short: true });
+            var monthLabel = BQ.monthLabel(monthStr, { withYear: true });
+
+            if (entry) {
+              card.innerHTML =
+                '<button type="button" class="bq-card__remove" data-queue-remove="' + esc(monthStr) + '" aria-label="Remove">' +
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="12" height="12"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>' +
+                '</button>' +
+                '<a href="' + esc(entry.url || '#') + '" class="bq-card__image">' +
+                  (entry.image ? '<img src="' + esc(entry.image) + '" alt="' + esc(entry.title || '') + '" loading="lazy">' : '') +
+                '</a>' +
+                '<div><h4 class="bq-card__title">' + esc(entry.title || '—') + '</h4>' +
+                (entry.family ? '<p class="bq-card__family">' + esc(entry.family) + '</p>' : '') + '</div>' +
+                '<p class="bq-card__month-label"><span class="bq-card__month">' + esc(monthLabel) + '</span>' +
+                '<span class="bq-card__ship-status' + (isImmediate ? ' bq-card__ship-status--immediate' : '') + '">' + esc(shipStatus) + '</span></p>' +
+                '<button type="button" class="bq-card__swap" data-queue-swap-month="' + esc(monthStr) + '">Swap</button>';
+            } else {
+              card.innerHTML =
+                '<div class="bq-card__empty-slot">' +
+                  '<button type="button" class="bq-card__empty-link" data-queue-pick-month="' + esc(monthStr) + '">' +
+                    '<div class="bq-card__plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>' +
+                    '<p class="bq-card__empty-title">Pick Your Next Scent</p>' +
+                    '<p class="bq-card__empty-sub">Empty on ship day → we send our Fragrance of the Month.</p>' +
+                  '</button>' +
+                '</div>' +
+                '<p class="bq-card__month-label"><span class="bq-card__month">' + esc(monthLabel) + '</span>' +
+                '<span class="bq-card__ship-status">Select fragrance</span></p>';
+            }
+            strip.appendChild(card);
+          });
+
+          if (badge) {
+            var pickedCount = Math.min(filled.length, SLOT_COUNT);
+            badge.textContent = pickedCount + ' of ' + SLOT_COUNT + ' picked';
+          }
+        }
+
+        // Delegation for remove / swap / pick buttons
+        strip.addEventListener('click', function(e) {
+          var rm = e.target.closest && e.target.closest('[data-queue-remove]');
+          var sw = e.target.closest && e.target.closest('[data-queue-swap-month]');
+          var pk = e.target.closest && e.target.closest('[data-queue-pick-month]');
+          if (rm) { e.preventDefault(); BQ.clearSlot(rm.getAttribute('data-queue-remove')); render(); return; }
+          if (sw) { e.preventDefault(); window.__bqPendingTargetMonth = sw.getAttribute('data-queue-swap-month'); document.dispatchEvent(new Event('fragrance-selector:open')); return; }
+          if (pk) { e.preventDefault(); window.__bqPendingTargetMonth = pk.getAttribute('data-queue-pick-month'); document.dispatchEvent(new Event('fragrance-selector:open')); return; }
+        });
+
+        BQ.on('change', render);
+        render();
+      });
+    }
+    hydrateQueueStrip();
+
+    // ── Visible toast for selection confirmation ──
+    function showToast(message, kind) {
+      var t = document.createElement('div');
+      t.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:99998;background:' + (kind === 'error' ? '#dc2626' : '#16a34a') + ';color:#fff;padding:14px 22px;border-radius:10px;font:600 15px/1.3 system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,0.2);max-width:420px;text-align:center;';
+      t.textContent = message;
+      document.body.appendChild(t);
+      setTimeout(function(){ t.style.transition = 'opacity 0.4s'; t.style.opacity = '0'; setTimeout(function(){ t.remove(); }, 400); }, 3500);
+    }
+
+    // ── Handle fragrance selection from the modal (no reload; BQ.on('change') will re-render) ──
     document.addEventListener('fragrance:selected', function(e){
       var frag = e.detail || {};
-      if (!window.BasenoteQueue) {
-        if (b) { b.style.background = '#dc2626'; b.textContent = '[ROUTER DIAG] Queue module not loaded — refresh.'; }
-        return;
-      }
+      if (!window.BasenoteQueue) { showToast('Queue module not loaded — please refresh.', 'error'); return; }
       var targetMonth = window.__bqPendingTargetMonth || window.BasenoteQueue.firstVisibleMonth();
       window.BasenoteQueue.setSlot(targetMonth, {
         productId: frag.id,
@@ -835,8 +932,10 @@
         family: frag.family
       });
       window.__bqPendingTargetMonth = null;
-      if (b) { b.style.background = '#16a34a'; b.textContent = '[ROUTER DIAG] Added ' + (frag.title || 'fragrance') + ' to ' + targetMonth + '. Reloading…'; }
-      setTimeout(function(){ location.reload(); }, 700);
+      showToast('✓ ' + (frag.title || 'Fragrance') + ' queued for ' + window.BasenoteQueue.monthLabel(targetMonth, { withYear: true }));
+      if (b) { b.style.background = '#16a34a'; b.textContent = '[ROUTER DIAG] Added ' + (frag.title || 'fragrance') + ' to ' + targetMonth + '.'; }
+      // Navigate to the queue view so user sees the result immediately
+      if (location.hash.replace(/^#/, '') !== 'next-shipment') navigate('#next-shipment');
     });
   }
 
