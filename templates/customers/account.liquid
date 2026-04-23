@@ -808,6 +808,16 @@
 
     window.addEventListener('hashchange', function(){ navigate(location.hash); });
     navigate(location.hash);
+
+    // ── Safety-net click handlers for critical buttons (in case big app script parse-fails) ──
+    document.addEventListener('click', function(e){
+      var chooseBtn = e.target.closest && e.target.closest('#nsChooseBtn, [data-open-fragrance-selector]');
+      if (chooseBtn) {
+        e.preventDefault();
+        document.dispatchEvent(new Event('fragrance-selector:open'));
+        if (b) { b.style.background = '#7c3aed'; b.textContent = '[ROUTER DIAG] Opening fragrance selector…'; }
+      }
+    }, false);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
