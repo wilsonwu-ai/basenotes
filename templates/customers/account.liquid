@@ -879,7 +879,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // Try metafield data first, fall back to localStorage
   var historyData = null;
   {% if fh_json != blank %}
-    try { historyData = {{ fh_json }}; } catch(e) {}
+    try {
+      var __fhRaw = {{ fh_json | json }};
+      historyData = (typeof __fhRaw === 'string') ? JSON.parse(__fhRaw) : __fhRaw;
+    } catch(e) {}
   {% endif %}
 
   if (!historyData) {
