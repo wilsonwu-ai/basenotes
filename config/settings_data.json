@@ -91,6 +91,13 @@
         "type": "shopify://apps/appstle-subscription/blocks/appstle-subscription-helper/fe257d39-6f88-4f35-ab08-bd437e3aa94e",
         "disabled": false,
         "settings": {}
+      },
+      "16548475241908962911": {
+        "type": "shopify://apps/oxi-social-login/blocks/social-login-embed/24ad60bc-8f09-42fa-807e-e5eda0fdae17",
+        "disabled": false,
+        "settings": {
+          "enabled_on_page": "all"
+        }
       }
     }
   }
