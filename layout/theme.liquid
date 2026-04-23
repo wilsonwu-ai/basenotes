@@ -73,6 +73,31 @@
     }
   </script>
 
+  {% comment %} AboutPage + Person schema on the About page (E-E-A-T signal) {% endcomment %}
+  {%- if template.name == 'page' and page.handle == 'about' -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "AboutPage",
+      "url": "{{ shop.url }}{{ page.url }}",
+      "name": "About Base Note",
+      "description": "The founder story behind Base Note, a flat-priced luxury fragrance subscription.",
+      "mainEntity": {
+        "@type": "Person",
+        "name": "Wilson Wu",
+        "jobTitle": "Founder",
+        "worksFor": {
+          "@type": "Organization",
+          "name": {{ shop.name | json }},
+          "url": {{ shop.url | json }}
+        },
+        "email": "hello@basenotescent.com",
+        "knowsAbout": ["fragrance", "subscription commerce", "direct-to-consumer brands", "luxury perfumery"]
+      }
+    }
+  </script>
+  {%- endif -%}
+
   {% comment %} BreadcrumbList schema on product pages {% endcomment %}
   {%- if template.name == 'product' and product -%}
   <script type="application/ld+json">
