@@ -243,74 +243,28 @@
         <div data-view="next-shipment" class="acct__view" style="display:none;">
 
           {%- if is_subscriber -%}
-          <div class="acct__card">
-            <div class="acct__card-header">
-              <h3 class="acct__card-title">Next Shipment</h3>
-              <span class="ns-status-badge" id="nsStatusBadge">Action Needed</span>
-            </div>
-
-            <!-- Selected fragrance display -->
-            <div class="ns-selected" id="nsSelected" style="display:none;">
-              <div class="ns-selected__card">
-                <div class="ns-selected__image" id="nsImage"></div>
-                <div class="ns-selected__info">
-                  <h4 class="ns-selected__name" id="nsName"></h4>
-                  <span class="ns-selected__family" id="nsFamily"></span>
-                  <p class="ns-selected__ship">Ships in <span id="nsShipDays">—</span> days</p>
-                </div>
-              </div>
-              <div class="ns-actions">
-                <button class="btn btn--outline btn--small" id="nsSwapBtn">Swap Fragrance</button>
-                <button class="btn btn--outline btn--small ns-skip-btn" id="nsSkipBtn">Skip This Month</button>
-              </div>
-            </div>
-
-            <!-- No selection / action needed -->
-            <div class="ns-choose" id="nsChoose">
-              <div class="ns-choose__content">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-                  <path d="M12 6v6l4 2"/>
-                </svg>
-                <h4>Choose Your Next Fragrance</h4>
-                <p>Select from our exclusive collection before the auto-selection date.</p>
-                <button class="btn btn--primary" id="nsChooseBtn">Choose Now</button>
-              </div>
-            </div>
-
-            <!-- Skipped state -->
-            <div class="ns-skipped" id="nsSkipped" style="display:none;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40">
-                <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
-              </svg>
-              <h4>Month Skipped</h4>
-              <p>You've skipped this month's shipment. Your subscription will resume next month.</p>
-              <button class="btn btn--outline btn--small" id="nsUndoSkip">Undo Skip</button>
-            </div>
-
-            {%- if latest_shipped_sub_item -%}
-            <!-- PRD-APR23v2 Issue E: past-tense copy to avoid confusion with Next Shipment card above -->
-            <div class="ns-sub-fallback" id="nsSubFallback" style="margin-top:1.25rem;padding:1.25rem;background:#FAF8F5;border-radius:12px;border-left:3px solid #D5CFC3;">
-              <p style="font-size:11px;color:#8a918e;margin:0 0 4px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">Last shipped</p>
-              <p style="font-size:14px;color:#2D4641;margin:0;"><strong>{{ latest_shipped_sub_item.product.title }}</strong> · {{ latest_shipped_sub_order.created_at | date: '%b %-d, %Y' }}</p>
-            </div>
-            {%- elsif latest_sub_item -%}
-            <div class="ns-sub-fallback" id="nsSubFallback" style="margin-top:1.25rem;padding:1.25rem;background:#FAF8F5;border-radius:12px;border-left:3px solid #D5CFC3;">
-              <p style="font-size:11px;color:#8a918e;margin:0 0 4px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">Most recent order</p>
-              <p style="font-size:14px;color:#2D4641;margin:0;"><strong>{{ latest_sub_item.product.title }}</strong> · placed {{ latest_sub_order.created_at | date: '%b %-d, %Y' }}</p>
-            </div>
-            {%- endif -%}
-          </div>
-
-          <!-- ═══ My Subscription List (PRD-01: Scentbird-style month-by-month queue) ═══ -->
+          <!-- ═══ Choose Your Next Fragrance — unified queue card (Scentbird-style) ═══ -->
           <div class="acct__card">
             <div class="acct__card-header">
               <div>
-                <h3 class="acct__card-title">My Subscription List</h3>
-                <p class="bq-sublabel">Drag to reorder. Tap a month to pick a fragrance.</p>
+                <h3 class="acct__card-title">Choose Your Next Fragrance</h3>
+                <p class="bq-sublabel">Tap a month to pick. Drag to reorder.</p>
               </div>
               <span class="bq-count-badge" id="bqCountBadge" aria-live="polite">0 of 5 picked</span>
             </div>
+
+            {%- if latest_shipped_sub_item -%}
+            <div class="ns-sub-fallback" style="margin:0 0 1rem;padding:0.75rem 1rem;background:#FAF8F5;border-radius:10px;border-left:3px solid #D5CFC3;">
+              <p style="font-size:11px;color:#8a918e;margin:0 0 2px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">Last shipped</p>
+              <p style="font-size:14px;color:#2D4641;margin:0;"><strong>{{ latest_shipped_sub_item.product.title }}</strong> · {{ latest_shipped_sub_order.created_at | date: '%b %-d, %Y' }}</p>
+            </div>
+            {%- elsif latest_sub_item -%}
+            <div class="ns-sub-fallback" style="margin:0 0 1rem;padding:0.75rem 1rem;background:#FAF8F5;border-radius:10px;border-left:3px solid #D5CFC3;">
+              <p style="font-size:11px;color:#8a918e;margin:0 0 2px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">Most recent order</p>
+              <p style="font-size:14px;color:#2D4641;margin:0;"><strong>{{ latest_sub_item.product.title }}</strong> · placed {{ latest_sub_order.created_at | date: '%b %-d, %Y' }}</p>
+            </div>
+            {%- endif -%}
+
             <div class="bq-strip" id="bqStrip" role="list" aria-label="Your upcoming fragrance shipments"
                  data-shipped-through="{%- if latest_shipped_sub_order -%}{{ latest_shipped_sub_order.created_at | date: '%Y-%m' }}{%- endif -%}">
               <!-- Hydrated client-side by queue-scheduler.js -->
@@ -810,13 +764,12 @@
     window.addEventListener('hashchange', function(){ navigate(location.hash); });
     navigate(location.hash);
 
-    // ── Safety-net click handlers for critical buttons (in case big app script parse-fails) ──
+    // ── Open fragrance selector on any [data-open-fragrance-selector] element ──
     document.addEventListener('click', function(e){
-      var chooseBtn = e.target.closest && e.target.closest('#nsChooseBtn, [data-open-fragrance-selector]');
-      if (chooseBtn) {
+      var btn = e.target.closest && e.target.closest('[data-open-fragrance-selector]');
+      if (btn) {
         e.preventDefault();
         document.dispatchEvent(new Event('fragrance-selector:open'));
-        if (b) { b.style.background = '#7c3aed'; b.textContent = '[ROUTER DIAG] Opening fragrance selector…'; }
       }
     }, false);
 
