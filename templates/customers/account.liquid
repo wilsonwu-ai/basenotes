@@ -807,6 +807,13 @@ document.addEventListener('DOMContentLoaded', function() {
     return d instanceof Date && !isNaN(d.getTime());
   }
 
+  /* ── DIAGNOSTIC: prove this script block is executing ── */
+  try {
+    document.title = 'Base Note · Account [router-v3-live]';
+    console.log('[bn-router] DOMContentLoaded fired, router initializing');
+    window.__bnRouterInit = Date.now();
+  } catch (e) { /* noop */ }
+
   /* ── Hash Router (event-delegation, capture-phase to beat theme.js smooth-scroll) ── */
   var validRoutes = ['dashboard', 'history', 'next-shipment', 'subscription', 'orders'];
 

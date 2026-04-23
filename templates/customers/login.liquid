@@ -175,13 +175,20 @@
         </a>
       </p>
 
-      {% comment %} Social login divider {% endcomment %}
-      <div class="auth-form__divider" id="SocialDivider">
+      {% comment %}
+        Social login UI is disabled — the buttons were never wired to any real OAuth
+        provider (see JS at the bottom: only logs to console unless window.socialLoginX
+        handlers are defined by an installed social-login app). Re-enable by:
+        (a) installing a social-login Shopify app that defines those handlers, OR
+        (b) migrating to Shopify's new customer accounts (Settings → Customer accounts),
+        then remove the `social-login-disabled` class or the style override below.
+      {% endcomment %}
+      <div class="auth-form__divider social-login-disabled" id="SocialDivider" style="display:none;">
         <span>Or log in with one of these platforms:</span>
       </div>
 
-      {% comment %} Social Auth Buttons {% endcomment %}
-      <div class="social-login-buttons" id="SocialButtons">
+      {% comment %} Social Auth Buttons — hidden until real OAuth is installed {% endcomment %}
+      <div class="social-login-buttons social-login-disabled" id="SocialButtons" style="display:none;">
         <button type="button" class="btn-social btn-social--google" data-social-auth="google">
           <svg viewBox="0 0 24 24" width="20" height="20">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
