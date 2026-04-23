@@ -808,28 +808,55 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   /* ── Hash Router ── */
-  var views = document.querySelectorAll('[data-view]');
-  var navLinks = document.querySelectorAll('[data-nav]');
   var validRoutes = ['dashboard', 'history', 'next-shipment', 'subscription', 'orders'];
+
+  function $views()   { return document.querySelectorAll('[data-view]'); }
+  function $navLinks(){ return document.querySelectorAll('[data-nav]'); }
 
   function navigate(hash) {
     var route = (hash || '').replace('#', '') || 'dashboard';
     if (validRoutes.indexOf(route) === -1) route = 'dashboard';
 
-    views.forEach(function(v) {
+    $views().forEach(function(v) {
       v.style.display = v.dataset.view === route ? '' : 'none';
     });
 
-    navLinks.forEach(function(link) {
-      if (link.dataset.nav === route) {
-        link.classList.add('is-active');
-      } else {
-        link.classList.remove('is-active');
-      }
+    $navLinks().forEach(function(link) {
+      if (link.dataset.nav === route) link.classList.add('is-active');
+      else link.classList.remove('is-active');
     });
+
+    if (location.hash.replace('#', '') !== route) {
+      // Keep URL in sync without triggering another hashchange loop
+      history.replaceState(null, '', '#' + route);
+    }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // Attach explicit click handlers to every in-page hash link that matches a known route.
+  // This covers three cases the bare hashchange listener missed:
+  //   1) Clicking a nav link whose href matches the current hash (no hashchange event fires).
+  //   2) Content-area route buttons like "Select Fragrance" → #next-shipment.
+  //   3) A runtime error elsewhere preventing the initial hashchange binding (defense-in-depth).
+  function bindRouteClicks(root) {
+    (root || document).querySelectorAll('a[href^="#"]').forEach(function(a) {
+      if (a.__bnRouteBound) return;
+      var hash = a.getAttribute('href') || '';
+      var route = hash.replace('#', '');
+      if (validRoutes.indexOf(route) === -1) return;
+      a.__bnRouteBound = true;
+      a.addEventListener('click', function(e) {
+        e.preventDefault();
+        navigate(hash);
+      });
+    });
+  }
+  bindRouteClicks();
+
+  // Re-bind after any client-side DOM mutation that might have injected new route links.
+  var routeBindObserver = new MutationObserver(function() { bindRouteClicks(); });
+  routeBindObserver.observe(document.body, { childList: true, subtree: true });
 
   window.addEventListener('hashchange', function() {
     navigate(location.hash);
