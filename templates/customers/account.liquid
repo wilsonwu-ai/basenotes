@@ -818,6 +818,26 @@
         if (b) { b.style.background = '#7c3aed'; b.textContent = '[ROUTER DIAG] Opening fragrance selector…'; }
       }
     }, false);
+
+    // ── Safety-net: handle fragrance selection from the modal ──
+    document.addEventListener('fragrance:selected', function(e){
+      var frag = e.detail || {};
+      if (!window.BasenoteQueue) {
+        if (b) { b.style.background = '#dc2626'; b.textContent = '[ROUTER DIAG] Queue module not loaded — refresh.'; }
+        return;
+      }
+      var targetMonth = window.__bqPendingTargetMonth || window.BasenoteQueue.firstVisibleMonth();
+      window.BasenoteQueue.setSlot(targetMonth, {
+        productId: frag.id,
+        title: frag.title,
+        url: frag.handle ? ('/products/' + frag.handle) : '#',
+        image: frag.image,
+        family: frag.family
+      });
+      window.__bqPendingTargetMonth = null;
+      if (b) { b.style.background = '#16a34a'; b.textContent = '[ROUTER DIAG] Added ' + (frag.title || 'fragrance') + ' to ' + targetMonth + '. Reloading…'; }
+      setTimeout(function(){ location.reload(); }, 700);
+    });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
