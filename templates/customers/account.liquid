@@ -142,31 +142,18 @@
           </div>
           {%- endif -%}
 
-          <!-- PRD-05: Dashboard cards — Upcoming Shipment + Your Queue preview, side-by-side on desktop -->
+          <!-- Subscription summary — billing cycle + queue-filled nudge -->
           {%- if is_subscriber -%}
-          <div class="acct__card-grid">
-          <div class="acct__card">
+          <div class="acct__card" id="dashSubscriptionSummary">
             <div class="acct__card-header">
-              <h3 class="acct__card-title">Upcoming Shipment</h3>
-              <a href="#next-shipment" class="acct__text-link">Manage</a>
-            </div>
-            <div class="acct__shipment-preview" id="dashShipmentPreview">
-              <div class="acct__shipment-placeholder">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-                <p>Choose your next fragrance</p>
-                <a href="#next-shipment" class="btn btn--primary btn--small">Select Fragrance</a>
-              </div>
-            </div>
-          </div>
-          <div class="acct__card">
-            <div class="acct__card-header">
-              <h3 class="acct__card-title">Your Queue</h3>
+              <h3 class="acct__card-title">Your Fragrance Journey</h3>
               <a href="#next-shipment" class="acct__text-link">Manage queue</a>
             </div>
-            <div class="dash-queue-preview" id="dashQueuePreview" role="list" aria-label="Upcoming queue preview">
-              <!-- Hydrated client-side: first 3 queue slots -->
+            <div class="dash-journey" id="dashJourney"
+                 data-shipped-through="{%- if latest_shipped_sub_order -%}{{ latest_shipped_sub_order.created_at | date: '%Y-%m' }}{%- endif -%}">
+              <!-- Hydrated client-side: past shipments + upcoming queue with billing dates -->
+              <p class="dash-journey__loading" style="padding:2rem 0;text-align:center;color:#999;font-size:14px;">Loading your journey…</p>
             </div>
-          </div>
           </div>
           {%- else -%}
           <div class="acct__card acct__card--cta">
@@ -640,6 +627,28 @@
 
   /* ═══ Dashboard Card Grid (PRD-05) ═══ */
   .acct__card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* ═══ Dashboard: Your Fragrance Journey ═══ */
+  .dash-journey__section { margin-top: 1rem; }
+  .dash-journey__section:first-child { margin-top: 0; }
+  .dash-journey__section-title { font: 700 11px/1 system-ui, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; color: #8a918e; margin: 0 0 10px; }
+  .dash-journey__rows { display: flex; flex-direction: column; gap: 8px; }
+  .dash-journey__row { display: grid; grid-template-columns: 48px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; background: #FAF8F5; border-radius: 10px; border-left: 3px solid #D5CFC3; text-decoration: none; color: inherit; }
+  .dash-journey__row--past { border-left-color: #8FA89F; opacity: 0.9; }
+  .dash-journey__row--upcoming { border-left-color: #C9A961; }
+  .dash-journey__row--empty { border-left-color: #E5E0D5; background: #FFF; border: 1px dashed #D5CFC3; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+  .dash-journey__row--empty:hover { border-color: #C9A961; background: #FAF8F5; }
+  .dash-journey__img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; background: #EDE8DC; }
+  .dash-journey__img--placeholder, .dash-journey__img--empty { display: flex; align-items: center; justify-content: center; color: #8a918e; background: #EDE8DC; }
+  .dash-journey__body { min-width: 0; }
+  .dash-journey__title { font: 600 14px/1.3 system-ui, sans-serif; color: #2D4641; margin: 0 0 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dash-journey__meta { font: 400 12px/1.2 system-ui, sans-serif; color: #8a918e; margin: 0; }
+  .dash-journey__badge { font: 700 10px/1 system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase; padding: 5px 8px; border-radius: 6px; white-space: nowrap; }
+  .dash-journey__badge--past { background: #E6EFE9; color: #5A7A6B; }
+  .dash-journey__badge--queued { background: #F6EED6; color: #8B6F2B; }
+  .dash-journey__badge--empty { background: #F4F0E8; color: #A39880; }
+  .dash-journey__nudge { margin: 1rem 0 0; padding: 12px 14px; background: #FFF9ED; border-radius: 10px; font: 400 13px/1.5 system-ui, sans-serif; color: #6B5A2B; }
+  .dash-journey__nudge--full { background: #EFF7F1; color: #3F5A4B; }
   @media (max-width: 860px) { .acct__card-grid { grid-template-columns: 1fr; } }
 
   /* ═══ Fragrance Journey Timeline (PRD-05) ═══ */
@@ -728,6 +737,38 @@
 <script src="{{ 'sortable.min.js' | asset_url }}" defer></script>
 <script src="{{ 'queue-scheduler.js' | asset_url }}" defer></script>
 
+<!-- ═══ STANDALONE SUBSCRIBER DATA (Liquid → JSON, safe for JS parsing) ═══ -->
+<script type="application/json" id="bn-subscriber-data">
+{
+  "isSubscriber": {{ is_subscriber | default: false | json }},
+  "billingDay": {%- if latest_sub_order -%}{{ latest_sub_order.created_at | date: '%-d' | json }}{%- else -%}null{%- endif -%},
+  "priceLabel": {{ settings.sub_plan_monthly_per_month | default: '$20/mo' | json }},
+  "pastShipments": [
+    {%- if is_subscriber -%}
+    {%- assign past_count = 0 -%}
+    {%- for order in customer.orders reversed limit: 24 -%}
+      {%- if order.fulfillment_status == 'fulfilled' -%}
+        {%- for line in order.line_items -%}
+          {%- if line.selling_plan_allocation and past_count < 12 -%}
+            {%- if past_count > 0 -%},{%- endif -%}
+            {
+              "shipMonth": {{ order.created_at | date: '%Y-%m' | json }},
+              "shippedAt": {{ order.created_at | date: '%b %-d, %Y' | json }},
+              "title": {{ line.product.title | json }},
+              "image": {%- if line.image -%}{{ line.image | image_url: width: 160 | json }}{%- else -%}null{%- endif -%},
+              "handle": {{ line.product.handle | json }}
+            }
+            {%- assign past_count = past_count | plus: 1 -%}
+            {%- break -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- endif -%}
+  ]
+}
+</script>
+
 <!-- ═══ STANDALONE ROUTER — isolated from the big <script> so it can't be broken by Liquid emits ═══ -->
 <script>
 (function(){
@@ -772,6 +813,102 @@
         document.dispatchEvent(new Event('fragrance-selector:open'));
       }
     }, false);
+
+    // ── Dashboard "Your Fragrance Journey" renderer: past shipments + upcoming queue ──
+    function renderDashJourney() {
+      var el = document.getElementById('dashJourney');
+      if (!el || !window.BasenoteQueue) return;
+      var dataEl = document.getElementById('bn-subscriber-data');
+      var subData = {};
+      try { subData = JSON.parse(dataEl.textContent); } catch(e) { subData = {}; }
+
+      var BQ = window.BasenoteQueue;
+      var shippedThrough = el.getAttribute('data-shipped-through');
+      if (shippedThrough) BQ.setShippedThrough(shippedThrough);
+
+      var past = (subData.pastShipments || []).slice().reverse(); // chronological, oldest → newest
+      var upcomingMonths = BQ.slotsFromNow(5);
+      var upcomingEntries = BQ.load();
+      var byMonth = {};
+      upcomingEntries.forEach(function(e){ byMonth[e.shipMonth] = e; });
+
+      function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); }
+
+      function billingDayLabel(monthStr) {
+        if (!subData.billingDay) return '';
+        var parts = monthStr.split('-');
+        var d = new Date(parseInt(parts[0],10), parseInt(parts[1],10) - 1, parseInt(subData.billingDay, 10));
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
+
+      var html = '';
+
+      // Past shipments
+      if (past.length) {
+        html += '<section class="dash-journey__section"><h4 class="dash-journey__section-title">Shipped</h4><div class="dash-journey__rows">';
+        past.forEach(function(p){
+          html += '<div class="dash-journey__row dash-journey__row--past">' +
+            (p.image ? '<img class="dash-journey__img" src="' + esc(p.image) + '" alt="' + esc(p.title) + '" loading="lazy">' : '<div class="dash-journey__img dash-journey__img--placeholder"></div>') +
+            '<div class="dash-journey__body">' +
+              '<p class="dash-journey__title">' + esc(p.title) + '</p>' +
+              '<p class="dash-journey__meta">Shipped ' + esc(p.shippedAt) + '</p>' +
+            '</div>' +
+            '<span class="dash-journey__badge dash-journey__badge--past">Delivered</span>' +
+          '</div>';
+        });
+        html += '</div></section>';
+      }
+
+      // Upcoming / Queue
+      html += '<section class="dash-journey__section"><h4 class="dash-journey__section-title">Upcoming (' + upcomingEntries.length + ' of 5 picked)</h4><div class="dash-journey__rows">';
+      upcomingMonths.forEach(function(monthStr, idx) {
+        var entry = byMonth[monthStr];
+        var monthLabel = BQ.monthLabel(monthStr, { withYear: true });
+        var chargeLabel = billingDayLabel(monthStr);
+        if (entry) {
+          html += '<div class="dash-journey__row dash-journey__row--upcoming">' +
+            (entry.image ? '<img class="dash-journey__img" src="' + esc(entry.image) + '" alt="' + esc(entry.title) + '" loading="lazy">' : '<div class="dash-journey__img dash-journey__img--placeholder"></div>') +
+            '<div class="dash-journey__body">' +
+              '<p class="dash-journey__title">' + esc(entry.title) + '</p>' +
+              '<p class="dash-journey__meta">' + esc(monthLabel) + (chargeLabel ? ' · charges ' + esc(chargeLabel) : '') + '</p>' +
+            '</div>' +
+            '<span class="dash-journey__badge dash-journey__badge--queued">Queued</span>' +
+          '</div>';
+        } else {
+          html += '<a href="#next-shipment" class="dash-journey__row dash-journey__row--empty">' +
+            '<div class="dash-journey__img dash-journey__img--empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>' +
+            '<div class="dash-journey__body">' +
+              '<p class="dash-journey__title">Pick your ' + esc(BQ.monthLabel(monthStr)) + ' fragrance</p>' +
+              '<p class="dash-journey__meta">' + esc(monthLabel) + (chargeLabel ? ' · charges ' + esc(chargeLabel) : '') + '</p>' +
+            '</div>' +
+            '<span class="dash-journey__badge dash-journey__badge--empty">Not picked</span>' +
+          '</a>';
+        }
+      });
+      html += '</div></section>';
+
+      // Nudge footer
+      var emptyCount = upcomingMonths.filter(function(m){ return !byMonth[m]; }).length;
+      if (emptyCount > 0) {
+        html += '<p class="dash-journey__nudge">You have <strong>' + emptyCount + ' unfilled slot' + (emptyCount === 1 ? '' : 's') + '</strong>. Any slot empty on ship day auto-fills with our Fragrance of the Month — fill them so every month feels like yours.</p>';
+      } else {
+        html += '<p class="dash-journey__nudge dash-journey__nudge--full">✓ All 5 months planned. Your queue is the way Base Note is meant to be used.</p>';
+      }
+
+      el.innerHTML = html;
+    }
+
+    // Call renderDashJourney when queue module loads and on every queue change
+    (function waitForBQ(tries){
+      tries = tries || 0;
+      if (window.BasenoteQueue) {
+        renderDashJourney();
+        window.BasenoteQueue.on('change', renderDashJourney);
+        return;
+      }
+      if (tries > 40) return;
+      setTimeout(function(){ waitForBQ(tries + 1); }, 50);
+    })();
 
     // ── Safety-net: queue strip hydration (full renderer, independent of big script) ──
     function hydrateQueueStrip() {
