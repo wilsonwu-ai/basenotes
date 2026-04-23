@@ -61,8 +61,13 @@
 
   function firstVisibleMonth() {
     // The earliest month we will ever show as a queue slot.
-    // If the customer already received the current month's shipment, start at next month.
+    // 3-day end-of-month buffer: if today is in the last 3 days of the month
+    // (daysLeft < 3, i.e. days 29/30/31 on a 31-day month), treat next month
+    // as "current" — the current month's shipment is already locked in.
     var cur = currentMonthStr();
+    var d = new Date();
+    var lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    if ((lastDay - d.getDate()) < 3) cur = monthStrAddOne(cur);
     if (shippedThrough && shippedThrough >= cur) return monthStrAddOne(shippedThrough);
     return cur;
   }
