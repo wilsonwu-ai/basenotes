@@ -771,6 +771,13 @@
 document.addEventListener('DOMContentLoaded', function() {
   'use strict';
 
+  // ═══ DIAGNOSTIC (FIRST line of handler) — proves DOMContentLoaded fires ═══
+  try {
+    document.title = 'Base Note · Account [v4]';
+    console.log('[bn-router] stage 1: DOMContentLoaded fired');
+    window.__bnStage = 1;
+  } catch (e) { console.error('[bn-router] stage 1 FAIL', e); }
+
   // Subscription data from server (Liquid)
   var serverSubData = {
     isSubscriber: {{ is_subscriber | json }},
@@ -807,12 +814,12 @@ document.addEventListener('DOMContentLoaded', function() {
     return d instanceof Date && !isNaN(d.getTime());
   }
 
-  /* ── DIAGNOSTIC: prove this script block is executing ── */
+  // ═══ DIAGNOSTIC stage 2 — proves we made it past serverSubData + isValidDate ═══
   try {
-    document.title = 'Base Note · Account [router-v3-live]';
-    console.log('[bn-router] DOMContentLoaded fired, router initializing');
-    window.__bnRouterInit = Date.now();
-  } catch (e) { /* noop */ }
+    document.title = 'Base Note · Account [v4 · stage 2]';
+    console.log('[bn-router] stage 2: past serverSubData, router attaching');
+    window.__bnStage = 2;
+  } catch (e) { console.error('[bn-router] stage 2 FAIL', e); }
 
   /* ── Hash Router (event-delegation, capture-phase to beat theme.js smooth-scroll) ── */
   var validRoutes = ['dashboard', 'history', 'next-shipment', 'subscription', 'orders'];
