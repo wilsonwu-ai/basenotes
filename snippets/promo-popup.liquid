@@ -192,6 +192,16 @@
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && popup.style.display === 'flex') closePopup();
     });
+
+    // Engaging the CTA (clicking "Start Your Journey") counts as "seen" — user is clearly
+    // aware of the offer. Mark it before navigation so the popup doesn't reappear on every
+    // page load for the rest of the session.
+    var ctaBtn = popup.querySelector('.promo-popup__cta');
+    if (ctaBtn) {
+      ctaBtn.addEventListener('click', function() {
+        try { localStorage.setItem('bn_promo_seen', '1'); } catch (e) {}
+      });
+    }
   })();
 </script>
 {%- endunless -%}
