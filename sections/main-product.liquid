@@ -449,6 +449,9 @@
       </div>
     </div>
 
+    {% comment %} Objection-handling FAQ — visible accordion + FAQPage JSON-LD for GEO / rich results {% endcomment %}
+    {% render 'product-faq', product: product %}
+
     {% comment %} Related Products {% endcomment %}
     {%- if section.settings.show_related and product.collections.size > 0 -%}
       {%- assign related_collection = product.collections.first -%}
@@ -470,6 +473,101 @@
 
   </div>
 </section>
+
+{% comment %} Mobile sticky subscribe CTA — appears when main CTA scrolls out of viewport on <=768px viewports {% endcomment %}
+<div class="product-sticky-cta" id="productStickyCta" aria-hidden="true">
+  <div class="product-sticky-cta__inner">
+    <div class="product-sticky-cta__meta">
+      <span class="product-sticky-cta__name">{{ product.title | truncate: 26 }}</span>
+      <span class="product-sticky-cta__price">$20/month &middot; 5ml</span>
+    </div>
+    <button type="button" class="product-sticky-cta__btn" id="productStickyCtaBtn">
+      Start Subscription
+    </button>
+  </div>
+</div>
+
+<script>
+  (function() {
+    var mainBtn = document.getElementById('addToCartButton');
+    var stickyBar = document.getElementById('productStickyCta');
+    var stickyBtn = document.getElementById('productStickyCtaBtn');
+    if (!mainBtn || !stickyBar || !stickyBtn) return;
+
+    // Click the sticky bar -> scroll to + trigger the real form button.
+    stickyBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      mainBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // After the scroll completes, click the real CTA so the form submits through the
+      // existing handler (which does the cart/subscription fetch + modal logic).
+      setTimeout(function() { mainBtn.click(); }, 600);
+    });
+
+    if (!('IntersectionObserver' in window)) {
+      // Fallback: always show sticky on mobile, let the scroll-to handler route.
+      if (window.innerWidth <= 768) stickyBar.classList.add('is-visible');
+      return;
+    }
+
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        // Show sticky bar when the main CTA is NOT in the viewport.
+        if (entry.isIntersecting || window.innerWidth > 768) {
+          stickyBar.classList.remove('is-visible');
+          stickyBar.setAttribute('aria-hidden', 'true');
+        } else {
+          stickyBar.classList.add('is-visible');
+          stickyBar.setAttribute('aria-hidden', 'false');
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -20% 0px' });
+    observer.observe(mainBtn);
+
+    // Hide on desktop resize.
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) {
+        stickyBar.classList.remove('is-visible');
+        stickyBar.setAttribute('aria-hidden', 'true');
+      }
+    });
+  })();
+</script>
+
+<style>
+  .product-sticky-cta {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    background: #ffffff;
+    border-top: 1px solid #e5e5e5;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+    transform: translateY(110%);
+    transition: transform 0.25s ease-out;
+    z-index: 800;
+    box-shadow: 0 -8px 24px rgba(0,0,0,0.08);
+    display: none;
+  }
+  .product-sticky-cta.is-visible { transform: translateY(0); }
+  .product-sticky-cta__inner {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; max-width: 560px; margin: 0 auto;
+  }
+  .product-sticky-cta__meta { flex: 1; min-width: 0; }
+  .product-sticky-cta__name {
+    display: block; font-size: 0.92rem; font-weight: 600; color: #1a1a1a;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .product-sticky-cta__price { display: block; font-size: 0.78rem; color: #666; margin-top: 2px; }
+  .product-sticky-cta__btn {
+    flex-shrink: 0; background: #1a1a1a; color: #fff; border: 0;
+    padding: 12px 18px; border-radius: 4px; font-weight: 600; font-size: 0.92rem;
+    cursor: pointer; font-family: inherit;
+  }
+  .product-sticky-cta__btn:hover { background: #2a2a2a; }
+  @media (max-width: 768px) {
+    .product-sticky-cta { display: block; }
+    body { padding-bottom: 0; }
+  }
+</style>
 
 <style>
   .product-page {

@@ -1,0 +1,127 @@
+{% comment %}
+  PDP FAQ block — addresses the top 5 objections for a luxury fragrance subscription.
+  Renders visible accordion + FAQPage JSON-LD schema for AI / Google rich results.
+  Include inside sections/main-product.liquid below the main product details accordion.
+{% endcomment %}
+
+<section class="product-faq" aria-labelledby="product-faq__title">
+  <h2 class="product-faq__title" id="product-faq__title">Answers to what you're probably asking</h2>
+
+  <details class="product-faq__item">
+    <summary class="product-faq__summary">
+      <span>Is this the real {{ product.vendor | default: "fragrance" }}, or a dupe?</span>
+      <span class="product-faq__chevron" aria-hidden="true">+</span>
+    </summary>
+    <div class="product-faq__answer">
+      <p>It's genuine. We transfer the fragrance from an authorized-distributor full bottle into a 5 ml glass atomizer. No knock-offs, no fragrance oils, no "inspired by" reformulations. Legally we can't put the original bottle's brand mark on the atomizer label &mdash; that's why our product name is precise ({{ product.title }}) but we never claim to be the original fragrance house.</p>
+    </div>
+  </details>
+
+  <details class="product-faq__item">
+    <summary class="product-faq__summary">
+      <span>How long will a 5 ml atomizer actually last?</span>
+      <span class="product-faq__chevron" aria-hidden="true">+</span>
+    </summary>
+    <div class="product-faq__answer">
+      <p>A 5 ml atomizer holds roughly 45 sprays. At 1&ndash;2 sprays a day, that's a full subscription month of real wear. At 4 sprays a day (for heavier projection or neck + shirt + wrist application), you'll finish it in about 20 days. Either way, it's enough time to know whether the fragrance becomes <em>yours</em> or ends up shelved.</p>
+    </div>
+  </details>
+
+  <details class="product-faq__item">
+    <summary class="product-faq__summary">
+      <span>What if it doesn't work on my skin?</span>
+      <span class="product-faq__chevron" aria-hidden="true">+</span>
+    </summary>
+    <div class="product-faq__answer">
+      <p>Love it or swap next month. You can skip, swap, or cancel your next shipment anytime before your renewal date &mdash; takes 15 seconds in your account. You're out one month ($20) on a fragrance that didn't click, not $400 on a full bottle you now can't return. That's the whole point of the subscription.</p>
+    </div>
+  </details>
+
+  <details class="product-faq__item">
+    <summary class="product-faq__summary">
+      <span>Are there hidden surcharges on luxury fragrances like Creed or Parfums de Marly?</span>
+      <span class="product-faq__chevron" aria-hidden="true">+</span>
+    </summary>
+    <div class="product-faq__answer">
+      <p>No. Every fragrance in the Base Note catalog is $20 flat, including Creed Aventus, Parfums de Marly Layton, Tom Ford Oud Wood, Xerjoff, and Bond No. 9. Most competitors charge an extra $5&ndash;15 on these brands on top of the advertised base price. We priced the product to include the luxury tier so the math is honest.</p>
+    </div>
+  </details>
+
+  <details class="product-faq__item">
+    <summary class="product-faq__summary">
+      <span>Can I gift this subscription, or change my scent after I subscribe?</span>
+      <span class="product-faq__chevron" aria-hidden="true">+</span>
+    </summary>
+    <div class="product-faq__answer">
+      <p>You can swap to a different fragrance from your account any time before the next ship date &mdash; there's no "committed for the year" lock-in. Gift subscriptions aren't live yet, but we're targeting them for later this year; in the meantime, a workaround is to start a normal subscription and forward the shipment to the recipient, then cancel. If you want to be notified when real gift flows launch, let us know at <a href="mailto:hello@basenotescent.com">hello@basenotescent.com</a>.</p>
+    </div>
+  </details>
+</section>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is this the real {{ product.vendor | default: 'fragrance' | escape }}, or a dupe?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It is genuine. Base Note transfers the fragrance from an authorized-distributor full bottle into a 5 ml glass atomizer. No knock-offs, no fragrance oils, no reformulations. We cannot put the original brand mark on the atomizer label, which is why product names are precise but we never claim to be the original fragrance house."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long will a 5 ml fragrance atomizer last?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A 5 ml atomizer holds roughly 45 sprays. At 1 to 2 sprays a day, that is a full month of wear. At 4 sprays a day it is about 20 days. Enough time to know whether the fragrance works for you."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What if the fragrance does not work on my skin?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Love it or swap next month. Skip, swap, or cancel your next shipment anytime before your renewal date in 15 seconds. You are out one month at 20 dollars on a fragrance that did not click, not 400 dollars on a full bottle."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are there hidden surcharges on luxury fragrances at Base Note?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Every fragrance in the Base Note catalog is 20 dollars flat, including Creed Aventus, Parfums de Marly Layton, Tom Ford Oud Wood, Xerjoff, and Bond No. 9. Most competitors charge an extra 5 to 15 dollars on these brands."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I change my scent after subscribing?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, you can swap to a different fragrance from your account any time before the next ship date. There is no committed-for-the-year lock-in."
+      }
+    }
+  ]
+}
+</script>
+
+<style>
+  .product-faq { max-width: 820px; margin: 48px auto 0; padding: 0 16px; }
+  .product-faq__title { font-size: clamp(1.4rem, 3vw, 1.75rem); margin: 0 0 20px; letter-spacing: -0.01em; }
+  .product-faq__item { border-bottom: 1px solid #e5e5e5; padding: 4px 0; }
+  .product-faq__item:first-of-type { border-top: 1px solid #e5e5e5; }
+  .product-faq__summary {
+    display: flex; align-items: center; justify-content: space-between;
+    list-style: none; cursor: pointer;
+    padding: 16px 4px;
+    font-size: 1rem; font-weight: 600; color: #1a1a1a;
+  }
+  .product-faq__summary::-webkit-details-marker { display: none; }
+  .product-faq__chevron { font-size: 1.4rem; line-height: 1; color: #999; margin-left: 16px; transition: transform 0.2s; }
+  .product-faq__item[open] .product-faq__chevron { transform: rotate(45deg); color: #1a1a1a; }
+  .product-faq__answer { padding: 0 4px 18px; font-size: 0.95rem; line-height: 1.6; color: #444; }
+  .product-faq__answer p { margin: 0; }
+  .product-faq__answer a { color: #1a1a1a; }
+</style>
