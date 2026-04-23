@@ -25,7 +25,12 @@
   {%- endfor -%}
 {%- endfor -%}
 
-<section class="acct">
+<!-- ═══ LOUD ROUTER DIAGNOSTIC BANNER — REMOVE AFTER FIX ═══ -->
+<div id="bn-diag-banner" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#dc2626;color:#fff;font:bold 14px/1.4 system-ui,sans-serif;padding:10px 16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+  [ROUTER DIAG] waiting for JS to load… if you see this red message, the inline &lt;script&gt; failed to parse. Check browser console (Cmd+Option+J) for red errors.
+</div>
+
+<section class="acct" style="margin-top:44px;">
   <div class="container">
     <div class="acct__layout">
 
@@ -776,6 +781,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.title = 'Base Note · Account [v4]';
     console.log('[bn-router] stage 1: DOMContentLoaded fired');
     window.__bnStage = 1;
+    var __bnBanner = document.getElementById('bn-diag-banner');
+    if (__bnBanner) { __bnBanner.style.background = '#f59e0b'; __bnBanner.textContent = '[ROUTER DIAG] Stage 1: DOMContentLoaded fired — continuing…'; }
   } catch (e) { console.error('[bn-router] stage 1 FAIL', e); }
 
   // Subscription data from server (Liquid)
@@ -819,6 +826,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.title = 'Base Note · Account [v4 · stage 2]';
     console.log('[bn-router] stage 2: past serverSubData, router attaching');
     window.__bnStage = 2;
+    if (__bnBanner) { __bnBanner.style.background = '#eab308'; __bnBanner.textContent = '[ROUTER DIAG] Stage 2: serverSubData parsed OK — attaching router…'; }
   } catch (e) { console.error('[bn-router] stage 2 FAIL', e); }
 
   /* ── Hash Router (event-delegation, capture-phase to beat theme.js smooth-scroll) ── */
@@ -859,6 +867,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (validRoutes.indexOf(route) === -1) return;
     e.preventDefault();
     e.stopImmediatePropagation();
+    if (__bnBanner) { __bnBanner.style.background = '#2563eb'; __bnBanner.textContent = '[ROUTER DIAG] Click intercepted → navigating to #' + route; }
+    console.log('[bn-router] click intercepted, navigating to', route);
     navigate(hash);
   }, true);
 
@@ -870,6 +880,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.title = 'Base Note · Account [v4 · stage 3]';
     console.log('[bn-router] stage 3: click delegation LIVE');
     window.__bnStage = 3;
+    if (__bnBanner) { __bnBanner.style.background = '#16a34a'; __bnBanner.textContent = '[ROUTER DIAG] Stage 3: router LIVE — clicks should now work. If they still don\'t, nav links are the issue.'; }
   } catch (e) { console.error('[bn-router] stage 3 FAIL', e); }
 
   /* ── Fragrance History ── */
