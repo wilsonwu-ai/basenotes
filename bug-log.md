@@ -86,6 +86,14 @@
 - **Problem:** `snippets/promo-popup.liquid` set `bn_promo_seen` only on close/overlay/Escape flows, not on the CTA click. Users who engaged with "Start Your Journey" were never marked as "seen" → popup reappeared on arrival at the collection page, looping.
 - **Solution:** Added a click handler on `.promo-popup__cta` that writes `bn_promo_seen='1'` before navigation proceeds. Engaging with the offer now counts as "seen".
 
+### 20. Sidebar nav clicks still did nothing after per-link binding fix
+- **Problem:** First fix attached click handlers to each `a[href^="#"]` in bubbling phase, but clicks still didn't work live — likely because theme.js's pre-existing bubbling-phase handler and attachment-order dependencies combined to block ours.
+- **Solution:** Replaced with document-level event delegation in CAPTURE phase. Intercepts every in-page-hash anchor click before any element-level handler, calls `preventDefault + stopImmediatePropagation`, then `navigate()` directly. No per-link binding, no MutationObserver, no stale refs.
+
+### 21. `/account/addresses` visually inconsistent with `/account`
+- **Problem:** The Addresses page still used the old `.account-layout` / `.account-nav` / `.account-nav__link` design system (predating PRD-05), so typography, sidebar structure, welcome banner, and card treatment all looked different from the dashboard.
+- **Solution:** Rewrote `templates/customers/addresses.liquid` to mirror account.liquid — same `.acct__layout` grid, identical sidebar (6 nav items in matching order, same icons, `acct__*` classes), dark-teal welcome banner, card-based address grid with gold badge for default, restyled form with uppercase-eyebrow labels.
+
 ---
 
 ## How to use this log
