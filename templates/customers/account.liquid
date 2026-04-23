@@ -4,6 +4,8 @@
 {%- assign latest_sub_order = nil -%}
 {%- assign latest_sub_item = nil -%}
 {%- assign earliest_sub_order = nil -%}
+{%- assign latest_shipped_sub_order = nil -%}
+{%- assign latest_shipped_sub_item = nil -%}
 {%- for order in customer.orders -%}
   {%- for line_item in order.line_items -%}
     {%- if line_item.selling_plan_allocation -%}
@@ -12,6 +14,12 @@
         {%- assign latest_sub_order = order -%}
         {%- assign latest_sub_item = line_item -%}
       {%- endunless -%}
+      {%- if order.fulfillment_status == 'fulfilled' -%}
+        {%- unless latest_shipped_sub_order -%}
+          {%- assign latest_shipped_sub_order = order -%}
+          {%- assign latest_shipped_sub_item = line_item -%}
+        {%- endunless -%}
+      {%- endif -%}
       {%- assign earliest_sub_order = order -%}
     {%- endif -%}
   {%- endfor -%}
@@ -275,11 +283,16 @@
               <button class="btn btn--outline btn--small" id="nsUndoSkip">Undo Skip</button>
             </div>
 
-            {%- if latest_sub_item -%}
-            <!-- Fallback: show last subscription item from order history -->
-            <div class="ns-sub-fallback" id="nsSubFallback" style="margin-top:1.25rem;padding:1.25rem;background:#FAF8F5;border-radius:12px;">
-              <p style="font-size:14px;color:#2D4641;margin:0 0 8px;">Your current subscription: <strong>{{ latest_sub_item.product.title }}</strong></p>
-              <p style="font-size:13px;color:#666;margin:0;">Want a different fragrance next month? <a href="{{ settings.appstle_portal_url | default: '/apps/subscriptions' }}" style="color:#C9A962;font-weight:600;">Swap Now &rarr;</a></p>
+            {%- if latest_shipped_sub_item -%}
+            <!-- PRD-APR23v2 Issue E: past-tense copy to avoid confusion with Next Shipment card above -->
+            <div class="ns-sub-fallback" id="nsSubFallback" style="margin-top:1.25rem;padding:1.25rem;background:#FAF8F5;border-radius:12px;border-left:3px solid #D5CFC3;">
+              <p style="font-size:11px;color:#8a918e;margin:0 0 4px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">Last shipped</p>
+              <p style="font-size:14px;color:#2D4641;margin:0;"><strong>{{ latest_shipped_sub_item.product.title }}</strong> · {{ latest_shipped_sub_order.created_at | date: '%b %-d, %Y' }}</p>
+            </div>
+            {%- elsif latest_sub_item -%}
+            <div class="ns-sub-fallback" id="nsSubFallback" style="margin-top:1.25rem;padding:1.25rem;background:#FAF8F5;border-radius:12px;border-left:3px solid #D5CFC3;">
+              <p style="font-size:11px;color:#8a918e;margin:0 0 4px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">Most recent order</p>
+              <p style="font-size:14px;color:#2D4641;margin:0;"><strong>{{ latest_sub_item.product.title }}</strong> · placed {{ latest_sub_order.created_at | date: '%b %-d, %Y' }}</p>
             </div>
             {%- endif -%}
           </div>
@@ -1036,34 +1049,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if (nsSkipped) nsSkipped.style.display = 'none';
     }
 
-    // Update "Ships in X days" and dashboard stat
-    var now = new Date();
-    var shipDate = null;
-
-    // Calculate next ship date from order anniversary or billing date
-    if (serverSubData.orderDate) {
-      var orderD = new Date(serverSubData.orderDate);
-      if (!isNaN(orderD.getTime())) {
-        shipDate = new Date(now.getFullYear(), now.getMonth(), orderD.getDate());
-        if (shipDate <= now) shipDate.setMonth(shipDate.getMonth() + 1);
-      }
-    }
-    if (!shipDate) {
-      shipDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-    }
-
-    // Update "Ships in X days" on the next shipment card
-    var nsShipDaysEl = document.getElementById('nsShipDays');
-    if (nsShipDaysEl) {
-      var daysUntilShip = Math.max(0, Math.ceil((shipDate - now) / 86400000));
-      nsShipDaysEl.textContent = daysUntilShip;
-    }
-
-    // Update dashboard stat
-    var statEl = document.getElementById('statNextShipment');
-    if (statEl) {
-      statEl.textContent = shipDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    }
+    // PRD-APR23v2 Issue D: Do NOT guess the next ship date from order anniversary — it was showing
+    // "Apr 7" to users whose real Appstle ship date was May 21. Let the Appstle fetch below
+    // populate #statNextShipment and #nsShipDays with authoritative values. If Appstle is
+    // unavailable, these stay at their default "—" placeholder, which is honest.
   }
 
   renderNextShipment();
@@ -1510,35 +1499,42 @@ document.addEventListener('DOMContentLoaded', function() {
     whenReady(function() {
       var BQ = window.BasenoteQueue;
 
-      // Past orders: pull from server-rendered customer.orders via data we have in scope
+      // Past shipped orders from customer.orders — only fulfilled subscription orders
       var pastOrders = [];
       {%- if is_subscriber -%}
-        {%- for order in customer.orders reversed limit: 6 -%}
-          {%- for line in order.line_items -%}
-            {%- if line.selling_plan_allocation -%}
-              pastOrders.push({
-                shipMonth: {{ order.created_at | date: '%Y-%m' | json }},
-                title: {{ line.product.title | json }},
-                image: {%- if line.image -%}{{ line.image | image_url: width: 120 | json }}{%- else -%}null{%- endif -%}
-              });
-              {%- break -%}
-            {%- endif -%}
-          {%- endfor -%}
+        {%- for order in customer.orders reversed limit: 12 -%}
+          {%- if order.fulfillment_status == 'fulfilled' -%}
+            {%- for line in order.line_items -%}
+              {%- if line.selling_plan_allocation -%}
+                pastOrders.push({
+                  shipMonth: {{ order.created_at | date: '%Y-%m' | json }},
+                  title: {{ line.product.title | json }},
+                  image: {%- if line.image -%}{{ line.image | image_url: width: 120 | json }}{%- else -%}null{%- endif -%}
+                });
+                {%- break -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
         {%- endfor -%}
       {%- endif -%}
 
-      // De-dup past by month (most recent wins), cap at last 3 for timeline fit
+      // De-dup past by month (most recent wins), cap at last 4 for timeline fit
       var pastByMonth = {};
       pastOrders.forEach(function(p){ pastByMonth[p.shipMonth] = p; });
-      var pastMonths = Object.keys(pastByMonth).sort().slice(-3);
+      var pastMonths = Object.keys(pastByMonth).sort().slice(-4);
 
-      // Future: next 4 queue slots (including current/immediate)
-      var futureMonths = BQ.slotsFromNow(4);
+      // The "Current" stop = the first month the queue considers visible (the next shipment month).
+      // This is what's actively in-flight, not a generic future slot.
+      var currentStopMonth = BQ.firstVisibleMonth();
+      // Don't duplicate if last past month IS the current stop month (unlikely but guard it)
+      if (pastMonths[pastMonths.length - 1] === currentStopMonth) {
+        pastMonths = pastMonths.slice(0, -1);
+      }
+
       var filled = BQ.load();
       var filledByMonth = {};
       filled.forEach(function(e){ filledByMonth[e.shipMonth] = e; });
 
-      var curMonth = BQ.currentMonth();
       el.innerHTML = '';
 
       function appendStop(monthStr, data, kind) {
@@ -1549,17 +1545,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data && data.image) inner += '<img src="' + data.image + '" alt="" loading="lazy">';
         else inner += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22"><path d="M9 2h6v4h-6z"/><path d="M7 6h10v16H7z"/></svg>';
         inner += '</div>';
-        inner += '<div class="fj-stop__month">' + BQ.monthLabel(monthStr, { short: true }) + '</div>';
-        inner += '<div class="fj-stop__label">' + (data && data.title ? escapeText(data.title) : (kind === 'future' ? 'Unpicked' : '—')) + '</div>';
+        var label;
+        if (kind === 'current') {
+          label = 'Current · ' + BQ.monthLabel(monthStr, { short: true });
+        } else {
+          label = BQ.monthLabel(monthStr, { short: true });
+        }
+        inner += '<div class="fj-stop__month">' + label + '</div>';
+        inner += '<div class="fj-stop__label">' + (data && data.title ? escapeText(data.title) : 'To be picked') + '</div>';
         stop.innerHTML = inner;
         el.appendChild(stop);
       }
 
       pastMonths.forEach(function(m){ appendStop(m, pastByMonth[m], 'past'); });
-      futureMonths.forEach(function(m, i) {
-        var kind = (m === curMonth || i === 0) ? 'current' : 'future';
-        appendStop(m, filledByMonth[m] || null, kind);
-      });
+      appendStop(currentStopMonth, filledByMonth[currentStopMonth] || null, 'current');
 
       function escapeText(s) {
         var div = document.createElement('div');
@@ -1642,6 +1641,12 @@ document.addEventListener('DOMContentLoaded', function() {
       var SLOT_COUNT = 5;
       var BQ = window.BasenoteQueue;
 
+      // PRD-APR23v2 Issue B: tell the scheduler what the customer has already received
+      // so the queue's first slot is the next UN-shipped month (not calendar current).
+      {%- if latest_shipped_sub_order -%}
+        BQ.setShippedThrough({{ latest_shipped_sub_order.created_at | date: '%Y-%m' | json }});
+      {%- endif -%}
+
       function render() {
         var months = BQ.slotsFromNow(SLOT_COUNT);
         var filled = BQ.load();
@@ -1672,8 +1677,10 @@ document.addEventListener('DOMContentLoaded', function() {
         card.setAttribute('data-position', String(idx));
         card.setAttribute('role', 'listitem');
 
-        var shipStatus = idx === 0 ? 'Ships Immediately' : 'Ships in ' + BQ.monthLabel(monthStr, { short: true });
-        var statusClass = idx === 0 ? 'bq-card__ship-status--immediate' : '';
+        // "Ships Immediately" only if the slot is the calendar current month AND it's the first visible slot.
+        var isImmediate = idx === 0 && monthStr === BQ.currentMonth();
+        var shipStatus = isImmediate ? 'Ships Immediately' : 'Ships in ' + BQ.monthLabel(monthStr, { short: true });
+        var statusClass = isImmediate ? 'bq-card__ship-status--immediate' : '';
 
         card.innerHTML =
           '<button type="button" class="bq-card__drag-handle" aria-label="Drag to reorder">' +
