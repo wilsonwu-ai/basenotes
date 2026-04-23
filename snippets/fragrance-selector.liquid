@@ -36,15 +36,17 @@
       {%- endif -%}
     </div>
 
-    <div class="fs-filters">
-      <button class="fs-filter is-active" data-fs-filter="all">All</button>
-      <button class="fs-filter" data-fs-filter="woody">Woody</button>
-      <button class="fs-filter" data-fs-filter="floral">Floral</button>
-      <button class="fs-filter" data-fs-filter="fresh">Fresh</button>
-      <button class="fs-filter" data-fs-filter="oriental">Oriental</button>
-      <button class="fs-filter" data-fs-filter="leather">Leather</button>
-      <button class="fs-filter" data-fs-filter="spicy">Spicy</button>
-      <button class="fs-filter" data-fs-filter="musk">Musk</button>
+    <div class="fs-filters-wrap">
+      <div class="fs-filters" role="tablist">
+        <button class="fs-filter is-active" data-fs-filter="all">All</button>
+        <button class="fs-filter" data-fs-filter="woody">Woody</button>
+        <button class="fs-filter" data-fs-filter="floral">Floral</button>
+        <button class="fs-filter" data-fs-filter="fresh">Fresh</button>
+        <button class="fs-filter" data-fs-filter="oriental">Oriental</button>
+        <button class="fs-filter" data-fs-filter="leather">Leather</button>
+        <button class="fs-filter" data-fs-filter="spicy">Spicy</button>
+        <button class="fs-filter" data-fs-filter="musk">Musk</button>
+      </div>
     </div>
 
     <div class="fs-grid">
@@ -93,7 +95,7 @@
                     data-product-title="{{ product.title | escape }}"
                     data-product-image="{{ product.featured_image | image_url: width: 400 }}"
                     data-product-family="{{ family }}">
-              Select This Fragrance
+              Add to Queue
             </button>
           </div>
         </div>
@@ -174,14 +176,30 @@
   }
 
   /* Filters */
+  .fs-filters-wrap {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+  .fs-filters-wrap::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0.25rem;
+    width: 28px;
+    pointer-events: none;
+    background: linear-gradient(to left, #fff, rgba(255,255,255,0));
+  }
   .fs-filters {
     display: flex;
     gap: 0.5rem;
-    margin-bottom: 1.5rem;
     overflow-x: auto;
-    padding-bottom: 0.25rem;
+    padding: 0 0 0.25rem 0;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
   }
+  .fs-filters::-webkit-scrollbar { height: 4px; }
+  .fs-filters::-webkit-scrollbar-thumb { background: #D5CFC3; border-radius: 2px; }
   .fs-filter {
     background: transparent;
     border: 1px solid var(--color-border, #E8E6E3);
