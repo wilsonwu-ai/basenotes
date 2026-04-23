@@ -73,7 +73,7 @@
     }
   </script>
 
-  {% comment %} AboutPage + Person schema on the About / Founder page (E-E-A-T signal) {% endcomment %}
+  {% comment %} AboutPage schema with both founders on the About / Founder page (E-E-A-T signal) {% endcomment %}
   {%- if page.handle == 'about' or page.handle == 'founder' -%}
   <script type="application/ld+json">
     {
@@ -83,16 +83,28 @@
       "name": "About Base Note",
       "description": "The founder story behind Base Note, a flat-priced luxury fragrance subscription.",
       "mainEntity": {
-        "@type": "Person",
-        "name": "Wilson Wu",
-        "jobTitle": "Founder",
-        "worksFor": {
-          "@type": "Organization",
-          "name": {{ shop.name | json }},
-          "url": {{ shop.url | json }}
-        },
+        "@type": "Organization",
+        "name": {{ shop.name | json }},
+        "url": {{ shop.url | json }},
         "email": "hello@basenotescent.com",
-        "knowsAbout": ["fragrance", "subscription commerce", "direct-to-consumer brands", "luxury perfumery"]
+        "founder": [
+          {
+            "@type": "Person",
+            "name": "Jeff Theefs",
+            "jobTitle": "Founder",
+            "email": "jeff@basenotescent.com",
+            "worksFor": { "@type": "Organization", "name": {{ shop.name | json }}, "url": {{ shop.url | json }} },
+            "knowsAbout": ["fragrance", "subscription commerce", "direct-to-consumer brands", "luxury perfumery"]
+          },
+          {
+            "@type": "Person",
+            "name": "Alex",
+            "jobTitle": "Cofounder",
+            "email": "alex@basenotescent.com",
+            "worksFor": { "@type": "Organization", "name": {{ shop.name | json }}, "url": {{ shop.url | json }} },
+            "knowsAbout": ["fragrance", "brand", "growth", "direct-to-consumer commerce"]
+          }
+        ]
       }
     }
   </script>
