@@ -133,7 +133,7 @@ def main() -> int:
 
     article = {
         "title": title,
-        "author": "Wilson Wu",
+        "author": "Jeff Theefs",
         "handle": handle,
         "body_html": body_html,
         "summary_html": meta_description,
