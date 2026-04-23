@@ -186,6 +186,7 @@
                 <p class="price-note">Retail: {{ product.compare_at_price | money }} for a full bottle.</p>
               {%- endif -%}
             </div>
+            {% render 'subscription-renewal-disclosure', surface: 'pdp' %}
           </div>
 
           <ul class="subscription-box__benefits">
@@ -264,6 +265,74 @@
 
           {% comment %} Appstle Subscription Widget Container {% endcomment %}
           <div id="appstle_subscription_widget" data-product-id="{{ product.id }}" data-variant-id="{{ current_variant.id }}"></div>
+
+          {% comment %}
+            Force subscription-only: hide Appstle's one-time purchase radio/option
+            regardless of Appstle admin setting. Covers common Appstle widget
+            selectors across versions. Also auto-selects the subscription radio
+            when the widget injects async.
+          {% endcomment %}
+          <style>
+            /* Hide any one-time purchase option within Appstle's widget */
+            #appstle_subscription_widget [data-option-type="onetime"],
+            #appstle_subscription_widget [data-option="onetime"],
+            #appstle_subscription_widget [data-option="one-time"],
+            #appstle_subscription_widget .appstle_subscription_one_time_wrapper,
+            #appstle_subscription_widget .appstle_one_time_wrapper,
+            #appstle_subscription_widget .appstle_subscription_plan_selector_one_time,
+            #appstle_subscription_widget label:has(input[value*="onetime"]),
+            #appstle_subscription_widget label:has(input[value*="one-time"]),
+            #appstle_subscription_widget label:has(input[value*="one_time"]),
+            #appstle_subscription_widget input[value*="onetime"],
+            #appstle_subscription_widget input[value*="one-time"],
+            #appstle_subscription_widget input[value*="one_time"] {
+              display: none !important;
+              visibility: hidden !important;
+            }
+          </style>
+          <script>
+            (function(){
+              var widget = document.getElementById('appstle_subscription_widget');
+              if (!widget) return;
+
+              function forceSubscription() {
+                // Hide any one-time parent container by text/attribute sniff (Appstle varies by version)
+                var labels = widget.querySelectorAll('label, div');
+                labels.forEach(function(el){
+                  var txt = (el.textContent || '').toLowerCase();
+                  var hasOnetimeRadio = el.querySelector && el.querySelector('input[type="radio"][value*="onetime" i], input[type="radio"][value*="one-time" i], input[type="radio"][value*="one_time" i]');
+                  if (hasOnetimeRadio || /one[-_\s]?time (purchase|buy)/i.test(txt)) {
+                    // If this is a small wrapper (<200 chars), hide it
+                    if ((el.textContent || '').length < 200) el.style.display = 'none';
+                  }
+                });
+
+                // Ensure a subscription radio is checked
+                var subRadios = widget.querySelectorAll('input[type="radio"]:not([value*="onetime" i]):not([value*="one-time" i]):not([value*="one_time" i])');
+                var anyChecked = false;
+                subRadios.forEach(function(r){ if (r.checked) anyChecked = true; });
+                if (!anyChecked && subRadios.length > 0) {
+                  subRadios[0].checked = true;
+                  subRadios[0].dispatchEvent(new Event('change', { bubbles: true }));
+                }
+              }
+
+              // Appstle injects the widget async — observe for insertion
+              var obs = new MutationObserver(function(){ forceSubscription(); });
+              obs.observe(widget, { childList: true, subtree: true, attributes: true });
+
+              // Also run on DOM ready as fallback
+              if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', forceSubscription);
+              } else {
+                forceSubscription();
+              }
+              // And a delayed fallback for slow-loading Appstle widgets
+              setTimeout(forceSubscription, 500);
+              setTimeout(forceSubscription, 1500);
+              setTimeout(forceSubscription, 3000);
+            })();
+          </script>
 
           {% comment %} Native Shopify Selling Plan Selector (fallback when Appstle not loaded) {% endcomment %}
           {%- if product.selling_plan_groups.size > 0 -%}
