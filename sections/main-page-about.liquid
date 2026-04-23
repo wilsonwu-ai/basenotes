@@ -1,10 +1,10 @@
 {% comment %}
-  About / Founder page. Template auto-matches to the Shopify page with handle "about".
-  The page body_html is managed in Shopify admin — this template wraps it with founder-page layout
-  (hero, headshot area, signature, closing CTA). E-E-A-T signals for Google + LLMs.
+  About / Founder section. Bound to templates/page.about.json (OS 2.0).
+  Renders the hero + body (page.content from admin) + closing CTA + AboutPage/Person schema.
 {% endcomment %}
 
 <article class="about-page">
+
   <section class="about-hero">
     <div class="about-hero__container">
       <div class="about-hero__media">
@@ -47,12 +47,13 @@
       <a href="/pages/find-your-scent" class="about-cta__button">Find My Scent</a>
       <p class="about-cta__secondary">
         Prefer reading first?
-        <a href="/blogs/hub/best-fragrance-subscriptions-2026-comparison">The honest comparison of every fragrance subscription</a>
-        or
-        <a href="/blogs/hub/scentbird-alternatives-what-subscribers-switch-to">Scentbird alternatives</a>.
+        <a href="/blogs/hub/best-fragrance-subscriptions-2026-comparison">The honest comparison</a>
+        &middot;
+        <a href="/blogs/hub/scentbird-alternatives-what-subscribers-switch-to">Scentbird alternatives</a>
       </p>
     </div>
   </section>
+
 </article>
 
 <script type="application/ld+json">
@@ -61,7 +62,7 @@
   "@type": "AboutPage",
   "url": "{{ shop.url }}{{ page.url }}",
   "name": "About Base Note",
-  "description": "The founder's story behind Base Note — a flat-priced luxury fragrance subscription.",
+  "description": "The founder story behind Base Note, a flat-priced luxury fragrance subscription.",
   "mainEntity": {
     "@type": "Person",
     "name": "Wilson Wu",
@@ -127,3 +128,10 @@
     .about-hero__media { max-width: 320px; margin: 0 auto; }
   }
 </style>
+
+{% schema %}
+{
+  "name": "Main page (about)",
+  "settings": []
+}
+{% endschema %}
