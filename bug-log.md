@@ -94,6 +94,18 @@
 - **Problem:** The Addresses page still used the old `.account-layout` / `.account-nav` / `.account-nav__link` design system (predating PRD-05), so typography, sidebar structure, welcome banner, and card treatment all looked different from the dashboard.
 - **Solution:** Rewrote `templates/customers/addresses.liquid` to mirror account.liquid — same `.acct__layout` grid, identical sidebar (6 nav items in matching order, same icons, `acct__*` classes), dark-teal welcome banner, card-based address grid with gold badge for default, restyled form with uppercase-eyebrow labels.
 
+### 24. Big inline `<script>` on /account has a JS parse error
+- **Problem:** The ~1,100-line inline `<script>` block in `templates/customers/account.liquid` (starting ~line 819) has an undiscovered JS parse error — rendered HTML line ~4394 reports `Uncaught SyntaxError: missing ) after argument list`. Effect: none of the code inside runs. Secondary features affected: Fragrance Journey timeline, dashboard Upcoming Shipment preview, subscription card skip/swap/pause, order-history rendering. Every Liquid emit inside the script uses `| json`, so the cause is NOT an obvious unescaped emit — suspect a runtime value producing invalid JSON in `| json` for a specific customer's data (metafield content with control chars, or product title with `</script>`-like payload). Cannot reproduce from curl (page requires auth).
+- **Solution (partial):** Router + queue strip render + fragrance-selection handler ported to an isolated standalone `<script>` block above the broken one (commits `d17daa2`, `80e9dc2`, `0550638`, `99f46d1`). Core flows work. Root-cause parse error still unfixed — requires either fetching an authenticated `/account` view-source, or splitting the big script into independent `<script>` tags to bisect.
+
+### 23. Sidebar nav / view-switcher totally dead on `/account`
+- **Problem:** Clicking My Queue / Order History / Select Fragrance / etc. did nothing. Earlier router fixes (per-link handlers → capture-phase delegation → three-stage diagnostic markers) all failed — the tab title stayed `Account | Base Note`, proving the inline `<script>` block's DOMContentLoaded handler never executed. Root cause: `{{ fh_json }}` on line 882 emitted the `customer.metafields.subscription.fragrance_history` metafield **without** a `| json` filter. If the metafield is a Liquid list/object (not a pre-stringified JSON string), Liquid renders it as raw `date2026...nameBaccarat...` garbage, corrupting the entire `<script>` with a JS parse error that aborted everything — including stage-1 diagnostic and the router.
+- **Solution:** Replaced with `| json` + runtime `JSON.parse` fallback so both pre-stringified-string and Liquid-native metafield shapes parse safely (`commit 0e629e2`). Lesson: never emit a metafield into JS without `| json`; always parse at runtime.
+
+### 23. Google / Apple / Facebook OAuth buttons never functional
+- **Problem:** Social-login buttons on `/account/login` were UI-only — never wired to any OAuth provider. Attempted to set up via Oxi Social Login (Essential $1.99/mo) but Essential forces all 5 providers visible, blocks per-provider credentials config, and routes consent through "Oxi Social Login" brand (not Base Note). Pro ($4.49/mo) would unlock whitelabeling.
+- **Solution:** Uninstalled Oxi; OAuth deferred until Base Note crosses ~1,000 subscribers and conversion data proves signup friction is the bottleneck. Buttons remain `display:none` in `templates/customers/login.liquid`. Setup doc `oauth-setup.md` retained as future reference.
+
 ---
 
 ## How to use this log
