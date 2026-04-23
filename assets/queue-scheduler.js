@@ -29,6 +29,10 @@
 
   var KEY = 'basenotes_queue';
   var listeners = [];
+  // shippedThrough: "YYYY-MM" of the latest month the customer already received a subscription shipment.
+  // Queue entries <= shippedThrough are considered in-the-past and pruned.
+  // When set, the queue's first visible slot is the month AFTER shippedThrough (not calendar current month).
+  var shippedThrough = null;
 
   function safeParse(raw) {
     try { return JSON.parse(raw) || []; } catch (e) { return []; }
@@ -45,9 +49,36 @@
     return d.getFullYear() + '-' + pad2(d.getMonth() + 1);
   }
 
+  function monthStrAddOne(monthStr) {
+    var parts = (monthStr || '').split('-');
+    if (parts.length !== 2) return currentMonthStr();
+    var y = parseInt(parts[0], 10);
+    var m = parseInt(parts[1], 10);
+    m += 1;
+    if (m > 12) { m = 1; y += 1; }
+    return y + '-' + pad2(m);
+  }
+
+  function firstVisibleMonth() {
+    // The earliest month we will ever show as a queue slot.
+    // If the customer already received the current month's shipment, start at next month.
+    var cur = currentMonthStr();
+    if (shippedThrough && shippedThrough >= cur) return monthStrAddOne(shippedThrough);
+    return cur;
+  }
+
   function monthStrFromOffset(offset) {
+    // Kept for back-compat — offset from calendar today, ignoring shippedThrough.
     var d = new Date();
     d.setDate(1);
+    d.setMonth(d.getMonth() + offset);
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1);
+  }
+
+  function monthStrFromFirstVisible(offset) {
+    // Offset from the firstVisibleMonth, honoring shippedThrough.
+    var base = firstVisibleMonth().split('-');
+    var d = new Date(parseInt(base[0], 10), parseInt(base[1], 10) - 1, 1);
     d.setMonth(d.getMonth() + offset);
     return d.getFullYear() + '-' + pad2(d.getMonth() + 1);
   }
@@ -86,9 +117,9 @@
   }
 
   function pruneExpired(queue) {
-    // Drop slots whose shipMonth is in the past (before current month)
-    var cur = currentMonthStr();
-    return queue.filter(function (entry) { return entry.shipMonth >= cur; });
+    // Drop slots whose shipMonth is already shipped (<= shippedThrough) or before current calendar month.
+    var minMonth = firstVisibleMonth();
+    return queue.filter(function (entry) { return entry.shipMonth >= minMonth; });
   }
 
   function load() {
@@ -187,10 +218,23 @@
   }
 
   function slotsFromNow(count) {
+    // Honors shippedThrough: first slot is the next month the customer hasn't yet received.
     count = count || 5;
     var out = [];
-    for (var i = 0; i < count; i++) out.push(monthStrFromOffset(i));
+    for (var i = 0; i < count; i++) out.push(monthStrFromFirstVisible(i));
     return out;
+  }
+
+  function setShippedThrough(monthStr) {
+    if (monthStr && /^\d{4}-(0[1-9]|1[0-2])$/.test(monthStr)) {
+      shippedThrough = monthStr;
+    } else {
+      shippedThrough = null;
+    }
+    // Re-prune existing queue now that the boundary changed
+    var pruned = pruneExpired(load());
+    localStorage.setItem(KEY, JSON.stringify(pruned));
+    emit();
   }
 
   function filledCount() {
@@ -213,6 +257,8 @@
     count: filledCount,
     monthLabel: monthLabel,
     currentMonth: currentMonthStr,
+    firstVisibleMonth: firstVisibleMonth,
+    setShippedThrough: setShippedThrough,
     on: on
   };
 })();
