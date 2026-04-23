@@ -807,61 +807,48 @@ document.addEventListener('DOMContentLoaded', function() {
     return d instanceof Date && !isNaN(d.getTime());
   }
 
-  /* ── Hash Router ── */
+  /* ── Hash Router (event-delegation, capture-phase to beat theme.js smooth-scroll) ── */
   var validRoutes = ['dashboard', 'history', 'next-shipment', 'subscription', 'orders'];
 
-  function $views()   { return document.querySelectorAll('[data-view]'); }
-  function $navLinks(){ return document.querySelectorAll('[data-nav]'); }
-
   function navigate(hash) {
-    var route = (hash || '').replace('#', '') || 'dashboard';
+    var route = (hash || '').replace(/^#/, '') || 'dashboard';
     if (validRoutes.indexOf(route) === -1) route = 'dashboard';
 
-    $views().forEach(function(v) {
+    var viewEls = document.querySelectorAll('[data-view]');
+    var navLinkEls = document.querySelectorAll('[data-nav]');
+
+    viewEls.forEach(function(v) {
       v.style.display = v.dataset.view === route ? '' : 'none';
     });
 
-    $navLinks().forEach(function(link) {
+    navLinkEls.forEach(function(link) {
       if (link.dataset.nav === route) link.classList.add('is-active');
       else link.classList.remove('is-active');
     });
 
-    if (location.hash.replace('#', '') !== route) {
-      // Keep URL in sync without triggering another hashchange loop
-      history.replaceState(null, '', '#' + route);
+    if (location.hash.replace(/^#/, '') !== route) {
+      try { history.replaceState(null, '', '#' + route); } catch(e) {}
     }
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) { window.scrollTo(0, 0); }
   }
 
-  // Attach explicit click handlers to every in-page hash link that matches a known route.
-  // This covers three cases the bare hashchange listener missed:
-  //   1) Clicking a nav link whose href matches the current hash (no hashchange event fires).
-  //   2) Content-area route buttons like "Select Fragrance" → #next-shipment.
-  //   3) A runtime error elsewhere preventing the initial hashchange binding (defense-in-depth).
-  function bindRouteClicks(root) {
-    (root || document).querySelectorAll('a[href^="#"]').forEach(function(a) {
-      if (a.__bnRouteBound) return;
-      var hash = a.getAttribute('href') || '';
-      var route = hash.replace('#', '');
-      if (validRoutes.indexOf(route) === -1) return;
-      a.__bnRouteBound = true;
-      a.addEventListener('click', function(e) {
-        e.preventDefault();
-        navigate(hash);
-      });
-    });
-  }
-  bindRouteClicks();
+  // Event delegation: catch EVERY click on any in-page hash link anywhere on the page.
+  // Using capture phase (third arg true) so we run BEFORE theme.js's a[href^="#"] smooth-scroll
+  // handler. stopImmediatePropagation prevents theme.js from then preventDefault'ing on
+  // a non-existent id selector and leaving the browser in a stuck state.
+  document.addEventListener('click', function(e) {
+    var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (!a) return;
+    var hash = a.getAttribute('href') || '';
+    var route = hash.replace(/^#/, '');
+    if (validRoutes.indexOf(route) === -1) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    navigate(hash);
+  }, true);
 
-  // Re-bind after any client-side DOM mutation that might have injected new route links.
-  var routeBindObserver = new MutationObserver(function() { bindRouteClicks(); });
-  routeBindObserver.observe(document.body, { childList: true, subtree: true });
-
-  window.addEventListener('hashchange', function() {
-    navigate(location.hash);
-  });
-
+  window.addEventListener('hashchange', function() { navigate(location.hash); });
   navigate(location.hash);
 
   /* ── Fragrance History ── */
