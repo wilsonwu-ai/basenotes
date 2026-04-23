@@ -74,7 +74,7 @@
   </script>
 
   {% comment %} AboutPage + Person schema on the About page (E-E-A-T signal) {% endcomment %}
-  {%- if template.name == 'page' and page.handle == 'about' -%}
+  {%- if page.handle == 'about' -%}
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
