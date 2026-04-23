@@ -785,6 +785,12 @@
         e.preventDefault();
         document.dispatchEvent(new Event('fragrance-selector:open'));
       }
+      // Cancel button (one-click ROSCA-compliant cancel path)
+      var cancelBtn = e.target.closest && e.target.closest('#subCancelBtn');
+      if (cancelBtn) {
+        e.preventDefault();
+        document.dispatchEvent(new Event('cancellation:open'));
+      }
     }, false);
 
     // ── Dashboard "Your Fragrance Journey" renderer: past shipments + upcoming queue ──
