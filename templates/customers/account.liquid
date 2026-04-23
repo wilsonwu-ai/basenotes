@@ -865,6 +865,13 @@ document.addEventListener('DOMContentLoaded', function() {
   window.addEventListener('hashchange', function() { navigate(location.hash); });
   navigate(location.hash);
 
+  // ═══ DIAGNOSTIC stage 3 — router fully attached ═══
+  try {
+    document.title = 'Base Note · Account [v4 · stage 3]';
+    console.log('[bn-router] stage 3: click delegation LIVE');
+    window.__bnStage = 3;
+  } catch (e) { console.error('[bn-router] stage 3 FAIL', e); }
+
   /* ── Fragrance History ── */
   var timelineEl = document.getElementById('fragranceTimeline');
   var timelineEmptyEl = document.getElementById('fragranceTimelineEmpty');
