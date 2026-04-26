@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Art of Fragrance Application | Base Note Scent</title>
+  <meta name="description" content="Master the art of wearing fragrance. Learn where to apply cologne, how much to use by concentration, layering techniques, and common mistakes to avoid." />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #f0ead8;
+      --bg-card:     #f7f2e6;
+      --bg-accent:   #ede6d0;
+      --bg-green:    #1e4035;
+      --bg-green-dk: #172e26;
+      --gold:        #b8974a;
+      --gold-light:  #c9a84c;
+      --gold-dim:    #8a6e30;
+      --cream:       #2a2520;
+      --muted:       #6b5e4a;
+      --divider:     rgba(90,70,40,0.15);
+      --serif:       'Cormorant Garamond', Georgia, serif;
+      --sans:        'Montserrat', 'Helvetica Neue', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--cream);
+      font-family: var(--sans);
+      font-weight: 300;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 100px 24px 80px;
+      overflow: hidden;
+      background-color: var(--bg-green);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 55% at 50% 0%, rgba(184,151,74,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 50% 100%, rgba(184,151,74,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--sans);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: #f0ead8;
+      margin-bottom: 24px;
+      max-width: 760px;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .hero-intro {
+      max-width: 580px;
+      font-size: 0.95rem;
+      color: rgba(240,234,216,0.70);
+      line-height: 1.8;
+    }
+
+    .gold-rule {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+      margin: 36px auto;
+    }
+
+    /* ── Nav Pills ── */
+    .nav-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      padding: 0 24px 72px;
+    }
+
+    .nav-pills a {
+      font-family: var(--sans);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      border: 1px solid var(--divider);
+      padding: 10px 22px;
+      border-radius: 2px;
+      text-decoration: none;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+    }
+
+    .nav-pills a:hover {
+      background: rgba(184,151,74,0.10);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Section Wrapper ── */
+    .section {
+      padding: 80px 0;
+      border-top: 1px solid var(--divider);
+    }
+
+    .section-label {
+      font-family: var(--sans);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--divider);
+    }
+
+    .section h2 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 300;
+      color: var(--bg-green);
+      margin-bottom: 16px;
+      line-height: 1.15;
+    }
+
+    .section-intro {
+      font-size: 0.9rem;
+      color: var(--muted);
+      max-width: 640px;
+      margin-bottom: 52px;
+      line-height: 1.85;
+    }
+
+    /* ── Pulse Points ── */
+    .pulse-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 2px;
+    }
+
+    .pulse-card {
+      background: var(--bg-card);
+      border: 1px solid var(--divider);
+      padding: 32px 28px;
+      position: relative;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .pulse-card:hover {
+      background: var(--bg-accent);
+      border-color: var(--gold-dim);
+    }
+
+    .pulse-icon {
+      font-size: 1.6rem;
+      margin-bottom: 16px;
+      display: block;
+      color: var(--gold);
+    }
+
+    .pulse-card h3 {
+      font-family: var(--serif);
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: var(--bg-green);
+      margin-bottom: 10px;
+    }
+
+    .pulse-card p {
+      font-size: 0.83rem;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .pulse-card .intensity {
+      display: inline-block;
+      margin-top: 14px;
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      border: 1px solid var(--divider);
+      padding: 4px 10px;
+      border-radius: 1px;
+    }
+
+    /* ── Concentration Table ── */
+    .conc-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .conc-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 2px;
+    }
+
+    .conc-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 2px;
+      margin-bottom: 4px;
+    }
+
+    .conc-header span {
+      font-family: var(--sans);
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      padding: 0 20px 12px;
+    }
+
+    .conc-cell {
+      background: var(--bg-card);
+      border: 1px solid var(--divider);
+      padding: 20px;
+    }
+
+    .conc-row:hover .conc-cell {
+      background: var(--bg-accent);
+      border-color: var(--gold-dim);
+    }
+
+    .conc-cell.name {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-weight: 400;
+      color: var(--bg-green);
+    }
+
+    .conc-cell.pct {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      color: var(--cream);
+    }
+
+    .conc-cell.sprays {
+      font-size: 0.82rem;
+      color: var(--cream);
+    }
+
+    .conc-cell.longevity {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .bar-wrap {
+      margin-top: 8px;
+      height: 2px;
+      background: rgba(30,64,53,0.12);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--bg-green), var(--gold));
+      border-radius: 1px;
+    }
+
+    /* ── Dos and Donts ── */
+    .dos-donts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+    }
+
+    @media (max-width: 600px) {
+      .dos-donts { grid-template-columns: 1fr; }
+      .conc-row, .conc-header { grid-template-columns: 1fr 1fr; }
+      .conc-cell.longevity { display: none; }
+      .conc-header span:last-child { display: none; }
+    }
+
+    .dos-col, .donts-col {
+      background: var(--bg-card);
+      border: 1px solid var(--divider);
+      padding: 36px 32px;
+    }
+
+    .col-heading {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: 400;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dos-col .col-heading { color: var(--bg-green); }
+    .donts-col .col-heading { color: #7a3030; }
+
+    .col-heading span.badge {
+      font-family: var(--sans);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 1px;
+    }
+
+    .dos-col .badge { background: rgba(30,64,53,0.08); color: var(--bg-green); }
+    .donts-col .badge { background: rgba(122,48,48,0.08); color: #7a3030; }
+
+    .tip-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .tip-list li {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.75;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .tip-list li::before {
+      position: absolute;
+      left: 0;
+      top: 2px;
+      font-size: 0.7rem;
+    }
+
+    .dos-col .tip-list li::before { content: '✦'; color: var(--gold); }
+    .donts-col .tip-list li::before { content: '✕'; color: #9a4040; }
+
+    .tip-list li strong {
+      color: var(--bg-green-dk);
+      font-weight: 500;
+    }
+
+    /* ── Layering ── */
+    .layering-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      counter-reset: step;
+    }
+
+    .layer-step {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      background: var(--bg-card);
+      border: 1px solid var(--divider);
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .layer-step:hover {
+      background: var(--bg-accent);
+      border-color: var(--gold-dim);
+    }
+
+    .step-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--gold-dim);
+      border-right: 1px solid var(--divider);
+      counter-increment: step;
+    }
+
+    .step-body {
+      padding: 28px 32px;
+    }
+
+    .step-body h3 {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: var(--bg-green);
+      margin-bottom: 8px;
+    }
+
+    .step-body p {
+      font-size: 0.83rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .step-tag {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      border: 1px solid var(--divider);
+      padding: 3px 9px;
+    }
+
+    /* ── Pro Tip Callout ── */
+    .callout {
+      background: var(--bg-green);
+      border: 1px solid var(--bg-green-dk);
+      border-left: 3px solid var(--gold-light);
+      padding: 28px 32px;
+      margin-top: 32px;
+    }
+
+    .callout-label {
+      font-family: var(--sans);
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 10px;
+    }
+
+    .callout p {
+      font-size: 0.88rem;
+      color: rgba(240,234,216,0.88);
+      line-height: 1.8;
+    }
+
+    /* ── Footer ── */
+    .page-footer {
+      background: var(--bg-green);
+      border-top: 1px solid var(--bg-green-dk);
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .page-footer .gold-rule {
+      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.5), transparent);
+    }
+
+    .page-footer p {
+      font-size: 0.78rem;
+      color: rgba(240,234,216,0.55);
+      letter-spacing: 0.05em;
+    }
+
+    .page-footer a {
+      color: var(--gold-light);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .page-footer a:hover { color: #f0ead8; }
+
+    /* ── Utility ── */
+    .mt-sm { margin-top: 24px; }
+    .mt-md { margin-top: 48px; }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════ HERO ═══════════════ -->
+  <section class="hero">
+    <p class="hero-eyebrow">Base Note Scent — The Guide</p>
+    <h1>The Art of <em>Fragrance</em><br>Application</h1>
+    <div class="gold-rule"></div>
+    <p class="hero-intro">
+      A great fragrance deserves to be worn well. From pulse points to concentration,
+      layering to longevity — this is everything you need to make your scent
+      perform at its very best.
+    </p>
+  </section>
+
+  <!-- ═══════════════ NAV PILLS ═══════════════ -->
+  <nav class="nav-pills" aria-label="Page sections">
+    <a href="#pulse-points">Pulse Points</a>
+    <a href="#concentration">How Much to Apply</a>
+    <a href="#dos-donts">Do's &amp; Don'ts</a>
+    <a href="#layering">Layering Techniques</a>
+  </nav>
+
+  <!-- ═══════════════ 01 — PULSE POINTS ═══════════════ -->
+  <section class="section" id="pulse-points">
+    <div class="container">
+      <p class="section-label">01 — Pulse Points</p>
+      <h2>Where to Apply Your Fragrance</h2>
+      <p class="section-intro">
+        Pulse points are areas where blood vessels sit close to the skin's surface, generating
+        warmth that continuously activates and diffuses your fragrance throughout the day.
+        Target two or three of these zones rather than applying everywhere at once.
+      </p>
+
+      <div class="pulse-grid">
+
+        <div class="pulse-card">
+          <span class="pulse-icon">✦</span>
+          <h3>Inner Wrists</h3>
+          <p>The classic application point. The thin skin and strong pulse create a consistent warmth that amplifies your fragrance naturally. Apply gently — never rub wrist-to-wrist.</p>
+          <span class="intensity">High Projection</span>
+        </div>
+
+        <div class="pulse-card">
+          <span class="pulse-icon">✦</span>
+          <h3>Neck &amp; Throat</h3>
+          <p>Apply to the sides of the neck or base of the throat. This is one of the most intimate and effective spots — the warmth from your carotid artery keeps the scent alive for hours.</p>
+          <span class="intensity">High Longevity</span>
+        </div>
+
+        <div class="pulse-card">
+          <span class="pulse-icon">✦</span>
+          <h3>Behind the Ears</h3>
+          <p>A subtle zone perfect for intimate moments. The skin here is warm and slightly oily, which helps anchor the fragrance's base notes and prolongs its sillage.</p>
+          <span class="intensity">Intimate Projection</span>
+        </div>
+
+        <div class="pulse-card">
+          <span class="pulse-icon">✦</span>
+          <h3>Inner Elbows</h3>
+          <p>The bend of the elbow creates a pocket of warmth whenever you move. Great for heavier, denser fragrances — the folding motion disperses the scent subtly throughout the day.</p>
+          <span class="intensity">Subtle Diffusion</span>
+        </div>
+
+        <div class="pulse-card">
+          <span class="pulse-icon">✦</span>
+          <h3>Chest &amp; Sternum</h3>
+          <p>Spraying the centre of your chest allows the scent to rise naturally with your body heat, creating an enveloping trail. Ideal for bold, statement fragrances worn for special occasions.</p>
+          <span class="intensity">Wide Sillage</span>
+        </div>
+
+        <div class="pulse-card">
+          <span class="pulse-icon">✦</span>
+          <h3>Behind the Knees</h3>
+          <p>Often overlooked, the back of the knees is a powerful pulse point. As you walk, the warmth and movement carry the scent upward — an excellent trick for anchoring your fragrance all day.</p>
+          <span class="intensity">Long-Lasting</span>
+        </div>
+
+      </div>
+
+      <div class="callout mt-md">
+        <p class="callout-label">Pro Tip</p>
+        <p>Apply fragrance to moisturised skin — dry skin releases scent faster and with less longevity. An unscented lotion or body oil applied first acts as an anchor, extending your fragrance's life significantly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ 02 — CONCENTRATION ═══════════════ -->
+  <section class="section" id="concentration">
+    <div class="container">
+      <p class="section-label">02 — Concentration</p>
+      <h2>How Much to Apply</h2>
+      <p class="section-intro">
+        The concentration of fragrance oil determines how potent a formula is — and, by extension,
+        how many sprays you actually need. More is rarely better. Let the concentration guide you.
+      </p>
+
+      <div class="conc-header">
+        <span>Type</span>
+        <span>Oil Concentration</span>
+        <span>Recommended Sprays</span>
+        <span>Expected Longevity</span>
+      </div>
+
+      <div class="conc-list">
+
+        <div class="conc-row">
+          <div class="conc-cell name">
+            Parfum<br><small style="font-family:var(--sans);font-size:0.72rem;color:var(--muted);font-weight:300;">Extrait de Parfum</small>
+            <div class="bar-wrap"><div class="bar-fill" style="width:95%"></div></div>
+          </div>
+          <div class="conc-cell pct">20 – 40%</div>
+          <div class="conc-cell sprays">1 – 2 sprays<br><span style="font-size:0.75rem;color:var(--muted);">Dab application is ideal</span></div>
+          <div class="conc-cell longevity">8 – 12+ hours</div>
+        </div>
+
+        <div class="conc-row">
+          <div class="conc-cell name">
+            Eau de Parfum
+            <div class="bar-wrap"><div class="bar-fill" style="width:75%"></div></div>
+          </div>
+          <div class="conc-cell pct">15 – 20%</div>
+          <div class="conc-cell sprays">2 – 3 sprays</div>
+          <div class="conc-cell longevity">6 – 8 hours</div>
+        </div>
+
+        <div class="conc-row">
+          <div class="conc-cell name">
+            Eau de Toilette
+            <div class="bar-wrap"><div class="bar-fill" style="width:55%"></div></div>
+          </div>
+          <div class="conc-cell pct">5 – 15%</div>
+          <div class="conc-cell sprays">3 – 5 sprays</div>
+          <div class="conc-cell longevity">3 – 5 hours</div>
+        </div>
+
+        <div class="conc-row">
+          <div class="conc-cell name">
+            Eau de Cologne
+            <div class="bar-wrap"><div class="bar-fill" style="width:35%"></div></div>
+          </div>
+          <div class="conc-cell pct">2 – 5%</div>
+          <div class="conc-cell sprays">4 – 6 sprays</div>
+          <div class="conc-cell longevity">2 – 3 hours</div>
+        </div>
+
+        <div class="conc-row">
+          <div class="conc-cell name">
+            Eau Fraîche
+            <div class="bar-wrap"><div class="bar-fill" style="width:15%"></div></div>
+          </div>
+          <div class="conc-cell pct">1 – 3%</div>
+          <div class="conc-cell sprays">5 – 8 sprays</div>
+          <div class="conc-cell longevity">1 – 2 hours</div>
+        </div>
+
+      </div>
+
+      <div class="callout mt-md">
+        <p class="callout-label">Remember</p>
+        <p>Hold the bottle 10–15 cm (4–6 inches) from your skin when spraying. Too close saturates a single spot; too far wastes fragrance to the air. A steady, single pump at the right distance distributes the scent evenly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ 03 — DOS & DON'TS ═══════════════ -->
+  <section class="section" id="dos-donts">
+    <div class="container">
+      <p class="section-label">03 — Etiquette</p>
+      <h2>Do's &amp; Don'ts</h2>
+      <p class="section-intro">
+        Even the finest fragrance can be undermined by poor application. These are the rules
+        that separate those who wear fragrance from those who wear it well.
+      </p>
+
+      <div class="dos-donts">
+        <div class="dos-col">
+          <h3 class="col-heading">
+            The Do's
+            <span class="badge">Best Practice</span>
+          </h3>
+          <ul class="tip-list">
+            <li><strong>Apply to clean, moisturised skin.</strong> Fragrance adheres best just after a shower when pores are open and skin is hydrated.</li>
+            <li><strong>Spray from a distance.</strong> Hold the bottle 4–6 inches away for even, natural diffusion — not a saturated patch.</li>
+            <li><strong>Layer thoughtfully.</strong> Use matching or complementary shower gels and body lotions from the same fragrance line to build depth and longevity.</li>
+            <li><strong>Apply before dressing.</strong> This protects delicate fabrics and allows the scent to warm with your skin naturally rather than sitting on cloth fibres.</li>
+            <li><strong>Store properly.</strong> Keep your fragrances in a cool, dark place away from sunlight and humidity. The original box and a drawer are ideal.</li>
+            <li><strong>Let it develop.</strong> A fragrance evolves through top, heart, and base notes over hours. Evaluate the dry-down, not just the initial spray.</li>
+          </ul>
+        </div>
+        <div class="donts-col">
+          <h3 class="col-heading">
+            The Don'ts
+            <span class="badge">Common Mistakes</span>
+          </h3>
+          <ul class="tip-list">
+            <li><strong>Never rub your wrists together.</strong> This crushing motion breaks down the fragrance molecules and destroys the top notes before they can develop properly.</li>
+            <li><strong>Don't overapply.</strong> You nose-blind quickly to your own scent. If you can strongly smell yourself, others will find it overwhelming.</li>
+            <li><strong>Avoid spraying in the air and walking through it.</strong> This wastes the majority of the fragrance and deposits it unevenly on clothing rather than skin.</li>
+            <li><strong>Don't spray directly onto clothes.</strong> Alcohol and fragrance oils can stain fabrics, particularly silks and light-coloured materials.</li>
+            <li><strong>Never apply to broken or irritated skin.</strong> Alcohol and aromatic compounds can cause irritation or sensitisation on compromised skin.</li>
+            <li><strong>Don't refrigerate your fragrance.</strong> While cool storage is ideal, temperature fluctuations from a fridge door damage the composition over time.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ 04 — LAYERING ═══════════════ -->
+  <section class="section" id="layering">
+    <div class="container">
+      <p class="section-label">04 — Layering</p>
+      <h2>Layering Techniques</h2>
+      <p class="section-intro">
+        Layering is the art of building dimension into your fragrance signature — combining
+        products and scents to create something that is entirely, unmistakably your own.
+        Follow these steps for a result that lasts from morning to night.
+      </p>
+
+      <div class="layering-steps">
+
+        <div class="layer-step">
+          <div class="step-num">01</div>
+          <div class="step-body">
+            <h3>Start with a Scented Shower</h3>
+            <p>Begin the foundation in the shower. A complementary shower gel — ideally from the same fragrance family or the same house — primes the skin with a whisper of scent that will anchor everything applied afterward.</p>
+            <span class="step-tag">Foundation Layer</span>
+          </div>
+        </div>
+
+        <div class="layer-step">
+          <div class="step-num">02</div>
+          <div class="step-body">
+            <h3>Apply an Unscented Body Oil or Lotion</h3>
+            <p>Immediately after drying off, apply a light, unscented body oil or moisturiser to your pulse points. Fragrance molecules bind to oils and fatty acids in skin, so this dramatically increases longevity. Avoid heavily scented products that will compete with your fragrance.</p>
+            <span class="step-tag">Primer Layer</span>
+          </div>
+        </div>
+
+        <div class="layer-step">
+          <div class="step-num">03</div>
+          <div class="step-body">
+            <h3>Apply a Complementary Scented Lotion</h3>
+            <p>If you want added depth, follow with a scented lotion in a complementary or matching fragrance. This fills in the mid-body and creates a warm base. Musk and vanilla-based lotions work particularly well under almost any fragrance type.</p>
+            <span class="step-tag">Depth Layer</span>
+          </div>
+        </div>
+
+        <div class="layer-step">
+          <div class="step-num">04</div>
+          <div class="step-body">
+            <h3>Apply Your Primary Fragrance</h3>
+            <p>Now apply your main fragrance to your chosen pulse points. With the oil base in place, the scent has something to bond with. You may find you need fewer sprays than usual — the layered foundation does a great deal of the work.</p>
+            <span class="step-tag">Signature Layer</span>
+          </div>
+        </div>
+
+        <div class="layer-step">
+          <div class="step-num">05</div>
+          <div class="step-body">
+            <h3>Layer a Second Fragrance (Advanced)</h3>
+            <p>For a truly custom scent, apply a second, complementary fragrance on different pulse points or lightly over the first. A good pairing rule: a woody or musky base fragrance with a fresher, citrus or floral top fragrance. Start light — you can always add more, but you cannot take it away.</p>
+            <span class="step-tag">Advanced</span>
+          </div>
+        </div>
+
+        <div class="layer-step">
+          <div class="step-num">06</div>
+          <div class="step-body">
+            <h3>Consider a Hair Mist or Fabric Spray</h3>
+            <p>Hair holds fragrance exceptionally well due to its porous structure. A dedicated hair mist (lower alcohol than standard eau de parfum) applied to the back of the hair creates a soft, trailing effect. If spraying on clothing, choose darker or coarser fabrics and test on a hidden area first to avoid staining.</p>
+            <span class="step-tag">Finishing Touch</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="callout mt-md">
+        <p class="callout-label">Fragrance Layering Tip</p>
+        <p>When combining two fragrances, apply the denser, richer scent (typically oud, woody, or oriental) first as the base. Layer the lighter, brighter scent (citrus, aquatic, or fresh floral) on top. The warmth of the base lifts and illuminates the top, creating a natural, evolving blend that reads as a single, complex signature.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <footer class="page-footer">
+    <div class="gold-rule"></div>
+    <p>© Base Note Scent &nbsp;·&nbsp; <a href="/">Return to Home</a></p>
+  </footer>
+
+</body>
+</html>
