@@ -1,0 +1,25 @@
+{
+  "sections": {
+    "main": {
+      "type": "fact-sheet",
+      "settings": {
+        "eyebrow": "THE ICON",
+        "title": "AVENTUS",
+        "subtitle": "Creed   ·   Eau de Parfum",
+        "country": "MADE IN FRANCE",
+        "tagline": "Named for Napoleon's victories, Aventus is the benchmark — smoky birch and crisp pineapple create a scent so recognizable it's become a cultural shorthand for success.",
+        "notes_top": "Bergamot, Black Currant, Apple, Pink Pepper",
+        "notes_heart": "Pineapple, Patchouli, Moroccan Jasmine",
+        "notes_base": "Birch, Musk, Oakmoss, Cedarwood, Ambroxan",
+        "best_for": "Year-round — true all-season icon\nBlack-tie & formal events\nDate night\nPower meetings\nFirst impressions",
+        "protip_label": "PRO TIP — LAYER IT",
+        "protip_body": "Two sprays — chest and lower neck. Aventus evolves dramatically: fresh and fruity up top, deep and smoky in the dry-down. Pairs with Creed Green Irish Tweed for a greener, more daytime feel.",
+        "vibe_tags": "Bold\nSmoky\nIconic\nYear-Round\nPower Move",
+        "cta_label": "JOIN THE ROTATION",
+        "cta_headline": "<p>One flat price. Every luxury fragrance. <em>Just $20/month.</em></p>",
+        "cta_body": "<p>Build your full rotation. <strong>Never run out of compliments.</strong> Scan the code or visit basenotescent.com to get started.</p>"
+      }
+    }
+  },
+  "order": ["main"]
+}

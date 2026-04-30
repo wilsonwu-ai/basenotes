@@ -700,7 +700,7 @@
 <!-- JAVASCRIPT                              -->
 <!-- ═══════════════════════════════════════ -->
 <script src="{{ 'sortable.min.js' | asset_url }}" defer></script>
-<script src="{{ 'queue-scheduler.js' | asset_url }}" defer></script>
+{%- comment -%} queue-scheduler.js now loads from layout/theme.liquid (PRD-4 — Apr 30 2026) {%- endcomment -%}
 
 <!-- ═══ STANDALONE SUBSCRIBER DATA (Liquid → JSON, safe for JS parsing) ═══ -->
 <script type="application/json" id="bn-subscriber-data">
@@ -743,6 +743,110 @@
   'use strict';
   var validRoutes = ['dashboard','history','next-shipment','subscription','orders'];
 
+  // ── Subscription action helper (pause / skip) — calls Appstle customer-portal API ──
+  // Exposed on window so the click handlers below can call it.
+  window.bnSubscriptionAction = function(action) {
+    var cpBase = '/apps/subscriptions/cp/api';
+    var paymentBtn = document.getElementById('subUpdatePaymentBtn');
+    var contractId = paymentBtn && paymentBtn.dataset ? paymentBtn.dataset.contractId : '';
+
+    function showError(msg) { alert(msg || 'Something went wrong. Please email hello@basenotescent.com and we’ll sort it out.'); }
+    function showOk(msg) { alert(msg); try { location.reload(); } catch(e){} }
+
+    function ensureContractId(cb) {
+      if (contractId) { cb(contractId); return; }
+      // Fallback: fetch from Appstle directly
+      fetch(cpBase + '/logged-in-customer', { credentials: 'same-origin' })
+        .then(function(r){ return r.ok ? r.json() : Promise.reject('no-session'); })
+        .then(function(customerId){
+          if (!customerId) return Promise.reject('no-id');
+          return fetch(cpBase + '/subscription-customers-detail/valid/' + customerId, { credentials: 'same-origin' });
+        })
+        .then(function(r){ return r.ok ? r.json() : Promise.reject('no-contracts'); })
+        .then(function(contracts){
+          var active = null;
+          for (var i = 0; i < (contracts||[]).length; i++) {
+            if (contracts[i].status === 'ACTIVE') { active = contracts[i]; break; }
+          }
+          if (!active) active = (contracts||[])[0];
+          if (!active) return Promise.reject('no-active');
+          var id = active.subscriptionContractId || active.contractId || active.id;
+          if (!id) return Promise.reject('no-id');
+          cb(id);
+        })
+        .catch(function(){ showError('We couldn’t load your subscription. Please refresh the page or email hello@basenotescent.com.'); });
+    }
+
+    if (action === 'pause') {
+      var rawCycles = prompt('Pause your subscription for how many months? Enter 1, 2, or 3.', '1');
+      if (rawCycles === null) return; // user cancelled
+      var cycles = parseInt(rawCycles, 10);
+      if (!cycles || cycles < 1 || cycles > 3) { showError('Please enter 1, 2, or 3.'); return; }
+      ensureContractId(function(id){
+        var url = cpBase + '/subscription-contracts-update-status'
+          + '?contractId=' + encodeURIComponent(id)
+          + '&status=PAUSED'
+          + '&pauseDurationCycle=' + encodeURIComponent(cycles);
+        fetch(url, { method: 'PUT', credentials: 'same-origin' })
+          .then(function(r){
+            if (r.ok || r.status === 204) {
+              showOk('Subscription paused for ' + cycles + ' month' + (cycles > 1 ? 's' : '') + '. We’ll resume billing automatically — you can also resume early from this page.');
+            } else {
+              return r.text().then(function(t){ throw new Error(t || ('HTTP ' + r.status)); });
+            }
+          })
+          .catch(function(err){ console.error('[bn-subscription] pause failed', err); showError('We couldn’t pause your subscription right now. Please email hello@basenotescent.com.'); });
+      });
+      return;
+    }
+
+    if (action === 'skip') {
+      if (!confirm('Skip next month’s shipment? You won’t be charged for next month, and shipments resume automatically the month after.')) return;
+      ensureContractId(function(id){
+        var url = cpBase + '/subscription-billing-attempts/skip-upcoming-order'
+          + '?subscriptionContractId=' + encodeURIComponent(id);
+        fetch(url, { method: 'PUT', credentials: 'same-origin' })
+          .then(function(r){
+            if (r.ok) {
+              showOk('Got it — next month’s shipment is skipped. Your next charge will be the month after.');
+            } else {
+              return r.text().then(function(t){ throw new Error(t || ('HTTP ' + r.status)); });
+            }
+          })
+          .catch(function(err){ console.error('[bn-subscription] skip failed', err); showError('We couldn’t skip next month right now. Please email hello@basenotescent.com.'); });
+      });
+      return;
+    }
+
+    if (action === 'update-payment') {
+      var btn = document.getElementById('subUpdatePaymentBtn');
+      var originalHtml = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="31.4" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" dur="0.8s" from="0 12 12" to="360 12 12" repeatCount="indefinite"/></circle></svg> Sending…';
+      }
+      ensureContractId(function(id){
+        var url = cpBase + '/subscription-contracts-update-payment-method?contractId=' + encodeURIComponent(id);
+        fetch(url, { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+          .then(function(r){
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            if (btn) {
+              btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" width="20" height="20"><polyline points="20 6 9 17 4 12"/></svg> Email sent!';
+              btn.style.borderColor = '#4CAF50';
+              btn.style.background = 'rgba(76,175,80,0.04)';
+            }
+            alert('Check your email — we just sent you a secure Shopify link to update your payment method. After you update your card, it’ll apply to your next billing cycle automatically.');
+          })
+          .catch(function(err){
+            console.error('[bn-subscription] update-payment failed', err);
+            if (btn) { btn.innerHTML = originalHtml; btn.disabled = false; }
+            showError('We couldn’t send the update email right now. Please try again or email hello@basenotescent.com.');
+          });
+      });
+      return;
+    }
+  };
+
   function navigate(hash) {
     var route = (hash || '').replace(/^#/, '') || 'dashboard';
     if (validRoutes.indexOf(route) === -1) route = 'dashboard';
@@ -755,7 +859,7 @@
   }
 
   function init() {
-    var b = document.getElementById('bn-diag-banner'); // null unless debug snippet enabled
+    var b = document.getElementById('bn-diag-banner');
     if (b) { b.style.background = '#16a34a'; b.textContent = '[ROUTER DIAG] Standalone router LIVE — clicks should work now.'; }
 
     document.addEventListener('click', function(e) {
@@ -780,11 +884,29 @@
         e.preventDefault();
         document.dispatchEvent(new Event('fragrance-selector:open'));
       }
-      // Cancel button (one-click ROSCA-compliant cancel path)
+      // Cancel button → open cancellation flow (cancellation-flow snippet listens for event)
       var cancelBtn = e.target.closest && e.target.closest('#subCancelBtn');
       if (cancelBtn) {
         e.preventDefault();
         document.dispatchEvent(new Event('cancellation:open'));
+      }
+      // Pause button → real Appstle pause API (PRD-5, Apr 30 2026)
+      var pauseBtn = e.target.closest && e.target.closest('#subPauseBtn');
+      if (pauseBtn) {
+        e.preventDefault();
+        bnSubscriptionAction('pause');
+      }
+      // Skip button → real Appstle skip-next-billing API (PRD-5, Apr 30 2026)
+      var skipBtn = e.target.closest && e.target.closest('#subSkipBtn');
+      if (skipBtn) {
+        e.preventDefault();
+        bnSubscriptionAction('skip');
+      }
+      // Update Payment → triggers Shopify-hosted secure card-update email via Appstle
+      var paymentBtn = e.target.closest && e.target.closest('#subUpdatePaymentBtn');
+      if (paymentBtn) {
+        e.preventDefault();
+        bnSubscriptionAction('update-payment');
       }
     }, false);
 
@@ -850,23 +972,7 @@
         '</div>';
       }
 
-      // Past shipments
-      if (past.length) {
-        html += '<section class="dash-journey__section"><h4 class="dash-journey__section-title">Shipped</h4><div class="dash-journey__rows">';
-        past.forEach(function(p){
-          html += '<a href="' + esc(p.orderUrl || '#') + '" class="dash-journey__row dash-journey__row--past">' +
-            (p.image ? '<img class="dash-journey__img" src="' + esc(p.image) + '" alt="' + esc(p.title) + '" loading="lazy">' : '<div class="dash-journey__img dash-journey__img--placeholder"></div>') +
-            '<div class="dash-journey__body">' +
-              '<p class="dash-journey__title">' + esc(p.title || '—') + '</p>' +
-              '<p class="dash-journey__meta">' + esc(p.orderName || '') + (p.orderName ? ' · ' : '') + 'Shipped ' + esc(p.shippedAt) + (p.orderTotal ? ' · ' + esc(p.orderTotal) : '') + '</p>' +
-            '</div>' +
-            '<span class="dash-journey__badge dash-journey__badge--past">Delivered</span>' +
-          '</a>';
-        });
-        html += '</div></section>';
-      }
-
-      // Upcoming / Queue
+      // Upcoming / Queue (rendered before Shipped per PM PRD-1 — Apr 30 2026)
       html += '<section class="dash-journey__section"><h4 class="dash-journey__section-title">Upcoming (' + upcomingEntries.length + ' of 5 picked)</h4><div class="dash-journey__rows">';
       upcomingMonths.forEach(function(monthStr, idx) {
         var entry = byMonth[monthStr];
@@ -893,6 +999,22 @@
         }
       });
       html += '</div></section>';
+
+      // Past shipments (rendered after Upcoming per PM PRD-1 — Apr 30 2026)
+      if (past.length) {
+        html += '<section class="dash-journey__section"><h4 class="dash-journey__section-title">Shipped</h4><div class="dash-journey__rows">';
+        past.forEach(function(p){
+          html += '<a href="' + esc(p.orderUrl || '#') + '" class="dash-journey__row dash-journey__row--past">' +
+            (p.image ? '<img class="dash-journey__img" src="' + esc(p.image) + '" alt="' + esc(p.title) + '" loading="lazy">' : '<div class="dash-journey__img dash-journey__img--placeholder"></div>') +
+            '<div class="dash-journey__body">' +
+              '<p class="dash-journey__title">' + esc(p.title || '—') + '</p>' +
+              '<p class="dash-journey__meta">' + esc(p.orderName || '') + (p.orderName ? ' · ' : '') + 'Shipped ' + esc(p.shippedAt) + (p.orderTotal ? ' · ' + esc(p.orderTotal) : '') + '</p>' +
+            '</div>' +
+            '<span class="dash-journey__badge dash-journey__badge--past">Delivered</span>' +
+          '</a>';
+        });
+        html += '</div></section>';
+      }
 
       // Nudge footer
       var emptyCount = upcomingMonths.filter(function(m){ return !byMonth[m]; }).length;
@@ -1086,8 +1208,12 @@
 document.addEventListener('DOMContentLoaded', function() {
   'use strict';
 
-  // Stage markers (no-op unless router-diagnostic snippet is enabled)
-  try { window.__bnStage = 1; } catch (e) {}
+  // ═══ DIAGNOSTIC (FIRST line of handler) — proves DOMContentLoaded fires ═══
+  try {
+    document.title = 'Base Note · Account [v4]';
+    console.log('[bn-router] stage 1: DOMContentLoaded fired');
+    window.__bnStage = 1;
+  } catch (e) { console.error('[bn-router] stage 1 FAIL', e); }
 
   // Subscription data from server (Liquid)
   var serverSubData = {
@@ -1125,7 +1251,12 @@ document.addEventListener('DOMContentLoaded', function() {
     return d instanceof Date && !isNaN(d.getTime());
   }
 
-  try { window.__bnStage = 2; } catch (e) {}
+  // ═══ DIAGNOSTIC stage 2 — proves we made it past serverSubData + isValidDate ═══
+  try {
+    document.title = 'Base Note · Account [v4 · stage 2]';
+    console.log('[bn-router] stage 2: past serverSubData');
+    window.__bnStage = 2;
+  } catch (e) { console.error('[bn-router] stage 2 FAIL', e); }
 
   // Router lives in the standalone <script> tag above — removed from here so this big block
   // can't break routing if it has a parse error.

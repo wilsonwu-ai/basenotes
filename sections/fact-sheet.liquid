@@ -1,0 +1,255 @@
+{%- comment -%}
+  Section: Fact Sheet (per-fragrance, referral-shareable)
+  Modeled on the Aventus PDF launch fact sheet.
+  All CSS scoped under `.bnfs` to avoid theme bleed.
+{%- endcomment -%}
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  .bnfs, .bnfs *, .bnfs *::before, .bnfs *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  .bnfs {
+    --bg: #f0ead8;
+    --bg-card: #f7f2e6;
+    --bg-accent: #ede6d0;
+    --bg-green: #1e4035;
+    --bg-green-dk: #172e26;
+    --gold: #b8974a;
+    --gold-light: #c9a84c;
+    --gold-dim: #8a6e30;
+    --cream: #2a2520;
+    --muted: #6b5e4a;
+    --divider: rgba(90,70,40,0.15);
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Montserrat', 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--cream);
+    font-family: var(--sans);
+    font-weight: 300;
+    line-height: 1.7;
+    padding: 48px 24px;
+  }
+
+  .bnfs__container { max-width: 880px; margin: 0 auto; }
+
+  /* Hero card */
+  .bnfs__hero { display: grid; grid-template-columns: 1fr 1.4fr; background: var(--bg-card); border: 1px solid var(--divider); margin-bottom: 24px; }
+  .bnfs__hero-img { background: #fff; padding: 32px; display: flex; align-items: center; justify-content: center; }
+  .bnfs__hero-img img { max-width: 100%; height: auto; max-height: 320px; }
+  .bnfs__hero-body { background: var(--bg-green); color: #f0ead8; padding: 40px 36px; position: relative; }
+  .bnfs__hero-meta { display: flex; justify-content: space-between; font: 600 9px/1 var(--sans); letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 28px; }
+  .bnfs__hero-meta-brand { display: flex; align-items: center; gap: 8px; }
+  .bnfs__hero-eyebrow { font: 600 9px/1 var(--sans); letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 12px; }
+  .bnfs__hero-title { font: 300 clamp(2.4rem, 5vw, 3.8rem)/1 var(--serif); letter-spacing: 0.04em; margin-bottom: 14px; color: #f0ead8; }
+  .bnfs__hero-subtitle { font: 400 0.78rem/1 var(--sans); letter-spacing: 0.18em; color: rgba(240,234,216,0.75); margin-bottom: 28px; }
+  .bnfs__hero-tagline { font: italic 300 0.95rem/1.7 var(--serif); color: rgba(240,234,216,0.85); max-width: 480px; }
+
+  /* Detail grid */
+  .bnfs__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .bnfs__card { background: var(--bg-card); border: 1px solid var(--divider); padding: 24px 28px; }
+  .bnfs__card-label { font: 600 9px/1 var(--sans); letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 18px; }
+
+  /* Notes columns */
+  .bnfs__notes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .bnfs__note { border-left: 2px solid var(--gold); padding: 0 14px; }
+  .bnfs__note-label { font: 600 8px/1 var(--sans); letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px; }
+  .bnfs__note-body { font: 400 0.86rem/1.55 var(--serif); color: var(--cream); }
+
+  /* Vibe tags */
+  .bnfs__tags { display: flex; flex-wrap: wrap; gap: 10px; }
+  .bnfs__tag { font: 400 0.78rem/1 var(--sans); color: var(--cream); border: 1px solid var(--divider); padding: 8px 16px; border-radius: 100px; }
+
+  /* Best for list */
+  .bnfs__bestfor { list-style: none; }
+  .bnfs__bestfor li { font: 300 0.9rem/1.5 var(--sans); color: var(--cream); padding-left: 18px; position: relative; margin-bottom: 8px; }
+  .bnfs__bestfor li::before { content: '•'; color: var(--gold); position: absolute; left: 0; }
+
+  /* Pro tip */
+  .bnfs__protip { background: var(--bg-card); border: 1px solid var(--gold); border-left-width: 3px; padding: 20px 24px; margin-top: 16px; }
+  .bnfs__protip-label { font: 600 9px/1 var(--sans); letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 10px; }
+  .bnfs__protip-body { font: 400 0.86rem/1.6 var(--serif); color: var(--cream); }
+
+  /* CTA footer */
+  .bnfs__cta { background: var(--bg-green); color: #f0ead8; padding: 36px 36px; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
+  .bnfs__cta-label { font: 600 9px/1 var(--sans); letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 10px; }
+  .bnfs__cta-headline { font: 300 1.5rem/1.2 var(--serif); color: #f0ead8; margin-bottom: 8px; }
+  .bnfs__cta-headline em { color: var(--gold-light); font-style: italic; }
+  .bnfs__cta-body { font: 300 0.85rem/1.6 var(--sans); color: rgba(240,234,216,0.8); max-width: 460px; }
+  .bnfs__cta-body strong { color: var(--gold-light); font-weight: 600; }
+  .bnfs__cta-qr { background: #fff; padding: 8px; }
+  .bnfs__cta-qr img { display: block; width: 110px; height: 110px; }
+  .bnfs__cta-qr-label { font: 600 8px/1.4 var(--sans); letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold-light); text-align: center; margin-top: 8px; }
+
+  /* Download row */
+  .bnfs__download { display: flex; gap: 12px; justify-content: center; margin-top: 24px; }
+  .bnfs__download a { font: 600 10px/1 var(--sans); letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--gold); padding: 14px 24px; text-decoration: none; transition: background 0.2s, color 0.2s; }
+  .bnfs__download a:hover { background: var(--gold); color: #fff; }
+
+  @media (max-width: 720px) {
+    .bnfs__hero { grid-template-columns: 1fr; }
+    .bnfs__grid { grid-template-columns: 1fr; }
+    .bnfs__notes { grid-template-columns: 1fr; }
+    .bnfs__cta { grid-template-columns: 1fr; text-align: center; }
+    .bnfs__cta-qr { margin: 0 auto; }
+  }
+</style>
+
+<div class="bnfs">
+  <div class="bnfs__container">
+
+    <!-- ── Hero ── -->
+    <div class="bnfs__hero">
+      <div class="bnfs__hero-img">
+        {%- if section.settings.product_image != blank -%}
+          <img src="{{ section.settings.product_image | image_url: width: 600 }}" alt="{{ section.settings.title }}">
+        {%- elsif section.settings.product != blank -%}
+          {%- assign p = section.settings.product -%}
+          {%- if p.featured_image -%}
+            <img src="{{ p.featured_image | image_url: width: 600 }}" alt="{{ p.title }}">
+          {%- endif -%}
+        {%- endif -%}
+      </div>
+      <div class="bnfs__hero-body">
+        <div class="bnfs__hero-meta">
+          <span class="bnfs__hero-meta-brand">⌘ BASE NOTE</span>
+          <span>{{ section.settings.country | default: 'MADE IN FRANCE' }}</span>
+        </div>
+        <p class="bnfs__hero-eyebrow">{{ section.settings.eyebrow | default: 'THE ICON' }}</p>
+        <h1 class="bnfs__hero-title">{{ section.settings.title }}</h1>
+        <p class="bnfs__hero-subtitle">{{ section.settings.subtitle }}</p>
+        <p class="bnfs__hero-tagline">{{ section.settings.tagline }}</p>
+      </div>
+    </div>
+
+    <!-- ── Detail Grid ── -->
+    <div class="bnfs__grid">
+
+      <!-- Key Notes -->
+      <div class="bnfs__card">
+        <p class="bnfs__card-label">KEY NOTES</p>
+        <div class="bnfs__notes">
+          <div class="bnfs__note">
+            <p class="bnfs__note-label">TOP</p>
+            <p class="bnfs__note-body">{{ section.settings.notes_top }}</p>
+          </div>
+          <div class="bnfs__note">
+            <p class="bnfs__note-label">HEART</p>
+            <p class="bnfs__note-body">{{ section.settings.notes_heart }}</p>
+          </div>
+          <div class="bnfs__note">
+            <p class="bnfs__note-label">BASE</p>
+            <p class="bnfs__note-body">{{ section.settings.notes_base }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Best For -->
+      <div class="bnfs__card">
+        <p class="bnfs__card-label">BEST FOR</p>
+        <ul class="bnfs__bestfor">
+          {%- assign best_lines = section.settings.best_for | newline_to_br | split: '<br />' -%}
+          {%- for line in best_lines -%}
+            {%- assign trimmed = line | strip -%}
+            {%- if trimmed != blank -%}<li>{{ trimmed }}</li>{%- endif -%}
+          {%- endfor -%}
+        </ul>
+        <div class="bnfs__protip">
+          <p class="bnfs__protip-label">{{ section.settings.protip_label | default: 'PRO TIP — LAYER IT' }}</p>
+          <p class="bnfs__protip-body">{{ section.settings.protip_body }}</p>
+        </div>
+      </div>
+
+      <!-- Vibe & Personality -->
+      <div class="bnfs__card" style="grid-column: 1 / -1;">
+        <p class="bnfs__card-label">VIBE & PERSONALITY</p>
+        <div class="bnfs__tags">
+          {%- assign tag_lines = section.settings.vibe_tags | newline_to_br | split: '<br />' -%}
+          {%- for line in tag_lines -%}
+            {%- assign trimmed = line | strip -%}
+            {%- if trimmed != blank -%}<span class="bnfs__tag">{{ trimmed }}</span>{%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── CTA Footer ── -->
+    <div class="bnfs__cta">
+      <div>
+        <p class="bnfs__cta-label">{{ section.settings.cta_label | default: 'TONIGHT ONLY' }}</p>
+        <p class="bnfs__cta-headline">{{ section.settings.cta_headline }}</p>
+        <p class="bnfs__cta-body">{{ section.settings.cta_body }}</p>
+      </div>
+      {%- if section.settings.qr_image != blank -%}
+        <div>
+          <div class="bnfs__cta-qr"><img src="{{ section.settings.qr_image | image_url: width: 220 }}" alt="Scan to shop"></div>
+          <p class="bnfs__cta-qr-label">SCAN TO SHOP</p>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <!-- ── Download row ── -->
+    <div class="bnfs__download">
+      {%- if section.settings.pdf_url != blank -%}
+        <a href="{{ section.settings.pdf_url }}" download>Download PDF</a>
+      {%- endif -%}
+      {%- if section.settings.product != blank -%}
+        <a href="{{ section.settings.product.url }}">Shop {{ section.settings.product.title | truncate: 24 }}</a>
+      {%- endif -%}
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Fact Sheet",
+  "settings": [
+    { "type": "header", "content": "Hero" },
+    { "type": "product", "id": "product", "label": "Linked product (drives image + shop link)" },
+    { "type": "image_picker", "id": "product_image", "label": "Hero image override (optional)" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "THE ICON" },
+    { "type": "text", "id": "title", "label": "Title", "default": "AVENTUS" },
+    { "type": "text", "id": "subtitle", "label": "Subtitle (brand · concentration)", "default": "Creed   ·   Eau de Parfum" },
+    { "type": "text", "id": "country", "label": "Made in (top right)", "default": "MADE IN FRANCE" },
+    { "type": "textarea", "id": "tagline", "label": "Tagline" },
+    { "type": "header", "content": "Notes" },
+    { "type": "textarea", "id": "notes_top", "label": "Top notes" },
+    { "type": "textarea", "id": "notes_heart", "label": "Heart notes" },
+    { "type": "textarea", "id": "notes_base", "label": "Base notes" },
+    { "type": "header", "content": "Best For" },
+    { "type": "textarea", "id": "best_for", "label": "Best for (one item per line)" },
+    { "type": "header", "content": "Pro Tip" },
+    { "type": "text", "id": "protip_label", "label": "Pro tip label", "default": "PRO TIP — LAYER IT" },
+    { "type": "textarea", "id": "protip_body", "label": "Pro tip body" },
+    { "type": "header", "content": "Vibe Tags" },
+    { "type": "textarea", "id": "vibe_tags", "label": "Vibe tags (one per line)" },
+    { "type": "header", "content": "CTA" },
+    { "type": "text", "id": "cta_label", "label": "CTA eyebrow", "default": "TONIGHT ONLY" },
+    { "type": "richtext", "id": "cta_headline", "label": "CTA headline", "default": "<p>Join Base Note — your first month <em>just $15</em></p>" },
+    { "type": "richtext", "id": "cta_body", "label": "CTA body", "default": "<p>Build your full rotation. <strong>Never run out of compliments.</strong> Scan the code or visit basenotescent.com to get started.</p>" },
+    { "type": "image_picker", "id": "qr_image", "label": "QR code image" },
+    { "type": "header", "content": "Downloads" },
+    { "type": "url", "id": "pdf_url", "label": "PDF download URL", "info": "Upload the printable PDF to Settings → Files, then paste the public URL here." }
+  ],
+  "presets": [
+    {
+      "name": "Fact Sheet — Aventus",
+      "settings": {
+        "eyebrow": "THE ICON",
+        "title": "AVENTUS",
+        "subtitle": "Creed   ·   Eau de Parfum",
+        "country": "MADE IN FRANCE",
+        "tagline": "Named for Napoleon's victories, Aventus is the benchmark — smoky birch and crisp pineapple create a scent so recognizable it's become a cultural shorthand for success.",
+        "notes_top": "Bergamot, Black Currant, Apple, Pink Pepper",
+        "notes_heart": "Pineapple, Patchouli, Moroccan Jasmine",
+        "notes_base": "Birch, Musk, Oakmoss, Cedarwood, Ambroxan",
+        "best_for": "Year-round — true all-season icon\nBlack-tie & formal events\nDate night\nPower meetings\nFirst impressions",
+        "protip_label": "PRO TIP — LAYER IT",
+        "protip_body": "Two sprays — chest and lower neck. Aventus evolves dramatically: fresh and fruity up top, deep and smoky in the dry-down. Pairs with Creed Green Irish Tweed for a greener, more daytime feel.",
+        "vibe_tags": "Bold\nSmoky\nIconic\nYear-Round\nPower Move"
+      }
+    }
+  ]
+}
+{% endschema %}

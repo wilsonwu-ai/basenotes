@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "fragrance-application-guide",
+      "settings": {
+        "pdf_url": ""
+      }
+    }
+  },
+  "order": ["main"]
+}
