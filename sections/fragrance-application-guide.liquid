@@ -1,16 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Art of Fragrance Application | Base Note Scent</title>
-  <meta name="description" content="Master the art of wearing fragrance. Learn where to apply cologne, how much to use by concentration, layering techniques, and common mistakes to avoid." />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    /* ── Reset & Base ── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+{%- comment -%}
+  Section: Fragrance Application Guide
+  Use on a Shopify Page with template `page.fragrance-application-guide`.
+  All CSS is scoped under `.fag` to avoid bleed into the rest of the theme.
+{%- endcomment -%}
 
-    :root {
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+    /* ── Reset & Base — scoped to .fag wrapper ── */
+    .fag, .fag *, .fag *::before, .fag *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    .fag {
       --bg:          #f0ead8;
       --bg-card:     #f7f2e6;
       --bg-accent:   #ede6d0;
@@ -26,19 +26,18 @@
       --sans:        'Montserrat', 'Helvetica Neue', sans-serif;
     }
 
-    html { scroll-behavior: smooth; }
-
-    body {
+    .fag {
       background-color: var(--bg);
       color: var(--cream);
       font-family: var(--sans);
       font-weight: 300;
       line-height: 1.7;
       -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
     }
 
     /* ── Hero ── */
-    .hero {
+    .fag .hero {
       position: relative;
       min-height: 480px;
       display: flex;
@@ -51,7 +50,7 @@
       background-color: var(--bg-green);
     }
 
-    .hero::before {
+    .fag .hero::before {
       content: '';
       position: absolute;
       inset: 0;
@@ -61,7 +60,7 @@
       pointer-events: none;
     }
 
-    .hero-eyebrow {
+    .fag .hero-eyebrow {
       font-family: var(--sans);
       font-size: 10px;
       font-weight: 600;
@@ -71,7 +70,7 @@
       margin-bottom: 24px;
     }
 
-    .hero h1 {
+    .fag .hero h1 {
       font-family: var(--serif);
       font-size: clamp(2.8rem, 6vw, 5rem);
       font-weight: 300;
@@ -81,19 +80,19 @@
       max-width: 760px;
     }
 
-    .hero h1 em {
+    .fag .hero h1 em {
       font-style: italic;
       color: var(--gold-light);
     }
 
-    .hero-intro {
+    .fag .hero-intro {
       max-width: 580px;
       font-size: 0.95rem;
       color: rgba(240,234,216,0.70);
       line-height: 1.8;
     }
 
-    .gold-rule {
+    .fag .gold-rule {
       width: 60px;
       height: 1px;
       background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
@@ -101,7 +100,7 @@
     }
 
     /* ── Nav Pills ── */
-    .nav-pills {
+    .fag .nav-pills {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
@@ -109,7 +108,7 @@
       padding: 40px 24px 60px;
     }
 
-    .nav-pills a {
+    .fag .nav-pills a {
       font-family: var(--sans);
       font-size: 10px;
       font-weight: 500;
@@ -123,26 +122,26 @@
       transition: background 0.3s, border-color 0.3s, color 0.3s;
     }
 
-    .nav-pills a:hover {
+    .fag .nav-pills a:hover {
       background: rgba(184,151,74,0.10);
       border-color: var(--gold);
       color: var(--gold);
     }
 
     /* ── Layout ── */
-    .container {
+    .fag .container {
       max-width: 900px;
       margin: 0 auto;
       padding: 0 24px;
     }
 
     /* ── Section Wrapper ── */
-    .section {
+    .fag .section {
       padding: 80px 0;
       border-top: 1px solid var(--divider);
     }
 
-    .section-label {
+    .fag .section-label {
       font-family: var(--sans);
       font-size: 9px;
       font-weight: 600;
@@ -155,14 +154,14 @@
       gap: 14px;
     }
 
-    .section-label::after {
+    .fag .section-label::after {
       content: '';
       flex: 1;
       height: 1px;
       background: var(--divider);
     }
 
-    .section h2 {
+    .fag .section h2 {
       font-family: var(--serif);
       font-size: clamp(2rem, 4vw, 3rem);
       font-weight: 300;
@@ -171,7 +170,7 @@
       line-height: 1.15;
     }
 
-    .section-intro {
+    .fag .section-intro {
       font-size: 0.9rem;
       color: var(--muted);
       max-width: 640px;
@@ -180,13 +179,13 @@
     }
 
     /* ── Pulse Points ── */
-    .pulse-grid {
+    .fag .pulse-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 2px;
     }
 
-    .pulse-card {
+    .fag .pulse-card {
       background: var(--bg-card);
       border: 1px solid var(--divider);
       padding: 32px 28px;
@@ -194,19 +193,19 @@
       transition: background 0.3s, border-color 0.3s;
     }
 
-    .pulse-card:hover {
+    .fag .pulse-card:hover {
       background: var(--bg-accent);
       border-color: var(--gold);
     }
 
-    .pulse-icon {
+    .fag .pulse-icon {
       font-size: 1.6rem;
       margin-bottom: 16px;
       display: block;
       color: var(--gold);
     }
 
-    .pulse-card h3 {
+    .fag .pulse-card h3 {
       font-family: var(--serif);
       font-size: 1.3rem;
       font-weight: 400;
@@ -214,13 +213,13 @@
       margin-bottom: 10px;
     }
 
-    .pulse-card p {
+    .fag .pulse-card p {
       font-size: 0.83rem;
       color: var(--muted);
       line-height: 1.75;
     }
 
-    .pulse-card .intensity {
+    .fag .pulse-card .intensity {
       display: inline-block;
       margin-top: 14px;
       font-size: 8px;
@@ -234,26 +233,26 @@
     }
 
     /* ── Concentration Table ── */
-    .conc-list {
+    .fag .conc-list {
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
 
-    .conc-row {
+    .fag .conc-row {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 2px;
     }
 
-    .conc-header {
+    .fag .conc-header {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 2px;
       margin-bottom: 4px;
     }
 
-    .conc-header span {
+    .fag .conc-header span {
       font-family: var(--sans);
       font-size: 8px;
       font-weight: 600;
@@ -263,41 +262,41 @@
       padding: 0 20px 12px;
     }
 
-    .conc-cell {
+    .fag .conc-cell {
       background: var(--bg-card);
       border: 1px solid var(--divider);
       padding: 20px;
     }
 
-    .conc-row:hover .conc-cell {
+    .fag .conc-row:hover .conc-cell {
       background: var(--bg-accent);
       border-color: var(--gold);
     }
 
-    .conc-cell.name {
+    .fag .conc-cell.name {
       font-family: var(--serif);
       font-size: 1.15rem;
       font-weight: 400;
       color: var(--bg-green);
     }
 
-    .conc-cell.pct {
+    .fag .conc-cell.pct {
       font-family: var(--serif);
       font-size: 1.1rem;
       color: var(--cream);
     }
 
-    .conc-cell.sprays {
+    .fag .conc-cell.sprays {
       font-size: 0.82rem;
       color: var(--cream);
     }
 
-    .conc-cell.longevity {
+    .fag .conc-cell.longevity {
       font-size: 0.82rem;
       color: var(--muted);
     }
 
-    .bar-wrap {
+    .fag .bar-wrap {
       margin-top: 8px;
       height: 2px;
       background: rgba(30,64,53,0.12);
@@ -305,33 +304,33 @@
       overflow: hidden;
     }
 
-    .bar-fill {
+    .fag .bar-fill {
       height: 100%;
       background: linear-gradient(90deg, var(--bg-green), var(--gold));
       border-radius: 1px;
     }
 
     /* ── Dos and Donts ── */
-    .dos-donts {
+    .fag .dos-donts {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 2px;
     }
 
     @media (max-width: 600px) {
-      .dos-donts { grid-template-columns: 1fr; }
-      .conc-row, .conc-header { grid-template-columns: 1fr 1fr; }
-      .conc-cell.longevity { display: none; }
-      .conc-header span:last-child { display: none; }
+      .fag .dos-donts { grid-template-columns: 1fr; }
+      .fag .conc-row, .fag .conc-header { grid-template-columns: 1fr 1fr; }
+      .fag .conc-cell.longevity { display: none; }
+      .fag .conc-header span:last-child { display: none; }
     }
 
-    .dos-col, .donts-col {
+    .fag .dos-col, .fag .donts-col {
       background: var(--bg-card);
       border: 1px solid var(--divider);
       padding: 36px 32px;
     }
 
-    .col-heading {
+    .fag .col-heading {
       font-family: var(--serif);
       font-size: 1.5rem;
       font-weight: 400;
@@ -341,10 +340,10 @@
       gap: 12px;
     }
 
-    .dos-col .col-heading { color: var(--bg-green); }
-    .donts-col .col-heading { color: #7a3030; }
+    .fag .dos-col .col-heading { color: var(--bg-green); }
+    .fag .donts-col .col-heading { color: #7a3030; }
 
-    .col-heading span.badge {
+    .fag .col-heading span.badge {
       font-family: var(--sans);
       font-size: 10px;
       font-weight: 600;
@@ -354,17 +353,17 @@
       border-radius: 1px;
     }
 
-    .dos-col .badge { background: rgba(30,64,53,0.08); color: var(--bg-green); }
-    .donts-col .badge { background: rgba(122,48,48,0.08); color: #7a3030; }
+    .fag .dos-col .badge { background: rgba(30,64,53,0.08); color: var(--bg-green); }
+    .fag .donts-col .badge { background: rgba(122,48,48,0.08); color: #7a3030; }
 
-    .tip-list {
+    .fag .tip-list {
       list-style: none;
       display: flex;
       flex-direction: column;
       gap: 18px;
     }
 
-    .tip-list li {
+    .fag .tip-list li {
       font-size: 0.85rem;
       color: var(--muted);
       line-height: 1.75;
@@ -372,30 +371,30 @@
       position: relative;
     }
 
-    .tip-list li::before {
+    .fag .tip-list li::before {
       position: absolute;
       left: 0;
       top: 2px;
       font-size: 0.7rem;
     }
 
-    .dos-col .tip-list li::before { content: '✦'; color: var(--gold); }
-    .donts-col .tip-list li::before { content: '✕'; color: #9a4040; }
+    .fag .dos-col .tip-list li::before { content: '✦'; color: var(--gold); }
+    .fag .donts-col .tip-list li::before { content: '✕'; color: #9a4040; }
 
-    .tip-list li strong {
+    .fag .tip-list li strong {
       color: var(--bg-green-dk);
       font-weight: 500;
     }
 
     /* ── Layering ── */
-    .layering-steps {
+    .fag .layering-steps {
       display: flex;
       flex-direction: column;
       gap: 2px;
       counter-reset: step;
     }
 
-    .layer-step {
+    .fag .layer-step {
       display: grid;
       grid-template-columns: 64px 1fr;
       background: var(--bg-card);
@@ -403,12 +402,12 @@
       transition: background 0.3s, border-color 0.3s;
     }
 
-    .layer-step:hover {
+    .fag .layer-step:hover {
       background: var(--bg-accent);
       border-color: var(--gold);
     }
 
-    .step-num {
+    .fag .step-num {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -420,11 +419,11 @@
       counter-increment: step;
     }
 
-    .step-body {
+    .fag .step-body {
       padding: 28px 32px;
     }
 
-    .step-body h3 {
+    .fag .step-body h3 {
       font-family: var(--serif);
       font-size: 1.2rem;
       font-weight: 400;
@@ -432,13 +431,13 @@
       margin-bottom: 8px;
     }
 
-    .step-body p {
+    .fag .step-body p {
       font-size: 0.83rem;
       color: var(--muted);
       line-height: 1.8;
     }
 
-    .step-tag {
+    .fag .step-tag {
       display: inline-block;
       margin-top: 12px;
       font-size: 8px;
@@ -451,7 +450,7 @@
     }
 
     /* ── Pro Tip Callout ── */
-    .callout {
+    .fag .callout {
       background: var(--bg-green);
       border: 1px solid var(--bg-green-dk);
       border-left: 3px solid var(--gold-light);
@@ -459,7 +458,7 @@
       margin-top: 32px;
     }
 
-    .callout-label {
+    .fag .callout-label {
       font-family: var(--sans);
       font-size: 8px;
       font-weight: 700;
@@ -469,44 +468,44 @@
       margin-bottom: 10px;
     }
 
-    .callout p {
+    .fag .callout p {
       font-size: 0.88rem;
       color: rgba(240,234,216,0.88);
       line-height: 1.8;
     }
 
     /* ── Footer ── */
-    .page-footer {
+    .fag .page-footer {
       background: var(--bg-green);
       border-top: 1px solid var(--bg-green-dk);
       padding: 48px 24px;
       text-align: center;
     }
 
-    .page-footer .gold-rule {
+    .fag .page-footer .gold-rule {
       background: linear-gradient(90deg, transparent, rgba(201,168,76,0.5), transparent);
     }
 
-    .page-footer p {
+    .fag .page-footer p {
       font-size: 0.78rem;
       color: rgba(240,234,216,0.55);
       letter-spacing: 0.05em;
     }
 
-    .page-footer a {
+    .fag .page-footer a {
       color: var(--gold-light);
       text-decoration: none;
       transition: color 0.2s;
     }
 
-    .page-footer a:hover { color: #f0ead8; }
+    .fag .page-footer a:hover { color: #f0ead8; }
 
     /* ── Utility ── */
-    .mt-sm { margin-top: 24px; }
-    .mt-md { margin-top: 48px; }
+    .fag .mt-sm { margin-top: 24px; }
+    .fag .mt-md { margin-top: 48px; }
   </style>
-</head>
-<body>
+
+<div class="fag">
 
   <!-- ═══════════════ HERO ═══════════════ -->
   <section class="hero">
@@ -790,11 +789,30 @@
     </div>
   </section>
 
-  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <!-- ═══════════════ DOWNLOAD CTA + RETURN ═══════════════ -->
   <footer class="page-footer">
     <div class="gold-rule"></div>
+    {%- if section.settings.pdf_url != blank -%}
+      <p style="margin-bottom:14px;"><a href="{{ section.settings.pdf_url }}" download class="nav-pills__a" style="display:inline-block;font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);padding:12px 24px;border-radius:2px;text-decoration:none;">Download as PDF</a></p>
+    {%- endif -%}
     <p>© Base Note Scent &nbsp;·&nbsp; <a href="/">Return to Home</a></p>
   </footer>
 
-</body>
-</html>
+</div>
+
+{% schema %}
+{
+  "name": "Application Guide",
+  "settings": [
+    {
+      "type": "url",
+      "id": "pdf_url",
+      "label": "PDF download URL",
+      "info": "Upload the printable PDF to Settings → Files, then paste the public URL here. Leave blank to hide the download button."
+    }
+  ],
+  "presets": [
+    { "name": "Fragrance Application Guide" }
+  ]
+}
+{% endschema %}

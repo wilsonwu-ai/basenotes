@@ -11,10 +11,10 @@
   "sections": {
     "main": {
       "type": "fragrance-application-guide",
-      "settings": {}
+      "settings": {
+        "pdf_url": ""
+      }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main"]
 }
