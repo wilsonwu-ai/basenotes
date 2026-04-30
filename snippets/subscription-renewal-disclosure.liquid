@@ -1,0 +1,62 @@
+{%- comment -%}
+  subscription-renewal-disclosure
+  -------------------------------
+  ROSCA-compliant auto-renewal disclosure. Use this on every surface where
+  the user is about to start (or continue) a subscription. Visually loud by
+  design — do not restyle smaller.
+
+  Usage: {% render 'subscription-renewal-disclosure', surface: 'pdp' %}
+  Surfaces: 'pdp' | 'cart' | 'drawer' | 'checkout-reassurance'
+
+  Theme settings consumed:
+    settings.subscription_price                     (e.g. '$20')
+    settings.subscription_first_order_price         (e.g. '$15')
+    settings.subscription_first_order_discount_pct  (e.g. '25')
+{%- endcomment -%}
+
+{%- assign price = settings.subscription_price | default: '$20' -%}
+{%- assign first_price = settings.subscription_first_order_price | default: '$15' -%}
+
+<div class="sub-disclosure sub-disclosure--{{ surface | default: 'pdp' }}" role="note" aria-label="Subscription renewal disclosure">
+  <svg class="sub-disclosure__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+    <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+  </svg>
+  <div class="sub-disclosure__body">
+    <p class="sub-disclosure__headline">This is a recurring monthly subscription.</p>
+    <p class="sub-disclosure__detail">
+      Your card will be charged <strong>{{ first_price }} today</strong>, then <strong>{{ price }} each month</strong> automatically.
+      You can cancel anytime in your account — no phone calls, no fees.
+    </p>
+    {%- if surface == 'pdp' -%}
+    <p class="sub-disclosure__manage">
+      <a href="/account#subscription">Manage or cancel your subscription anytime →</a>
+    </p>
+    {%- endif -%}
+  </div>
+</div>
+
+<style>
+  .sub-disclosure {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    background: #FFF9ED;
+    border: 1px solid #E8D8A8;
+    border-radius: 8px;
+    margin: 0.75rem 0;
+    color: #6B5A2B;
+  }
+  .sub-disclosure__icon { flex-shrink: 0; margin-top: 2px; color: #B08C2E; }
+  .sub-disclosure__body { flex: 1; min-width: 0; }
+  .sub-disclosure__headline { font: 700 14px/1.3 system-ui, -apple-system, sans-serif; color: #4D3E1F; margin: 0 0 0.3rem; }
+  .sub-disclosure__detail { font: 400 13px/1.5 system-ui, -apple-system, sans-serif; margin: 0; }
+  .sub-disclosure__detail strong { color: #4D3E1F; }
+  .sub-disclosure__manage { font: 400 12px/1.4 system-ui, sans-serif; margin: 0.4rem 0 0; }
+  .sub-disclosure__manage a { color: #B08C2E; text-decoration: underline; font-weight: 600; }
+  .sub-disclosure__manage a:hover { color: #8B6F2B; }
+
+  /* Surface-specific scaling — never smaller than 13px detail / 14px headline (ROSCA: "clear and conspicuous") */
+  .sub-disclosure--drawer { padding: 0.75rem; margin: 0.5rem 0; }
+  .sub-disclosure--drawer .sub-disclosure__headline { font-size: 13px; }
+  .sub-disclosure--drawer .sub-disclosure__detail { font-size: 12.5px; }
+</style>
