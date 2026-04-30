@@ -161,6 +161,7 @@
 
         {%- if drawer_has_subscription -%}
           {% render 'subscription-pricing-summary', surface: 'drawer' %}
+          {% render 'subscription-renewal-disclosure', surface: 'drawer' %}
         {%- endif -%}
 
         <div class="cart-drawer__actions">
