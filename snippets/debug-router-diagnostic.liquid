@@ -1,0 +1,66 @@
+{%- comment -%}
+  debug-router-diagnostic
+  -----------------------
+  **Name:** "Router Diagnostic Banner" (a.k.a. "bn-diag")
+
+  **What it is:** A loud, fixed-position color-coded banner at the top of
+  any page that renders this snippet. Used to bisect JavaScript parse
+  errors and router failures on /account without requiring DevTools.
+
+  **When to use:**
+  1. Any time a user reports "clicks don't do anything" on /account
+  2. When the standalone router or queue-strip renderer appears to be
+     failing silently
+  3. Before tearing apart a big inline script — drop this in, reload,
+     and read the banner color. It'll tell you in 5 seconds whether
+     JS is parsing at all.
+
+  **How to enable:**
+  Add this ONE line near the top of templates/customers/account.liquid,
+  immediately after the `{%- assign -%}` block or inside the main
+  `<section class="acct">` (before any content):
+
+      {% render 'debug-router-diagnostic' %}
+
+  Then hard refresh /account. Push live with:
+      shopify theme push --store base-note.myshopify.com --theme 158692901082 \
+        --only templates/customers/account.liquid --allow-live --nodelete
+
+  **How to disable:** Remove the {% render %} line. Push. Done.
+
+  **Color legend (what the banner color means):**
+    🔴 red    — script never parsed (JS SyntaxError blocks everything)
+    🟠 orange — Stage 1: DOMContentLoaded fired (serverSubData broken)
+    🟡 yellow — Stage 2: serverSubData OK (router attach failed)
+    🟢 green  — Stage 3: router LIVE (bug is downstream of router)
+    🔵 blue   — click intercepted, routing to #target
+    🟣 purple — opening fragrance selector modal
+
+  **How the existing handlers update it:**
+  The account.liquid standalone script already has:
+      var b = document.getElementById('bn-diag-banner');
+      if (b) { b.style.background = '...'; b.textContent = '...'; }
+  at every key checkpoint. When the banner element exists (this snippet
+  rendered), the hooks fire. When it doesn't, they're silent no-ops.
+  So this snippet is the only thing you need to toggle.
+
+  **History / context:**
+  Originally built 2026-04-23 during multi-hour hunt for a parse error
+  in the ~1,100-line inline <script> in account.liquid (bug-log.md #22).
+  Proved that the router was blocked because a Liquid emit produced
+  invalid JS at rendered line ~4364. Kept as a reusable harness because
+  similar failure modes (a single bad metafield emit corrupts the whole
+  script) are expected to recur.
+{%- endcomment -%}
+
+<div id="bn-diag-banner"
+     style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#dc2626;color:#fff;font:bold 14px/1.4 system-ui,-apple-system,sans-serif;padding:10px 16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+  [ROUTER DIAG] waiting for JS to load… if you see this red message, the inline &lt;script&gt; failed to parse. Check browser console (Cmd+Option+J) for red errors.
+</div>
+
+<style>
+  /* Push the page content below the fixed banner */
+  body:has(#bn-diag-banner) { padding-top: 44px; }
+  body:has(#bn-diag-banner) .header,
+  body:has(#bn-diag-banner) header { margin-top: 44px; }
+</style>
