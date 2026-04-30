@@ -25,12 +25,7 @@
   {%- endfor -%}
 {%- endfor -%}
 
-<!-- ═══ LOUD ROUTER DIAGNOSTIC BANNER — REMOVE AFTER FIX ═══ -->
-<div id="bn-diag-banner" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#dc2626;color:#fff;font:bold 14px/1.4 system-ui,sans-serif;padding:10px 16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
-  [ROUTER DIAG] waiting for JS to load… if you see this red message, the inline &lt;script&gt; failed to parse. Check browser console (Cmd+Option+J) for red errors.
-</div>
-
-<section class="acct" style="margin-top:44px;">
+<section class="acct">
   <div class="container">
     <div class="acct__layout">
 
@@ -785,6 +780,26 @@
         e.preventDefault();
         document.dispatchEvent(new Event('fragrance-selector:open'));
       }
+      // Cancel button → open cancellation flow (cancellation-flow snippet listens for event)
+      var cancelBtn = e.target.closest && e.target.closest('#subCancelBtn');
+      if (cancelBtn) {
+        e.preventDefault();
+        document.dispatchEvent(new Event('cancellation:open'));
+      }
+      // Pause button → fallback alert until Appstle API integration
+      var pauseBtn = e.target.closest && e.target.closest('#subPauseBtn');
+      if (pauseBtn) {
+        e.preventDefault();
+        alert('To pause your subscription, please email us at hello@basenotescent.com and we’ll pause it for you within one business day.');
+      }
+      // Skip button → confirm + fallback alert until Appstle API integration
+      var skipBtn = e.target.closest && e.target.closest('#subSkipBtn');
+      if (skipBtn) {
+        e.preventDefault();
+        if (confirm('Skip next month’s shipment? You won’t be charged for next month and shipments resume the month after.')) {
+          alert('Got it — please email hello@basenotescent.com to confirm the skip. We’ll process it and send you a confirmation.');
+        }
+      }
     }, false);
 
     // ── Dashboard "Your Fragrance Journey" renderer: past shipments + upcoming queue ──
@@ -849,23 +864,7 @@
         '</div>';
       }
 
-      // Past shipments
-      if (past.length) {
-        html += '<section class="dash-journey__section"><h4 class="dash-journey__section-title">Shipped</h4><div class="dash-journey__rows">';
-        past.forEach(function(p){
-          html += '<a href="' + esc(p.orderUrl || '#') + '" class="dash-journey__row dash-journey__row--past">' +
-            (p.image ? '<img class="dash-journey__img" src="' + esc(p.image) + '" alt="' + esc(p.title) + '" loading="lazy">' : '<div class="dash-journey__img dash-journey__img--placeholder"></div>') +
-            '<div class="dash-journey__body">' +
-              '<p class="dash-journey__title">' + esc(p.title || '—') + '</p>' +
-              '<p class="dash-journey__meta">' + esc(p.orderName || '') + (p.orderName ? ' · ' : '') + 'Shipped ' + esc(p.shippedAt) + (p.orderTotal ? ' · ' + esc(p.orderTotal) : '') + '</p>' +
-            '</div>' +
-            '<span class="dash-journey__badge dash-journey__badge--past">Delivered</span>' +
-          '</a>';
-        });
-        html += '</div></section>';
-      }
-
-      // Upcoming / Queue
+      // Upcoming / Queue (rendered before Shipped per PM PRD-1 — Apr 30 2026)
       html += '<section class="dash-journey__section"><h4 class="dash-journey__section-title">Upcoming (' + upcomingEntries.length + ' of 5 picked)</h4><div class="dash-journey__rows">';
       upcomingMonths.forEach(function(monthStr, idx) {
         var entry = byMonth[monthStr];
@@ -892,6 +891,22 @@
         }
       });
       html += '</div></section>';
+
+      // Past shipments (rendered after Upcoming per PM PRD-1 — Apr 30 2026)
+      if (past.length) {
+        html += '<section class="dash-journey__section"><h4 class="dash-journey__section-title">Shipped</h4><div class="dash-journey__rows">';
+        past.forEach(function(p){
+          html += '<a href="' + esc(p.orderUrl || '#') + '" class="dash-journey__row dash-journey__row--past">' +
+            (p.image ? '<img class="dash-journey__img" src="' + esc(p.image) + '" alt="' + esc(p.title) + '" loading="lazy">' : '<div class="dash-journey__img dash-journey__img--placeholder"></div>') +
+            '<div class="dash-journey__body">' +
+              '<p class="dash-journey__title">' + esc(p.title || '—') + '</p>' +
+              '<p class="dash-journey__meta">' + esc(p.orderName || '') + (p.orderName ? ' · ' : '') + 'Shipped ' + esc(p.shippedAt) + (p.orderTotal ? ' · ' + esc(p.orderTotal) : '') + '</p>' +
+            '</div>' +
+            '<span class="dash-journey__badge dash-journey__badge--past">Delivered</span>' +
+          '</a>';
+        });
+        html += '</div></section>';
+      }
 
       // Nudge footer
       var emptyCount = upcomingMonths.filter(function(m){ return !byMonth[m]; }).length;
