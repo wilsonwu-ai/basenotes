@@ -155,6 +155,27 @@
     } catch (e) { /* swallow — analytics failures must not break UX */ }
   }
 
+  function handleFromUrl(url) {
+    if (!url) return null;
+    var clean = String(url).split('?')[0].split('#')[0];
+    var parts = clean.split('/').filter(Boolean);
+    var idx = parts.lastIndexOf('products');
+    if (idx >= 0 && parts[idx + 1]) return parts[idx + 1];
+    return parts[parts.length - 1] || null;
+  }
+
+  function syncFirstSlotToAppstle(month, product) {
+    // The very next renewal is bound to Appstle. Months 2+ stay local until
+    // they become month 1 (handled on next render or via setShippedThrough).
+    if (month !== firstVisibleMonth()) return;
+    if (!window.BasenoteAppstleSwap || typeof window.BasenoteAppstleSwap.swap !== 'function') return;
+    var input = {};
+    if (product && product.variantId) input.variantId = product.variantId;
+    if (product && product.url) input.handle = handleFromUrl(product.url);
+    if (!input.variantId && !input.handle) return;
+    try { window.BasenoteAppstleSwap.swap(input); } catch (e) {}
+  }
+
   function setSlot(month, product) {
     if (!month || !product || !product.productId) return load();
     var queue = load();
@@ -183,6 +204,7 @@
       QueueLength: queue.length,
       PreviousTitle: previous ? previous.title : null
     });
+    syncFirstSlotToAppstle(month, entry);
     return queue;
   }
 
@@ -219,6 +241,10 @@
       fromEntry.shipMonth = toMonth;
     }
     save(queue);
+    // If a reorder put a different entry into month #1, sync it to Appstle.
+    var firstMonth = firstVisibleMonth();
+    var nowFirst = queue.find(function (e) { return e.shipMonth === firstMonth; });
+    if (nowFirst) syncFirstSlotToAppstle(firstMonth, nowFirst);
     return queue;
   }
 
@@ -240,6 +266,12 @@
     var pruned = pruneExpired(load());
     localStorage.setItem(KEY, JSON.stringify(pruned));
     emit();
+    // After a shipment posts, the slot that was month-2 becomes month-1.
+    // Sync the new first-visible month to Appstle so the next renewal
+    // pulls the customer's actual queued pick (not the variant they just received).
+    var firstMonth = firstVisibleMonth();
+    var nowFirst = pruned.find(function (e) { return e.shipMonth === firstMonth; });
+    if (nowFirst) syncFirstSlotToAppstle(firstMonth, nowFirst);
   }
 
   function filledCount() {
