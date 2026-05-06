@@ -155,6 +155,27 @@
     } catch (e) { /* swallow — analytics failures must not break UX */ }
   }
 
+  function handleFromUrl(url) {
+    if (!url) return null;
+    var clean = String(url).split('?')[0].split('#')[0];
+    var parts = clean.split('/').filter(Boolean);
+    var idx = parts.lastIndexOf('products');
+    if (idx >= 0 && parts[idx + 1]) return parts[idx + 1];
+    return parts[parts.length - 1] || null;
+  }
+
+  function syncFirstSlotToAppstle(month, product) {
+    // The very next renewal is bound to Appstle. Months 2+ stay local until
+    // they become month 1 (handled on next render or via setShippedThrough).
+    if (month !== firstVisibleMonth()) return;
+    if (!window.BasenoteAppstleSwap || typeof window.BasenoteAppstleSwap.swap !== 'function') return;
+    var input = {};
+    if (product && product.variantId) input.variantId = product.variantId;
+    if (product && product.url) input.handle = handleFromUrl(product.url);
+    if (!input.variantId && !input.handle) return;
+    try { window.BasenoteAppstleSwap.swap(input); } catch (e) {}
+  }
+
   function setSlot(month, product) {
     if (!month || !product || !product.productId) return load();
     var queue = load();
@@ -183,6 +204,7 @@
       QueueLength: queue.length,
       PreviousTitle: previous ? previous.title : null
     });
+    syncFirstSlotToAppstle(month, entry);
     return queue;
   }
 
@@ -219,6 +241,10 @@
       fromEntry.shipMonth = toMonth;
     }
     save(queue);
+    // If a reorder put a different entry into month #1, sync it to Appstle.
+    var firstMonth = firstVisibleMonth();
+    var nowFirst = queue.find(function (e) { return e.shipMonth === firstMonth; });
+    if (nowFirst) syncFirstSlotToAppstle(firstMonth, nowFirst);
     return queue;
   }
 
@@ -240,6 +266,12 @@
     var pruned = pruneExpired(load());
     localStorage.setItem(KEY, JSON.stringify(pruned));
     emit();
+    // After a shipment posts, the slot that was month-2 becomes month-1.
+    // Sync the new first-visible month to Appstle so the next renewal
+    // pulls the customer's actual queued pick (not the variant they just received).
+    var firstMonth = firstVisibleMonth();
+    var nowFirst = pruned.find(function (e) { return e.shipMonth === firstMonth; });
+    if (nowFirst) syncFirstSlotToAppstle(firstMonth, nowFirst);
   }
 
   function filledCount() {
@@ -265,5 +297,100 @@
     firstVisibleMonth: firstVisibleMonth,
     setShippedThrough: setShippedThrough,
     on: on
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // Server sync (PRD-4 — Apr 30 2026)
+  // Cross-device persistence via Shopify customer metafield, fronted by a
+  // Cloudflare Worker mounted at /apps/basenote/queue (Shopify App Proxy).
+  // localStorage is the warm cache; server is the source of truth for
+  // logged-in customers. Logged-out: localStorage only (unchanged behavior).
+  // ════════════════════════════════════════════════════════════
+  var SYNC_URL = '/apps/basenote/queue';
+  var DEBOUNCE_MS = 1500;
+  var pushTimer = null;
+  var lastPushedJson = null;
+
+  function isLoggedIn() {
+    // Set by Liquid as <script>window.bnCustomerId = {{ customer.id | json }}</script>
+    return !!(window.bnCustomerId);
+  }
+
+  function mergeServerLocal(serverQ, localQ) {
+    // Server wins on shipMonth collision. Local-only entries are added.
+    var byMonth = {};
+    (serverQ || []).forEach(function (e) { if (e && e.shipMonth) byMonth[e.shipMonth] = e; });
+    (localQ || []).forEach(function (e) { if (e && e.shipMonth && !byMonth[e.shipMonth]) byMonth[e.shipMonth] = e; });
+    return Object.keys(byMonth).sort().map(function (m) { return byMonth[m]; });
+  }
+
+  function pullFromServer() {
+    if (!isLoggedIn()) return Promise.resolve(null);
+    return fetch(SYNC_URL, { credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { return j && Array.isArray(j.queue) ? j.queue : null; })
+      .catch(function () { return null; });
+  }
+
+  function pushToServerNow(queue) {
+    if (!isLoggedIn()) return Promise.resolve(false);
+    var bodyStr = JSON.stringify({ queue: queue || [] });
+    if (bodyStr === lastPushedJson) return Promise.resolve(true); // no-op
+    return fetch(SYNC_URL, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: bodyStr
+    })
+      .then(function (r) { if (r.ok) lastPushedJson = bodyStr; return r.ok; })
+      .catch(function () { return false; });
+  }
+
+  function schedulePush() {
+    if (!isLoggedIn()) return;
+    if (pushTimer) clearTimeout(pushTimer);
+    pushTimer = setTimeout(function () { pushToServerNow(load()); }, DEBOUNCE_MS);
+  }
+
+  // Hydrate on first load: server → merge with local → save
+  (function hydrateFromServer() {
+    if (!isLoggedIn()) return;
+    pullFromServer().then(function (serverQ) {
+      if (serverQ === null) return; // request failed; stick with local
+      var localQ = load();
+      var merged = mergeServerLocal(serverQ, localQ);
+      var localJson = JSON.stringify(localQ);
+      var mergedJson = JSON.stringify(merged);
+      if (mergedJson !== localJson) {
+        localStorage.setItem(KEY, mergedJson);
+        emit();
+      }
+      lastPushedJson = JSON.stringify({ queue: serverQ });
+      // If merge differs from server, push the merged result back
+      if (mergedJson !== JSON.stringify(serverQ)) pushToServerNow(merged);
+    });
+  })();
+
+  // Subscribe local-changes → debounced push
+  listeners.push(function () { schedulePush(); });
+
+  // Flush pending push on tab close so we don't lose changes
+  window.addEventListener('pagehide', function () {
+    if (pushTimer && isLoggedIn()) {
+      clearTimeout(pushTimer);
+      try {
+        var bodyStr = JSON.stringify({ queue: load() });
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(SYNC_URL, new Blob([bodyStr], { type: 'application/json' }));
+        }
+      } catch (e) {}
+    }
+  });
+
+  // Expose sync hooks for debugging / manual triggers
+  window.BasenoteQueue.sync = {
+    pull: pullFromServer,
+    push: function () { return pushToServerNow(load()); },
+    isLoggedIn: isLoggedIn
   };
 })();

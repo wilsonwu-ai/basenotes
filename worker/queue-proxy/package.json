@@ -1,0 +1,16 @@
+{
+  "name": "basenote-queue-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloudflare Worker that backs Base Note's cross-device customer queue persistence (PRD-4, Apr 30 2026 sprint).",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250110.0",
+    "typescript": "^5.4.0",
+    "wrangler": "^3.78.0"
+  }
+}

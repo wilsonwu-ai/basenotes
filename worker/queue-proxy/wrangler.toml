@@ -1,0 +1,12 @@
+name = "basenote-queue-proxy"
+main = "src/index.ts"
+compatibility_date = "2026-04-30"
+
+# Set non-secret config here. Secrets are managed via `wrangler secret put`.
+[vars]
+# SHOPIFY_SHOP can live in vars (it's not secret)
+SHOPIFY_SHOP = "ath7ay-1y.myshopify.com"
+
+# Secrets (set via `wrangler secret put` — do NOT add them here):
+#   wrangler secret put SHOPIFY_APP_PROXY_SECRET
+#   wrangler secret put SHOPIFY_ADMIN_TOKEN

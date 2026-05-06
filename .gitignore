@@ -2,3 +2,4 @@
 .superpowers/
 .env
 .claude/
+worker/queue-proxy/node_modules/

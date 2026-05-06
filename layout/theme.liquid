@@ -201,7 +201,12 @@
 
   <script>
     document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+    {%- if customer -%}
+      window.bnCustomerId = {{ customer.id | json }};
+    {%- endif -%}
   </script>
+  <script src="{{ 'queue-scheduler.js' | asset_url }}" defer></script>
+  <script src="{{ 'bn-appstle-swap.js' | asset_url }}" defer></script>
 </head>
 
 <body class="template-{{ template.name }}{% if template.suffix %} template-{{ template.name }}-{{ template.suffix }}{% endif %}">
