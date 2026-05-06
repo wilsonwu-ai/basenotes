@@ -1409,8 +1409,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function saveNextShipment(data) {
     localStorage.setItem('bn_next_shipment', JSON.stringify(data));
-    // TODO: Appstle API — update next shipment server-side
     renderNextShipment();
+    syncNextShipmentToAppstle(data);
+  }
+
+  // Push the customer's chosen variant onto their Appstle subscription contract
+  // so the next renewal order ships THIS fragrance, not the original one.
+  // The swap module no-ops when the variant already matches, so this is safe
+  // to call on every save (and on auto-reconciliation at page load).
+  function syncNextShipmentToAppstle(data) {
+    if (!data || !data.fragrance) return;
+    if (!window.BasenoteAppstleSwap) return;
+    var handle = data.fragrance.handle;
+    if (!handle) return;
+
+    var prevBadgeText = nsStatusBadge ? nsStatusBadge.textContent : '';
+    var prevBadgeClass = nsStatusBadge ? nsStatusBadge.className : '';
+    if (nsStatusBadge) {
+      nsStatusBadge.textContent = 'Saving…';
+      nsStatusBadge.className = 'ns-status-badge ns-auto';
+    }
+
+    window.BasenoteAppstleSwap.swap({ handle: handle }).then(function (res) {
+      if (!nsStatusBadge) return;
+      if (res && res.ok) {
+        nsStatusBadge.textContent = 'Confirmed';
+        nsStatusBadge.className = 'ns-status-badge ns-confirmed';
+      } else if (res && res.skipped === 'logged-out') {
+        // Logged-out customers can't have a contract — leave UI as-is.
+        nsStatusBadge.textContent = prevBadgeText || 'Confirmed';
+        nsStatusBadge.className = prevBadgeClass || 'ns-status-badge ns-confirmed';
+      } else {
+        nsStatusBadge.textContent = 'Save failed — retry';
+        nsStatusBadge.className = 'ns-status-badge ns-action';
+        try { console.warn('[bn-next-shipment] Appstle sync failed', res); } catch (e) {}
+        alert('We saved your pick locally but couldn\'t update your subscription. Please try again, or email hello@basenotescent.com so we can confirm before your next shipment.');
+      }
+    });
   }
 
   function renderNextShipment() {
@@ -1733,6 +1768,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // ── Update next shipment product from Appstle ──
         var lines = active.lines || active.lineItems || [];
+        // Seed the Appstle-swap module so it doesn't have to refetch when the
+        // user changes their next-shipment pick. Source-of-truth for what the
+        // next renewal will actually ship.
+        if (window.BasenoteAppstleSwap && lines.length > 0) {
+          var firstLine = lines[0];
+          window.BasenoteAppstleSwap.seed({
+            customerId: customerId,
+            contractId: bestContractId,
+            lineId: firstLine.id || firstLine.lineId,
+            variantId: firstLine.variantId || (firstLine.variant && firstLine.variant.id) || null
+          });
+
+          // NOTE: do not auto-reconcile localStorage → Appstle on load.
+          // It would overwrite a pick made on another device with stale state
+          // from this one. The fetchAppstleData block below already paints the
+          // live Appstle line over the UI, so existing wrong-state customers
+          // (selected before this sync shipped) will see the original variant
+          // resurface as "Confirmed" and can re-pick once to fix it forever.
+        }
         if (lines.length > 0) {
           var line = lines[0];
           var prodTitle = line.title || line.productTitle || '';
