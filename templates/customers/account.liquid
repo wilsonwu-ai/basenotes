@@ -1244,7 +1244,8 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     {%- endif -%}
     fotmDisplayName: {{ settings.fotm_display_name | json }},
-    isStaff: {{ customer.tags | join: ',' | downcase | contains: 'staff' | json }}
+    {%- assign _cts = customer.tags | join: ',' | downcase -%}
+    isStaff: {%- if _cts contains 'staff' -%}true{%- else -%}false{%- endif -%}
   };
 
   function isValidDate(d) {
