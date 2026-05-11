@@ -14,18 +14,18 @@
  *
  * Env (configured via `wrangler secret put` — never check secrets into the repo):
  *   SHOPIFY_APP_PROXY_SECRET   – shared secret from the Shopify private app's App Proxy config
- *   SHOPIFY_ADMIN_TOKEN        – Admin API access token (custom app, scopes: read_customers + write_customers)
- *   SHOPIFY_SHOP               – e.g. "base-note.myshopify.com" (in [vars])
- *   APPSTLE_API_KEY            – Appstle Admin API key (Configurations → API)
- *   APPSTLE_API_BASE           – e.g. https://subscription-admin.appstle.com/api/external/v2
+ *   SHOPIFY_ADMIN_TOKEN        – Admin API access token (custom app)
+ *                                  Required scopes:
+ *                                    read_customers, write_customers           (queue metafield)
+ *                                    read_own_subscription_contracts            (sync-subscription)
+ *                                    write_own_subscription_contracts           (sync-subscription)
+ *   SHOPIFY_SHOP               – e.g. "ath7ay-1y.myshopify.com" (in [vars])
  */
 
 interface Env {
   SHOPIFY_APP_PROXY_SECRET: string;
   SHOPIFY_ADMIN_TOKEN: string;
   SHOPIFY_SHOP: string;
-  APPSTLE_API_KEY: string;
-  APPSTLE_API_BASE: string;
 }
 
 const ADMIN_API_VERSION = "2025-01";
@@ -245,16 +245,29 @@ async function safeJson(req: Request): Promise<Record<string, unknown> | null> {
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// Appstle Admin API: swap subscription line item for a customer
-// Docs reference (from scripts/swap-jeff-contract.sh, May 5 2026):
-//   GET  $APPSTLE_API_BASE/subscription-contract-details?customerId=...
-//   POST $APPSTLE_API_BASE/subscription-contract-details/replace-variants-v3
-//   Headers: X-API-Key: <APPSTLE_API_KEY>
+// Shopify-native subscription line swap (PRD 2026-05-11 pivot).
+//
+// Appstle's Admin API was rejecting our key with HTTP 401 across every
+// auth scheme after Jeff upgraded to Business. Rather than gate the
+// June 7 launch on a third-party support ticket, we swap the contract
+// line via Shopify's own subscription-contract GraphQL. Appstle reads
+// from Shopify's contract, so the Appstle Admin "Upcoming Orders" view
+// reflects the change automatically.
+//
+// Flow:
+//   1. customer.subscriptionContracts → find ACTIVE contract + line
+//   2. subscriptionContractUpdate(contractId) → open a draft
+//   3. subscriptionDraftLineUpdate(draftId, lineId, {productVariantId, quantity})
+//   4. subscriptionDraftCommit(draftId)
+//
+// Required scopes on SHOPIFY_ADMIN_TOKEN:
+//   read_own_subscription_contracts
+//   write_own_subscription_contracts
 // ─────────────────────────────────────────────────────────────────────
 interface SyncResult {
   ok: boolean;
-  contractId?: string | number;
-  oldVariantId?: string | number | null;
+  contractId?: string;
+  oldVariantId?: string | null;
   newVariantId?: string;
   noop?: boolean;
   status?: number;
@@ -262,66 +275,100 @@ interface SyncResult {
 }
 
 async function syncSubscription(env: Env, customerId: string, newVariantId: string): Promise<SyncResult> {
-  if (!env.APPSTLE_API_KEY || !env.APPSTLE_API_BASE) {
-    return { ok: false, detail: "appstle_env_missing" };
-  }
+  const customerGid = `gid://shopify/Customer/${customerId}`;
+  const newVariantGid = newVariantId.startsWith("gid://")
+    ? newVariantId
+    : `gid://shopify/ProductVariant/${newVariantId}`;
 
-  // 1. Find this customer's active contract.
-  const contractListUrl = `${env.APPSTLE_API_BASE}/subscription-contract-details?customerId=${encodeURIComponent(customerId)}&page=0&size=10`;
-  const listResp = await fetch(contractListUrl, {
-    headers: { "X-API-Key": env.APPSTLE_API_KEY },
-  });
-  if (!listResp.ok) {
-    const text = await safeText(listResp);
-    return { ok: false, status: listResp.status, detail: `contract_list_${listResp.status}: ${text.slice(0, 200)}` };
-  }
-  const listJson = (await listResp.json()) as unknown;
-  const contracts = Array.isArray(listJson)
-    ? (listJson as Record<string, unknown>[])
-    : ((listJson as { content?: unknown[]; data?: unknown[] })?.content as Record<string, unknown>[])
-      || ((listJson as { content?: unknown[]; data?: unknown[] })?.data as Record<string, unknown>[])
-      || [];
-  const active = contracts.find((c) => (c.status as string) === "ACTIVE") || contracts[0];
+  // 1. Find active contract + its first line.
+  const listResp = await adminFetch(
+    env,
+    `query($id: ID!) {
+       customer(id: $id) {
+         subscriptionContracts(first: 5) {
+           edges { node {
+             id
+             status
+             lines(first: 5) { edges { node { id productId variantId quantity } } }
+           } }
+         }
+       }
+     }`,
+    { id: customerGid }
+  );
+
+  const contracts = ((listResp as any)?.data?.customer?.subscriptionContracts?.edges || []) as Array<{ node: any }>;
+  const active = contracts.find((e) => e?.node?.status === "ACTIVE") || contracts[0];
   if (!active) return { ok: false, detail: "no_contract_for_customer" };
 
-  const contractId = (active.subscriptionContractId || active.contractId || active.id) as string | number;
-  const lines = (active.lines as Record<string, unknown>[]) || (active.lineItems as Record<string, unknown>[]) || [];
-  const line = lines[0];
-  const oldVariantId = line ? (line.variantId || (line.variant as { id?: unknown })?.id) as string | number | null : null;
+  const contractId = active.node.id as string;
+  const lines = (active.node.lines?.edges || []) as Array<{ node: any }>;
+  const line = lines[0]?.node;
+  if (!line) return { ok: false, contractId, detail: "no_line_on_contract" };
 
-  if (oldVariantId != null && String(oldVariantId) === newVariantId) {
-    return { ok: true, contractId, oldVariantId, newVariantId, noop: true };
-  }
-  if (oldVariantId == null) {
-    return { ok: false, contractId, detail: "no_line_on_contract" };
-  }
+  const lineId = line.id as string;
+  const oldVariantGid = line.variantId as string | null;
+  const quantity = (line.quantity as number) || 1;
 
-  // 2. Replace variant via v3 endpoint.
-  const swapUrl = `${env.APPSTLE_API_BASE}/subscription-contract-details/replace-variants-v3`;
-  const swapBody = JSON.stringify({
-    shop: env.SHOPIFY_SHOP,
-    contractId: typeof contractId === "string" ? parseInt(contractId, 10) : contractId,
-    oldVariants: [typeof oldVariantId === "string" ? parseInt(oldVariantId, 10) : oldVariantId],
-    newVariants: { [newVariantId]: 1 },
-  });
-  const swapResp = await fetch(swapUrl, {
-    method: "POST",
-    headers: {
-      "X-API-Key": env.APPSTLE_API_KEY,
-      "Content-Type": "application/json",
-    },
-    body: swapBody,
-  });
-  if (!swapResp.ok && swapResp.status !== 204) {
-    const text = await safeText(swapResp);
-    return { ok: false, contractId, oldVariantId, newVariantId, status: swapResp.status, detail: `swap_${swapResp.status}: ${text.slice(0, 300)}` };
+  if (oldVariantGid && oldVariantGid === newVariantGid) {
+    return { ok: true, contractId, oldVariantId: oldVariantGid, newVariantId: newVariantGid, noop: true };
   }
 
-  return { ok: true, contractId, oldVariantId, newVariantId };
-}
+  // 2. Open a draft.
+  const draftOpen = await adminFetch(
+    env,
+    `mutation($contractId: ID!) {
+       subscriptionContractUpdate(contractId: $contractId) {
+         draft { id }
+         userErrors { field message code }
+       }
+     }`,
+    { contractId }
+  );
+  const draftErrs = (draftOpen as any)?.data?.subscriptionContractUpdate?.userErrors || [];
+  if (draftErrs.length) {
+    return { ok: false, contractId, detail: `draft_open_err: ${JSON.stringify(draftErrs).slice(0, 300)}` };
+  }
+  const draftId = (draftOpen as any)?.data?.subscriptionContractUpdate?.draft?.id as string;
+  if (!draftId) return { ok: false, contractId, detail: "no_draft_id" };
 
-async function safeText(r: Response): Promise<string> {
-  try { return await r.text(); } catch { return ""; }
+  // 3. Update the line.
+  const lineUpdate = await adminFetch(
+    env,
+    `mutation($draftId: ID!, $lineId: ID!, $input: SubscriptionLineInput!) {
+       subscriptionDraftLineUpdate(draftId: $draftId, lineId: $lineId, input: $input) {
+         lineUpdated { id productId variantId quantity }
+         userErrors { field message code }
+       }
+     }`,
+    {
+      draftId,
+      lineId,
+      input: { productVariantId: newVariantGid, quantity },
+    }
+  );
+  const updErrs = (lineUpdate as any)?.data?.subscriptionDraftLineUpdate?.userErrors || [];
+  if (updErrs.length) {
+    return { ok: false, contractId, detail: `line_update_err: ${JSON.stringify(updErrs).slice(0, 300)}` };
+  }
+
+  // 4. Commit.
+  const commitResp = await adminFetch(
+    env,
+    `mutation($draftId: ID!) {
+       subscriptionDraftCommit(draftId: $draftId) {
+         contract { id status }
+         userErrors { field message code }
+       }
+     }`,
+    { draftId }
+  );
+  const commitErrs = (commitResp as any)?.data?.subscriptionDraftCommit?.userErrors || [];
+  if (commitErrs.length) {
+    return { ok: false, contractId, detail: `commit_err: ${JSON.stringify(commitErrs).slice(0, 300)}` };
+  }
+
+  return { ok: true, contractId, oldVariantId: oldVariantGid, newVariantId: newVariantGid };
 }
 
 function corsHeaders(): HeadersInit {

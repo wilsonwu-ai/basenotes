@@ -10,5 +10,7 @@ SHOPIFY_SHOP = "ath7ay-1y.myshopify.com"
 # Secrets (set via `wrangler secret put` — do NOT add them here):
 #   wrangler secret put SHOPIFY_APP_PROXY_SECRET
 #   wrangler secret put SHOPIFY_ADMIN_TOKEN
-#   wrangler secret put APPSTLE_API_KEY      # Appstle Admin → Configurations → API
-#   wrangler secret put APPSTLE_API_BASE     # https://subscription-admin.appstle.com/api/external/v2
+#
+# SHOPIFY_ADMIN_TOKEN must have scopes:
+#   read_customers, write_customers
+#   read_own_subscription_contracts, write_own_subscription_contracts
