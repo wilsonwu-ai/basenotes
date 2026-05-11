@@ -107,11 +107,14 @@
         }
 
         if (line) {
-          // lineId / variantId may be full gid strings — strip the prefix when
-          // calling Appstle's replace-variants-v2 (which expects numeric IDs).
+          // lineId MUST stay in full gid form (gid://shopify/SubscriptionLine/UUID)
+          // — Appstle's replace-variants-v2 rejects bare UUIDs with HTTP 400
+          // "Contract line not found." Confirmed via Playwright probe May 11.
+          // variantId: keep bare numeric form for the noop comparison; bn-appstle-swap
+          // also resolves swap targets to bare variant IDs via /products/:handle.js.
           var rawLineId = line.lineId || line.id || null;
           var rawVid = line.variantId || (line.variant && line.variant.id) || null;
-          state.lineId = stripGid(rawLineId);
+          state.lineId = rawLineId;
           state.currentVariantId = rawVid != null ? stripGid(String(rawVid)) : null;
         }
         state.fetched = true;
