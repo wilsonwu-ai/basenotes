@@ -1,30 +1,31 @@
 /**
  * Base Note — Queue Proxy Worker
  * --------------------------------
- * Cloudflare Worker that backs the customer-queue persistence layer.
+ * Cloudflare Worker that backs the customer-queue persistence layer + the
+ * subscription-sync bridge into Appstle (PRD 2026-05-11).
  *
- * Mounted via Shopify App Proxy at /apps/basenote/queue/* on the storefront.
- * Reads + writes the customer's queue JSON to a Shopify customer metafield:
- *   namespace: "basenote", key: "queue", type: "json"
+ * Mounted via Shopify App Proxy at /apps/basenote/* on the storefront.
  *
- * Auth: every request from Shopify includes a `signature` query param that is
- * an HMAC-SHA256 of the other query params, signed with the App Proxy shared
- * secret. We verify that BEFORE doing any Admin API work.
- *
- * Routes:
- *   GET  /apps/basenote/queue   → returns { queue: [...] } for the logged-in customer
- *   POST /apps/basenote/queue   → writes { queue: [...] } from the request body
+ * Routes (App Proxy verifies signature on every call):
+ *   GET  /apps/basenote/queue              → { queue }
+ *   POST /apps/basenote/queue              → write queue
+ *   POST /apps/basenote/sync-subscription  → swap Appstle contract line item
+ *                                             to the variant in body { variantId }
  *
  * Env (configured via `wrangler secret put` — never check secrets into the repo):
  *   SHOPIFY_APP_PROXY_SECRET   – shared secret from the Shopify private app's App Proxy config
  *   SHOPIFY_ADMIN_TOKEN        – Admin API access token (custom app, scopes: read_customers + write_customers)
- *   SHOPIFY_SHOP               – e.g. "base-note.myshopify.com"
+ *   SHOPIFY_SHOP               – e.g. "base-note.myshopify.com" (in [vars])
+ *   APPSTLE_API_KEY            – Appstle Admin API key (Configurations → API)
+ *   APPSTLE_API_BASE           – e.g. https://subscription-admin.appstle.com/api/external/v2
  */
 
 interface Env {
   SHOPIFY_APP_PROXY_SECRET: string;
   SHOPIFY_ADMIN_TOKEN: string;
   SHOPIFY_SHOP: string;
+  APPSTLE_API_KEY: string;
+  APPSTLE_API_BASE: string;
 }
 
 const ADMIN_API_VERSION = "2025-01";
@@ -52,28 +53,53 @@ export default {
     }
 
     // 3. Route
+    // App Proxy strips its mount prefix before forwarding, so the path we see
+    // is the part AFTER /apps/basenote (e.g. /queue, /sync-subscription).
+    // Some Shopify proxy configs forward the full path — handle both shapes.
+    const path = normalizePath(url.pathname);
     try {
-      if (request.method === "GET") {
-        const queue = await readQueue(env, customerId);
-        return json({ queue });
-      }
-      if (request.method === "POST" || request.method === "PUT") {
-        const body = await safeJson(request);
-        if (!body || !Array.isArray(body.queue)) {
-          return json({ error: "bad_body" }, 400);
+      if (path === "/queue" || path === "" || path === "/") {
+        if (request.method === "GET") {
+          const queue = await readQueue(env, customerId);
+          return json({ queue });
         }
-        // Cheap server-side validation: cap size, drop unknown keys
-        const sanitized = sanitizeQueue(body.queue);
-        await writeQueue(env, customerId, sanitized);
-        return json({ ok: true, queue: sanitized });
+        if (request.method === "POST" || request.method === "PUT") {
+          const body = await safeJson(request);
+          if (!body || !Array.isArray((body as QueueBody).queue)) {
+            return json({ error: "bad_body" }, 400);
+          }
+          const sanitized = sanitizeQueue((body as QueueBody).queue!);
+          await writeQueue(env, customerId, sanitized);
+          return json({ ok: true, queue: sanitized });
+        }
+        return json({ error: "method_not_allowed" }, 405);
       }
-      return json({ error: "method_not_allowed" }, 405);
+
+      if (path === "/sync-subscription") {
+        if (request.method !== "POST") return json({ error: "method_not_allowed" }, 405);
+        const body = await safeJson(request);
+        const variantId = body && (body as SyncBody).variantId;
+        if (!variantId) return json({ error: "bad_body", detail: "variantId required" }, 400);
+        const result = await syncSubscription(env, customerId, String(variantId));
+        return json(result, result.ok ? 200 : 502);
+      }
+
+      return json({ error: "not_found", path }, 404);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "unknown";
       return json({ error: "server_error", detail: message }, 500);
     }
   },
 };
+
+function normalizePath(p: string): string {
+  // Strip the App Proxy mount prefix if Shopify forwards the full path.
+  // Accepts: /apps/basenote/queue, /queue, /apps/basenote/sync-subscription, etc.
+  return p.replace(/^\/apps\/basenote/, "") || "/";
+}
+
+interface QueueBody { queue?: unknown[] }
+interface SyncBody { variantId?: unknown }
 
 // ─────────────────────────────────────────────────────────────────────
 // Shopify App Proxy signature verification
@@ -209,13 +235,93 @@ function sanitizeQueue(raw: unknown[]): Record<string, unknown>[] {
   });
 }
 
-async function safeJson(req: Request): Promise<{ queue?: unknown[] } | null> {
+async function safeJson(req: Request): Promise<Record<string, unknown> | null> {
   try {
     const j = await req.json();
-    return j as { queue?: unknown[] };
+    return j as Record<string, unknown>;
   } catch {
     return null;
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Appstle Admin API: swap subscription line item for a customer
+// Docs reference (from scripts/swap-jeff-contract.sh, May 5 2026):
+//   GET  $APPSTLE_API_BASE/subscription-contract-details?customerId=...
+//   POST $APPSTLE_API_BASE/subscription-contract-details/replace-variants-v3
+//   Headers: X-API-Key: <APPSTLE_API_KEY>
+// ─────────────────────────────────────────────────────────────────────
+interface SyncResult {
+  ok: boolean;
+  contractId?: string | number;
+  oldVariantId?: string | number | null;
+  newVariantId?: string;
+  noop?: boolean;
+  status?: number;
+  detail?: string;
+}
+
+async function syncSubscription(env: Env, customerId: string, newVariantId: string): Promise<SyncResult> {
+  if (!env.APPSTLE_API_KEY || !env.APPSTLE_API_BASE) {
+    return { ok: false, detail: "appstle_env_missing" };
+  }
+
+  // 1. Find this customer's active contract.
+  const contractListUrl = `${env.APPSTLE_API_BASE}/subscription-contract-details?customerId=${encodeURIComponent(customerId)}&page=0&size=10`;
+  const listResp = await fetch(contractListUrl, {
+    headers: { "X-API-Key": env.APPSTLE_API_KEY },
+  });
+  if (!listResp.ok) {
+    const text = await safeText(listResp);
+    return { ok: false, status: listResp.status, detail: `contract_list_${listResp.status}: ${text.slice(0, 200)}` };
+  }
+  const listJson = (await listResp.json()) as unknown;
+  const contracts = Array.isArray(listJson)
+    ? (listJson as Record<string, unknown>[])
+    : ((listJson as { content?: unknown[]; data?: unknown[] })?.content as Record<string, unknown>[])
+      || ((listJson as { content?: unknown[]; data?: unknown[] })?.data as Record<string, unknown>[])
+      || [];
+  const active = contracts.find((c) => (c.status as string) === "ACTIVE") || contracts[0];
+  if (!active) return { ok: false, detail: "no_contract_for_customer" };
+
+  const contractId = (active.subscriptionContractId || active.contractId || active.id) as string | number;
+  const lines = (active.lines as Record<string, unknown>[]) || (active.lineItems as Record<string, unknown>[]) || [];
+  const line = lines[0];
+  const oldVariantId = line ? (line.variantId || (line.variant as { id?: unknown })?.id) as string | number | null : null;
+
+  if (oldVariantId != null && String(oldVariantId) === newVariantId) {
+    return { ok: true, contractId, oldVariantId, newVariantId, noop: true };
+  }
+  if (oldVariantId == null) {
+    return { ok: false, contractId, detail: "no_line_on_contract" };
+  }
+
+  // 2. Replace variant via v3 endpoint.
+  const swapUrl = `${env.APPSTLE_API_BASE}/subscription-contract-details/replace-variants-v3`;
+  const swapBody = JSON.stringify({
+    shop: env.SHOPIFY_SHOP,
+    contractId: typeof contractId === "string" ? parseInt(contractId, 10) : contractId,
+    oldVariants: [typeof oldVariantId === "string" ? parseInt(oldVariantId, 10) : oldVariantId],
+    newVariants: { [newVariantId]: 1 },
+  });
+  const swapResp = await fetch(swapUrl, {
+    method: "POST",
+    headers: {
+      "X-API-Key": env.APPSTLE_API_KEY,
+      "Content-Type": "application/json",
+    },
+    body: swapBody,
+  });
+  if (!swapResp.ok && swapResp.status !== 204) {
+    const text = await safeText(swapResp);
+    return { ok: false, contractId, oldVariantId, newVariantId, status: swapResp.status, detail: `swap_${swapResp.status}: ${text.slice(0, 300)}` };
+  }
+
+  return { ok: true, contractId, oldVariantId, newVariantId };
+}
+
+async function safeText(r: Response): Promise<string> {
+  try { return await r.text(); } catch { return ""; }
 }
 
 function corsHeaders(): HeadersInit {
