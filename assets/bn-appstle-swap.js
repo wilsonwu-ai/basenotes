@@ -196,7 +196,12 @@
         }
         emit('start', { variantId: newVariantId, handle: handle, path: 'A' });
         return callReplaceVariants(newVariantId).then(function () {
+          // Appstle replace-variants-v2 REPLACES the line (new lineId each time),
+          // so invalidate the contract cache. Next swap will refetch and pick up
+          // the new lineId — otherwise we'd hit "Contract line not found".
           state.currentVariantId = newVariantId;
+          state.lineId = null;
+          state.fetched = false;
           emit('success', { variantId: newVariantId, handle: handle, path: 'A' });
           return { ok: true, variantId: newVariantId, path: 'A' };
         });
