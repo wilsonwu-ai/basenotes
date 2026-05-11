@@ -108,15 +108,18 @@ export default {
         if (request.method !== "POST") return json({ error: "method_not_allowed" }, 405);
         const body = await safeJson(request);
         const variantId = body && (body as SyncBody).variantId;
-        if (!variantId) return json({ error: "bad_body", detail: "variantId required" }, 400);
+        if (!variantId) return json({ ok: false, error: "bad_body", detail: "variantId required" }, 200);
         const result = await syncSubscription(env, customerId, String(variantId));
-        return json(result, result.ok ? 200 : 502);
+        // Always return 200 — Shopify App Proxy replaces non-2xx response bodies
+        // with the storefront's HTML error chrome, swallowing our JSON detail.
+        return json(result, 200);
       }
 
       return json({ error: "not_found", path }, 404);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "unknown";
-      return json({ error: "server_error", detail: message }, 500);
+      // 200 for the same reason as above — surface the real error to the client.
+      return json({ ok: false, error: "server_error", detail: message }, 200);
     }
   },
 };
