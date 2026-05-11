@@ -48,6 +48,15 @@
     return !!(window.bnCustomerId);
   }
 
+  function stripGid(s) {
+    // "gid://shopify/SubscriptionLine/abc-123" -> "abc-123"
+    // "12345" -> "12345"
+    if (s == null) return null;
+    var str = String(s);
+    var idx = str.lastIndexOf('/');
+    return idx >= 0 ? str.slice(idx + 1) : str;
+  }
+
   function emit(evt, data) {
     listeners.forEach(function (l) {
       if (l.evt === evt) {
@@ -71,20 +80,39 @@
       .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('no-contracts')); })
       .then(function (contracts) {
         var list = contracts || [];
+        // Appstle returns `status: "active"` lowercase, not "ACTIVE".
         var active = null;
         for (var i = 0; i < list.length; i++) {
-          if (list[i].status === 'ACTIVE') { active = list[i]; break; }
+          if (String(list[i].status || '').toLowerCase() === 'active') { active = list[i]; break; }
         }
         if (!active) active = list[0];
         if (!active) throw new Error('no-active-contract');
 
         state.contractId = active.subscriptionContractId || active.contractId || active.id || null;
-        var lines = active.lines || active.lineItems || [];
-        var line = lines[0] || null;
+
+        // Line data lives in `contractDetailsJSON` (stringified JSON array),
+        // not in `lines` or `lineItems`. Confirmed via Playwright probe May 11.
+        // Each entry: {productId, variantId, lineId, quantity, ...} — values
+        // are full GraphQL gids (e.g. "gid://shopify/SubscriptionLine/...").
+        var line = null;
+        if (active.contractDetailsJSON) {
+          try {
+            var parsed = JSON.parse(active.contractDetailsJSON);
+            if (Array.isArray(parsed) && parsed.length > 0) line = parsed[0];
+          } catch (e) { /* fall through to legacy paths */ }
+        }
+        if (!line) {
+          var lines = active.lines || active.lineItems || [];
+          line = lines[0] || null;
+        }
+
         if (line) {
-          state.lineId = line.id || line.lineId || null;
-          var vid = line.variantId || (line.variant && line.variant.id) || null;
-          state.currentVariantId = vid != null ? String(vid) : null;
+          // lineId / variantId may be full gid strings — strip the prefix when
+          // calling Appstle's replace-variants-v2 (which expects numeric IDs).
+          var rawLineId = line.lineId || line.id || null;
+          var rawVid = line.variantId || (line.variant && line.variant.id) || null;
+          state.lineId = stripGid(rawLineId);
+          state.currentVariantId = rawVid != null ? stripGid(String(rawVid)) : null;
         }
         state.fetched = true;
         state.fetching = null;
