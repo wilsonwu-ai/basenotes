@@ -10,7 +10,10 @@ SHOPIFY_SHOP = "ath7ay-1y.myshopify.com"
 # Secrets (set via `wrangler secret put` — do NOT add them here):
 #   wrangler secret put SHOPIFY_APP_PROXY_SECRET
 #   wrangler secret put SHOPIFY_ADMIN_TOKEN
+#   wrangler secret put SUBSCRIPTION_WRITER_CLIENT_ID      # Dev Dashboard "Basenote Subscription Writer" → Settings → Credentials
+#   wrangler secret put SUBSCRIPTION_WRITER_CLIENT_SECRET  # same place
 #
 # SHOPIFY_ADMIN_TOKEN must have scopes:
 #   read_customers, write_customers
 #   read_own_subscription_contracts, write_own_subscription_contracts
+# It is captured via the OAuth flow this Worker handles at GET / and /oauth/callback.

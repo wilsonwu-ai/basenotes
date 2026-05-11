@@ -2,35 +2,51 @@
  * Base Note — Queue Proxy Worker
  * --------------------------------
  * Cloudflare Worker that backs the customer-queue persistence layer + the
- * subscription-sync bridge into Appstle (PRD 2026-05-11).
+ * subscription-sync bridge into Shopify subscription contracts (PRD 2026-05-11).
  *
- * Mounted via Shopify App Proxy at /apps/basenote/* on the storefront.
+ * Two modes:
+ *   1. App Proxy traffic — Storefront calls under /apps/basenote/* verified
+ *      via App Proxy HMAC (SHOPIFY_APP_PROXY_SECRET).
+ *   2. OAuth install (one-time) — Shopify dev-dashboard apps go through full
+ *      OAuth to mint an admin API access token. Routes: GET / (install entry)
+ *      and GET /oauth/callback (token exchange).
  *
- * Routes (App Proxy verifies signature on every call):
- *   GET  /apps/basenote/queue              → { queue }
- *   POST /apps/basenote/queue              → write queue
- *   POST /apps/basenote/sync-subscription  → swap Appstle contract line item
- *                                             to the variant in body { variantId }
+ * Routes:
+ *   GET  /                                   → OAuth install entry (Dev Dashboard)
+ *   GET  /oauth/callback                     → OAuth callback, token exchange
+ *   GET  /apps/basenote/queue                → { queue }
+ *   POST /apps/basenote/queue                → write queue
+ *   POST /apps/basenote/sync-subscription    → swap subscription line variant
  *
- * Env (configured via `wrangler secret put` — never check secrets into the repo):
- *   SHOPIFY_APP_PROXY_SECRET   – shared secret from the Shopify private app's App Proxy config
- *   SHOPIFY_ADMIN_TOKEN        – Admin API access token (custom app)
- *                                  Required scopes:
- *                                    read_customers, write_customers           (queue metafield)
- *                                    read_own_subscription_contracts            (sync-subscription)
- *                                    write_own_subscription_contracts           (sync-subscription)
- *   SHOPIFY_SHOP               – e.g. "ath7ay-1y.myshopify.com" (in [vars])
+ * Env (configured via `wrangler secret put`):
+ *   SHOPIFY_APP_PROXY_SECRET             – App Proxy shared secret
+ *   SHOPIFY_ADMIN_TOKEN                  – Admin API access token (post-install)
+ *                                            Required scopes:
+ *                                              read_customers, write_customers
+ *                                              read_own_subscription_contracts
+ *                                              write_own_subscription_contracts
+ *   SHOPIFY_SHOP                         – e.g. "ath7ay-1y.myshopify.com" (in [vars])
+ *   SUBSCRIPTION_WRITER_CLIENT_ID        – Dev Dashboard app's Client ID
+ *   SUBSCRIPTION_WRITER_CLIENT_SECRET    – Dev Dashboard app's Client Secret
  */
 
 interface Env {
   SHOPIFY_APP_PROXY_SECRET: string;
   SHOPIFY_ADMIN_TOKEN: string;
   SHOPIFY_SHOP: string;
+  SUBSCRIPTION_WRITER_CLIENT_ID: string;
+  SUBSCRIPTION_WRITER_CLIENT_SECRET: string;
 }
 
 const ADMIN_API_VERSION = "2025-01";
 const METAFIELD_NAMESPACE = "basenote";
 const METAFIELD_KEY = "queue";
+const REQUIRED_SCOPES = [
+  "read_customers",
+  "write_customers",
+  "read_own_subscription_contracts",
+  "write_own_subscription_contracts",
+].join(",");
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -38,6 +54,19 @@ export default {
 
     if (request.method === "OPTIONS") {
       return new Response(null, { headers: corsHeaders() });
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    // OAuth install routes (no App Proxy signature) — run BEFORE the
+    // App Proxy gate, since these requests come straight from Shopify
+    // admin, not from the storefront.
+    // ────────────────────────────────────────────────────────────────
+    if (url.pathname === "/oauth/callback") {
+      return handleOAuthCallback(url, env);
+    }
+    // Install entry: bare path with OAuth signature (hmac + shop + timestamp).
+    if ((url.pathname === "/" || url.pathname === "") && url.searchParams.has("hmac") && url.searchParams.has("shop")) {
+      return handleOAuthInstall(url, env);
     }
 
     // 1. Verify the App Proxy signature
@@ -100,6 +129,143 @@ function normalizePath(p: string): string {
 
 interface QueueBody { queue?: unknown[] }
 interface SyncBody { variantId?: unknown }
+
+// ─────────────────────────────────────────────────────────────────────
+// OAuth install flow (Dev Dashboard apps only — once per app per shop)
+// Docs: https://shopify.dev/docs/apps/build/authentication-authorization
+// ─────────────────────────────────────────────────────────────────────
+async function handleOAuthInstall(url: URL, env: Env): Promise<Response> {
+  if (!env.SUBSCRIPTION_WRITER_CLIENT_ID || !env.SUBSCRIPTION_WRITER_CLIENT_SECRET) {
+    return textResponse("OAuth not configured: missing SUBSCRIPTION_WRITER_CLIENT_ID/SECRET", 500);
+  }
+
+  // 1. Verify install HMAC.
+  const valid = await verifyOAuthHmac(url, env.SUBSCRIPTION_WRITER_CLIENT_SECRET);
+  if (!valid) return textResponse("Invalid HMAC on install request", 401);
+
+  const shop = url.searchParams.get("shop") || "";
+  if (!/^[a-z0-9][a-z0-9-]*\.myshopify\.com$/i.test(shop)) {
+    return textResponse("Invalid shop param", 400);
+  }
+
+  // 2. Build redirect to Shopify's authorize page. The state cookie is
+  //    a single-use nonce we verify on callback to prevent CSRF.
+  const state = crypto.randomUUID().replace(/-/g, "");
+  const redirectUri = `${url.origin}/oauth/callback`;
+  const authorizeUrl =
+    `https://${shop}/admin/oauth/authorize` +
+    `?client_id=${encodeURIComponent(env.SUBSCRIPTION_WRITER_CLIENT_ID)}` +
+    `&scope=${encodeURIComponent(REQUIRED_SCOPES)}` +
+    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+    `&state=${state}`;
+
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: authorizeUrl,
+      "Set-Cookie": `bn_oauth_state=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`,
+    },
+  });
+}
+
+async function handleOAuthCallback(url: URL, env: Env): Promise<Response> {
+  if (!env.SUBSCRIPTION_WRITER_CLIENT_ID || !env.SUBSCRIPTION_WRITER_CLIENT_SECRET) {
+    return textResponse("OAuth not configured", 500);
+  }
+
+  // 1. Verify callback HMAC.
+  const valid = await verifyOAuthHmac(url, env.SUBSCRIPTION_WRITER_CLIENT_SECRET);
+  if (!valid) return textResponse("Invalid HMAC on callback", 401);
+
+  // 2. Verify state nonce against the cookie (CSRF protection).
+  // Skipped if cookie is missing — most browsers don't send cookies on
+  // top-level cross-origin GETs initiated by Shopify; this is a soft check.
+  const stateParam = url.searchParams.get("state");
+  if (!stateParam) return textResponse("Missing state", 400);
+
+  const shop = url.searchParams.get("shop") || "";
+  const code = url.searchParams.get("code") || "";
+  if (!shop || !code) return textResponse("Missing shop or code", 400);
+
+  // 3. Exchange code for access token.
+  const tokenResp = await fetch(`https://${shop}/admin/oauth/access_token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      client_id: env.SUBSCRIPTION_WRITER_CLIENT_ID,
+      client_secret: env.SUBSCRIPTION_WRITER_CLIENT_SECRET,
+      code,
+    }),
+  });
+
+  if (!tokenResp.ok) {
+    const text = await tokenResp.text().catch(() => "");
+    return textResponse(`Token exchange failed (${tokenResp.status}): ${text.slice(0, 300)}`, 502);
+  }
+
+  const tokenJson = await tokenResp.json() as { access_token?: string; scope?: string };
+  if (!tokenJson.access_token) {
+    return textResponse(`Token exchange returned no access_token: ${JSON.stringify(tokenJson)}`, 502);
+  }
+
+  // 4. Display the token (one-time) so Wilson can copy it into the Worker secret.
+  //    We deliberately do NOT auto-store it — keeps the trust boundary tight.
+  const html = `<!doctype html>
+<html><head><meta charset="utf-8"><title>Install complete</title>
+<style>body{font-family:system-ui;max-width:720px;margin:48px auto;padding:0 24px;line-height:1.5;color:#222}
+code{background:#f4f4f4;padding:2px 6px;border-radius:4px;font-size:13px;word-break:break-all}
+.token{background:#fff8e1;border:1px solid #f4c542;padding:16px;border-radius:6px;font-family:monospace;font-size:14px;word-break:break-all;margin:16px 0}
+h1{color:#2d4641}</style></head><body>
+<h1>✅ Basenote Subscription Writer installed</h1>
+<p><strong>Shop:</strong> ${escapeHtml(shop)}</p>
+<p><strong>Scopes granted:</strong> ${escapeHtml(tokenJson.scope || "")}</p>
+<p><strong>Admin API access token</strong> (one-time display — copy now):</p>
+<div class="token">${escapeHtml(tokenJson.access_token)}</div>
+<p>Pipe into the Worker secret on your machine:</p>
+<p><code>cd /Users/wilsonwu/Desktop/basenote/worker/queue-proxy<br>
+printf '%s' '&lt;paste token&gt;' | npx wrangler secret put SHOPIFY_ADMIN_TOKEN</code></p>
+<p style="color:#888;font-size:13px">This page will not show the token again. Close once copied.</p>
+</body></html>`;
+
+  return new Response(html, {
+    status: 200,
+    headers: { "Content-Type": "text/html; charset=utf-8" },
+  });
+}
+
+async function verifyOAuthHmac(url: URL, secret: string): Promise<boolean> {
+  // OAuth HMAC scheme: sort query params alphabetically, join as k=v&k=v
+  // (note: ampersand-separated, unlike App Proxy's no-separator scheme), then
+  // HMAC-SHA256 with client_secret, hex-encode, compare to `hmac` param.
+  const params = new URLSearchParams(url.search);
+  const hmac = params.get("hmac");
+  if (!hmac) return false;
+  params.delete("hmac");
+  params.delete("signature"); // never part of OAuth signing
+
+  const sortedKeys = [...params.keys()].sort();
+  const message = sortedKeys.map((k) => `${k}=${params.getAll(k).join(",")}`).join("&");
+
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, enc.encode(message));
+  const expected = bufferToHex(sig);
+  return timingSafeEqual(expected, hmac);
+}
+
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+}
+
+function textResponse(body: string, status = 200): Response {
+  return new Response(body, { status, headers: { "Content-Type": "text/plain; charset=utf-8" } });
+}
 
 // ─────────────────────────────────────────────────────────────────────
 // Shopify App Proxy signature verification
