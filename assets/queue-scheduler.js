@@ -257,11 +257,18 @@
   }
 
   function setShippedThrough(monthStr) {
+    var newVal;
     if (monthStr && /^\d{4}-(0[1-9]|1[0-2])$/.test(monthStr)) {
-      shippedThrough = monthStr;
+      newVal = monthStr;
     } else {
-      shippedThrough = null;
+      newVal = null;
     }
+    // No-op if value unchanged — prevents infinite emit() recursion when a
+    // 'change' listener (e.g. renderDashJourney in account.liquid) calls
+    // setShippedThrough on every render. Caught a RangeError loop May 12.
+    if (newVal === shippedThrough) return;
+    shippedThrough = newVal;
+
     // Re-prune existing queue now that the boundary changed
     var pruned = pruneExpired(load());
     localStorage.setItem(KEY, JSON.stringify(pruned));

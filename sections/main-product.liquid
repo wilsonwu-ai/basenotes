@@ -1884,17 +1884,39 @@
             url: {{ product.url | json }},
             image: {{ product.featured_image | image_url: width: 200 | json }},
             family: {{ product.vendor | json }},
-            variantId: variantEl ? parseInt(variantEl.value, 10) : 0,
-            addedAt: new Date().toISOString()
+            variantId: variantEl ? parseInt(variantEl.value, 10) : 0
           };
-          var queue = [];
-          try { queue = JSON.parse(localStorage.getItem('basenotes_queue') || '[]'); } catch(e) {}
-          var idx = queue.findIndex(function(q){ return q.shipMonth === monthStr; });
-          var entry = Object.assign({ shipMonth: monthStr, locked: false }, productData);
-          if (idx >= 0) queue[idx] = entry;
-          else queue.push(entry);
-          localStorage.setItem('basenotes_queue', JSON.stringify(queue));
-          window.location.href = '/account#next-shipment';
+
+          // Route through BasenoteQueue.setSlot — this is the public API that:
+          //   1. writes to localStorage
+          //   2. emits the 'change' event so PRD-4 server-sync pushes to the
+          //      customer.basenote.queue metafield (otherwise navigation away
+          //      from this page loses the write — see May 12 bug)
+          //   3. calls syncFirstSlotToAppstle when month === firstVisibleMonth
+          //      so the Appstle subscription contract line gets swapped before
+          //      the customer's next billing cycle (May 11 fix wiring).
+          // Direct localStorage writes bypass all three and leave Appstle on
+          // the original signup product — the canonical "Jeff bug".
+          if (window.BasenoteQueue && typeof window.BasenoteQueue.setSlot === 'function') {
+            window.BasenoteQueue.setSlot(monthStr, productData);
+          } else {
+            // Defensive fallback — module not loaded for some reason.
+            try {
+              var queue = JSON.parse(localStorage.getItem('basenotes_queue') || '[]');
+              var idx = queue.findIndex(function(q){ return q.shipMonth === monthStr; });
+              var entry = Object.assign({ shipMonth: monthStr, locked: false }, productData, { addedAt: new Date().toISOString() });
+              if (idx >= 0) queue[idx] = entry; else queue.push(entry);
+              localStorage.setItem('basenotes_queue', JSON.stringify(queue));
+            } catch(e) {}
+          }
+
+          // Brief wait so the debounced server-sync (1500ms in queue-scheduler)
+          // has a chance to flush BEFORE we navigate away. Without this, the
+          // server keeps stale state and overwrites local on next page load.
+          modal.remove();
+          setTimeout(function() {
+            window.location.href = '/account#next-shipment';
+          }, 1700);
         });
       });
 
