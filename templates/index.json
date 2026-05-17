@@ -409,6 +409,14 @@
     "testimonials": {
       "type": "testimonials",
       "blocks": {
+        "testimonial_jQQpGh": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "I tried Xerjoff Alexandria ii. The scent is absolutely stunning — I wear it on nights out and always get compliments. My 5ml bottle lasted  through the end of the month, which is perfect. Excited for my next fragrance.",
+            "author": "Sophie Y",
+            "location": "Los Angeles, CA"
+          }
+        },
         "testimonial_M6crP6": {
           "type": "testimonial",
           "settings": {
@@ -443,6 +451,7 @@
         }
       },
       "block_order": [
+        "testimonial_jQQpGh",
         "testimonial_M6crP6",
         "testimonial-1",
         "testimonial-2",
