@@ -409,6 +409,14 @@
     "testimonials": {
       "type": "testimonials",
       "blocks": {
+        "testimonial_M6crP6": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "Creed Aventus is a total winner. My wife loves it, and I lost count of how many compliments I got at a friend's birthday!",
+            "author": "Mike C",
+            "location": "Chicago, IL"
+          }
+        },
         "testimonial-1": {
           "type": "testimonial",
           "settings": {
@@ -435,6 +443,7 @@
         }
       },
       "block_order": [
+        "testimonial_M6crP6",
         "testimonial-1",
         "testimonial-2",
         "testimonial-3"
