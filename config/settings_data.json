@@ -44,8 +44,8 @@
     "appstle_portal_url": "https://basenotescent.com/apps/subscriptions",
     "fotm_enabled": true,
     "fotm_product": "bond-no-9-bleecker-street",
-    "fotm_display_name": "April’s Pick: Bond No.9 Bleecker Street",
-    "fotm_month": "2026-04",
+    "fotm_display_name": "June's Pick: Bond No.9 Bleecker Street",
+    "fotm_month": "2026-06",
     "sub_plan_quarterly_price": "",
     "sub_plan_quarterly_per_month": "",
     "sub_plan_annual_price": "",
@@ -91,13 +91,6 @@
         "type": "shopify://apps/appstle-subscription/blocks/appstle-subscription-helper/fe257d39-6f88-4f35-ab08-bd437e3aa94e",
         "disabled": false,
         "settings": {}
-      },
-      "16548475241908962911": {
-        "type": "shopify://apps/oxi-social-login/blocks/social-login-embed/24ad60bc-8f09-42fa-807e-e5eda0fdae17",
-        "disabled": false,
-        "settings": {
-          "enabled_on_page": "all"
-        }
       }
     }
   }
