@@ -2,7 +2,7 @@
 
 **Status:** Email templates created via API. Flow needs to be assembled in Klaviyo admin (5-minute task). The Klaviyo Flows API doesn't fully support programmatic flow creation, so the trigger + timing has to be wired in the UI.
 
-## What's already done (by Claude via API)
+## What's already done
 
 - **Metric created**: `Completed Scent Quiz` (id: `UjG7aM`, integration: API). The scent quiz on `/pages/find-your-scent` fires this event client-side with 5 quiz-answer properties attached.
 - **4 email templates created** and ready to drop into a flow:

@@ -2,7 +2,7 @@
 
 **Status:** Design + code scaffold. **NOT deployed.** Requires Cloudflare Worker + Appstle admin access to ship.
 **Owner:** Wilson (infra) + Engineering (integration)
-**Generated:** 2026-04-22 by Claude Opus 4.7
+**Generated:** 2026-04-22
 
 ---
 

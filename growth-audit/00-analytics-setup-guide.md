@@ -117,6 +117,6 @@ Once GA4 + GSC are verified and firing, tell me and I'll:
 - **Jeff**: Owner/admin on GA4 property, GSC, Google & YouTube Shopify app.
 - **Wilson**: Editor on GA4, full access on GSC.
 - **Alex**: Viewer on both.
-- **Claude (me)**: No direct login — I access via the `google_search_console-automation` skill on-demand, triggered by you granting the session permission to call it.
+- **Search Console**: No direct login — I access via the `google_search_console-automation` skill on-demand, triggered by you granting the session permission to call it.
 
 No sharing credentials with me. All auth flows go through the skill's OAuth flow when/if invoked.

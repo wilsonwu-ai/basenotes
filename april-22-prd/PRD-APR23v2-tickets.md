@@ -2,7 +2,7 @@
 
 **Source:** `april 23 tickets v2.docx` (Jeff Theefs QA)
 **Status:** Planning → Implementation (same turn)
-**Author:** Wilson / Claude
+**Author:** Wilson Wu
 **Date:** 2026-04-23
 
 ---

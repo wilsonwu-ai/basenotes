@@ -171,7 +171,6 @@ git commit -m "Batch 1: Update spray count, remove shipping bar, update pricing 
 - Remove 30-day satisfaction guarantee perk (all sales final)
 - Remove free atomizer case mention from subscription landing page
 
-Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -280,7 +279,6 @@ git commit -m "Batch 2: Remove social sharing, fix footer links, remove cart ups
 - Remove 'Complete Your Collection' upsell from cart drawer
 - Remove 'Add Monthly Subscription' upsell from cart drawer
 
-Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -621,7 +619,6 @@ git commit -m "Batch 3: Update product cards, filters, simplify to monthly subsc
 - Add seasonal fragrance recommendations to cart
 - Add 'View All Fragrances' link
 
-Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -738,7 +735,6 @@ git commit -m "Batch 4: Fix mobile cart icon, remove one-time purchase option
 - Hardcode button text to 'Add to My Queue' (no more 'Add to Cart')
 - Remove selling plan toggle JS handler (no longer needed)
 
-Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
 ```
 
 ---

@@ -129,7 +129,7 @@ def main() -> int:
     lines.append(f"SHOPIFY_ADMIN_API_ACCESS_TOKEN={access_token}")
     ENV_PATH.write_text("\n".join(lines) + "\n")
     print(f"\n✓ Wrote SHOPIFY_ADMIN_API_ACCESS_TOKEN to {ENV_PATH} (existing line replaced if present).")
-    print("\nYou can now tell Claude 'token is saved' and it will read from .env to create blog posts.")
+    print("\nToken saved; the installer reads from .env to create blog posts.")
     print("If you rotate or revoke the token later, re-run this script.")
     return 0
 
