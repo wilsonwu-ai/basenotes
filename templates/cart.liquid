@@ -45,18 +45,22 @@
                 </h2>
                 <p class="cart-items__section-subtitle">This fragrance ships with your next subscription order</p>
               </div>
-              {%- assign current_day = 'now' | date: '%d' | plus: 0 -%}
-              {%- if current_day <= 25 -%}
-                {%- assign ship_date = 'now' | date: '%B 25, %Y' -%}
-              {%- else -%}
-                {%- assign next_month_ts = 'now' | date: '%s' | plus: 2592000 -%}
-                {%- assign ship_date = next_month_ts | date: '%B 25, %Y' -%}
-              {%- endif -%}
+              {%- comment -%}
+                The FIRST subscription order is charged and fulfilled at checkout, so it ships
+                promptly — it is NOT on a monthly anchor. The previous logic
+                ('%B 25' + a 2,592,000-second "+30 days" hack) surfaced a next-month date for
+                anyone buying late in the month (e.g. May 31 → "June 25, 2026"), which read as
+                "shipped a month later" and cost conversions.
+                NOTE: this assumes first orders ship promptly. If Base Note actually batches all
+                first orders onto a fixed calendar day, replace the copy below with the NEXT
+                occurrence of that day computed correctly — do NOT reintroduce the seconds hack
+                (adding 2,592,000s to Jan 31 lands in March, skipping February).
+              {%- endcomment -%}
               <p class="cart-section__ship-date">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
                 </svg>
-                Expected ship date: <strong>{{ ship_date }}</strong>
+                Ships within <strong>3&ndash;5 business days</strong> of checkout
               </p>
               {%- for item in cart.items -%}
                 <div class="cart-item" data-item-key="{{ item.key }}">

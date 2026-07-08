@@ -326,17 +326,33 @@
         break;
 
       case 'confirm-cancel':
-        // TODO: Recharge API — cancel subscription
-        // Save cancellation data to localStorage
-        try {
-          var cancelData = {
-            reason: selectedReason,
-            feedback: (document.getElementById('cfFeedback') || {}).value || '',
-            date: new Date().toISOString()
-          };
-          localStorage.setItem('bn_cancellation', JSON.stringify(cancelData));
-        } catch(err) {}
-        showStep(5);
+        // Real cancellation via the account page's Appstle helper.
+        // The success screen (step 5) is shown ONLY after Appstle confirms the cancel —
+        // never faked, so a customer is never told they cancelled when they didn't.
+        var confirmBtn = btn;
+        var confirmOriginal = confirmBtn ? confirmBtn.textContent : '';
+        var persistCancelMeta = function() {
+          try {
+            localStorage.setItem('bn_cancellation', JSON.stringify({
+              reason: selectedReason,
+              feedback: (document.getElementById('cfFeedback') || {}).value || '',
+              date: new Date().toISOString()
+            }));
+          } catch(err) {}
+        };
+        if (typeof window.bnSubscriptionAction === 'function') {
+          if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.textContent = 'Cancelling…'; }
+          window.bnSubscriptionAction('cancel', {
+            onSuccess: function() { persistCancelMeta(); showStep(5); },
+            onError: function() {
+              if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = confirmOriginal || 'Confirm Cancellation'; }
+              alert('We couldn’t process your cancellation just now. Please try again, or email hello@basenotescent.com and we’ll cancel it for you right away.');
+            }
+          });
+        } else {
+          // Helper unavailable — do NOT fake success. Route to a real path.
+          alert('To finish cancelling, please use the Cancel button in your account page, or email hello@basenotescent.com and we’ll take care of it right away.');
+        }
         break;
 
       case 'close':
@@ -349,26 +365,33 @@
   var acceptOfferBtn = document.getElementById('cfAcceptOffer');
   if (acceptOfferBtn) {
     acceptOfferBtn.addEventListener('click', function() {
-      // TODO: Recharge API — apply retention offer based on selectedReason
-      var message = 'Offer applied! ';
+      // Accepting any offer means the customer is STAYING — never cancel here.
+      // Only claim actions that actually happen.
+      try {
+        localStorage.setItem('bn_retention_offer', JSON.stringify({ reason: selectedReason, date: new Date().toISOString() }));
+      } catch(e) {}
+
+      // "Not using it enough" → real pause via the working Appstle helper.
+      if (selectedReason === 'not_using') {
+        closeFlow();
+        if (typeof window.bnSubscriptionAction === 'function') {
+          window.bnSubscriptionAction('pause');
+        } else {
+          alert('To pause your subscription, use the Pause button on your account page, or email hello@basenotescent.com.');
+        }
+        return;
+      }
+
+      // Discount / consultation offers can't be self-applied from the browser yet
+      // (needs Appstle-side application) — hand off truthfully instead of faking it.
+      var message;
       switch(selectedReason) {
-        case 'too_expensive':
-        case 'switching':
-        case 'other':
-          message += 'Your discount has been applied to your next billing cycle.';
-          break;
-        case 'not_using':
-          message += 'Your subscription has been paused.';
-          break;
         case 'dont_like_scents':
         case 'shipping_issues':
-          message += 'Our team will reach out to you shortly.';
-          break;
-        case 'financial':
-          message += 'Your plan has been updated.';
+          message = 'Thanks for staying with us. Our team will reach out within 1 business day to make this right.';
           break;
         default:
-          message += 'Thank you for staying with us!';
+          message = 'Thanks for staying! Use code ' + settings.discountCode + ' at checkout for ' + settings.discountAmount + '. If it doesn’t apply to your subscription automatically, email hello@basenotescent.com and we’ll add it for you.';
       }
       alert(message);
       closeFlow();
