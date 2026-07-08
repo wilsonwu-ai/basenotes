@@ -745,7 +745,8 @@
 
   // ── Subscription action helper (pause / skip) — calls Appstle customer-portal API ──
   // Exposed on window so the click handlers below can call it.
-  window.bnSubscriptionAction = function(action) {
+  window.bnSubscriptionAction = function(action, opts) {
+    opts = opts || {};
     var cpBase = '/apps/subscriptions/cp/api';
     var paymentBtn = document.getElementById('subUpdatePaymentBtn');
     var contractId = paymentBtn && paymentBtn.dataset ? paymentBtn.dataset.contractId : '';
@@ -774,7 +775,33 @@
           if (!id) return Promise.reject('no-id');
           cb(id);
         })
-        .catch(function(){ showError('We couldn’t load your subscription. Please refresh the page or email hello@basenotescent.com.'); });
+        .catch(function(){ if (typeof opts.onError === 'function') { opts.onError('load-failed'); } showError('We couldn’t load your subscription. Please refresh the page or email hello@basenotescent.com.'); });
+    }
+
+    if (action === 'cancel') {
+      // Real Appstle cancellation — same customer-portal endpoint as pause, status=CANCELLED.
+      // Success/error routed to opts callbacks so callers (e.g. the cancellation modal)
+      // only advance to a "cancelled" state on a confirmed 2xx from Appstle.
+      ensureContractId(function(id){
+        var url = cpBase + '/subscription-contracts-update-status'
+          + '?contractId=' + encodeURIComponent(id)
+          + '&status=CANCELLED';
+        fetch(url, { method: 'PUT', credentials: 'same-origin' })
+          .then(function(r){
+            if (r.ok || r.status === 204) {
+              if (typeof opts.onSuccess === 'function') { opts.onSuccess(); }
+              else { showOk('Your subscription has been cancelled. You’ll keep access until the end of your current billing period.'); }
+            } else {
+              return r.text().then(function(t){ throw new Error(t || ('HTTP ' + r.status)); });
+            }
+          })
+          .catch(function(err){
+            console.error('[bn-subscription] cancel failed', err);
+            if (typeof opts.onError === 'function') { opts.onError(err); }
+            else { showError('We couldn’t cancel your subscription right now. Please email hello@basenotescent.com.'); }
+          });
+      });
+      return;
     }
 
     if (action === 'pause') {
