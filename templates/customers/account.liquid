@@ -128,7 +128,7 @@
               <a href="#next-shipment" class="acct__text-link">Manage queue</a>
             </div>
             <div class="dash-journey" id="dashJourney"
-                 data-shipped-through="{%- if latest_shipped_sub_order -%}{{ latest_shipped_sub_order.created_at | date: '%Y-%m' }}{%- endif -%}"
+                 data-shipped-through="{%- if latest_sub_order -%}{{ latest_sub_order.created_at | date: '%Y-%m' }}{%- endif -%}"
                  data-last-order-date="{%- if latest_sub_order -%}{{ latest_sub_order.created_at | date: '%Y-%m-%d' }}{%- endif -%}">
               <p class="dash-journey__loading" style="padding:2rem 0;text-align:center;color:#999;font-size:14px;">Loading your journey…</p>
             </div>
@@ -208,7 +208,7 @@
             {%- endif -%}
 
             <div class="bq-strip" id="bqStrip" role="list" aria-label="Your upcoming fragrance shipments"
-                 data-shipped-through="{%- if latest_shipped_sub_order -%}{{ latest_shipped_sub_order.created_at | date: '%Y-%m' }}{%- endif -%}">
+                 data-shipped-through="{%- if latest_sub_order -%}{{ latest_sub_order.created_at | date: '%Y-%m' }}{%- endif -%}">
               <!-- Hydrated client-side by queue-scheduler.js -->
             </div>
             <p class="bq-footnote">
@@ -2122,10 +2122,15 @@ document.addEventListener('DOMContentLoaded', function() {
       var SLOT_COUNT = 5;
       var BQ = window.BasenoteQueue;
 
-      // PRD-APR23v2 Issue B: tell the scheduler what the customer has already received
-      // so the queue's first slot is the next UN-shipped month (not calendar current).
-      {%- if latest_shipped_sub_order -%}
-        BQ.setShippedThrough({{ latest_shipped_sub_order.created_at | date: '%Y-%m' | json }});
+      // Roll the queue's first editable slot forward the moment THIS cycle's
+      // subscription order is PLACED (any fulfillment status) — not when it's
+      // marked 'fulfilled'. Fulfillment often lags the charge (or is never marked,
+      // when shipping outside Shopify), which left the roll to the 3-day calendar
+      // buffer instead of advancing "the day after the order" (Jeff, Jul 8 2026).
+      // latest_sub_order = most recent sub order (any status); once a cycle is
+      // charged, that month's scent is locked, so the next editable month is next.
+      {%- if latest_sub_order -%}
+        BQ.setShippedThrough({{ latest_sub_order.created_at | date: '%Y-%m' | json }});
       {%- endif -%}
 
       function render() {
