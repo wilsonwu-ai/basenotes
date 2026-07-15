@@ -563,7 +563,6 @@ img {
   width: 60px;
   height: 1px;
   background-color: var(--color-secondary);
-  margin:24px; /* adjust this value to taste */
 }
 
 /* Skip to Content */
@@ -667,11 +666,5 @@ img {
     --font-size-4xl: 1.75rem;
     --font-size-3xl: 1.5rem;
     --container-padding: 1rem;
-  }
-}
-@media screen and (max-width: 749px) {
-  .hero__buttons,
-  .hero__button--secondary {
-    margin-bottom: 24px; /* adjust this value to taste */
   }
 }
