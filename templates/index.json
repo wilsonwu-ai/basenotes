@@ -20,8 +20,8 @@
         "description": "<b>A 5ml atomizer of a designer or niche luxury fragrance — Creed, Tom Ford, Xerjoff, Parfums de Marly, Bond No. 9 — delivered every month for $20. No per-brand surcharges. No upcharge games.</b>",
         "button_label": "Find My Scent",
         "button_link": "/pages/find-your-scent",
-        "secondary_button_label": "",
-        "secondary_button_link": "/pages/find-your-scent",
+        "secondary_button_label": "View the Scent Vault",
+        "secondary_button_link": "shopify://collections/fragrances",
         "show_scroll_indicator": true
       }
     },
