@@ -562,7 +562,7 @@ img {
   width: 60px;
   height: 1px;
   background-color: var(--color-secondary);
-  margin: var(--spacing-lg) auto;
+  margin: 24px; /* adjust this value to taste */
 }
 
 /* Skip to Content */
