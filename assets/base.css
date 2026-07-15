@@ -668,3 +668,9 @@ img {
     --container-padding: 1rem;
   }
 }
+@media screen and (max-width: 749px) {
+  .hero__buttons,
+  .hero__button--secondary {
+    margin-bottom: 24px; /* adjust this value to taste */
+  }
+}
