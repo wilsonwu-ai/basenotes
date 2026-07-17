@@ -217,14 +217,12 @@
   </a>
 
   {% comment %} Quick Add Button {% endcomment %}
-  {%- if show_quick_add and product.available -%}
+  {%- if show_quick_add and product.available and product.selling_plan_groups.size > 0 -%}
     <button
       class="product-card__add-btn"
       data-quick-add="{{ current_variant.id }}"
       data-product-url="{{ product.url }}"
-      {%- if product.selling_plan_groups.size > 0 -%}
-        data-selling-plan="{{ product.selling_plan_groups[0].selling_plans[0].id }}"
-      {%- endif -%}
+      data-selling-plan="{{ product.selling_plan_groups[0].selling_plans[0].id }}"
       type="button"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -232,6 +230,12 @@
       </svg>
       <span>Choose This Scent</span>
     </button>
+  {%- elsif show_quick_add and product.available -%}
+    {%- comment -%} Bug D guard: product not attached to the Appstle selling-plan group. Quick-add
+       would post no selling_plan and add a ONE-TIME purchase. Show a calm unavailable state. {%- endcomment -%}
+    <div class="product-card__sold-out-btn" data-subscription-unavailable>
+      <span>Coming Soon</span>
+    </div>
   {%- elsif product.available == false -%}
     <div class="product-card__sold-out-btn">
       <span>Sold Out</span>

@@ -17,9 +17,12 @@
     settings.subscription_first_order_discount_pct (default: '10')
 {%- endcomment -%}
 
+{%- comment -%} Fallbacks match the config/settings_schema.json defaults ($15 / 25%) so this snippet
+   never contradicts subscription-renewal-disclosure.liquid on the same PDP if settings are blanked.
+   The actual first-month discount is enforced by the Appstle selling plan — keep these in sync. {%- endcomment -%}
 {%- assign price = settings.subscription_price | default: '$20' -%}
-{%- assign first_price = settings.subscription_first_order_price | default: '$18' -%}
-{%- assign first_pct = settings.subscription_first_order_discount_pct | default: '10' -%}
+{%- assign first_price = settings.subscription_first_order_price | default: '$15' -%}
+{%- assign first_pct = settings.subscription_first_order_discount_pct | default: '25' -%}
 
 {%- case surface -%}
 

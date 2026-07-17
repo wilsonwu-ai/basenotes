@@ -362,14 +362,34 @@
             </div>
           {%- endif -%}
 
-          <button type="submit" class="add-to-queue-btn" id="addToCartButton" {% unless current_variant.available %}disabled{% endunless %} data-add-to-cart>
-            {%- if current_variant.available -%}
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-              <span id="addToCartText">Start My Subscription — $20/month</span>
-            {%- else -%}
-              <span id="addToCartText">Sold Out</span>
-            {%- endif -%}
-          </button>
+          {%- comment -%}
+            Bug D guard (July 16 2026): if this product is NOT attached to the Appstle selling-plan
+            group (selling_plan_groups.size == 0), the submit button would silently add a plain
+            ONE-TIME purchase (no subscription, no first-month discount, no Appstle contract — a
+            revenue leak). Base Note has no intentional one-time SKUs, so size==0 is always a
+            misconfiguration. Show a calm unavailable state instead of letting it add to cart. The
+            real fix is attaching the product to the plan in Appstle admin.
+          {%- endcomment -%}
+          {%- if product.selling_plan_groups.size > 0 -%}
+            <button type="submit" class="add-to-queue-btn" id="addToCartButton" {% unless current_variant.available %}disabled{% endunless %} data-add-to-cart>
+              {%- if current_variant.available -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                <span id="addToCartText">Start My Subscription — $20/month</span>
+              {%- else -%}
+                <span id="addToCartText">Sold Out</span>
+              {%- endif -%}
+            </button>
+          {%- else -%}
+            <button type="button" class="add-to-queue-btn" disabled aria-disabled="true" data-subscription-unavailable>
+              <span>Subscription unavailable</span>
+            </button>
+            <p class="subscription-box__note subscription-box__note--unavailable">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+              </svg>
+              This scent's subscription is being set up — check back soon.
+            </p>
+          {%- endif -%}
         {%- endform -%}
 
         {%- comment -%} PRD-01 follow-up (Apr 23): logged-in subscribers can queue a future-month pick directly from PDP without hitting cart {%- endcomment -%}
