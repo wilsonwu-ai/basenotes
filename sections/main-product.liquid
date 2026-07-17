@@ -1,5 +1,5 @@
 {%- liquid
-  assign current_variant = collection.product.selected_or_first_available_variant
+  assign current_variant = product.selected_or_first_available_variant
   assign featured_image = current_variant.featured_image | default: product.featured_image
 
   # Get seasons from metafield or tags
@@ -43,7 +43,6 @@
   endif
 
   # Detect if current variant is a subscription (5ml) or one-time purchase (full bottle)
-  assign is_subscription_variant = false
   assign variant_title_lower = current_variant.title | downcase
   if variant_title_lower contains '5ml' or variant_title_lower contains '5 ml' or variant_title_lower contains 'atomizer' or variant_title_lower contains 'subscription'
     assign is_subscription_variant = true
