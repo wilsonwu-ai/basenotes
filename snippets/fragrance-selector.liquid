@@ -16,6 +16,31 @@
   {%- assign fs_products = collections['all'].products -%}
 {%- endif -%}
 
+{%- comment -%}
+  Bug A fix (July 16 2026): build the filter tabs from the fragrance families that are ACTUALLY
+  present in the rendered products, instead of a hardcoded taxonomy (woody/floral/fresh/oriental/
+  leather/spicy/musk) that did not match the store's real `custom.fragrance_family` vocabulary and
+  emptied the grid on every filter. `.value | join` is metafield-type-robust: for a list metafield
+  it joins the array; for a single-line metafield it passes the string through; if unset it falls
+  back to product.type. Tab scope == grid scope (both `limit: 20`), so a tab can never be empty.
+{%- endcomment -%}
+{%- assign fs_family_blob = '' -%}
+{%- for product in fs_products limit: 20 -%}
+  {%- assign p_ff = product.metafields.custom.fragrance_family.value -%}
+  {%- if p_ff == blank -%}{%- assign p_ff = product.type -%}{%- endif -%}
+  {%- comment -%} Normalize to individual families: `join` flattens a list metafield or passes a
+       single string; `replace ','` also splits comma-delimited single-field values; strip each so
+       whitespace-carrying values can't create duplicate or mismatched tabs. {%- endcomment -%}
+  {%- assign p_ff_arr = p_ff | join: '~~' | replace: ',', '~~' | split: '~~' -%}
+  {%- for fv in p_ff_arr -%}
+    {%- assign fvs = fv | strip -%}
+    {%- unless fvs == blank -%}
+      {%- assign fs_family_blob = fs_family_blob | append: '~~' | append: fvs -%}
+    {%- endunless -%}
+  {%- endfor -%}
+{%- endfor -%}
+{%- assign fs_families = fs_family_blob | split: '~~' | uniq | sort_natural -%}
+
 {%- if mode == 'modal' -%}
 <div class="fs-overlay" id="fragranceSelectorOverlay" style="display:none;" aria-hidden="true">
   <div class="fs-overlay__bg" data-fs-close></div>
@@ -39,26 +64,47 @@
     <div class="fs-filters-wrap">
       <div class="fs-filters" role="tablist">
         <button class="fs-filter is-active" data-fs-filter="all">All</button>
-        <button class="fs-filter" data-fs-filter="woody">Woody</button>
-        <button class="fs-filter" data-fs-filter="floral">Floral</button>
-        <button class="fs-filter" data-fs-filter="fresh">Fresh</button>
-        <button class="fs-filter" data-fs-filter="oriental">Oriental</button>
-        <button class="fs-filter" data-fs-filter="leather">Leather</button>
-        <button class="fs-filter" data-fs-filter="spicy">Spicy</button>
-        <button class="fs-filter" data-fs-filter="musk">Musk</button>
+        {%- for fam in fs_families -%}
+          {%- assign fam_clean = fam | strip -%}
+          {%- unless fam_clean == blank or fam_clean == 'Fragrance' -%}
+            <button class="fs-filter" data-fs-filter="{{ fam_clean | downcase }}">{{ fam_clean }}</button>
+          {%- endunless -%}
+        {%- endfor -%}
       </div>
     </div>
 
     <div class="fs-grid">
       {%- for product in fs_products limit: 20 -%}
-        {%- assign family = product.metafields.custom.fragrance_family | default: product.type | downcase -%}
+        {%- comment -%} Bug A fix: robust family derivation (list- or single-metafield, or product.type fallback).
+             Element-wise strip so tab tokens and card keys match exactly.
+             card_ff_display = human label ("Fresh, Citrus"); card_ff_key = "|fresh|citrus|" for delimiter-safe JS match;
+             card_ff_primary = first family for the queue event payload. {%- endcomment -%}
+        {%- assign card_ff = product.metafields.custom.fragrance_family.value -%}
+        {%- if card_ff == blank -%}{%- assign card_ff = product.type -%}{%- endif -%}
+        {%- assign card_ff_key = '|' -%}
+        {%- assign card_ff_display = '' -%}
+        {%- assign card_ff_primary = '' -%}
+        {%- assign card_ff_arr = card_ff | join: '~~' | replace: ',', '~~' | split: '~~' -%}
+        {%- for fv in card_ff_arr -%}
+          {%- assign fvs = fv | strip -%}
+          {%- unless fvs == blank -%}
+            {%- assign fvl = fvs | downcase -%}
+            {%- assign card_ff_key = card_ff_key | append: fvl | append: '|' -%}
+            {%- if card_ff_display == blank -%}
+              {%- assign card_ff_display = fvs -%}
+              {%- assign card_ff_primary = fvs -%}
+            {%- else -%}
+              {%- assign card_ff_display = card_ff_display | append: ', ' | append: fvs -%}
+            {%- endif -%}
+          {%- endunless -%}
+        {%- endfor -%}
         {%- assign top_notes = product.metafields.custom.top_notes -%}
         {%- assign heart_notes = product.metafields.custom.heart_notes -%}
         {%- assign base_notes = product.metafields.custom.base_notes -%}
         <div class="fs-card"
              data-fs-id="{{ product.id }}"
              data-fs-handle="{{ product.handle }}"
-             data-fs-family="{{ family | downcase }}">
+             data-fs-family="{{ card_ff_key }}">
           <div class="fs-card__image">
             {%- if product.featured_image -%}
               <img
@@ -79,7 +125,7 @@
           </div>
           <div class="fs-card__content">
             <h4 class="fs-card__name">{{ product.title }}</h4>
-            <span class="fs-card__family">{{ family }}</span>
+            <span class="fs-card__family">{{ card_ff_display }}</span>
             {%- if top_notes != blank -%}
               <div class="fs-card__notes">
                 <span class="fs-card__notes-label">Top:</span> {{ top_notes }}
@@ -94,7 +140,7 @@
                     data-product-handle="{{ product.handle }}"
                     data-product-title="{{ product.title | escape }}"
                     data-product-image="{{ product.featured_image | image_url: width: 400 }}"
-                    data-product-family="{{ family }}">
+                    data-product-family="{{ card_ff_primary }}">
               Add to Queue
             </button>
           </div>
@@ -334,6 +380,12 @@
     .fs-card__content {
       padding: 0.75rem;
     }
+    /* Brand framework §7.1: minimum 44px touch targets on mobile */
+    .fs-filter {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
   }
 </style>
 
@@ -386,8 +438,10 @@
         if (family === 'all') {
           card.style.display = '';
         } else {
+          // data-fs-family is a pipe-delimited key like "|fresh|citrus|"; match the whole token
+          // (not a substring) so "fresh" never matches "freshwater" and multi-family cards work.
           var cardFamily = (card.dataset.fsFamily || '').toLowerCase();
-          card.style.display = cardFamily.indexOf(family) !== -1 ? '' : 'none';
+          card.style.display = cardFamily.indexOf('|' + family + '|') !== -1 ? '' : 'none';
         }
       });
     });
