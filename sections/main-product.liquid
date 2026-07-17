@@ -2090,6 +2090,25 @@
           return response.json();
         })
         .then(function(data) {
+          // Subscription safety-net (Jul 17): a subscribe click must NEVER become a silent one-time
+          // purchase. If a selling plan was requested but Shopify did not attach it (subscription
+          // plans not applying at cart), roll the line back out and surface an error rather than
+          // charging one-time. Dormant when subscriptions work normally.
+          if (sellingPlan && data && !data.selling_plan_allocation) {
+            if (data.key) {
+              fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
+            }
+            console.error('[BaseNote] Subscription plan was not applied by Shopify — rolled back to avoid a one-time charge. sellingPlan=', sellingPlan);
+            addToCartBtn.classList.remove('is-loading');
+            addToCartBtn.classList.remove('is-added');
+            if (addToCartText) addToCartText.textContent = 'Subscription unavailable — please try again';
+            addToCartBtn.style.background = '#c0392b';
+            setTimeout(function() {
+              if (addToCartText) addToCartText.textContent = originalText;
+              addToCartBtn.style.background = '';
+            }, 4000);
+            return;
+          }
           addToCartBtn.classList.remove('is-loading');
           addToCartBtn.classList.add('is-added');
           if (addToCartText) addToCartText.textContent = 'Added to Queue!';
@@ -2137,6 +2156,22 @@
         return response.json();
       })
       .then(function(data) {
+        // Subscription safety-net (Jul 17): same guard as the primary path — never let a subscribe
+        // action silently become a one-time purchase if Shopify drops the selling plan.
+        if (sellingPlan && data && !data.selling_plan_allocation) {
+          if (data.key) {
+            fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
+          }
+          console.error('[BaseNote] Subscription plan was not applied by Shopify (swap path) — rolled back. sellingPlan=', sellingPlan);
+          if (addToCartBtn) addToCartBtn.classList.remove('is-loading', 'is-added');
+          if (addToCartText) addToCartText.textContent = 'Subscription unavailable — please try again';
+          if (addToCartBtn) addToCartBtn.style.background = '#c0392b';
+          setTimeout(function() {
+            if (addToCartText) addToCartText.textContent = originalText;
+            if (addToCartBtn) addToCartBtn.style.background = '';
+          }, 4000);
+          return;
+        }
         if (addToCartBtn) {
           addToCartBtn.classList.remove('is-loading');
           addToCartBtn.classList.add('is-added');
