@@ -7,6 +7,11 @@
   `selling_plan_groups.size > 0`; otherwise "Coming Soon" (was: leaked a one-time purchase).
 - **P1-2** fallback alignment — `snippets/subscription-pricing-summary.liquid`: `$18/10%` → `$15/25%`.
 
+**P0-1 RESOLVED → DROPPED (Wilson confirmed 2026-07-17): `custom.fragrance_family` IS populated.**
+⇒ The committed `dbf7d12` fix already delivers working family filters. No taxonomy re-point needed.
+Only remaining step for the swap filter is the preview render to confirm the tabs populate live.
+(Original P0-1 analysis retained below for the record.)
+
 **P0-1 REVISED after deeper verification (do NOT ship the original P0-1 as written):**
 - The theme references **only** `metafields.custom.fragrance_family` for family — there is NO theme
   code touching `metafields.shopify.fragrance`, and the season pattern
