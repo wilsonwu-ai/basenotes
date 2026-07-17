@@ -379,6 +379,18 @@
                 <span id="addToCartText">Sold Out</span>
               {%- endif -%}
             </button>
+            {%- comment -%} July 16 ticket: reinforce the first-month discount at the point of action,
+                 not just in the summary card above. Fallbacks match settings_schema defaults ($15/25%). {%- endcomment -%}
+            {%- if current_variant.available -%}
+              <p class="subscription-box__note subscription-box__note--pricing">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+                </svg>
+                First month {{ settings.subscription_first_order_price | default: '$15' }}
+                ({{ settings.subscription_first_order_discount_pct | default: '25' }}% off)
+                · then {{ settings.subscription_price | default: '$20' }}/month · cancel anytime
+              </p>
+            {%- endif -%}
           {%- else -%}
             <button type="button" class="add-to-queue-btn" disabled aria-disabled="true" data-subscription-unavailable>
               <span>Subscription unavailable</span>
