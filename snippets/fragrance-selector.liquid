@@ -26,18 +26,34 @@
 {%- endcomment -%}
 {%- assign fs_family_blob = '' -%}
 {%- for product in fs_products limit: 20 -%}
-  {%- assign p_ff = product.metafields.custom.fragrance_family.value -%}
-  {%- if p_ff == blank -%}{%- assign p_ff = product.type -%}{%- endif -%}
-  {%- comment -%} Normalize to individual families: `join` flattens a list metafield or passes a
-       single string; `replace ','` also splits comma-delimited single-field values; strip each so
-       whitespace-carrying values can't create duplicate or mismatched tabs. {%- endcomment -%}
-  {%- assign p_ff_arr = p_ff | join: '~~' | replace: ',', '~~' | split: '~~' -%}
-  {%- for fv in p_ff_arr -%}
-    {%- assign fvs = fv | strip -%}
-    {%- unless fvs == blank -%}
-      {%- assign fs_family_blob = fs_family_blob | append: '~~' | append: fvs -%}
-    {%- endunless -%}
-  {%- endfor -%}
+  {%- comment -%} Family source of truth = the Shopify taxonomy "Fragrance" attribute — the same
+       data the collection page facet (filter.v.t.shopify.fragrance) filters on. Live QA (Jul 18)
+       showed custom.fragrance_family resolves blank in this context, leaving only the ALL tab.
+       Taxonomy values are metaobjects; use .name (default to the raw value for plain strings).
+       If the taxonomy read yields nothing, fall back to the legacy chain (custom metafield ->
+       product.type) so the worst case is identical to prior behavior. {%- endcomment -%}
+  {%- assign p_fam_str = '' -%}
+  {%- assign p_tax = product.metafields.shopify.fragrance.value -%}
+  {%- if p_tax -%}
+    {%- for tv in p_tax -%}
+      {%- assign fvs = tv.name | default: tv | strip -%}
+      {%- unless fvs == blank -%}
+        {%- assign p_fam_str = p_fam_str | append: '~~' | append: fvs -%}
+      {%- endunless -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- if p_fam_str == blank -%}
+    {%- assign p_ff = product.metafields.custom.fragrance_family.value -%}
+    {%- if p_ff == blank -%}{%- assign p_ff = product.type -%}{%- endif -%}
+    {%- assign p_ff_arr = p_ff | join: '~~' | replace: ',', '~~' | split: '~~' -%}
+    {%- for fv in p_ff_arr -%}
+      {%- assign fvs = fv | strip -%}
+      {%- unless fvs == blank -%}
+        {%- assign p_fam_str = p_fam_str | append: '~~' | append: fvs -%}
+      {%- endunless -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- assign fs_family_blob = fs_family_blob | append: p_fam_str -%}
 {%- endfor -%}
 {%- assign fs_families = fs_family_blob | split: '~~' | uniq | sort_natural -%}
 
@@ -75,29 +91,47 @@
 
     <div class="fs-grid">
       {%- for product in fs_products limit: 20 -%}
-        {%- comment -%} Bug A fix: robust family derivation (list- or single-metafield, or product.type fallback).
-             Element-wise strip so tab tokens and card keys match exactly.
+        {%- comment -%} Family derivation, taxonomy-first (matches the tab pre-pass above).
              card_ff_display = human label ("Fresh, Citrus"); card_ff_key = "|fresh|citrus|" for delimiter-safe JS match;
              card_ff_primary = first family for the queue event payload. {%- endcomment -%}
-        {%- assign card_ff = product.metafields.custom.fragrance_family.value -%}
-        {%- if card_ff == blank -%}{%- assign card_ff = product.type -%}{%- endif -%}
         {%- assign card_ff_key = '|' -%}
         {%- assign card_ff_display = '' -%}
         {%- assign card_ff_primary = '' -%}
-        {%- assign card_ff_arr = card_ff | join: '~~' | replace: ',', '~~' | split: '~~' -%}
-        {%- for fv in card_ff_arr -%}
-          {%- assign fvs = fv | strip -%}
-          {%- unless fvs == blank -%}
-            {%- assign fvl = fvs | downcase -%}
-            {%- assign card_ff_key = card_ff_key | append: fvl | append: '|' -%}
-            {%- if card_ff_display == blank -%}
-              {%- assign card_ff_display = fvs -%}
-              {%- assign card_ff_primary = fvs -%}
-            {%- else -%}
-              {%- assign card_ff_display = card_ff_display | append: ', ' | append: fvs -%}
-            {%- endif -%}
-          {%- endunless -%}
-        {%- endfor -%}
+        {%- assign card_tax = product.metafields.shopify.fragrance.value -%}
+        {%- if card_tax -%}
+          {%- for tv in card_tax -%}
+            {%- assign fvs = tv.name | default: tv | strip -%}
+            {%- unless fvs == blank -%}
+              {%- assign fvl = fvs | downcase -%}
+              {%- assign card_ff_key = card_ff_key | append: fvl | append: '|' -%}
+              {%- if card_ff_display == blank -%}
+                {%- assign card_ff_display = fvs -%}
+                {%- assign card_ff_primary = fvs -%}
+              {%- else -%}
+                {%- assign card_ff_display = card_ff_display | append: ', ' | append: fvs -%}
+              {%- endif -%}
+            {%- endunless -%}
+          {%- endfor -%}
+        {%- endif -%}
+        {%- if card_ff_display == blank -%}
+          {%- comment -%} legacy fallback: custom.fragrance_family -> product.type {%- endcomment -%}
+          {%- assign card_ff = product.metafields.custom.fragrance_family.value -%}
+          {%- if card_ff == blank -%}{%- assign card_ff = product.type -%}{%- endif -%}
+          {%- assign card_ff_arr = card_ff | join: '~~' | replace: ',', '~~' | split: '~~' -%}
+          {%- for fv in card_ff_arr -%}
+            {%- assign fvs = fv | strip -%}
+            {%- unless fvs == blank -%}
+              {%- assign fvl = fvs | downcase -%}
+              {%- assign card_ff_key = card_ff_key | append: fvl | append: '|' -%}
+              {%- if card_ff_display == blank -%}
+                {%- assign card_ff_display = fvs -%}
+                {%- assign card_ff_primary = fvs -%}
+              {%- else -%}
+                {%- assign card_ff_display = card_ff_display | append: ', ' | append: fvs -%}
+              {%- endif -%}
+            {%- endunless -%}
+          {%- endfor -%}
+        {%- endif -%}
         {%- assign top_notes = product.metafields.custom.top_notes -%}
         {%- assign heart_notes = product.metafields.custom.heart_notes -%}
         {%- assign base_notes = product.metafields.custom.base_notes -%}
