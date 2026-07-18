@@ -108,7 +108,7 @@
           .catch(err => {
             console.error('Add to cart error:', err);
             this.classList.remove('loading');
-            this.textContent = 'Error - Try Again';
+            this.textContent = /subscription/i.test(err && err.message) ? 'Subscription Unavailable' : 'Error - Try Again';
           });
       });
     });
@@ -205,7 +205,17 @@
       if (!response.ok) throw new Error('Add to cart failed');
       return response.json();
     })
-    .then(() => {
+    .then(data => {
+      // Subscription safety-net (Jul 18): if a selling plan was requested but Shopify did not
+      // attach it (plans intermittently not applying at cart), roll the line back out and fail
+      // loudly instead of silently charging a one-time purchase. Dormant when subs work.
+      if (sellingPlan && data && !data.selling_plan_allocation) {
+        if (data.key) {
+          fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
+        }
+        console.error('[BaseNote] Subscription plan not applied on quick-add — rolled back. plan=', sellingPlan);
+        throw new Error('Subscription unavailable — please try again');
+      }
       // Refresh cart count in header
       return fetch('/cart.js')
         .then(res => res.json())

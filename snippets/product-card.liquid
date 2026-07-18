@@ -754,6 +754,24 @@
       })
       .then(response => response.json())
       .then(data => {
+        // Subscription safety-net (Jul 18): never let a subscribe quick-add silently become a
+        // one-time purchase if Shopify drops the selling plan. Roll back + show an honest error.
+        if (sellingPlan && data && !data.selling_plan_allocation) {
+          if (data.key) {
+            fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
+          }
+          console.error('[BaseNote] Subscription plan not applied on quick-add — rolled back. plan=', sellingPlan);
+          addBtn.classList.remove('is-loading');
+          if (addBtn.querySelector('span')) {
+            addBtn.querySelector('span').textContent = 'Subscription Unavailable — Try Again';
+          }
+          setTimeout(() => {
+            if (addBtn.querySelector('span')) {
+              addBtn.querySelector('span').textContent = originalText;
+            }
+          }, 3500);
+          return;
+        }
         addBtn.classList.remove('is-loading');
         addBtn.classList.add('is-added');
         if (addBtn.querySelector('span')) {
