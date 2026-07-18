@@ -89,6 +89,9 @@
 
         const sellingPlan = this.dataset.sellingPlan;
 
+        // Preserve the button's real markup (icon + label) so we can restore it after adding,
+        // instead of resetting to a stale hardcoded label.
+        const originalHTML = this.innerHTML;
         this.classList.add('loading');
         this.textContent = 'Adding...';
 
@@ -97,7 +100,7 @@
             this.textContent = 'Added!';
             setTimeout(() => {
               this.classList.remove('loading');
-              this.textContent = 'Quick Subscribe — $20/mo';
+              this.innerHTML = originalHTML;
             }, 1500);
 
             // Refresh and open cart drawer with updated content
