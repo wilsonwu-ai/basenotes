@@ -2156,22 +2156,8 @@
           });
         }
         return response.json();
-})
-.then(function(data) {
-  if (!sellingPlan) return data;
-  // Verify selling plan was applied by checking cart directly
-  return fetch('/cart.js')
-    .then(function(r) { return r.json(); })
-    .then(function(cart) {
-      var applied = cart.items.some(function(item) {
-        return item.variant_id === parseInt(variantId) && item.selling_plan_allocation;
-      });
-      if (!applied) throw new Error('selling_plan_not_applied');
-      return data;
-    });
-})
-.then(function(data) {
-  // success path continues here
+      })
+      .then(function(data) {
         // Subscription safety-net (Jul 17): same guard as the primary path — never let a subscribe
         // action silently become a one-time purchase if Shopify drops the selling plan.
         if (sellingPlan && data && !data.selling_plan_allocation) {
