@@ -244,7 +244,8 @@
 
         {% comment %} SHARED FORM (used by both views) {% endcomment %}
         {%- form 'product', product, id: 'productForm', class: 'product-purchase-form', data-product-form: '', data-productid: product.id -%}
-          <input type="hidden" name="id" value="{{ current_variant.id | default: product.selected_or_first_available_variant.id }}" id="variantId">
+          <input type="hidden" name="id" value="{{ current_variant.id }}" id="variantId">
+
           {%- if product.variants.size > 1 -%}
             <div class="product-variants">
               {%- for option in product.options_with_values -%}
@@ -371,8 +372,6 @@
           {%- endcomment -%}
           {%- if product.selling_plan_groups.size > 0 -%}
             {%- assign sp = product.selling_plan_groups.first.selling_plans.first -%}
-            <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-            <input type="hidden" name="selling_plan" value="{{ sp.id }}">
             <button type="submit" class="add-to-queue-btn" id="addToCartButton" {% unless current_variant.available %}disabled{% endunless %} data-add-to-cart>
               {%- if current_variant.available -%}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
@@ -2157,8 +2156,22 @@
           });
         }
         return response.json();
-      })
-      .then(function(data) {
+})
+.then(function(data) {
+  if (!sellingPlan) return data;
+  // Verify selling plan was applied by checking cart directly
+  return fetch('/cart.js')
+    .then(function(r) { return r.json(); })
+    .then(function(cart) {
+      var applied = cart.items.some(function(item) {
+        return item.variant_id === parseInt(variantId) && item.selling_plan_allocation;
+      });
+      if (!applied) throw new Error('selling_plan_not_applied');
+      return data;
+    });
+})
+.then(function(data) {
+  // success path continues here
         // Subscription safety-net (Jul 17): same guard as the primary path — never let a subscribe
         // action silently become a one-time purchase if Shopify drops the selling plan.
         if (sellingPlan && data && !data.selling_plan_allocation) {
