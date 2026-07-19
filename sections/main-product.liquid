@@ -371,6 +371,8 @@
             real fix is attaching the product to the plan in Appstle admin.
           {%- endcomment -%}
           {%- if product.selling_plan_groups.size > 0 -%}
+            {%- assign sp = product.selling_plan_groups.first.selling_plans.first -%}
+            <input type="hidden" name="selling_plan" value="{{ sp.id }}">
             <button type="submit" class="add-to-queue-btn" id="addToCartButton" {% unless current_variant.available %}disabled{% endunless %} data-add-to-cart>
               {%- if current_variant.available -%}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
