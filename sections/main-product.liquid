@@ -371,6 +371,7 @@
             real fix is attaching the product to the plan in Appstle admin.
           {%- endcomment -%}
           {%- if product.selling_plan_groups.size > 0 -%}
+            {%- assign sp = product.selling_plan_groups.first.selling_plans.first -%}
             <button type="submit" class="add-to-queue-btn" id="addToCartButton" {% unless current_variant.available %}disabled{% endunless %} data-add-to-cart>
               {%- if current_variant.available -%}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
@@ -2091,25 +2092,28 @@
           return response.json();
         })
         .then(function(data) {
-          // Subscription safety-net (Jul 17): a subscribe click must NEVER become a silent one-time
-          // purchase. If a selling plan was requested but Shopify did not attach it (subscription
-          // plans not applying at cart), roll the line back out and surface an error rather than
-          // charging one-time. Dormant when subscriptions work normally.
-          if (sellingPlan && data && !data.selling_plan_allocation) {
-            if (data.key) {
-              fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
-            }
-            console.error('[BaseNote] Subscription plan was not applied by Shopify — rolled back to avoid a one-time charge. sellingPlan=', sellingPlan);
-            addToCartBtn.classList.remove('is-loading');
-            addToCartBtn.classList.remove('is-added');
-            if (addToCartText) addToCartText.textContent = 'Subscription unavailable — please try again';
-            addToCartBtn.style.background = '#c0392b';
-            setTimeout(function() {
-              if (addToCartText) addToCartText.textContent = originalText;
-              addToCartBtn.style.background = '';
-            }, 4000);
-            return;
-          }
+          // Subscription safety-net v2 (Jul 19, Jeff's approach): verify against the LIVE CART,
+          // not the add response — /cart/add.js can omit selling_plan_allocation even when the
+          // plan attached correctly, which made v1 roll back good subscriptions. Only roll back
+          // when the cart itself confirms the plan is missing.
+          if (!sellingPlan) return data;
+          return fetch('/cart.js')
+            .then(function(r) { return r.json(); })
+            .then(function(cart) {
+              var applied = cart.items.some(function(item) {
+                return item.variant_id === parseInt(variantId) && item.selling_plan_allocation;
+              });
+              if (!applied) {
+                if (data.key) {
+                  fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
+                }
+                console.error('[BaseNote] Subscription plan not applied (cart-verified) — rolled back. sellingPlan=', sellingPlan);
+                throw new Error('selling_plan_not_applied');
+              }
+              return data;
+            });
+        })
+        .then(function(data) {
           addToCartBtn.classList.remove('is-loading');
           addToCartBtn.classList.add('is-added');
           if (addToCartText) addToCartText.textContent = 'Added to Queue!';
@@ -2128,78 +2132,87 @@
           console.error('Add to cart error:', error);
           addToCartBtn.classList.remove('is-loading');
           addToCartBtn.classList.remove('is-added');
-          if (addToCartText) addToCartText.textContent = 'Error — Try Again';
+          if (addToCartText) addToCartText.textContent = (error && error.message === 'selling_plan_not_applied') ? 'Subscription unavailable — please try again' : 'Error — Try Again';
           addToCartBtn.style.background = '#c0392b';
           setTimeout(function() {
             if (addToCartText) addToCartText.textContent = originalText;
             addToCartBtn.style.background = '';
-          }, 3000);
+          }, 3500);
         });
       });
     }
 
     // ─── doAddToCart helper (used by subscription swap flow) ───
-    function doAddToCart(variantId, sellingPlan, originalText) {
-      var payload = { id: parseInt(variantId), quantity: 1 };
-      if (sellingPlan) payload.selling_plan = parseInt(sellingPlan);
+function doAddToCart(variantId, sellingPlan, originalText) {
+  var payload = { id: parseInt(variantId), quantity: 1 };
+  if (sellingPlan) payload.selling_plan = parseInt(sellingPlan);
 
-      fetch('/cart/add.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-      .then(function(response) {
-        if (!response.ok) {
-          return response.json().then(function(err) {
-            throw new Error(err.description || err.message || 'Could not add item to cart');
-          });
-        }
-        return response.json();
-      })
-      .then(function(data) {
-        // Subscription safety-net (Jul 17): same guard as the primary path — never let a subscribe
-        // action silently become a one-time purchase if Shopify drops the selling plan.
-        if (sellingPlan && data && !data.selling_plan_allocation) {
-          if (data.key) {
-            fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
-          }
-          console.error('[BaseNote] Subscription plan was not applied by Shopify (swap path) — rolled back. sellingPlan=', sellingPlan);
-          if (addToCartBtn) addToCartBtn.classList.remove('is-loading', 'is-added');
-          if (addToCartText) addToCartText.textContent = 'Subscription unavailable — please try again';
-          if (addToCartBtn) addToCartBtn.style.background = '#c0392b';
-          setTimeout(function() {
-            if (addToCartText) addToCartText.textContent = originalText;
-            if (addToCartBtn) addToCartBtn.style.background = '';
-          }, 4000);
-          return;
-        }
-        if (addToCartBtn) {
-          addToCartBtn.classList.remove('is-loading');
-          addToCartBtn.classList.add('is-added');
-        }
-        if (addToCartText) addToCartText.textContent = 'Added to Queue!';
-
-        // Refresh cart drawer with new content and open it
-        if (window.refreshAndOpenCartDrawer) {
-          window.refreshAndOpenCartDrawer();
-        }
-
-        setTimeout(function() {
-          if (addToCartBtn) addToCartBtn.classList.remove('is-added');
-          if (addToCartText) addToCartText.textContent = originalText;
-        }, 2000);
-      })
-      .catch(function(error) {
-        console.error('Add to cart error:', error);
-        if (addToCartBtn) addToCartBtn.classList.remove('is-loading');
-        if (addToCartText) addToCartText.textContent = 'Error — Try Again';
-        if (addToCartBtn) addToCartBtn.style.background = '#c0392b';
-        setTimeout(function() {
-          if (addToCartText) addToCartText.textContent = originalText;
-          if (addToCartBtn) addToCartBtn.style.background = '';
-        }, 3000);
+  fetch('/cart/add.js', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(function(response) {
+    if (!response.ok) {
+      return response.json().then(function(err) {
+        throw new Error(err.description || err.message || 'Could not add item to cart');
       });
     }
+    return response.json();
+  })
+  .then(function(data) {
+    // Verify selling plan was applied by checking cart directly.
+    // /cart/add.js does not reliably return selling_plan_allocation
+    // even when the plan was successfully attached — so we confirm
+    // against the live cart instead of trusting the add response.
+    if (!sellingPlan) return data;
+    return fetch('/cart.js')
+      .then(function(r) { return r.json(); })
+      .then(function(cart) {
+        var applied = cart.items.some(function(item) {
+          return item.variant_id === parseInt(variantId) && item.selling_plan_allocation;
+        });
+        if (!applied) {
+          // Roll back and fail loudly
+          if (data.key) {
+            fetch('/cart/change.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: data.key, quantity: 0 })
+            }).catch(function(){});
+          }
+          throw new Error('selling_plan_not_applied');
+        }
+        return data;
+      });
+  })
+  .then(function() {
+    if (addToCartBtn) {
+      addToCartBtn.classList.remove('is-loading');
+      addToCartBtn.classList.add('is-added');
+    }
+    if (addToCartText) addToCartText.textContent = 'Added to Queue!';
+
+    if (window.refreshAndOpenCartDrawer) {
+      window.refreshAndOpenCartDrawer();
+    }
+
+    setTimeout(function() {
+      if (addToCartBtn) addToCartBtn.classList.remove('is-added');
+      if (addToCartText) addToCartText.textContent = originalText;
+    }, 2000);
+  })
+  .catch(function(err) {
+    console.error('[BaseNote] doAddToCart error:', err);
+    if (addToCartBtn) addToCartBtn.classList.remove('is-loading', 'is-added');
+    if (addToCartText) addToCartText.textContent = 'Subscription unavailable — please try again';
+    if (addToCartBtn) addToCartBtn.style.background = '#c0392b';
+    setTimeout(function() {
+      if (addToCartText) addToCartText.textContent = originalText;
+      if (addToCartBtn) addToCartBtn.style.background = '';
+    }, 4000);
+  });
+}
 
     // ─── Copy Link ───
     document.querySelectorAll('[data-copy-link]').forEach(function(btn) {

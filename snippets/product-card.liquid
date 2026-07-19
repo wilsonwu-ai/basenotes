@@ -754,24 +754,32 @@
       })
       .then(response => response.json())
       .then(data => {
-        // Subscription safety-net (Jul 18): never let a subscribe quick-add silently become a
-        // one-time purchase if Shopify drops the selling plan. Roll back + show an honest error.
-        if (sellingPlan && data && !data.selling_plan_allocation) {
-          if (data.key) {
-            fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
-          }
-          console.error('[BaseNote] Subscription plan not applied on quick-add — rolled back. plan=', sellingPlan);
-          addBtn.classList.remove('is-loading');
-          if (addBtn.querySelector('span')) {
-            addBtn.querySelector('span').textContent = 'Subscription Unavailable — Try Again';
-          }
-          setTimeout(() => {
-            if (addBtn.querySelector('span')) {
-              addBtn.querySelector('span').textContent = originalText;
+        // Subscription safety-net v2 (Jul 19, Jeff's approach): verify against the LIVE CART, not
+        // the add response — /cart/add.js can omit selling_plan_allocation even when the plan
+        // attached correctly, which made v1 roll back good subscriptions.
+        if (!sellingPlan) return data;
+        return fetch('/cart.js').then(r => r.json()).then(cart => {
+          const applied = cart.items.some(item => item.variant_id === parseInt(variantId) && item.selling_plan_allocation);
+          if (!applied) {
+            if (data.key) {
+              fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
             }
-          }, 3500);
-          return;
-        }
+            console.error('[BaseNote] Subscription plan not applied on quick-add (cart-verified) — rolled back. plan=', sellingPlan);
+            addBtn.classList.remove('is-loading');
+            if (addBtn.querySelector('span')) {
+              addBtn.querySelector('span').textContent = 'Subscription Unavailable — Try Again';
+            }
+            setTimeout(() => {
+              if (addBtn.querySelector('span')) {
+                addBtn.querySelector('span').textContent = originalText;
+              }
+            }, 3500);
+            throw new Error('bn_handled');
+          }
+          return data;
+        });
+      })
+      .then(data => {
         addBtn.classList.remove('is-loading');
         addBtn.classList.add('is-added');
         if (addBtn.querySelector('span')) {
@@ -792,6 +800,7 @@
         }, 2000);
       })
       .catch(error => {
+        if (error && error.message === 'bn_handled') return; // safety-net already updated the UI
         console.error('Error adding to cart:', error);
         addBtn.classList.remove('is-loading');
         if (addBtn.querySelector('span')) {

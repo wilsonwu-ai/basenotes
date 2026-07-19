@@ -209,20 +209,24 @@
       return response.json();
     })
     .then(data => {
-      // Subscription safety-net (Jul 18): if a selling plan was requested but Shopify did not
-      // attach it (plans intermittently not applying at cart), roll the line back out and fail
-      // loudly instead of silently charging a one-time purchase. Dormant when subs work.
-      if (sellingPlan && data && !data.selling_plan_allocation) {
-        if (data.key) {
-          fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
-        }
-        console.error('[BaseNote] Subscription plan not applied on quick-add — rolled back. plan=', sellingPlan);
-        throw new Error('Subscription unavailable — please try again');
-      }
-      // Refresh cart count in header
+      // Subscription safety-net v2 (Jul 19, Jeff's approach): verify against the LIVE CART, not
+      // the add response — /cart/add.js can omit selling_plan_allocation even when the plan
+      // attached correctly, which made v1 roll back good subscriptions. One cart.js fetch does
+      // both the verification and the header count refresh.
       return fetch('/cart.js')
         .then(res => res.json())
         .then(cart => {
+          if (sellingPlan) {
+            const applied = cart.items.some(item => item.variant_id === parseInt(variantId) && item.selling_plan_allocation);
+            if (!applied) {
+              if (data.key) {
+                fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
+              }
+              console.error('[BaseNote] Subscription plan not applied on quick-add (cart-verified) — rolled back. plan=', sellingPlan);
+              throw new Error('Subscription unavailable — please try again');
+            }
+          }
+          // Refresh cart count in header
           const countEl = document.querySelector('[data-cart-count]') || document.querySelector('.header__cart-count');
           if (countEl) {
             countEl.textContent = cart.item_count;
