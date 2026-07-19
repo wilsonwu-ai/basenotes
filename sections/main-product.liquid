@@ -43,6 +43,7 @@
   endif
 
   # Detect if current variant is a subscription (5ml) or one-time purchase (full bottle)
+  assign is_subscription_variant = false
   assign variant_title_lower = current_variant.title | downcase
   if variant_title_lower contains '5ml' or variant_title_lower contains '5 ml' or variant_title_lower contains 'atomizer' or variant_title_lower contains 'subscription'
     assign is_subscription_variant = true
@@ -54,6 +55,9 @@
 -%}
 
 <section class="product-page">
+  {%- comment -%} TEMP-DEBUG-TAXONOMY (Jul 19, remove after reading): dump the shopify.fragrance
+       taxonomy metafield structure so we can determine the correct label field. {%- endcomment -%}
+  <script type="application/json" id="bn-tax-debug">{{ product.metafields.shopify.fragrance.value | json }}</script>
   <div class="container">
 
     {% comment %} Breadcrumb {% endcomment %}
@@ -373,7 +377,7 @@
             <button type="submit" class="add-to-queue-btn" id="addToCartButton" {% unless current_variant.available %}disabled{% endunless %} data-add-to-cart>
               {%- if current_variant.available -%}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                <span id="addToCartText">Start Your Subscription — $20/month</span>
+                <span id="addToCartText">Start My Subscription — $20/month</span>
               {%- else -%}
                 <span id="addToCartText">Sold Out</span>
               {%- endif -%}
