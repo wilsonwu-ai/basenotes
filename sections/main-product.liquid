@@ -244,8 +244,7 @@
 
         {% comment %} SHARED FORM (used by both views) {% endcomment %}
         {%- form 'product', product, id: 'productForm', class: 'product-purchase-form', data-product-form: '', data-productid: product.id -%}
-          <input type="hidden" name="id" value="{{ current_variant.id }}" id="variantId">
-
+          <input type="hidden" name="id" value="{{ current_variant.id | default: product.selected_or_first_available_variant.id }}" id="variantId">
           {%- if product.variants.size > 1 -%}
             <div class="product-variants">
               {%- for option in product.options_with_values -%}
