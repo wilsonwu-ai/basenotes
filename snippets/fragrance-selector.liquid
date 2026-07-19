@@ -36,7 +36,7 @@
   {%- assign p_tax = product.metafields.shopify.fragrance.value -%}
   {%- if p_tax -%}
     {%- for tv in p_tax -%}
-      {%- assign fvs = tv.name | default: tv | strip -%}
+      {%- assign fvs = tv.name | default: tv.label | strip -%}
       {%- unless fvs == blank -%}
         {%- assign p_fam_str = p_fam_str | append: '~~' | append: fvs -%}
       {%- endunless -%}
@@ -100,7 +100,7 @@
         {%- assign card_tax = product.metafields.shopify.fragrance.value -%}
         {%- if card_tax -%}
           {%- for tv in card_tax -%}
-            {%- assign fvs = tv.name | default: tv | strip -%}
+            {%- assign fvs = tv.name | default: tv.label | strip -%}
             {%- unless fvs == blank -%}
               {%- assign fvl = fvs | downcase -%}
               {%- assign card_ff_key = card_ff_key | append: fvl | append: '|' -%}

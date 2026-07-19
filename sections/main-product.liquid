@@ -55,6 +55,9 @@
 -%}
 
 <section class="product-page">
+  {%- comment -%} TEMP-DEBUG-TAXONOMY (Jul 19, remove after reading): dump the shopify.fragrance
+       taxonomy metafield structure so we can determine the correct label field. {%- endcomment -%}
+  <script type="application/json" id="bn-tax-debug">{{ product.metafields.shopify.fragrance.value | json }}</script>
   <div class="container">
 
     {% comment %} Breadcrumb {% endcomment %}
