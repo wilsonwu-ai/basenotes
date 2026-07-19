@@ -2140,45 +2140,76 @@
     }
 
     // ─── doAddToCart helper (used by subscription swap flow) ───
-    function doAddToCart(variantId, sellingPlan, originalText) {
-      var payload = { id: parseInt(variantId), quantity: 1 };
-      if (sellingPlan) payload.selling_plan = parseInt(sellingPlan);
+function doAddToCart(variantId, sellingPlan, originalText) {
+  var payload = { id: parseInt(variantId), quantity: 1 };
+  if (sellingPlan) payload.selling_plan = parseInt(sellingPlan);
 
-      fetch('/cart/add.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-      .then(function(response) {
-        if (!response.ok) {
-          return response.json().then(function(err) {
-            throw new Error(err.description || err.message || 'Could not add item to cart');
-          });
-        }
-        return response.json();
-      })
-      .then(function(data) {
-        // Subscription safety-net (Jul 17): same guard as the primary path — never let a subscribe
-        // action silently become a one-time purchase if Shopify drops the selling plan.
-        if (sellingPlan && data && !data.selling_plan_allocation) {
+  fetch('/cart/add.js', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(function(response) {
+    if (!response.ok) {
+      return response.json().then(function(err) {
+        throw new Error(err.description || err.message || 'Could not add item to cart');
+      });
+    }
+    return response.json();
+  })
+  .then(function(data) {
+    // Verify selling plan was applied by checking cart directly.
+    // /cart/add.js does not reliably return selling_plan_allocation
+    // even when the plan was successfully attached — so we confirm
+    // against the live cart instead of trusting the add response.
+    if (!sellingPlan) return data;
+    return fetch('/cart.js')
+      .then(function(r) { return r.json(); })
+      .then(function(cart) {
+        var applied = cart.items.some(function(item) {
+          return item.variant_id === parseInt(variantId) && item.selling_plan_allocation;
+        });
+        if (!applied) {
+          // Roll back and fail loudly
           if (data.key) {
-            fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
+            fetch('/cart/change.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: data.key, quantity: 0 })
+            }).catch(function(){});
           }
-          console.error('[BaseNote] Subscription plan was not applied by Shopify (swap path) — rolled back. sellingPlan=', sellingPlan);
-          if (addToCartBtn) addToCartBtn.classList.remove('is-loading', 'is-added');
-          if (addToCartText) addToCartText.textContent = 'Subscription unavailable — please try again';
-          if (addToCartBtn) addToCartBtn.style.background = '#c0392b';
-          setTimeout(function() {
-            if (addToCartText) addToCartText.textContent = originalText;
-            if (addToCartBtn) addToCartBtn.style.background = '';
-          }, 4000);
-          return;
+          throw new Error('selling_plan_not_applied');
         }
-        if (addToCartBtn) {
-          addToCartBtn.classList.remove('is-loading');
-          addToCartBtn.classList.add('is-added');
-        }
-        if (addToCartText) addToCartText.textContent = 'Added to Queue!';
+        return data;
+      });
+  })
+  .then(function() {
+    if (addToCartBtn) {
+      addToCartBtn.classList.remove('is-loading');
+      addToCartBtn.classList.add('is-added');
+    }
+    if (addToCartText) addToCartText.textContent = 'Added to Queue!';
+
+    if (window.refreshAndOpenCartDrawer) {
+      window.refreshAndOpenCartDrawer();
+    }
+
+    setTimeout(function() {
+      if (addToCartBtn) addToCartBtn.classList.remove('is-added');
+      if (addToCartText) addToCartText.textContent = originalText;
+    }, 2000);
+  })
+  .catch(function(err) {
+    console.error('[BaseNote] doAddToCart error:', err);
+    if (addToCartBtn) addToCartBtn.classList.remove('is-loading', 'is-added');
+    if (addToCartText) addToCartText.textContent = 'Subscription unavailable — please try again';
+    if (addToCartBtn) addToCartBtn.style.background = '#c0392b';
+    setTimeout(function() {
+      if (addToCartText) addToCartText.textContent = originalText;
+      if (addToCartBtn) addToCartBtn.style.background = '';
+    }, 4000);
+  });
+}
 
         // Refresh cart drawer with new content and open it
         if (window.refreshAndOpenCartDrawer) {
