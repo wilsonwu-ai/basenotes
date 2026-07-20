@@ -2091,7 +2091,38 @@
           }
           return response.json();
         })
-        .then(function(data) {
+       .then(function(data) {
+  if (!sellingPlan) return data;
+
+  function checkCart(attemptsLeft) {
+    return fetch('/cart.js')
+      .then(function(r) { return r.json(); })
+      .then(function(cart) {
+        var applied = cart.items.some(function(item) {
+          return item.variant_id === parseInt(variantId) && item.selling_plan_allocation;
+        });
+        if (!applied && attemptsLeft > 1) {
+          // Not applied yet — wait 500ms and retry
+          return new Promise(function(resolve) { setTimeout(resolve, 500); })
+            .then(function() { return checkCart(attemptsLeft - 1); });
+        }
+        if (!applied) {
+          // All retries exhausted — roll back
+          if (data.key) {
+            fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
+          }
+          console.error('[BaseNote] Subscription plan not applied after retries — rolled back. sellingPlan=', sellingPlan);
+          throw new Error('selling_plan_not_applied');
+        }
+        return data;
+      });
+  }
+
+  // Initial 300ms delay then start retry loop (3 attempts, 500ms apart = up to 1.3s total)
+  return new Promise(function(resolve) { setTimeout(resolve, 300); })
+    .then(function() { return checkCart(3); });
+})
+
           // Subscription safety-net v2 (Jul 19, Jeff's approach): verify against the LIVE CART,
           // not the add response — /cart/add.js can omit selling_plan_allocation even when the
           // plan attached correctly, which made v1 roll back good subscriptions. Only roll back
