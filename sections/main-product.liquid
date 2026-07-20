@@ -2160,7 +2160,9 @@ function doAddToCart(variantId, sellingPlan, originalText) {
     }
     return response.json();
   })
-  .then(function(data) {
+  return new Promise(function(resolve) { setTimeout(resolve, 800); })
+  .then(function() { return fetch('/cart.js'); })
+
     // Verify selling plan was applied by checking cart directly.
     // /cart/add.js does not reliably return selling_plan_allocation
     // even when the plan was successfully attached — so we confirm
