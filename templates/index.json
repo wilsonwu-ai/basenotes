@@ -85,60 +85,6 @@
       ],
       "settings": {}
     },
-    "1775503735ef6a96df": {
-      "type": "_blocks",
-      "blocks": {
-        "ai_gen_block_9faa96e_EXAHBD": {
-          "type": "ai_gen_block_9faa96e",
-          "settings": {
-            "title": "No surcharges. Ever.",
-            "subtitle": "Most fragrance subscriptions charge $5–15 extra on luxury brands like Creed and Parfums de Marly. Base Note doesn't. Every fragrance is $20 flat.",
-            "title_size": 32,
-            "subtitle_size": 16,
-            "column_1_header": "Fragrance",
-            "column_2_header": "Typical sub with luxury surcharge",
-            "column_3_header": "Base Note",
-            "row_1_product": "Creed Aventus 5ml",
-            "row_1_competitor": "$45",
-            "row_1_price": "$20 / month",
-            "row_2_product": "Parfums de Marly Layton 5ml",
-            "row_2_competitor": "$40",
-            "row_2_price": "$20 / month",
-            "row_3_product": "Tom Ford Oud Wood 5ml",
-            "row_3_competitor": "$32",
-            "row_3_price": "$20 / month",
-            "row_4_product": "Bond No. 9 Bleecker St. 5ml",
-            "row_4_competitor": "$42",
-            "row_4_price": "$20 / month",
-            "desktop_width_percent": 100,
-            "section_padding": 40,
-            "cell_padding": 16,
-            "border_radius": 8,
-            "header_font_size": 14,
-            "body_font_size": 15,
-            "background_color": "#f5f5f5",
-            "title_color": "#1a1a1a",
-            "subtitle_color": "#666666",
-            "table_background": "#ffffff",
-            "header_background": "#f5f5f5",
-            "header_text_color": "#1a1a1a",
-            "body_text_color": "#1a1a1a",
-            "border_color": "#e5e5e5",
-            "row_hover_color": "#f9f9f9",
-            "competitor_price_color": "#999999",
-            "show_checkmark": true,
-            "highlight_background": "#f0ead6",
-            "highlight_text_color": "#1a1a1a"
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "ai_gen_block_9faa96e_EXAHBD"
-      ],
-      "name": "Price Comparison",
-      "settings": {}
-    },
     "delivery-explainer": {
       "type": "delivery-explainer",
       "blocks": {
@@ -197,6 +143,60 @@
         "button_label": "Start Your Subscription",
         "button_link": "/collections/fragrances"
       }
+    },
+    "1775503735ef6a96df": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_9faa96e_EXAHBD": {
+          "type": "ai_gen_block_9faa96e",
+          "settings": {
+            "title": "No surcharges. Ever.",
+            "subtitle": "Most fragrance subscriptions charge $5–15 extra on luxury brands like Creed and Parfums de Marly. Base Note doesn't. Every fragrance is $20 flat.",
+            "title_size": 32,
+            "subtitle_size": 16,
+            "column_1_header": "Fragrance",
+            "column_2_header": "Typical sub with luxury surcharge",
+            "column_3_header": "Base Note",
+            "row_1_product": "Creed Aventus 5ml",
+            "row_1_competitor": "$45",
+            "row_1_price": "$20 / month",
+            "row_2_product": "Parfums de Marly Layton 5ml",
+            "row_2_competitor": "$40",
+            "row_2_price": "$20 / month",
+            "row_3_product": "Tom Ford Oud Wood 5ml",
+            "row_3_competitor": "$32",
+            "row_3_price": "$20 / month",
+            "row_4_product": "Bond No. 9 Bleecker St. 5ml",
+            "row_4_competitor": "$42",
+            "row_4_price": "$20 / month",
+            "desktop_width_percent": 100,
+            "section_padding": 40,
+            "cell_padding": 16,
+            "border_radius": 8,
+            "header_font_size": 14,
+            "body_font_size": 15,
+            "background_color": "#f5f5f5",
+            "title_color": "#1a1a1a",
+            "subtitle_color": "#666666",
+            "table_background": "#ffffff",
+            "header_background": "#f5f5f5",
+            "header_text_color": "#1a1a1a",
+            "body_text_color": "#1a1a1a",
+            "border_color": "#e5e5e5",
+            "row_hover_color": "#f9f9f9",
+            "competitor_price_color": "#999999",
+            "show_checkmark": true,
+            "highlight_background": "#f0ead6",
+            "highlight_text_color": "#1a1a1a"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_9faa96e_EXAHBD"
+      ],
+      "name": "Price Comparison",
+      "settings": {}
     },
     "1775502539958abd4e": {
       "type": "_blocks",
@@ -516,8 +516,8 @@
   "order": [
     "hero",
     "17768546331d8577f5",
-    "1775503735ef6a96df",
     "delivery-explainer",
+    "1775503735ef6a96df",
     "1775502539958abd4e",
     "how-it-works",
     "featured-collection",
