@@ -753,6 +753,29 @@
     function showError(msg) { alert(msg || 'Something went wrong. Please email hello@basenotescent.com and we’ll sort it out.'); }
     function showOk(msg) { alert(msg); try { location.reload(); } catch(e){} }
 
+    // PRD-Jul24: moved here from the big script below, where it was the confirmation for a
+    // DUPLICATE #subUpdatePaymentBtn listener that fired a second identical PUT on every
+    // click. This is now the single confirmation for the single binding.
+    function showPaymentUpdateConfirmation() {
+      var existing = document.getElementById('paymentUpdateOverlay');
+      if (existing) existing.remove();
+      var ov = document.createElement('div');
+      ov.id = 'paymentUpdateOverlay';
+      ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1rem;';
+      ov.innerHTML = '<div style="background:#fff;border-radius:16px;padding:2.5rem;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);font-family:inherit;">'
+        + '<div style="width:56px;height:56px;border-radius:50%;background:rgba(76,175,80,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2.5" width="28" height="28"><polyline points="20 6 9 17 4 12"/></svg></div>'
+        + '<h3 style="font-family:Cormorant Garamond,Georgia,serif;font-size:1.4rem;color:#2D4641;margin:0 0 0.75rem;font-weight:600;">Check Your Email</h3>'
+        + '<p style="color:#555;font-size:14px;line-height:1.6;margin:0 0 1rem;">We’ve sent you a secure link from Shopify to update your payment method. Check your inbox (and spam folder).</p>'
+        + '<p style="color:#888;font-size:13px;line-height:1.5;margin:0 0 1.5rem;">After you update your card, it will automatically apply to your next billing cycle.</p>'
+        + '<button type="button" data-payment-overlay-close style="background:#2D4641;color:#fff;border:none;border-radius:8px;padding:12px 32px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.2s;">Got It</button>'
+        + '</div>';
+      ov.addEventListener('click', function(e) {
+        if (e.target === ov || (e.target.closest && e.target.closest('[data-payment-overlay-close]'))) ov.remove();
+      });
+      document.body.appendChild(ov);
+    }
+
     function ensureContractId(cb) {
       if (contractId) { cb(contractId); return; }
       // Fallback: fetch from Appstle directly
@@ -808,6 +831,22 @@
         fetch(url, { method: 'PUT', credentials: 'same-origin' })
           .then(function(r){
             if (r.ok) {
+              // PRD-Jul24: the local 'skipped' breadcrumb drives a badge that CLAIMS a real
+              // skip, so it is written only here — after Appstle has actually accepted one.
+              // Writing it up-front (what #nsSkipBtn used to do) meant the badge said
+              // "Skipped" while Appstle billed $20 and shipped on schedule.
+              // It is stamped with the billing month because a skip covers ONE cycle: an
+              // unscoped flag pinned the badge to "Skipped" and disabled auto-selection for
+              // good. isSkipActive() in the block below expires it. (Computed inline —
+              // that helper lives in the other script's scope.)
+              try {
+                var skipNow = new Date();
+                var skipMonth = skipNow.getMonth() + 1;
+                localStorage.setItem('bn_next_shipment', JSON.stringify({
+                  status: 'skipped',
+                  skippedForMonth: skipNow.getFullYear() + '-' + (skipMonth < 10 ? '0' + skipMonth : String(skipMonth))
+                }));
+              } catch(e){}
               showOk('Got it — next month’s shipment is skipped. Your next charge will be the month after.');
             } else {
               return r.text().then(function(t){ throw new Error(t || ('HTTP ' + r.status)); });
@@ -835,7 +874,7 @@
               btn.style.borderColor = '#4CAF50';
               btn.style.background = 'rgba(76,175,80,0.04)';
             }
-            alert('Check your email — we just sent you a secure Shopify link to update your payment method. After you update your card, it’ll apply to your next billing cycle automatically.');
+            showPaymentUpdateConfirmation();
           })
           .catch(function(err){
             console.error('[bn-subscription] update-payment failed', err);
@@ -1407,6 +1446,24 @@ document.addEventListener('DOMContentLoaded', function() {
     try { return JSON.parse(localStorage.getItem('bn_next_shipment') || 'null'); } catch(e) { return null; }
   }
 
+  // PRD-Jul24: a skip applies to ONE billing cycle, so its local breadcrumb has to expire.
+  // An un-scoped { status: 'skipped' } flag was permanent: it kept the badge on "Skipped"
+  // forever and, via the guard in autoSelectFragrance, silently switched auto-selection off
+  // for the life of the browser — so months later the customer's rotation never advanced.
+  function skipMonthKey(d) {
+    var t = d || new Date();
+    var m = t.getMonth() + 1;
+    return t.getFullYear() + '-' + (m < 10 ? '0' + m : String(m));
+  }
+
+  function isSkipActive(data) {
+    if (!data || data.status !== 'skipped') return false;
+    // Legacy breadcrumbs written before this change carry no month. Treat them as expired
+    // rather than honouring them forever — the badge is cosmetic and Appstle is the truth.
+    if (!data.skippedForMonth) return false;
+    return data.skippedForMonth === skipMonthKey();
+  }
+
   function saveNextShipment(data) {
     localStorage.setItem('bn_next_shipment', JSON.stringify(data));
     renderNextShipment();
@@ -1452,7 +1509,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!nsStatusBadge) return;
     var data = getNextShipment();
 
-    if (data && data.status === 'skipped') {
+    if (isSkipActive(data)) {
       nsStatusBadge.textContent = 'Skipped';
       nsStatusBadge.className = 'ns-status-badge ns-skipped';
       if (nsSelected) nsSelected.style.display = 'none';
@@ -1523,10 +1580,11 @@ document.addEventListener('DOMContentLoaded', function() {
   function autoSelectFragrance() {
     if (!serverSubData.isSubscriber) return;
 
-    // Skip if user already chose or skipped
+    // Skip if the user already chose, or skipped THIS billing month (isSkipActive expires
+    // the breadcrumb — an unscoped 'skipped' flag used to disable auto-selection forever).
     var existing = null;
     try { existing = JSON.parse(localStorage.getItem('bn_next_shipment') || 'null'); } catch(e) {}
-    if (existing && (existing.fragrance || existing.status === 'skipped')) return;
+    if (existing && (existing.fragrance || isSkipActive(existing))) return;
 
     // Only auto-select within 3 days of billing
     var nextBill = getNextBillingDate();
@@ -1764,6 +1822,12 @@ document.addEventListener('DOMContentLoaded', function() {
         var bestContractId = active.subscriptionContractId || active.contractId || active.id;
         if (paymentBtn && bestContractId) {
           paymentBtn.dataset.contractId = bestContractId;
+          // PRD-Jul24: `active` above falls back to contracts[0] with NO status filter, so
+          // this id can be a long-dead CANCELLED contract for a former subscriber (the
+          // Cancel button never disappears — is_subscriber comes from order history).
+          // Publish the status alongside it so the cancellation flow can refuse to reuse a
+          // terminal contract as its fast path.
+          paymentBtn.dataset.contractStatus = String(active.status || '').toUpperCase();
         }
 
         // ── Update next shipment product from Appstle ──
@@ -1866,101 +1930,51 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Skip
+  // Skip — PRD-Jul24: this used to call saveNextShipment({ status: 'skipped' }), which wrote
+  // bn_next_shipment to localStorage and flipped the badge to "Skipped" WITHOUT calling any
+  // API (syncNextShipmentToAppstle returns immediately on a payload with no .fragrance).
+  // Appstle billed $20 and shipped on schedule while the customer had been told the opposite
+  // — the identical false-claim defect already removed from #subSkipBtn. Route it through
+  // the same real endpoint; bnSubscriptionAction confirms first, writes the local 'skipped'
+  // breadcrumb only after a 2xx, and reloads, so the badge can never run ahead of the
+  // subscription system. On a failure it says so and leaves the badge alone.
   var skipBtn = document.getElementById('nsSkipBtn');
   if (skipBtn) {
     skipBtn.addEventListener('click', function() {
-      if (confirm('Skip this month\'s shipment? You can undo this anytime.')) {
-        saveNextShipment({ status: 'skipped' });
+      if (typeof window.bnSubscriptionAction !== 'function') {
+        alert('We can’t reach your subscription right now, so nothing has changed. Please refresh the page, or email hello@basenotescent.com and we’ll skip next month for you.');
+        return;
       }
+      window.bnSubscriptionAction('skip');
     });
   }
 
-  // Undo skip
+  // Undo skip — the 'skipped' breadcrumb is now only written once Appstle has confirmed a
+  // REAL skip, so clearing it locally would show "Confirmed" for a shipment the subscription
+  // system has genuinely skipped. There is no un-skip endpoint on the customer-portal API,
+  // so route this to a human rather than lie to the badge.
   var undoSkipBtn = document.getElementById('nsUndoSkip');
   if (undoSkipBtn) {
     undoSkipBtn.addEventListener('click', function() {
-      localStorage.removeItem('bn_next_shipment');
-      renderNextShipment();
+      alert('Next month is already skipped with our subscription system, and we can’t undo that from this page. Email hello@basenotescent.com and we’ll put your shipment back right away.');
     });
   }
 
-  // Update Payment — trigger Shopify payment-update email via Appstle customer portal API
-  var subUpdatePaymentBtn = document.getElementById('subUpdatePaymentBtn');
-  if (subUpdatePaymentBtn) {
-    subUpdatePaymentBtn.addEventListener('click', async function() {
-      var contractId = this.dataset.contractId;
-      if (!contractId) {
-        alert('No active subscription found. Please contact hello@basenote.com for help.');
-        return;
-      }
-      var btn = this;
-      var originalHtml = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = '<svg class="payment-spinner" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="31.4" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" dur="0.8s" from="0 12 12" to="360 12 12" repeatCount="indefinite"/></circle></svg> Sending\u2026';
-      try {
-        var res = await fetch(
-          '/apps/subscriptions/cp/api/subscription-contracts-update-payment-method?contractId=' + encodeURIComponent(contractId),
-          { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: '{}' }
-        );
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" width="20" height="20"><polyline points="20 6 9 17 4 12"/></svg> Email sent!';
-        btn.style.borderColor = '#4CAF50';
-        btn.style.background = 'rgba(76,175,80,0.04)';
-        showPaymentUpdateConfirmation();
-      } catch (err) {
-        btn.innerHTML = originalHtml;
-        btn.disabled = false;
-        alert('Could not send the update email right now. Please try again or contact hello@basenote.com.');
-      }
-    });
-  }
+  // PRD-Jul24: the direct #subUpdatePaymentBtn listener (and its showPaymentUpdateConfirmation
+  // helper) that used to live here were deleted. Neither it nor the delegated router handler
+  // called stopPropagation, so ONE click fired TWO identical update-payment PUTs: Shopify
+  // emailed the customer twice and they got two confirmations (a native alert plus the
+  // modal), and on failure the button was "restored" to the spinner markup the first handler
+  // had already swapped in. The router's bnSubscriptionAction('update-payment') is now the
+  // single binding, and the modal moved there with it.
 
-  function showPaymentUpdateConfirmation() {
-    var existing = document.getElementById('paymentUpdateOverlay');
-    if (existing) existing.remove();
-    var overlay = document.createElement('div');
-    overlay.id = 'paymentUpdateOverlay';
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1rem;';
-    overlay.innerHTML = '<div style="background:#fff;border-radius:16px;padding:2.5rem;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);font-family:inherit;">'
-      + '<div style="width:56px;height:56px;border-radius:50%;background:rgba(76,175,80,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">'
-      + '<svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2.5" width="28" height="28"><polyline points="20 6 9 17 4 12"/></svg></div>'
-      + '<h3 style="font-family:Cormorant Garamond,Georgia,serif;font-size:1.4rem;color:#2D4641;margin:0 0 0.75rem;font-weight:600;">Check Your Email</h3>'
-      + '<p style="color:#555;font-size:14px;line-height:1.6;margin:0 0 1rem;">We\u2019ve sent you a secure link from Shopify to update your payment method. Check your inbox (and spam folder).</p>'
-      + '<p style="color:#888;font-size:13px;line-height:1.5;margin:0 0 1.5rem;">After you update your card, it will automatically apply to your next billing cycle.</p>'
-      + '<button onclick="this.closest(\'#paymentUpdateOverlay\').remove()" style="background:#2D4641;color:#fff;border:none;border-radius:8px;padding:12px 32px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.2s;">Got It</button>'
-      + '</div>';
-    overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
-    document.body.appendChild(overlay);
-  }
-
-  // Sub page skip/pause
-  var subSkipBtn = document.getElementById('subSkipBtn');
-  if (subSkipBtn) {
-    subSkipBtn.addEventListener('click', function() {
-      if (confirm('Skip next month\'s shipment?')) {
-        saveNextShipment({ status: 'skipped' });
-        // TODO: Appstle API
-        alert('Next month\'s shipment has been skipped.');
-      }
-    });
-  }
-
-  var subPauseBtn = document.getElementById('subPauseBtn');
-  if (subPauseBtn) {
-    subPauseBtn.addEventListener('click', function() {
-      // TODO: Appstle API — pause subscription
-      alert('To pause your subscription, please contact us at hello@basenote.com or use the subscription portal in your account.');
-    });
-  }
-
-  // Cancel button → open cancellation flow
-  var subCancelBtn = document.getElementById('subCancelBtn');
-  if (subCancelBtn) {
-    subCancelBtn.addEventListener('click', function() {
-      document.dispatchEvent(new Event('cancellation:open'));
-    });
-  }
+  // PRD-Jul24: the #subSkipBtn / #subPauseBtn / #subCancelBtn handlers that used to live
+  // here were removed. They were duplicate bindings that fired BEFORE the real ones and
+  // told the customer things that had not happened ("Next month's shipment has been
+  // skipped." with only a localStorage write; "please contact us to pause" when
+  // self-serve pause works). The live implementations are the delegated handlers in the
+  // standalone router script above → window.bnSubscriptionAction('skip' | 'pause') and
+  // the single `cancellation:open` dispatch.
 
   // ═══ Dashboard Fragrance Journey + Queue preview (PRD-05) ═══
   initFragranceJourney();

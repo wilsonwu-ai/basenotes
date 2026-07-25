@@ -674,10 +674,16 @@
         "content": "Cancellation & Retention"
       },
       {
-        "type": "text",
+        "type": "select",
         "id": "cancel_pause_duration",
         "label": "Pause offer duration",
-        "default": "up to 3 months"
+        "info": "How long the 'pause instead of cancel' offer pauses for. This drives BOTH the pauseDurationCycle sent to Appstle AND the wording the customer reads, so the two can never disagree. Appstle accepts whole billing cycles only.",
+        "options": [
+          { "value": "1", "label": "1 month" },
+          { "value": "2", "label": "2 months" },
+          { "value": "3", "label": "3 months" }
+        ],
+        "default": "1"
       },
       {
         "type": "header",
