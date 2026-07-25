@@ -164,6 +164,38 @@
     .cf-panel { padding: 1.5rem; border-radius: 12px; width: 100%; max-height: 100vh; border-radius: 0; }
     .cf-step__title { font-size: 1.25rem; }
   }
+  /* Error banner */
+  .cf-error-banner {
+    background: #fdecea;
+    border: 1px solid #f5c6cb;
+    color: #c62828;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  /* Toast notification */
+  .cf-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2D4641;
+    color: #fff;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 10003;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    animation: cf-fadein 0.3s ease;
+  }
+
+  @keyframes cf-fadein {
+    from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
 </style>
 
 <script>
