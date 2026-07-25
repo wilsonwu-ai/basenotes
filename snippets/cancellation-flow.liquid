@@ -99,7 +99,7 @@
       <button class="cf-cancel-confirm" data-cf-action="confirm-cancel">Confirm Cancellation</button>
     </div>
 
-    <!-- Step 5: Post-Cancellation -->
+    <!-- Step 5: Post-Cancellation — ONLY reachable after a CONFIRMED 2xx from the Appstle cancel API -->
     <div class="cf-step" data-cf-step="5" style="display:none;">
       <div class="cf-step__icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
@@ -107,11 +107,75 @@
         </svg>
       </div>
       <h3 class="cf-step__title">We'll miss you</h3>
-      <p class="cf-step__desc">Your subscription has been canceled. You'll continue to have access until the end of your current billing period.</p>
-      <p class="cf-step__desc" style="margin-top:12px;">If you change your mind, we'd love to have you back anytime.</p>
+      <p class="cf-step__desc">Your subscription has been canceled.</p>
+      <p class="cf-step__desc" id="cfCancelledDetail">You won't be charged again.</p>
+      <p class="cf-step__desc">Anything you've already paid for will still ship, and your account and scent history stay exactly where they are. Questions? Email hello@basenotescent.com.</p>
 
       <a href="/collections/all" class="btn btn--primary cf-btn--full">Come Back Anytime</a>
-      <button class="cf-text-link" data-cf-action="close" style="margin-top:12px;">Close</button>
+      <button class="cf-text-link" data-cf-action="close-reload" style="margin-top:12px;">Close</button>
+    </div>
+
+    <!-- Step 6: Cancellation request received, auto-cancel FAILED — never claims the subscription ended -->
+    <div class="cf-step" data-cf-step="6" style="display:none;">
+      <div class="cf-step__icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <h3 class="cf-step__title">We've received your request</h3>
+      <p class="cf-step__desc">We couldn't complete the cancellation automatically just now, so your subscription hasn't changed yet. Your request is not lost.</p>
+      <p class="cf-note" id="cfPendingNotice">Notifying our team…</p>
+
+      <div class="cf-final-details">
+        <div class="cf-final-row">
+          <span>Request received</span>
+          <strong id="cfPendingTime">Just now</strong>
+        </div>
+        <div class="cf-final-row">
+          <span>Reason given</span>
+          <strong id="cfPendingReason">Not specified</strong>
+        </div>
+        <div class="cf-final-row">
+          <span>Your subscription</span>
+          <strong>Still active until we confirm</strong>
+        </div>
+      </div>
+
+      <button class="btn btn--primary cf-btn--full" data-cf-action="confirm-cancel">Try again</button>
+      <a class="cf-mail-link" href="mailto:hello@basenotescent.com?subject=Cancel%20my%20Base%20Note%20subscription">Or email hello@basenotescent.com</a>
+      <button class="cf-text-link" data-cf-action="close" style="margin-top:8px;">Close</button>
+    </div>
+
+    <!-- Step 7: Retention-offer outcome — all copy written by JS, gated on what actually happened -->
+    <div class="cf-step" data-cf-step="7" style="display:none;">
+      <div class="cf-step__icon" id="cfOutcomeIcon"></div>
+      <h3 class="cf-step__title" id="cfOutcomeTitle"></h3>
+      <p class="cf-step__desc" id="cfOutcomeDesc"></p>
+
+      <div class="cf-code" id="cfOutcomeCode" style="display:none;">
+        <span class="cf-code__label">Your code</span>
+        <span class="cf-code__value" id="cfOutcomeCodeValue"></span>
+      </div>
+
+      <p class="cf-note" id="cfOutcomeNote"></p>
+
+      <button class="btn btn--primary cf-btn--full" data-cf-action="close" id="cfOutcomeDone">Done</button>
+    </div>
+
+    <!-- Step 8: No active subscription contract — NOT an API failure, so it must never
+         claim the subscription is "still active" or raise an ACTION REQUIRED alert. -->
+    <div class="cf-step" data-cf-step="8" style="display:none;">
+      <div class="cf-step__icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+        </svg>
+      </div>
+      <h3 class="cf-step__title">We don’t see an active subscription</h3>
+      <p class="cf-step__desc" id="cfNoSubDesc">There’s no active subscription on this account, so there’s nothing to cancel. You won’t be charged again.</p>
+      <p class="cf-note">If you think that’s wrong — for example you were charged recently — email us and we’ll check it for you the same day.</p>
+
+      <a class="cf-mail-link" href="mailto:hello@basenotescent.com?subject=Subscription%20question">Email hello@basenotescent.com</a>
+      <button class="btn btn--primary cf-btn--full" data-cf-action="close" style="margin-top:12px;">Close</button>
     </div>
 
   </div>
@@ -153,6 +217,16 @@
   .cf-offer__title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.35rem; font-weight: 600; margin: 0 0 8px; }
   .cf-offer__desc { font-size: 14px; opacity: 0.8; margin: 0; line-height: 1.6; }
 
+  /* Discount code block (retention offer outcome) */
+  .cf-code { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; background: #fff; border: 2px dashed #C9A962; border-radius: 10px; margin-bottom: 20px; }
+  .cf-code__label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #999; }
+  .cf-code__value { font-family: 'Courier New', Courier, monospace; font-size: 18px; font-weight: 700; letter-spacing: 0.06em; color: #2D4641; }
+
+  /* Status note + support mail link */
+  .cf-note { font-size: 13px; color: #666; line-height: 1.6; margin: 0 0 20px; }
+  .cf-mail-link { display: block; text-align: center; font-size: 13px; color: #2D4641; padding: 8px; }
+  .cf-panel .btn[disabled], .cf-panel button[disabled] { opacity: 0.6; cursor: default; }
+
   /* Final details */
   .cf-final-details { text-align: left; margin-bottom: 24px; }
   .cf-final-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #E8E6E3; font-size: 14px; }
@@ -177,13 +251,216 @@
   var selectedReason = '';
   var steps = overlay.querySelectorAll('[data-cf-step]');
 
-  // Settings from theme
+  // Settings from theme.
+  // NO '| default:' fallbacks on the retention values — Liquid's default filter substitutes
+  // on an EMPTY STRING, which is exactly how the theme editor lets Jeff retire the offer.
+  // A fallback here would promise a discount code that does not exist in Shopify Discounts.
+  // Blank setting → hasDiscount === false → the honest "no discount" copy + support routing.
   var settings = {
-    discountCode: {{ settings.cancel_discount_code | default: 'STAYWITHUS30' | json }},
-    discountAmount: {{ settings.cancel_discount_amount | default: '30% off your next 3 months' | json }},
-    pauseDuration: {{ settings.cancel_pause_duration | default: 'up to 3 months' | json }},
+    discountCode: {{ settings.cancel_discount_code | json }},
+    discountAmount: {{ settings.cancel_discount_amount | json }},
+    pauseDuration: {{ settings.cancel_pause_duration | json }},
     portalUrl: {{ settings.recharge_portal_url | default: '' | json }}
   };
+
+  // ── Logged-in customer (this snippet only renders inside templates/customers/account.liquid,
+  //    but stay defensive: every field is null-safe and emitted through | json) ──
+  var bnCustomer = {
+    id: {{ customer.id | json }},
+    email: {{ customer.email | json }},
+    name: {{ customer.name | json }},
+    firstName: {{ customer.first_name | json }},
+    ordersCount: {{ customer.orders_count | default: 0 | json }}
+  };
+
+  // C7: the theme editor's "Pause offer duration" has to actually change what happens.
+  // Appstle's pauseDurationCycle is an int32, so map whatever the setting holds onto 1–3
+  // billing cycles. Tolerates the legacy free-text value still sitting in
+  // settings_data.json ("up to 1 months" → 1), so live behaviour is unchanged until the
+  // merchant re-saves the field.
+  function pauseCyclesFromSetting(raw) {
+    var n = 0;
+    try {
+      var m = /\d+/.exec(String(raw == null ? '' : raw));
+      n = m ? parseInt(m[0], 10) : 0;
+    } catch (e) { n = 0; }
+    if (!n || n < 1) n = 1;
+    if (n > 3) n = 3;
+    return n;
+  }
+
+  // ── Constants ──
+  var SUPPORT_EMAIL      = 'hello@basenotescent.com';
+  var CP_BASE            = '/apps/subscriptions/cp/api';   // Shopify app proxy → Appstle customer portal
+  var KLAVIYO_COMPANY_ID = 'VbjRT8';                       // public site id — safe in the browser
+  var KLAVIYO_REVISION   = '2024-10-15';
+  var CANCEL_METRIC      = 'Cancellation Requested';
+  var OFFER_METRIC       = 'Retention Offer Requested';
+  // Drives BOTH the API call and every pause string on screen, so the two can never drift.
+  var PAUSE_CYCLES       = pauseCyclesFromSetting(settings.pauseDuration);
+  var PAUSE_LABEL        = PAUSE_CYCLES === 1 ? '1 month' : (PAUSE_CYCLES + ' months');
+  var PAUSE_LABEL_TITLE  = PAUSE_CYCLES === 1 ? '1 Month' : (PAUSE_CYCLES + ' Months');
+  var NOTIFY_TIMEOUT_MS  = 8000;
+  var KLAVIYO_GRACE_MS   = 3000;                           // stop waiting on a HANGING Klaviyo
+  var MAX_NOTIFICATIONS  = 8;                              // abuse guard per page load
+  // Timeout budget. Every Appstle call has a hard deadline; the per-attempt watchdog sits
+  // ABOVE the worst-case chain on purpose, so it can only ever fire when a fetch neither
+  // resolves, rejects nor aborts. If it fired earlier it could release the lock while a PUT
+  // was still live on the wire and reopen the exact conflicting-writes hole this rewrite
+  // closes. Worst case is now 6s + 6s lookup + 20s PUT + 6s + 6s re-read (the C6
+  // "did the 400 actually mean it already happened?" verification) = 44s.
+  var LOOKUP_TIMEOUT_MS   = 6000;                          // read-only contract lookup hops
+  var FETCH_TIMEOUT_MS    = 20000;                         // the mutating PUT
+  var ATTEMPT_WATCHDOG_MS = 46000;                         // backstop: a fetch that never settles
+  var LOOKUP_GRACE_MS     = 5000;                          // how long a notification waits on the contract id
+
+  // Any request that mutates the contract sets one of these. They are read TOGETHER
+  // everywhere (isMutating) so a pause and a cancel can never be in flight at once —
+  // two conflicting PUTs on the same contract is the original "we lied to the customer" bug.
+  var cancelInFlight = false;
+  var offerInFlight  = false;
+  var notifyCount    = 0;
+
+  function isMutating() { return cancelInFlight || offerInFlight; }
+
+  var reasonLabels = {
+    too_expensive:    'Too expensive',
+    not_using:        'Not using it enough',
+    dont_like_scents: 'Does not like the scent selection',
+    tried_enough:     'Has tried enough fragrances',
+    switching:        'Switching to another service',
+    financial:        'Financial reasons',
+    shipping_issues:  'Shipping or delivery issues',
+    other:            'Other'
+  };
+
+  var OUTCOME_ICONS = {
+    ok: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><circle cx="12" cy="12" r="10"/><polyline points="16 9 11 15 8 12"/></svg>',
+    warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+  };
+
+  // ── Small helpers ──
+  function el(id) { return document.getElementById(id); }
+
+  function setText(node, text) { if (node) node.textContent = text; }
+
+  function bnLog(msg, err) {
+    try { console.error('[bn-cancel] ' + msg, err || ''); } catch (e) {}
+  }
+
+  function errText(err) {
+    try {
+      if (!err) return '';
+      if (typeof err === 'string') return err;
+      if (err.name === 'AbortError') return 'request timed out';
+      if (err.message) return String(err.message);
+      return String(err);
+    } catch (e) { return 'unknown error'; }
+  }
+
+  // ── ONE shared fetch wrapper (B2) ──────────────────────────────────────────
+  // Every Appstle call goes through this. Without a deadline a stalled request on a
+  // degraded mobile connection leaves cancelInFlight stuck true forever, which locks
+  // the modal, blocks body scroll, and means the team notification never fires at all.
+  // An abort lands in the caller's existing .catch, so it flows into the honest
+  // failure path exactly like an HTTP error does.
+  function fetchWithTimeout(url, opts, ms) {
+    var deadline = ms || FETCH_TIMEOUT_MS;
+    var options = {};
+    if (opts) {
+      for (var k in opts) {
+        if (Object.prototype.hasOwnProperty.call(opts, k)) options[k] = opts[k];
+      }
+    }
+
+    var timer = null;
+    var ctrl = null;
+    try {
+      if (typeof AbortController !== 'undefined') {
+        ctrl = new AbortController();
+        options.signal = ctrl.signal;
+      }
+    } catch (e) { ctrl = null; }
+
+    var p = null;
+    try {
+      p = fetch(url, options);
+    } catch (e3) {
+      // A synchronous throw would otherwise skip the caller's .catch entirely.
+      return Promise.reject(e3);
+    }
+
+    if (ctrl) {
+      timer = setTimeout(function() {
+        timer = null;
+        try { ctrl.abort(); } catch (e2) {}
+      }, deadline);
+    } else {
+      // No AbortController: race a rejecting timer so the caller still settles in time.
+      var timeoutP = new Promise(function(resolve, reject) {
+        timer = setTimeout(function() {
+          timer = null;
+          reject(new Error('request timed out'));
+        }, deadline);
+      });
+      p = Promise.race([p, timeoutP]);
+    }
+
+    // No Promise.finally on this theme's ES5 target.
+    return p.then(function(r) {
+      if (timer) { clearTimeout(timer); timer = null; }
+      return r;
+    }, function(err) {
+      if (timer) { clearTimeout(timer); timer = null; }
+      throw err;
+    });
+  }
+
+  function getFeedback() {
+    var f = el('cfFeedback');
+    var v = '';
+    try { v = ((f && f.value) || '').toString().slice(0, 2000).replace(/^\s+|\s+$/g, ''); } catch (e) {}
+    return v;
+  }
+
+  function shopHandle() {
+    try {
+      var d = (window.Shopify && window.Shopify.shop) ? String(window.Shopify.shop) : '';
+      return d.replace('.myshopify.com', '');
+    } catch (e) { return ''; }
+  }
+
+  // Next billing date is already hydrated from Appstle by account.liquid.
+  function nextBillingText() {
+    var node = el('subNextBilling');
+    var t = node ? (node.textContent || '').replace(/^\s+|\s+$/g, '') : '';
+    if (!t || t === '—' || t === '-') return '';
+    return t;
+  }
+
+  function hydrateEndDate() {
+    var node = el('cfEndDate');
+    if (!node) return;
+    var d = nextBillingText();
+    node.textContent = d
+      ? 'Immediately — your ' + d + ' charge will not happen'
+      : 'Immediately — you will not be charged again';
+  }
+
+  function saveLocalRecord(status, contractId, errorMessage) {
+    // Local-only breadcrumb. Kept for parity with the old behaviour — it is never
+    // the only thing that happens, and nothing user-facing depends on it.
+    try {
+      localStorage.setItem('bn_cancellation', JSON.stringify({
+        reason: selectedReason,
+        feedback: getFeedback(),
+        date: new Date().toISOString(),
+        status: status,
+        contractId: contractId ? String(contractId) : '',
+        error: errorMessage ? String(errorMessage).slice(0, 300) : ''
+      }));
+    } catch (err) {}
+  }
 
   function showStep(n) {
     currentStep = n;
@@ -197,6 +474,14 @@
     overlay.style.display = '';
     overlay.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    hydrateEndDate();
+    // C4: a mutating request is still on the wire. Every mutating path now moves the
+    // customer to the pending outcome step BEFORE calling the network, and that step's
+    // button is on the always-allowed list — so re-render it rather than resetting to
+    // Step 1, whose controls are blocked by the in-flight guard. Landing on a step with no
+    // working control, with body scroll locked and Escape gated, is a dead full-screen
+    // modal on the click-to-cancel screen.
+    if (isMutating()) { showStep(currentStep); return; }
     showStep(1);
   }
 
@@ -206,19 +491,482 @@
     document.body.style.overflow = '';
   }
 
+  // The pending outcome step keeps a working Done button (the customer must never be
+  // trapped), so they can dismiss the modal while the PUT is still on the wire. Without
+  // this, the terminal answer — including "we could NOT cancel it" — would be painted into
+  // a hidden overlay and never seen, leaving them believing something the code cannot
+  // guarantee. Their last seen state was "in progress", so the result is always new
+  // information they asked for: bring the modal back to deliver it.
+  function reopenIfDismissed() {
+    if (overlay.style.display !== 'none') return;
+    overlay.style.display = '';
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
   // Open event
   document.addEventListener('cancellation:open', openFlow);
 
-  // Close events
-  overlay.querySelectorAll('[data-cf-close]').forEach(function(el) {
-    el.addEventListener('click', closeFlow);
+  // Accidental-dismissal guards (backdrop click / Escape) while a mutating request is
+  // in flight, so the modal is not dismissed by mistake between "Confirm" and the API
+  // answering. These are now BOUNDED: every request has a hard deadline and every
+  // attempt has a watchdog, so isMutating() can never stay true indefinitely. The
+  // explicit Close / Keep buttons are never blocked — see the action handler.
+  overlay.querySelectorAll('[data-cf-close]').forEach(function(node) {
+    node.addEventListener('click', function() {
+      if (isMutating()) return;
+      closeFlow();
+    });
   });
 
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && overlay.style.display !== 'none') {
+      if (isMutating()) return;
       closeFlow();
     }
   });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // APPSTLE CUSTOMER-PORTAL API (via Shopify app proxy — the logged-in customer
+  // session authenticates the call, no API key is ever in the browser).
+  // Same base + auth as window.bnSubscriptionAction in account.liquid; implemented
+  // locally so this snippet never hard-depends on that script having loaded.
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  function normalizeContractId(id) {
+    var s = String(id || '');
+    if (s.indexOf('gid://') === 0) {
+      var slash = s.lastIndexOf('/');
+      if (slash > -1) s = s.slice(slash + 1);
+    }
+    return s;
+  }
+
+  function contractStatusOf(c) {
+    try { return String((c && c.status) || '').toUpperCase(); } catch (e) { return ''; }
+  }
+
+  function contractIdOf(c) {
+    if (!c) return '';
+    return c.subscriptionContractId || c.contractId || c.id || '';
+  }
+
+  // C1: never act on a contract that is already finished. Picking one produces a PUT that
+  // comes back 400, which used to render "Your subscription: Still active until we confirm"
+  // to somebody with no subscription and page Jeff to cancel a contract needing no action.
+  //
+  // This is a DENY-list on purpose. A whitelist of {ACTIVE, PAUSED} fails CLOSED: a real
+  // subscriber whose card was declined sits in a dunning status (Appstle FAILED, Shopify
+  // STALE) and would be told "there's no active subscription to cancel" — locking them out
+  // of cancelling at all, which is a worse click-to-cancel failure than the bug we started
+  // with. Unknown or absent statuses must fail OPEN: let the customer try, and let Appstle
+  // be the authority on whether the PUT is legal.
+  var TERMINAL_STATUSES = { CANCELLED: 1, EXPIRED: 1 };
+
+  // Used only to decide whether the id seeded on #subUpdatePaymentBtn can be trusted without
+  // a live lookup. Strict on purpose — an unrecognised seed falls through to the real
+  // lookup, which is cheap and authoritative.
+  var CANCELLABLE_STATUSES = { ACTIVE: 1, PAUSED: 1 };
+
+  function pickCancellable(list) {
+    var i, st;
+    for (i = 0; i < list.length; i++) {
+      if (list[i] && contractStatusOf(list[i]) === 'ACTIVE') return list[i];
+    }
+    for (i = 0; i < list.length; i++) {
+      if (list[i] && contractStatusOf(list[i]) === 'PAUSED') return list[i];
+    }
+    // Anything not explicitly finished is still worth trying.
+    for (i = 0; i < list.length; i++) {
+      if (!list[i]) continue;
+      st = contractStatusOf(list[i]);
+      if (TERMINAL_STATUSES[st] !== 1) return list[i];
+    }
+    return null;
+  }
+
+  // cb(list, errorMessage) — called exactly once. 'list' is null on a lookup FAILURE and
+  // [] when Appstle answered normally with no contracts. Those two must never be conflated:
+  // an outage is not "you have no subscription".
+  function lookupContracts(cb) {
+    var settled = false;
+    function done(list, err) {
+      if (settled) return;
+      settled = true;
+      try { cb(list, err || ''); } catch (e) { bnLog('lookupContracts callback threw', e); }
+    }
+
+    fetchWithTimeout(CP_BASE + '/logged-in-customer', { credentials: 'same-origin' }, LOOKUP_TIMEOUT_MS)
+      .then(function(r) {
+        if (!r.ok) throw new Error('logged-in-customer HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(customerId) {
+        if (!customerId) throw new Error('Appstle returned no customer id');
+        return fetchWithTimeout(CP_BASE + '/subscription-customers-detail/valid/' + encodeURIComponent(customerId), { credentials: 'same-origin' }, LOOKUP_TIMEOUT_MS);
+      })
+      .then(function(r) {
+        if (!r.ok) throw new Error('subscription-customers-detail HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(contracts) { done(contracts || [], ''); })
+      .catch(function(err) {
+        bnLog('contract lookup failed', err);
+        done(null, errText(err) || 'contract lookup failed');
+      });
+  }
+
+  // cb(contractId, errorMessage, code) — called exactly once.
+  // 'code' is 'NO_CONTRACT' when Appstle answered normally and the customer has no contract
+  // in a state that can still be changed. That is NOT an API failure and must never be
+  // reported as one (B4): is_subscriber in account.liquid is derived from order history, so
+  // it stays true forever for anyone who ever had one subscription order — every former
+  // subscriber can reach this, and the Cancel button never disappears for them.
+  // Pass skipSeed=true to force a live read (used to verify what a 400 actually meant).
+  function resolveContractId(cb, skipSeed) {
+    var settled = false;
+    function done(id, err, code) {
+      if (settled) return;
+      settled = true;
+      try { cb(id, err, code || ''); } catch (e) { bnLog('resolveContractId callback threw', e); }
+    }
+
+    // Fast path: account.liquid seeds the id on the payment button from Appstle. It seeds
+    // from contracts[0] with NO status filter, so it can hold a long-dead CANCELLED
+    // contract — only trust it when account.liquid also told us the status is one we can
+    // still act on. Anything else falls through to the status-aware live lookup below.
+    if (!skipSeed) {
+      var seeded = '';
+      var seededStatus = '';
+      try {
+        var payBtn = el('subUpdatePaymentBtn');
+        if (payBtn && payBtn.dataset) {
+          seeded = payBtn.dataset.contractId || '';
+          seededStatus = String(payBtn.dataset.contractStatus || '').toUpperCase();
+        }
+      } catch (e) {}
+      if (seeded && CANCELLABLE_STATUSES[seededStatus] === 1) {
+        done(normalizeContractId(seeded), '', '');
+        return;
+      }
+    }
+
+    lookupContracts(function(list, err) {
+      if (!list) { done('', err || 'contract lookup failed', ''); return; }
+      var chosen = pickCancellable(list);
+      if (!chosen) { done('', 'no active subscription contract', 'NO_CONTRACT'); return; }
+      var id = contractIdOf(chosen);
+      if (!id) { done('', 'contract has no id', ''); return; }
+      done(normalizeContractId(id), '', '');
+    });
+  }
+
+  function statusFromQuery(q) {
+    var m = /[?&]status=([A-Za-z_]+)/.exec(String(q || ''));
+    return m ? m[1].toUpperCase() : '';
+  }
+
+  // C6: on any 400, don't guess from the wording — go and LOOK. cb(state):
+  //   'match' → the contract is already in the status we asked for (the PUT landed)
+  //   'gone'  → Appstle no longer lists that contract at all
+  //   'other' → it is still there in a different status, or we could not find out
+  function verifyContractStatus(id, wanted, cb) {
+    var called = false;
+    function done(state) { if (called) return; called = true; try { cb(state); } catch (e) { bnLog('verify callback threw', e); } }
+    if (!wanted) { done('other'); return; }
+    lookupContracts(function(list) {
+      if (!list) { done('other'); return; }
+      var target = String(normalizeContractId(id));
+      for (var i = 0; i < list.length; i++) {
+        if (!list[i]) continue;
+        if (String(normalizeContractId(contractIdOf(list[i]))) !== target) continue;
+        done(contractStatusOf(list[i]) === wanted ? 'match' : 'other');
+        return;
+      }
+      done('gone');
+    });
+  }
+
+  // PUT /subscription-contracts-update-status — 204 No Content on success.
+  // cb(ok, errorMessage, code) — called exactly once.
+  function updateContractStatus(id, statusQuery, cb) {
+    var settled = false;
+    var wanted = statusFromQuery(statusQuery);
+    function done(ok, err, code) {
+      if (settled) return;
+      settled = true;
+      try { cb(ok, err, code || ''); } catch (e) { bnLog('updateContractStatus callback threw', e); }
+    }
+
+    var url = CP_BASE + '/subscription-contracts-update-status'
+      + '?contractId=' + encodeURIComponent(id)
+      + statusQuery;
+
+    fetchWithTimeout(url, { method: 'PUT', credentials: 'same-origin' }, FETCH_TIMEOUT_MS)
+      .then(function(r) {
+        if (r.ok) { done(true, ''); return null; }
+        return r.text().then(function(t) {
+          var body = String(t || '');
+          var detail = 'HTTP ' + r.status + (body ? ' — ' + body.slice(0, 200) : '');
+
+          if (r.status !== 400) { done(false, detail); return; }
+
+          // A 400 from Appstle is routinely "the contract is already in that status" —
+          // which is the end state the customer asked for, not a failure. Retrying after a
+          // PUT that succeeded but whose response never arrived is ROUTINE here: the 20s
+          // deadline, the watchdog and Step 6's "Try again" button all lead straight back
+          // in. A retry must never contradict reality by telling somebody their (already
+          // cancelled) subscription "hasn't changed yet" and paging Jeff a second time.
+          // Deliberately NO text heuristic here. Matching /already/ against the body was
+          // too loose: a 400 like "already has a pending billing attempt; retry later" has
+          // nothing to do with status, and treating it as success rendered "Your
+          // subscription has been canceled" over a contract that is still live — the exact
+          // bug this whole PRD exists to kill. Every 400 falls through to the authoritative
+          // live re-read below, which answers from Appstle rather than from wording.
+          verifyContractStatus(id, wanted, function(state) {
+            if (state === 'match') { done(true, ''); return; }
+            if (state === 'gone') {
+              // Nothing ACTIVE or PAUSED is left to act on. For a cancel that IS the
+              // requested end state; for a pause it means there is nothing to pause, which
+              // is the honest Step 8 outcome, not an ACTION REQUIRED alert.
+              if (wanted === 'CANCELLED') { done(true, ''); return; }
+              done(false, detail, 'NO_CONTRACT');
+              return;
+            }
+            done(false, detail);
+          });
+        });
+      })
+      .catch(function(err) {
+        bnLog('status update failed', err);
+        done(false, errText(err) || 'network error');
+      });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TEAM NOTIFICATION (PRD-Jul24 — Jeff: "email me if someone cancels")
+  // Klaviyo client-side event (same endpoint/revision the theme already ships in
+  // sections/scent-quiz.liquid) → Klaviyo flow with an INTERNAL ALERT action.
+  // Same-origin POST /contact is the backstop for anything needing manual action,
+  // because a.klaviyo.com is on common ad-blocker lists.
+  // Contract: never throws, never rejects, always calls back exactly once.
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  function buildProps(kind, extra) {
+    var handle = shopHandle();
+    var cid = bnCustomer.id ? String(bnCustomer.id) : '';
+    var props = {
+      event_kind:              kind,
+      customer_id:             cid,
+      customer_email:          bnCustomer.email || '(unknown)',
+      customer_name:           bnCustomer.name || '(unknown)',
+      customer_orders_count:   bnCustomer.ordersCount || 0,
+      admin_customer_url:      (handle && cid) ? ('https://admin.shopify.com/store/' + handle + '/customers/' + cid) : '',
+      cancellation_reason_key: selectedReason || 'unspecified',
+      cancellation_reason:     reasonLabels[selectedReason] || 'Not specified',
+      cancellation_feedback:   getFeedback() || '(none given)',
+      requested_at:            new Date().toISOString(),
+      page_url:                (window.location && window.location.href) || '',
+      user_agent:              (navigator && navigator.userAgent) || ''
+    };
+    if (extra) {
+      for (var k in extra) {
+        if (Object.prototype.hasOwnProperty.call(extra, k)) props[k] = extra[k];
+      }
+    }
+    return props;
+  }
+
+  // Returns a Promise<boolean> that never rejects, or null when unusable.
+  function sendKlaviyoEvent(metricName, props) {
+    var email = bnCustomer.email || '';
+    if (!email) return null;   // Klaviyo needs an identifier — fall through to the backstop
+    try {
+      return fetch('https://a.klaviyo.com/client/events/?company_id=' + KLAVIYO_COMPANY_ID, {
+        method: 'POST',
+        mode: 'cors',
+        keepalive: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'revision': KLAVIYO_REVISION
+        },
+        body: JSON.stringify({
+          data: {
+            type: 'event',
+            attributes: {
+              unique_id: 'bn-' + (props.event_kind || 'event') + '-' + (props.customer_id || 'anon') + '-' + props.requested_at,
+              time: props.requested_at,
+              profile: {
+                data: {
+                  type: 'profile',
+                  attributes: {
+                    email: email,
+                    properties: {
+                      subscription_status:      props.subscription_status_hint || '',
+                      last_cancellation_reason: props.cancellation_reason,
+                      last_cancellation_at:     props.requested_at
+                    }
+                  }
+                }
+              },
+              metric: { data: { type: 'metric', attributes: { name: metricName } } },
+              properties: props
+            }
+          }
+        })
+      }).then(function(r) {
+        var ok = !!(r && r.ok);
+        if (!ok) bnLog('Klaviyo returned HTTP ' + (r ? r.status : '?'));
+        return ok;
+      }, function(err) {
+        bnLog('Klaviyo event failed (blocked or offline)', err);
+        return false;
+      });
+    } catch (err) {
+      bnLog('Klaviyo event threw', err);
+      return null;
+    }
+  }
+
+  // Returns a Promise<boolean> that never rejects, or null when unusable.
+  function sendContactBackstop(props) {
+    try {
+      var lines = [
+        '*** BASE NOTE — ' + (props.alert_subject || 'subscription alert') + ' ***',
+        '',
+        'Customer:      ' + props.customer_name + ' <' + props.customer_email + '>',
+        'Customer ID:   ' + props.customer_id,
+        'Admin link:    ' + props.admin_customer_url,
+        'Contract ID:   ' + (props.subscription_contract_id || '(unresolved)'),
+        '',
+        'Event:         ' + props.event_kind,
+        'Reason:        ' + props.cancellation_reason,
+        'Feedback:      ' + props.cancellation_feedback,
+        '',
+        'Automatic action: ' + (props.needs_manual_action
+          ? 'FAILED — please action this manually in Appstle.'
+          : 'succeeded — no action needed.'),
+        (props.api_error ? 'API error:     ' + props.api_error : ''),
+        (props.discount_code ? 'Discount code: ' + props.discount_code + ' (' + (props.discount_amount || '') + ')' : ''),
+        'Requested at:  ' + props.requested_at,
+        'Page:          ' + props.page_url
+      ];
+      var body = [
+        'form_type=contact',
+        'utf8=' + encodeURIComponent('✓'),
+        'contact[name]=' + encodeURIComponent('Subscription alert — ' + props.customer_name),
+        'contact[email]=' + encodeURIComponent(props.customer_email !== '(unknown)' ? props.customer_email : 'no-reply@basenotescent.com'),
+        'contact[body]=' + encodeURIComponent(lines.join('\n'))
+      ].join('&');
+
+      return fetch('/contact', {
+        method: 'POST',
+        credentials: 'same-origin',
+        keepalive: true,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body
+      }).then(function(r) {
+        return !!(r && r.ok);
+      }, function(err) {
+        bnLog('contact-form backstop failed', err);
+        return false;
+      });
+    } catch (err) {
+      bnLog('contact-form backstop threw', err);
+      return null;
+    }
+  }
+
+  /**
+   * Fire the team alert. cb(delivered) is called exactly once, where 'delivered'
+   * means at least one channel accepted the request. Never throws, never rejects,
+   * and a notification failure can never break the cancellation UI.
+   */
+  function notifyTeam(metricName, props, cb) {
+    var finished = false;
+    var timer = null;
+    var graceTimer = null;
+    var backstopSent = false;
+    var backstopP = null;
+
+    function finish(delivered) {
+      if (finished) return;
+      finished = true;
+      if (timer) { clearTimeout(timer); timer = null; }
+      if (graceTimer) { clearTimeout(graceTimer); graceTimer = null; }
+      try { if (cb) cb(delivered); } catch (e) { bnLog('notify callback threw', e); }
+    }
+
+    // Same-origin /contact — the only channel an ad blocker cannot touch. Idempotent: it is
+    // reachable from a Klaviyo answer, from the hang grace timer, and from the C5 parallel
+    // dispatch, and only ever puts one request on the wire.
+    function dispatchBackstop() {
+      if (backstopSent) return;
+      backstopSent = true;
+      if (graceTimer) { clearTimeout(graceTimer); graceTimer = null; }
+      backstopP = sendContactBackstop(props);
+      if (backstopP) {
+        // A backstop that lands is delivery, whatever Klaviyo is doing.
+        backstopP.then(function(okContact) { if (okContact) finish(true); }, function() {});
+      }
+    }
+
+    function runBackstop() {
+      dispatchBackstop();
+      if (!backstopP) { finish(false); return; }
+      backstopP.then(function(okContact) { finish(!!okContact); }, function() { finish(false); });
+    }
+
+    try {
+      if (notifyCount >= MAX_NOTIFICATIONS) { finish(false); return; }
+      notifyCount++;
+
+      timer = setTimeout(function() { timer = null; finish(false); }, NOTIFY_TIMEOUT_MS);
+
+      // C5: on a cancellation the alert IS the ticket, and Step 5's primary CTA is a link
+      // that navigates away. keepalive:true only protects a request already in flight — it
+      // does nothing for one that was never created. So do not make the backstop
+      // conditional on a Klaviyo answer here: fire it in parallel so it is already on the
+      // wire at unload time. A duplicate email costs nothing; a dropped cancellation notice
+      // is the bug being fixed.
+      if (props && props.event_kind === 'cancellation') dispatchBackstop();
+
+      var klaviyoP = sendKlaviyoEvent(metricName, props);
+
+      // B6: a.klaviyo.com is on EasyPrivacy and every major content-blocker list, so
+      // "Klaviyo was blocked" is the COMMON case, not an edge case. The backstop decision
+      // therefore has to be made AFTER the Klaviyo result is known — on EVERY path,
+      // including a successful auto-cancel, or Jeff gets no email at all for a real
+      // cancellation (verbatim the ticket). Both requests set keepalive:true, so the
+      // retry survives the Step 5 close-and-reload.
+      if (!klaviyoP) { runBackstop(); return; }
+
+      // C2: a BLOCKED Klaviyo rejects fast; a BLACKHOLED one (Pi-hole answering 0.0.0.0,
+      // captive portal, corporate proxy dropping packets) never settles at all. Waiting on
+      // a settlement that never comes meant the 8s hard timeout was the only thing that
+      // fired and /contact was never even attempted — Jeff got nothing for a real
+      // cancellation, and the churn reason plus free-text feedback were lost for good
+      // (Appstle's endpoint carries no free-text field).
+      graceTimer = setTimeout(function() { graceTimer = null; runBackstop(); }, KLAVIYO_GRACE_MS);
+
+      klaviyoP.then(function(okKlaviyo) {
+        if (graceTimer) { clearTimeout(graceTimer); graceTimer = null; }
+        if (okKlaviyo) {
+          // Anything a human must action gets both channels; delivery is already assured.
+          if (props.needs_manual_action === true) dispatchBackstop();
+          finish(true);
+          return;
+        }
+        runBackstop();
+      }, function(err) {
+        bnLog('notify failed', err);
+        runBackstop();
+      });
+    } catch (err) {
+      bnLog('notify threw', err);
+      finish(false);
+    }
+  }
 
   // Reason radio buttons
   var reasons = overlay.querySelectorAll('input[name="cf_reason"]');
@@ -231,55 +979,66 @@
     });
   });
 
-  // Retention offers by reason
+  // ── Retention offers by reason ──
+  // Every amount comes from theme settings so the copy can never drift from
+  // config/settings_data.json, and no branch claims an action it cannot perform.
+  var hasDiscount = !!(settings.discountCode && String(settings.discountCode).replace(/^\s+|\s+$/g, ''));
+  var discountAmountLabel = settings.discountAmount || 'a discount';
+
   var offers = {
     too_expensive: {
       badge: 'Special Offer',
-      title: 'How about ' + settings.discountAmount + '?',
-      desc: 'We\'d love to keep you. Use code <strong>' + settings.discountCode + '</strong> for ' + settings.discountAmount + '. That\'s less than the price of a coffee per day for luxury fragrances.',
-      action: 'Apply Discount'
+      title: hasDiscount ? ('How about ' + discountAmountLabel + '?') : 'Let’s talk about the price',
+      desc: hasDiscount
+        ? 'We’d love to keep you. Accept and we’ll send your code to our team to apply <strong>' + discountAmountLabel + '</strong> to your subscription — they’ll email you to confirm within one business day.'
+        : 'We’d love to keep you. Accept and our team will get in touch about your pricing within one business day.',
+      action: hasDiscount ? 'Request This Discount' : 'Ask Us About Pricing'
     },
     not_using: {
       badge: 'Take a Break',
       title: 'Pause instead of canceling',
-      desc: 'You can pause your subscription for ' + settings.pauseDuration + '. No charges, and you can resume anytime with all your preferences saved.',
-      action: 'Pause My Subscription'
+      desc: 'We’ll pause your subscription for ' + PAUSE_LABEL + ' right now. You won’t be charged while it’s paused, billing and shipments resume automatically after that, and all your preferences stay saved.',
+      action: 'Pause For ' + PAUSE_LABEL_TITLE
     },
     dont_like_scents: {
       badge: 'We Can Help',
-      title: 'Free personalized scent consultation',
-      desc: 'Our fragrance experts will hand-pick scents based on your preferences — plus enjoy a free month on us while we find your perfect match.',
-      action: 'Get Free Consultation'
+      title: 'Personalized scent consultation',
+      desc: 'Tell us what missed the mark and our fragrance team will hand-pick your next scents. Accept and we’ll email you within one business day.',
+      action: 'Request A Consultation'
     },
     tried_enough: {
       badge: 'Coming Soon',
-      title: 'New fragrances dropping next month',
-      desc: 'We\'re adding exciting new scents to our collection every month. Stay subscribed and be first to discover our newest arrivals.',
+      title: 'New fragrances arrive every month',
+      desc: 'We add new scents to the collection regularly. Stay subscribed and be first to discover our newest arrivals.',
       action: 'Stay for New Scents'
     },
     switching: {
       badge: 'Loyalty Reward',
-      title: '40% off — our best price ever',
-      desc: 'As a valued member, we\'re offering you an exclusive 40% loyalty discount on your next 3 months. Stay and keep discovering luxury fragrances you won\'t find anywhere else.',
-      action: 'Claim 40% Off'
+      title: hasDiscount ? ('Stay for ' + discountAmountLabel) : 'Before you switch',
+      desc: hasDiscount
+        ? 'As a valued member we can apply <strong>' + discountAmountLabel + '</strong> to your subscription. Accept and our team will apply it and email you to confirm within one business day.'
+        : 'Tell us what pulled you away. Accept and our team will reach out within one business day.',
+      action: hasDiscount ? 'Request This Discount' : 'Talk To Our Team'
     },
     financial: {
       badge: 'We Understand',
-      title: 'We\'d hate to see you go!',
-      desc: 'Your subscription is $20/mo with free shipping on every order. That\'s the most affordable way to keep discovering amazing fragrances.',
+      title: 'We’d hate to see you go!',
+      desc: 'Your subscription is $20/mo with free shipping on every order. That’s the most affordable way to keep discovering amazing fragrances.',
       action: 'Keep My Subscription'
     },
     shipping_issues: {
-      badge: 'We\'re Sorry',
+      badge: 'We’re Sorry',
       title: 'Let us make it right',
-      desc: 'We take shipping seriously. Our support team will prioritize your account, and we\'ll add a free month to your subscription as an apology.',
+      desc: 'We take shipping seriously. Accept and our support team will look into what went wrong and email you within one business day.',
       action: 'Contact Support'
     },
     other: {
       badge: 'Stay With Us',
-      title: '25% off your next 2 months',
-      desc: 'We value your membership. Enjoy 25% off your next 2 months while we work to make Base Note even better for you.',
-      action: 'Apply 25% Off'
+      title: hasDiscount ? ('How about ' + discountAmountLabel + '?') : 'We’d love to keep you',
+      desc: hasDiscount
+        ? 'We value your membership. Accept and we’ll send your code to our team to apply <strong>' + discountAmountLabel + '</strong> to your subscription — they’ll confirm by email within one business day.'
+        : 'We value your membership. Accept and our team will reach out within one business day to see how we can do better.',
+      action: hasDiscount ? 'Request This Discount' : 'Talk To Our Team'
     }
   };
 
@@ -292,7 +1051,412 @@
       '<h4 class="cf-offer__title">' + offer.title + '</h4>' +
       '<p class="cf-offer__desc">' + offer.desc + '</p>';
 
-    if (acceptBtn) acceptBtn.textContent = offer.action;
+    if (acceptBtn) {
+      acceptBtn.disabled = false;
+      acceptBtn.removeAttribute('data-cf-label');
+      acceptBtn.textContent = offer.action;
+    }
+  }
+
+  // ── Busy-state helpers (make double-submit impossible) ──
+  function setCancelBusy(busy, label) {
+    var btns = overlay.querySelectorAll('[data-cf-action="confirm-cancel"]');
+    for (var i = 0; i < btns.length; i++) {
+      var b = btns[i];
+      if (busy) {
+        if (!b.getAttribute('data-cf-label')) b.setAttribute('data-cf-label', b.textContent);
+        b.disabled = true;
+        b.textContent = label || 'Cancelling…';
+      } else {
+        b.disabled = false;
+        var orig = b.getAttribute('data-cf-label');
+        if (orig) { b.textContent = orig; b.removeAttribute('data-cf-label'); }
+      }
+    }
+  }
+
+  function setOfferBusy(busy, label) {
+    var b = el('cfAcceptOffer');
+    if (b) {
+      if (busy) {
+        if (!b.getAttribute('data-cf-label')) b.setAttribute('data-cf-label', b.textContent);
+        b.disabled = true;
+        b.textContent = label || 'Working…';
+      } else {
+        b.disabled = false;
+        var orig = b.getAttribute('data-cf-label');
+        if (orig) { b.textContent = orig; b.removeAttribute('data-cf-label'); }
+      }
+    }
+    // While an offer PUT is in flight the customer must not be able to walk to Step 4 and
+    // fire a second, conflicting status change on the same contract. The Step 7 "Done"
+    // button uses data-cf-action="close" and is deliberately NOT locked — there is always
+    // an exit from whatever step is actually on screen.
+    //
+    // C4: "keep" is deliberately NOT in this list. It lives on Step 1 AND Step 4, so
+    // disabling it globally defeated the "keep/close always work" guarantee — a disabled
+    // button never dispatches the click the always-allowed branch would have honoured, and
+    // re-opening the modal mid-flight produced a modal with no working control at all.
+    // The structural guard is that acceptPauseOffer leaves Step 3 before it touches the
+    // network, so the decline link is not on screen to be clicked; the handler's
+    // isMutating() check is the second line.
+    var locked = overlay.querySelectorAll('[data-cf-action="decline"]');
+    for (var i = 0; i < locked.length; i++) { locked[i].disabled = !!busy; }
+  }
+
+  // ── Outcome step (step 7) — all copy is set from JS, never hardcoded claims ──
+  function showOutcome(opts) {
+    opts = opts || {};
+    var icon = el('cfOutcomeIcon');
+    if (icon) icon.innerHTML = OUTCOME_ICONS[opts.icon] || OUTCOME_ICONS.ok;
+    setText(el('cfOutcomeTitle'), opts.title || '');
+    setText(el('cfOutcomeDesc'), opts.desc || '');
+    setText(el('cfOutcomeNote'), opts.note || '');
+
+    var codeWrap = el('cfOutcomeCode');
+    if (codeWrap) {
+      if (opts.code) {
+        setText(el('cfOutcomeCodeValue'), opts.code);
+        codeWrap.style.display = '';
+      } else {
+        codeWrap.style.display = 'none';
+      }
+    }
+
+    var doneBtn = el('cfOutcomeDone');
+    if (doneBtn) doneBtn.setAttribute('data-cf-action', opts.reload ? 'close-reload' : 'close');
+
+    showStep(7);
+  }
+
+  // ── Terminal state: the customer has no active contract (B4) ──
+  // Appstle answered normally and returned an empty list. Nothing failed, so this must
+  // NOT render the "Still active until we confirm" row and must NOT raise an ACTION
+  // REQUIRED alert — every already-cancelled customer can trigger this at will, and a
+  // queue full of false positives is a queue Jeff stops trusting.
+  function showNoSubscription(kind) {
+    setText(el('cfNoSubDesc'), kind === 'pause'
+      ? 'There’s no active subscription on this account, so there’s nothing to pause. You won’t be charged again.'
+      : 'There’s no active subscription on this account, so there’s nothing to cancel. You won’t be charged again.');
+    showStep(8);
+
+    // FYI-level only — informational, never "cancel this manually".
+    notifyTeam(kind === 'pause' ? OFFER_METRIC : CANCEL_METRIC, buildProps('no_active_subscription', {
+      auto_cancel_succeeded:    false,
+      cancel_status:            'no_active_contract',
+      needs_manual_action:      false,
+      needs_manual_cancel:      false,
+      alert_subject:            'FYI - no active subscription to change',
+      subscription_contract_id: '(none)',
+      subscription_status_hint: 'no_active_contract',
+      requested_action:         kind === 'pause' ? 'pause' : 'cancel'
+    }), function() {});
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // REAL CANCELLATION
+  // 1. lock the button   2. resolve the contract   3. PUT status=CANCELLED
+  // 4. ALWAYS notify the team (success and failure)
+  // 5. only show "canceled" on a 2xx — otherwise show the honest pending state
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  function handleConfirmCancel() {
+    // A pause PUT in flight must block this: two conflicting status writes on the same
+    // contract is exactly the "told them canceled, then it silently paused" bug.
+    if (isMutating()) return;
+    cancelInFlight = true;
+    setCancelBusy(true, 'Cancelling…');
+
+    // C3: advance OFF Step 4 before touching the network — the same structural fix the
+    // pause branch already has. Left on Step 4 the customer sees a disabled "Cancelling…"
+    // button directly under a LIVE, primary-styled "Keep My Subscription" button; on a slow
+    // connection they click it, closeFlow() runs, and seconds later the 204 lands and
+    // renders Step 5 into a hidden overlay. Net result: we cancel the subscription of a
+    // customer whose last deliberate action was "keep it", with zero UI feedback.
+    // finishCancel overwrites this with Step 5 / 6 / 8 exactly as before.
+    showOutcome({
+      icon: 'ok',
+      title: 'Cancelling your subscription…',
+      desc: 'One moment — we are asking our subscription system to cancel your next billing cycle.',
+      note: '',
+      reload: false
+    });
+
+    setText(el('cfPendingNotice'), 'Cancelling…');
+    saveLocalRecord('requested', '', '');
+
+    // Per-attempt settled guard: the watchdog and the real response race each other, and
+    // whichever lands FIRST is the only one allowed to touch the UI. A late real response
+    // can therefore never move the customer off an already-rendered terminal state.
+    var attempt = { settled: false, timer: null };
+
+    function settle(ok, contractId, errorMessage, code) {
+      if (attempt.settled) return;
+      attempt.settled = true;
+      if (attempt.timer) { clearTimeout(attempt.timer); attempt.timer = null; }
+      finishCancel(ok, contractId, errorMessage, code);
+    }
+
+    attempt.timer = setTimeout(function() {
+      attempt.timer = null;
+      settle(false, '', 'no response from the subscription service (timed out)', '');
+    }, ATTEMPT_WATCHDOG_MS);
+
+    resolveContractId(function(contractId, resolveErr, code) {
+      if (!contractId) {
+        settle(false, '', resolveErr || 'could not resolve subscription contract', code);
+        return;
+      }
+      updateContractStatus(contractId, '&status=CANCELLED', function(ok, err, statusCode) {
+        settle(ok, contractId, err, statusCode || '');
+      });
+    });
+  }
+
+  function finishCancel(ok, contractId, errorMessage, code) {
+    cancelInFlight = false;
+    setCancelBusy(false);
+    reopenIfDismissed();
+
+    // "No contract" is not a failure — do not claim the subscription is still active
+    // and do not page the team to cancel something that does not exist.
+    if (!ok && code === 'NO_CONTRACT') {
+      saveLocalRecord('no_contract', '', errorMessage);
+      showNoSubscription('cancel');
+      return;
+    }
+
+    saveLocalRecord(ok ? 'cancelled' : 'failed', contractId, errorMessage);
+
+    var props = buildProps('cancellation', {
+      auto_cancel_succeeded:    ok === true,
+      cancel_status:            ok ? 'auto_cancelled' : 'manual_action_required',
+      needs_manual_action:      !ok,
+      needs_manual_cancel:      !ok,
+      alert_subject:            ok ? 'FYI - auto-cancelled' : 'ACTION REQUIRED - cancel manually',
+      subscription_contract_id: contractId ? String(contractId) : '(unresolved)',
+      subscription_status_hint: ok ? 'cancelled' : 'cancel_pending',
+      api_error:                errorMessage ? String(errorMessage).slice(0, 500) : ''
+    });
+
+    if (ok) {
+      var d = nextBillingText();
+      setText(el('cfCancelledDetail'), d
+        ? 'You won’t be charged again — the payment scheduled for ' + d + ' will not be taken.'
+        : 'You won’t be charged again.');
+      showStep(5);
+      // Fire-and-forget: Jeff still gets the churn reason + feedback on the happy path.
+      notifyTeam(CANCEL_METRIC, props, function() {});
+    } else {
+      setText(el('cfPendingReason'), props.cancellation_reason);
+      try { setText(el('cfPendingTime'), new Date().toLocaleString()); } catch (e) {}
+      setText(el('cfPendingNotice'), 'Notifying our team…');
+      showStep(6);
+      // The claim "our team has been notified" is gated on the notification actually landing.
+      notifyTeam(CANCEL_METRIC, props, function(delivered) {
+        setText(el('cfPendingNotice'), delivered
+          ? 'Our team has been notified and will confirm your cancellation by email within one business day. Your subscription stays active until then — if your renewal date is close, email ' + SUPPORT_EMAIL + ' so we can stop the charge in time.'
+          : 'We could not reach our team automatically. Please email ' + SUPPORT_EMAIL + ' and we will cancel it for you right away.');
+      });
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // RETENTION OFFERS — each branch is either REAL or HONEST. Nothing in here
+  // claims an action that did not happen.
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // not_using → a real Appstle pause (1 cycle).
+  function acceptPauseOffer() {
+    offerInFlight = true;
+    setOfferBusy(true, 'Pausing…');
+
+    // Advance OFF Step 3 before touching the network, matching what the discount and
+    // support branches already do. Left on Step 3 the customer sees a disabled "Pausing…"
+    // button directly above a live "No thanks, continue canceling" link, clicks it, and
+    // fires a CANCELLED PUT that races the PAUSED PUT on the same contract.
+    showOutcome({
+      icon: 'ok',
+      title: 'Pausing your subscription…',
+      desc: 'One moment — we’re asking our subscription system to pause your next billing cycle.',
+      note: '',
+      reload: false
+    });
+
+    var attempt = { settled: false, timer: null };
+
+    function settle(ok, contractId, errorMessage, code) {
+      if (attempt.settled) return;
+      attempt.settled = true;
+      if (attempt.timer) { clearTimeout(attempt.timer); attempt.timer = null; }
+      finishPause(ok, contractId, errorMessage, code);
+    }
+
+    attempt.timer = setTimeout(function() {
+      attempt.timer = null;
+      settle(false, '', 'no response from the subscription service (timed out)', '');
+    }, ATTEMPT_WATCHDOG_MS);
+
+    resolveContractId(function(contractId, resolveErr, code) {
+      if (!contractId) {
+        settle(false, '', resolveErr || 'could not resolve subscription contract', code);
+        return;
+      }
+      updateContractStatus(contractId, '&status=PAUSED&pauseDurationCycle=' + PAUSE_CYCLES, function(ok, err, statusCode) {
+        settle(ok, contractId, err, statusCode || '');
+      });
+    });
+  }
+
+  function finishPause(ok, contractId, errorMessage, code) {
+    offerInFlight = false;
+    setOfferBusy(false);
+    reopenIfDismissed();
+
+    if (!ok && code === 'NO_CONTRACT') {
+      showNoSubscription('pause');
+      return;
+    }
+
+    var props = buildProps('retention_pause', {
+      offer_type:               'pause',
+      pause_cycles:             PAUSE_CYCLES,
+      auto_action_succeeded:    ok === true,
+      needs_manual_action:      !ok,
+      alert_subject:            ok ? 'FYI - subscription paused (cancellation saved)' : 'ACTION REQUIRED - pause failed',
+      subscription_contract_id: contractId ? String(contractId) : '(unresolved)',
+      subscription_status_hint: ok ? 'paused' : 'pause_pending',
+      api_error:                errorMessage ? String(errorMessage).slice(0, 500) : ''
+    });
+
+    if (ok) {
+      showOutcome({
+        icon: 'ok',
+        title: 'Your subscription is paused',
+        desc: 'We’ve paused it for ' + PAUSE_LABEL + '. You won’t be charged while it’s paused, and billing and shipments resume automatically after that with all your preferences saved.',
+        note: 'Want to come back sooner? Email ' + SUPPORT_EMAIL + ' and we’ll restart it right away.',
+        reload: true
+      });
+      notifyTeam(OFFER_METRIC, props, function() {});
+    } else {
+      showOutcome({
+        icon: 'warn',
+        title: 'We couldn’t pause it just now',
+        desc: 'Nothing has changed on your subscription — it is still active. We’re letting our team know so they can pause it for you.',
+        note: 'Notifying our team…',
+        reload: false
+      });
+      notifyTeam(OFFER_METRIC, props, function(delivered) {
+        setText(el('cfOutcomeNote'), delivered
+          ? 'Our team has been notified and will pause it for you within one business day. You can also email ' + SUPPORT_EMAIL + '.'
+          : 'We could not reach our team automatically. Please email ' + SUPPORT_EMAIL + ' and we will pause it for you.');
+      });
+    }
+  }
+
+  /**
+   * B5: the contract id is METADATA on these alerts, not a precondition — so the alert
+   * must never be nested inside the lookup callback. If /logged-in-customer stalls (the
+   * same outage class that makes people cancel), a nested notifyTeam is never invoked at
+   * all: no Klaviyo event, no /contact backstop, its 8s timeout never gets to run, and
+   * offerInFlight is never cleared. Here the lookup is raced against a short grace timer
+   * and the alert goes out exactly once either way. cb(delivered) always runs.
+   */
+  function sendOfferAlert(kind, extra, cb) {
+    var sent = false;
+    var timer = null;
+
+    function send(contractId) {
+      if (sent) return;
+      sent = true;
+      if (timer) { clearTimeout(timer); timer = null; }
+      var props = buildProps(kind, extra);
+      props.subscription_contract_id = contractId || '(unresolved)';
+      notifyTeam(OFFER_METRIC, props, cb);
+    }
+
+    timer = setTimeout(function() { timer = null; send(''); }, LOOKUP_GRACE_MS);
+    resolveContractId(function(contractId) { send(contractId ? String(contractId) : ''); });
+  }
+
+  // too_expensive / switching / other → the storefront CANNOT apply a discount to an
+  // existing Appstle contract, so we say exactly that, show the real code, and route
+  // it to the team. No "your discount has been applied" claim anywhere.
+  function acceptDiscountOffer() {
+    var code = String(settings.discountCode || '').replace(/^\s+|\s+$/g, '');
+    if (!code) { acceptSupportOffer(); return; }   // nothing real to offer → route to a human
+
+    offerInFlight = true;
+    setOfferBusy(true, 'Sending…');
+
+    showOutcome({
+      icon: 'ok',
+      title: 'Here’s your code',
+      desc: 'We can’t apply a discount to an existing subscription from this page, so we’re sending it to our team to apply to your account. Nothing changes on your subscription until they confirm.',
+      code: code,
+      note: 'Sending your request…',
+      reload: false
+    });
+
+    sendOfferAlert('retention_discount', {
+      offer_type:            'discount',
+      discount_code:         code,
+      discount_amount:       discountAmountLabel,
+      auto_action_succeeded: false,
+      needs_manual_action:   true,
+      alert_subject:         'ACTION REQUIRED - apply retention discount',
+      subscription_status_hint: 'discount_requested'
+    }, function(delivered) {
+      offerInFlight = false;
+      setOfferBusy(false);
+      // Same reason finishCancel/finishPause do this: if the customer dismissed the pending
+      // step while we were still working, the real answer must not be written into a hidden
+      // overlay. That is how somebody ends up believing a request was sent that never was.
+      reopenIfDismissed();
+      setText(el('cfOutcomeNote'), delivered
+        ? 'Request sent. Our team will apply ' + discountAmountLabel + ' to your subscription and email you to confirm within one business day.'
+        : 'We could not send your request automatically. Please email ' + SUPPORT_EMAIL + ' with the code above and we will apply it for you.');
+    });
+  }
+
+  // dont_like_scents / shipping_issues → the "we'll be in touch" promise is only
+  // shown once the notification has actually been accepted by a channel.
+  function acceptSupportOffer() {
+    offerInFlight = true;
+    setOfferBusy(true, 'Sending…');
+
+    showOutcome({
+      icon: 'ok',
+      title: 'Sending your request…',
+      desc: 'One moment — we’re passing this to our team.',
+      note: '',
+      reload: false
+    });
+
+    sendOfferAlert('retention_support', {
+      offer_type:            'support_followup',
+      auto_action_succeeded: false,
+      needs_manual_action:   true,
+      alert_subject:         'ACTION REQUIRED - customer needs a follow-up',
+      subscription_status_hint: 'support_requested'
+    }, function(delivered) {
+      offerInFlight = false;
+      setOfferBusy(false);
+      reopenIfDismissed();
+      if (delivered) {
+        setText(el('cfOutcomeTitle'), 'We’ve got it');
+        setText(el('cfOutcomeDesc'), 'Our team has your note and will email you' +
+          (bnCustomer.email ? ' at ' + bnCustomer.email : '') +
+          ' within one business day. Your subscription is unchanged in the meantime.');
+        setText(el('cfOutcomeNote'), '');
+      } else {
+        var icon = el('cfOutcomeIcon');
+        if (icon) icon.innerHTML = OUTCOME_ICONS.warn;
+        setText(el('cfOutcomeTitle'), 'We couldn’t reach our team');
+        setText(el('cfOutcomeDesc'), 'Nothing has changed on your subscription. Please email ' + SUPPORT_EMAIL + ' and we’ll pick this up right away.');
+        setText(el('cfOutcomeNote'), '');
+      }
+    });
   }
 
   // Action handlers
@@ -301,6 +1465,15 @@
     if (!btn) return;
 
     var action = btn.dataset.cfAction;
+
+    // 'close' / 'close-reload' / 'keep' ALWAYS work — the customer must never be trapped
+    // in this modal, and dismissing it does not abort the request or the team notification
+    // (both fetches are keepalive and the handlers run to completion regardless).
+    // Everything else is blocked while ANY mutating request is in flight, so a pause and a
+    // cancel can never race each other on the same contract. 'confirm-cancel' is included
+    // in that block — handleConfirmCancel re-checks isMutating() as a second line anyway.
+    var alwaysAllowed = (action === 'close' || action === 'close-reload' || action === 'keep');
+    if (!alwaysAllowed && isMutating()) return;
 
     switch(action) {
       case 'keep':
@@ -322,25 +1495,21 @@
         break;
 
       case 'decline':
+        hydrateEndDate();
         showStep(4);
         break;
 
       case 'confirm-cancel':
-        // TODO: Recharge API — cancel subscription
-        // Save cancellation data to localStorage
-        try {
-          var cancelData = {
-            reason: selectedReason,
-            feedback: (document.getElementById('cfFeedback') || {}).value || '',
-            date: new Date().toISOString()
-          };
-          localStorage.setItem('bn_cancellation', JSON.stringify(cancelData));
-        } catch(err) {}
-        showStep(5);
+        handleConfirmCancel();
         break;
 
       case 'close':
         closeFlow();
+        break;
+
+      case 'close-reload':
+        closeFlow();
+        try { window.location.reload(); } catch (err) {}
         break;
     }
   });
@@ -349,29 +1518,31 @@
   var acceptOfferBtn = document.getElementById('cfAcceptOffer');
   if (acceptOfferBtn) {
     acceptOfferBtn.addEventListener('click', function() {
-      // TODO: Recharge API — apply retention offer based on selectedReason
-      var message = 'Offer applied! ';
+      if (isMutating()) return;
       switch(selectedReason) {
+        case 'not_using':
+          acceptPauseOffer();
+          break;
+
         case 'too_expensive':
         case 'switching':
         case 'other':
-          message += 'Your discount has been applied to your next billing cycle.';
+          acceptDiscountOffer();
           break;
-        case 'not_using':
-          message += 'Your subscription has been paused.';
-          break;
+
         case 'dont_like_scents':
         case 'shipping_issues':
-          message += 'Our team will reach out to you shortly.';
+          acceptSupportOffer();
           break;
+
+        // Pure "stay" branches — the customer simply keeps their subscription.
+        // Nothing to call, nothing to claim.
         case 'financial':
-          message += 'Your plan has been updated.';
-          break;
+        case 'tried_enough':
         default:
-          message += 'Thank you for staying with us!';
+          closeFlow();
+          break;
       }
-      alert(message);
-      closeFlow();
     });
   }
 })();

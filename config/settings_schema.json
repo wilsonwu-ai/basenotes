@@ -677,20 +677,25 @@
         "type": "text",
         "id": "cancel_discount_code",
         "label": "Retention discount code",
-        "default": "STAYWITHUS30",
-        "info": "Discount code offered during cancellation flow"
+        "info": "Discount code offered during the cancellation flow. Leave blank to turn the discount offer off entirely. The flow then routes those customers to the team instead of promising a code that does not exist."
       },
       {
         "type": "text",
         "id": "cancel_discount_amount",
         "label": "Retention discount description",
-        "default": "30% off your next 3 months"
+        "info": "Shown verbatim to the customer. Must match the real discount in Shopify Discounts."
       },
       {
-        "type": "text",
+        "type": "select",
         "id": "cancel_pause_duration",
         "label": "Pause offer duration",
-        "default": "up to 3 months"
+        "info": "How long the 'pause instead of cancel' offer pauses for. This drives BOTH the pauseDurationCycle sent to Appstle AND the wording the customer reads, so the two can never disagree. Appstle accepts whole billing cycles only.",
+        "options": [
+          { "value": "1", "label": "1 month" },
+          { "value": "2", "label": "2 months" },
+          { "value": "3", "label": "3 months" }
+        ],
+        "default": "1"
       },
       {
         "type": "header",
