@@ -71,138 +71,33 @@
         <!-- Content populated by JS based on reason -->
       </div>
 
-            case 'confirm-cancel':
-        handleCancellation();
-        break;
+      <button class="btn btn--primary cf-btn--full" id="cfAcceptOffer">Accept Offer</button>
+      <button class="cf-text-link" data-cf-action="decline">No thanks, continue canceling</button>
+    </div>
 
-      case 'close':
-        closeFlow();
-        break;
-    }
-  });
+    <!-- Step 4: Final Confirmation -->
+    <div class="cf-step" data-cf-step="4" style="display:none;">
+      <h3 class="cf-step__title">Final Confirmation</h3>
+      <p class="cf-step__desc">Please confirm you'd like to cancel your subscription.</p>
 
-  function setLoading(btn, loading) {
-    btn.disabled = loading;
-    btn.dataset.originalText = btn.dataset.originalText || btn.textContent;
-    btn.textContent = loading ? 'Please wait…' : btn.dataset.originalText;
-  }
+      <div class="cf-final-details">
+        <div class="cf-final-row">
+          <span>Subscription ends</span>
+          <strong id="cfEndDate">End of current billing period</strong>
+        </div>
+        <div class="cf-final-row">
+          <span>What you keep</span>
+          <strong>All fragrances received & your scent history</strong>
+        </div>
+        <div class="cf-final-row">
+          <span>What you lose</span>
+          <strong>Monthly deliveries, subscriber pricing, free shipping</strong>
+        </div>
+      </div>
 
-  function showError(message) {
-    var panel = overlay.querySelector('.cf-panel');
-    var existing = panel.querySelector('.cf-error-banner');
-    if (existing) existing.remove();
-    var banner = document.createElement('div');
-    banner.className = 'cf-error-banner';
-    banner.textContent = message;
-    panel.insertBefore(banner, panel.firstChild);
-    setTimeout(function() { if (banner.parentNode) banner.remove(); }, 5000);
-  }
-
-  function getSubscriptionId() {
-    // Appstle embeds subscription ID on the account page
-    var el = document.querySelector('[data-appstle-subscription-id]');
-    if (el) return el.dataset.appstleSubscriptionId;
-    // Fallback: read from URL param ?subscription_id=
-    var match = window.location.search.match(/[?&]subscription_id=([^&]+)/);
-    return match ? match[1] : null;
-  }
-
-  function saveCancellationData(status) {
-    try {
-      localStorage.setItem('bn_cancellation', JSON.stringify({
-        reason: selectedReason,
-        feedback: (document.getElementById('cfFeedback') || {}).value || '',
-        date: new Date().toISOString(),
-        status: status
-      }));
-    } catch(err) {}
-  }
-  function handleCancellation() {
-    var confirmBtn = overlay.querySelector('[data-cf-action="confirm-cancel"]');
-    var subscriptionId = getSubscriptionId();
-
-    if (!subscriptionId) {
-      showError('Unable to find your subscription. Please contact support.');
-      return;
-    }
-
-    setLoading(confirmBtn, true);
-
-    fetch('/apps/appstle-subscriptions/api/subscription/' + subscriptionId + '/cancel', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-      body: JSON.stringify({
-        cancellation_reason: selectedReason,
-        cancellation_reason_comments: (document.getElementById('cfFeedback') || {}).value || ''
-      })
-    })
-    .then(function(res) {
-      if (!res.ok) throw new Error('cancel_failed');
-      return res.json();
-    })
-    .then(function() {
-      saveCancellationData('cancelled');
-      showStep(5);
-    })
-    .catch(function() {
-      setLoading(confirmBtn, false);
-      showError('Something went wrong. Please try again or contact support.');
-    });
-  }
-
-  function handleRetentionOffer() {
-    var acceptBtn = document.getElementById('cfAcceptOffer');
-    var subscriptionId = getSubscriptionId();
-    var offer = offers[selectedReason] || offers.other;
-
-    if (!subscriptionId) {
-      showError('Unable to find your subscription. Please contact support.');
-      return;
-    }
-
-    setLoading(acceptBtn, true);
-
-    var endpoint, payload;
-
-    switch(selectedReason) {
-      case 'not_using':
-        endpoint = '/apps/appstle-subscriptions/api/subscription/' + subscriptionId + '/pause';
-        payload = { pause_duration: settings.pauseDuration };
-        break;
-      case 'too_expensive':
-      case 'switching':
-      case 'other':
-      case 'financial':
-        endpoint = '/apps/appstle-subscriptions/api/subscription/' + subscriptionId + '/discount';
-        payload = { discount_code: settings.discountCode };
-        break;
-      default:
-        // Contact support / consultation flows — no API call needed
-        saveCancellationData('retained_' + selectedReason);
-        setLoading(acceptBtn, false);
-        closeFlow();
-        return;
-    }
-
-    fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-      body: JSON.stringify(payload)
-    })
-    .then(function(res) {
-      if (!res.ok) throw new Error('offer_failed');
-      return res.json();
-    })
-    .then(function() {
-      saveCancellationData('retained_' + selectedReason);
-      closeFlow();
-      // Soft confirmation without alert()
-      var toast = document.createElement('div');
-      toast.className = 'cf-toast';
-      toast.textContent = offer.action + ' — done! Your subscription has been updated.';
-      document.body.appendChild(toast);
-      setTimeout(function() { toast.remove(); },
-
+      <button class="btn btn--primary cf-btn--full" data-cf-action="keep" style="margin-bottom:12px;">Keep My Subscription</button>
+      <button class="cf-cancel-confirm" data-cf-action="confirm-cancel">Confirm Cancellation</button>
+    </div>
 
     <!-- Step 5: Post-Cancellation -->
     <div class="cf-step" data-cf-step="5" style="display:none;">
@@ -431,17 +326,7 @@
         break;
 
       case 'confirm-cancel':
-        // TODO: Recharge API — cancel subscription
-        // Save cancellation data to localStorage
-        try {
-          var cancelData = {
-            reason: selectedReason,
-            feedback: (document.getElementById('cfFeedback') || {}).value || '',
-            date: new Date().toISOString()
-          };
-          localStorage.setItem('bn_cancellation', JSON.stringify(cancelData));
-        } catch(err) {}
-        showStep(5);
+        handleCancellation();
         break;
 
       case 'close':
@@ -450,34 +335,140 @@
     }
   });
 
-  // Accept offer button
+  function setLoading(btn, loading) {
+    btn.disabled = loading;
+    btn.dataset.originalText = btn.dataset.originalText || btn.textContent;
+    btn.textContent = loading ? 'Please wait…' : btn.dataset.originalText;
+  }
+
+  function showError(message) {
+    var panel = overlay.querySelector('.cf-panel');
+    var existing = panel.querySelector('.cf-error-banner');
+    if (existing) existing.remove();
+    var banner = document.createElement('div');
+    banner.className = 'cf-error-banner';
+    banner.textContent = message;
+    panel.insertBefore(banner, panel.firstChild);
+    setTimeout(function() { if (banner.parentNode) banner.remove(); }, 5000);
+  }
+
+  function getSubscriptionId() {
+    // Appstle embeds subscription ID on the account page
+    var el = document.querySelector('[data-appstle-subscription-id]');
+    if (el) return el.dataset.appstleSubscriptionId;
+    // Fallback: read from URL param ?subscription_id=
+    var match = window.location.search.match(/[?&]subscription_id=([^&]+)/);
+    return match ? match[1] : null;
+  }
+
+  function saveCancellationData(status) {
+    try {
+      localStorage.setItem('bn_cancellation', JSON.stringify({
+        reason: selectedReason,
+        feedback: (document.getElementById('cfFeedback') || {}).value || '',
+        date: new Date().toISOString(),
+        status: status
+      }));
+    } catch(err) {}
+  }
+
+  function handleCancellation() {
+    var confirmBtn = overlay.querySelector('[data-cf-action="confirm-cancel"]');
+    var subscriptionId = getSubscriptionId();
+
+    if (!subscriptionId) {
+      showError('Unable to find your subscription. Please contact support.');
+      return;
+    }
+
+    setLoading(confirmBtn, true);
+
+    fetch('/apps/appstle-subscriptions/api/subscription/' + subscriptionId + '/cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+      body: JSON.stringify({
+        cancellation_reason: selectedReason,
+        cancellation_reason_comments: (document.getElementById('cfFeedback') || {}).value || ''
+      })
+    })
+    .then(function(res) {
+      if (!res.ok) throw new Error('cancel_failed');
+      return res.json();
+    })
+    .then(function() {
+      saveCancellationData('cancelled');
+      showStep(5);
+    })
+    .catch(function() {
+      setLoading(confirmBtn, false);
+      showError('Something went wrong. Please try again or contact support.');
+    });
+  }
+
+  function handleRetentionOffer() {
+    var acceptBtn = document.getElementById('cfAcceptOffer');
+    var subscriptionId = getSubscriptionId();
+    var offer = offers[selectedReason] || offers.other;
+
+    if (!subscriptionId) {
+      showError('Unable to find your subscription. Please contact support.');
+      return;
+    }
+
+    setLoading(acceptBtn, true);
+
+    var endpoint, payload;
+
+    switch(selectedReason) {
+      case 'not_using':
+        endpoint = '/apps/appstle-subscriptions/api/subscription/' + subscriptionId + '/pause';
+        payload = { pause_duration: settings.pauseDuration };
+        break;
+      case 'too_expensive':
+      case 'switching':
+      case 'other':
+      case 'financial':
+        endpoint = '/apps/appstle-subscriptions/api/subscription/' + subscriptionId + '/discount';
+        payload = { discount_code: settings.discountCode };
+        break;
+      default:
+        // Contact support / consultation flows — no API call needed
+        saveCancellationData('retained_' + selectedReason);
+        setLoading(acceptBtn, false);
+        closeFlow();
+        return;
+    }
+
+    fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+      body: JSON.stringify(payload)
+    })
+    .then(function(res) {
+      if (!res.ok) throw new Error('offer_failed');
+      return res.json();
+    })
+    .then(function() {
+      saveCancellationData('retained_' + selectedReason);
+      closeFlow();
+      // Soft confirmation without alert()
+      var toast = document.createElement('div');
+      toast.className = 'cf-toast';
+      toast.textContent = offer.action + ' — done! Your subscription has been updated.';
+      document.body.appendChild(toast);
+      setTimeout(function() { toast.remove(); }, 4000);
+    })
+    .catch(function() {
+      setLoading(acceptBtn, false);
+      showError('Something went wrong applying your offer. Please contact support.');
+    });
+  }
+
   var acceptOfferBtn = document.getElementById('cfAcceptOffer');
   if (acceptOfferBtn) {
-    acceptOfferBtn.addEventListener('click', function() {
-      // TODO: Recharge API — apply retention offer based on selectedReason
-      var message = 'Offer applied! ';
-      switch(selectedReason) {
-        case 'too_expensive':
-        case 'switching':
-        case 'other':
-          message += 'Your discount has been applied to your next billing cycle.';
-          break;
-        case 'not_using':
-          message += 'Your subscription has been paused.';
-          break;
-        case 'dont_like_scents':
-        case 'shipping_issues':
-          message += 'Our team will reach out to you shortly.';
-          break;
-        case 'financial':
-          message += 'Your plan has been updated.';
-          break;
-        default:
-          message += 'Thank you for staying with us!';
-      }
-      alert(message);
-      closeFlow();
-    });
+    acceptOfferBtn.addEventListener('click', handleRetentionOffer);
+  }
+
   }
 })();
 </script>
