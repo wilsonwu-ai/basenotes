@@ -275,6 +275,104 @@
       desc: 'We take shipping seriously. Our support team will prioritize your account, and we\'ll add a free month to your subscription as an apology.',
       action: 'Contact Support'
     },
-  
+    other: {
+      badge: 'Stay With Us',
+      title: '25% off your next 2 months',
+      desc: 'We value your membership. Enjoy 25% off your next 2 months while we work to make Base Note even better for you.',
+      action: 'Apply 25% Off'
+    }
+  };
+
+  function renderOffer() {
+    var offerEl = document.getElementById('cfOffer');
+    var acceptBtn = document.getElementById('cfAcceptOffer');
+    var offer = offers[selectedReason] || offers.other;
+
+    offerEl.innerHTML = '<span class="cf-offer__badge">' + offer.badge + '</span>' +
+      '<h4 class="cf-offer__title">' + offer.title + '</h4>' +
+      '<p class="cf-offer__desc">' + offer.desc + '</p>';
+
+    if (acceptBtn) acceptBtn.textContent = offer.action;
+  }
+
+  // Action handlers
+  overlay.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-cf-action]');
+    if (!btn) return;
+
+    var action = btn.dataset.cfAction;
+
+    switch(action) {
+      case 'keep':
+        closeFlow();
+        break;
+
+      case 'next':
+        showStep(2);
+        break;
+
+      case 'back':
+        showStep(currentStep - 1);
+        break;
+
+      case 'continue':
+        if (!selectedReason) return;
+        renderOffer();
+        showStep(3);
+        break;
+
+      case 'decline':
+        showStep(4);
+        break;
+
+      case 'confirm-cancel':
+        // TODO: Recharge API — cancel subscription
+        // Save cancellation data to localStorage
+        try {
+          var cancelData = {
+            reason: selectedReason,
+            feedback: (document.getElementById('cfFeedback') || {}).value || '',
+            date: new Date().toISOString()
+          };
+          localStorage.setItem('bn_cancellation', JSON.stringify(cancelData));
+        } catch(err) {}
+        showStep(5);
+        break;
+
+      case 'close':
+        closeFlow();
+        break;
+    }
+  });
+
+  // Accept offer button
+  var acceptOfferBtn = document.getElementById('cfAcceptOffer');
+  if (acceptOfferBtn) {
+    acceptOfferBtn.addEventListener('click', function() {
+      // TODO: Recharge API — apply retention offer based on selectedReason
+      var message = 'Offer applied! ';
+      switch(selectedReason) {
+        case 'too_expensive':
+        case 'switching':
+        case 'other':
+          message += 'Your discount has been applied to your next billing cycle.';
+          break;
+        case 'not_using':
+          message += 'Your subscription has been paused.';
+          break;
+        case 'dont_like_scents':
+        case 'shipping_issues':
+          message += 'Our team will reach out to you shortly.';
+          break;
+        case 'financial':
+          message += 'Your plan has been updated.';
+          break;
+        default:
+          message += 'Thank you for staying with us!';
+      }
+      alert(message);
+      closeFlow();
+    });
+  }
 })();
 </script>
