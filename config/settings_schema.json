@@ -674,18 +674,6 @@
         "content": "Cancellation & Retention"
       },
       {
-        "type": "text",
-        "id": "cancel_discount_code",
-        "label": "Retention discount code",
-        "info": "Discount code offered during the cancellation flow. Leave blank to turn the discount offer off entirely. The flow then routes those customers to the team instead of promising a code that does not exist."
-      },
-      {
-        "type": "text",
-        "id": "cancel_discount_amount",
-        "label": "Retention discount description",
-        "info": "Shown verbatim to the customer. Must match the real discount in Shopify Discounts."
-      },
-      {
         "type": "select",
         "id": "cancel_pause_duration",
         "label": "Pause offer duration",

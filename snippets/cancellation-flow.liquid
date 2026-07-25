@@ -41,6 +41,17 @@
 
       <button class="btn btn--primary cf-btn--full" data-cf-action="keep">Keep My Subscription</button>
       <button class="cf-text-link" data-cf-action="next">I still want to cancel</button>
+
+      {%- comment -%}
+        Jeff's email route, kept from the Jul 24 stopgap. That stopgap replaced these two
+        buttons outright, which left Step 1 with no way forward and no way back — self-serve
+        cancellation was effectively removed. Self-serve is restored above (and now really
+        cancels), so this stays as a genuine human option rather than the only door.
+      {%- endcomment -%}
+      <p class="cf-human-route">
+        Prefer to talk to a person? Email
+        <a href="mailto:jeff@basenotescent.com">jeff@basenotescent.com</a> and we'll take care of it.
+      </p>
     </div>
 
     <!-- Step 2: Reason Survey -->
@@ -198,6 +209,8 @@
   .cf-btn--full { width: 100%; margin-bottom: 12px; }
   .cf-text-link { display: block; background: none; border: none; color: #999; font-size: 13px; cursor: pointer; font-family: inherit; margin: 0 auto; padding: 8px; }
   .cf-text-link:hover { color: #666; text-decoration: underline; }
+  .cf-human-route { margin: 18px 0 0; padding-top: 16px; border-top: 1px solid #E8E6E3; font-size: 13px; line-height: 1.6; color: #999; }
+  .cf-human-route a { color: #C9A962; text-decoration: underline; }
   .cf-cancel-confirm { display: block; width: 100%; padding: 14px; background: #c62828; color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; font-family: inherit; transition: background 0.2s; }
   .cf-cancel-confirm:hover { background: #b71c1c; }
 
