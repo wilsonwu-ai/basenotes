@@ -314,7 +314,6 @@
   var PAUSE_LABEL        = PAUSE_CYCLES === 1 ? '1 month' : (PAUSE_CYCLES + ' months');
   var PAUSE_LABEL_TITLE  = PAUSE_CYCLES === 1 ? '1 Month' : (PAUSE_CYCLES + ' Months');
   var NOTIFY_TIMEOUT_MS  = 8000;
-  var KLAVIYO_GRACE_MS   = 3000;                           // stop waiting on a HANGING Klaviyo
   var MAX_NOTIFICATIONS  = 8;                              // abuse guard per page load
   // Timeout budget. Every Appstle call has a hard deadline; the per-attempt watchdog sits
   // ABOVE the worst-case chain on purpose, so it can only ever fire when a fetch neither
@@ -760,8 +759,22 @@
   // TEAM NOTIFICATION (PRD-Jul24 — Jeff: "email me if someone cancels")
   // Klaviyo client-side event (same endpoint/revision the theme already ships in
   // sections/scent-quiz.liquid) → Klaviyo flow with an INTERNAL ALERT action.
-  // Same-origin POST /contact is the backstop for anything needing manual action,
-  // because a.klaviyo.com is on common ad-blocker lists.
+  //
+  // There is deliberately NO second channel. This originally posted to /contact as an
+  // ad-blocker backstop; live testing on 2026-07-25 proved that can never work — Shopify
+  // has CAPTCHA spam protection on the contact form and returns 400 "Missing CAPTCHA token"
+  // to any programmatic submission. Verified with the minimal payload, the full field set,
+  // and a genuine top-level form navigation from the store's own /pages/contact. fetch()
+  // cannot satisfy it: the Sec-Fetch-* headers that mark a real navigation are forbidden to
+  // JavaScript. Keeping the call would fire a guaranteed-404-shaped request on every
+  // cancellation and imply a redundancy that does not exist.
+  //
+  // Consequence: if Klaviyo is blocked, `delivered` is false and the customer is told
+  // plainly that we could not reach the team and to email SUPPORT_EMAIL. That honesty is
+  // load-bearing — do not soften it without adding a channel that actually works. The right
+  // second channel is server-side (Appstle → Klaviyo integration, or a route on the existing
+  // basenote-queue-proxy Worker), not another storefront form post.
+  //
   // Contract: never throws, never rejects, always calls back exactly once.
   // ═══════════════════════════════════════════════════════════════════════════
 
@@ -841,139 +854,47 @@
     }
   }
 
-  // Returns a Promise<boolean> that never rejects, or null when unusable.
-  function sendContactBackstop(props) {
-    try {
-      var lines = [
-        '*** BASE NOTE — ' + (props.alert_subject || 'subscription alert') + ' ***',
-        '',
-        'Customer:      ' + props.customer_name + ' <' + props.customer_email + '>',
-        'Customer ID:   ' + props.customer_id,
-        'Admin link:    ' + props.admin_customer_url,
-        'Contract ID:   ' + (props.subscription_contract_id || '(unresolved)'),
-        '',
-        'Event:         ' + props.event_kind,
-        'Reason:        ' + props.cancellation_reason,
-        'Feedback:      ' + props.cancellation_feedback,
-        '',
-        'Automatic action: ' + (props.needs_manual_action
-          ? 'FAILED — please action this manually in Appstle.'
-          : 'succeeded — no action needed.'),
-        (props.api_error ? 'API error:     ' + props.api_error : ''),
-        (props.discount_code ? 'Discount code: ' + props.discount_code + ' (' + (props.discount_amount || '') + ')' : ''),
-        'Requested at:  ' + props.requested_at,
-        'Page:          ' + props.page_url
-      ];
-      var body = [
-        'form_type=contact',
-        'utf8=' + encodeURIComponent('✓'),
-        'contact[name]=' + encodeURIComponent('Subscription alert — ' + props.customer_name),
-        'contact[email]=' + encodeURIComponent(props.customer_email !== '(unknown)' ? props.customer_email : 'no-reply@basenotescent.com'),
-        'contact[body]=' + encodeURIComponent(lines.join('\n'))
-      ].join('&');
-
-      return fetch('/contact', {
-        method: 'POST',
-        credentials: 'same-origin',
-        keepalive: true,
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: body
-      }).then(function(r) {
-        return !!(r && r.ok);
-      }, function(err) {
-        bnLog('contact-form backstop failed', err);
-        return false;
-      });
-    } catch (err) {
-      bnLog('contact-form backstop threw', err);
-      return null;
-    }
-  }
-
   /**
-   * Fire the team alert. cb(delivered) is called exactly once, where 'delivered'
-   * means at least one channel accepted the request. Never throws, never rejects,
-   * and a notification failure can never break the cancellation UI.
+   * Fire the team alert. cb(delivered) is called exactly once. 'delivered' means Klaviyo
+   * accepted the event — the single channel this theme has (see the note above on why the
+   * /contact backstop was removed). Never throws, never rejects, and a notification failure
+   * can never break the cancellation UI.
+   *
+   * NOTE for whoever reads this next: Klaviyo returns 202 for a well-formed event even when
+   * NO FLOW consumes the metric. So `delivered: true` means "Klaviyo has it", not "a human
+   * was emailed". If alerts stop arriving, check the flow in Klaviyo before suspecting this
+   * code — that is exactly the failure we hit on 2026-07-25.
    */
   function notifyTeam(metricName, props, cb) {
     var finished = false;
     var timer = null;
-    var graceTimer = null;
-    var backstopSent = false;
-    var backstopP = null;
 
     function finish(delivered) {
       if (finished) return;
       finished = true;
       if (timer) { clearTimeout(timer); timer = null; }
-      if (graceTimer) { clearTimeout(graceTimer); graceTimer = null; }
       try { if (cb) cb(delivered); } catch (e) { bnLog('notify callback threw', e); }
-    }
-
-    // Same-origin /contact — the only channel an ad blocker cannot touch. Idempotent: it is
-    // reachable from a Klaviyo answer, from the hang grace timer, and from the C5 parallel
-    // dispatch, and only ever puts one request on the wire.
-    function dispatchBackstop() {
-      if (backstopSent) return;
-      backstopSent = true;
-      if (graceTimer) { clearTimeout(graceTimer); graceTimer = null; }
-      backstopP = sendContactBackstop(props);
-      if (backstopP) {
-        // A backstop that lands is delivery, whatever Klaviyo is doing.
-        backstopP.then(function(okContact) { if (okContact) finish(true); }, function() {});
-      }
-    }
-
-    function runBackstop() {
-      dispatchBackstop();
-      if (!backstopP) { finish(false); return; }
-      backstopP.then(function(okContact) { finish(!!okContact); }, function() { finish(false); });
     }
 
     try {
       if (notifyCount >= MAX_NOTIFICATIONS) { finish(false); return; }
       notifyCount++;
 
+      // A BLOCKED Klaviyo (uBlock, Brave shields) rejects fast. A BLACKHOLED one (Pi-hole
+      // answering 0.0.0.0, captive portal, packet-dropping proxy) never settles at all, so
+      // this timeout is the only thing that will ever fire. Report NOT delivered in that
+      // case — the copy the customer sees branches on it, and telling somebody the team was
+      // notified when it was not is the bug this whole PRD exists to kill.
       timer = setTimeout(function() { timer = null; finish(false); }, NOTIFY_TIMEOUT_MS);
 
-      // C5: on a cancellation the alert IS the ticket, and Step 5's primary CTA is a link
-      // that navigates away. keepalive:true only protects a request already in flight — it
-      // does nothing for one that was never created. So do not make the backstop
-      // conditional on a Klaviyo answer here: fire it in parallel so it is already on the
-      // wire at unload time. A duplicate email costs nothing; a dropped cancellation notice
-      // is the bug being fixed.
-      if (props && props.event_kind === 'cancellation') dispatchBackstop();
-
       var klaviyoP = sendKlaviyoEvent(metricName, props);
-
-      // B6: a.klaviyo.com is on EasyPrivacy and every major content-blocker list, so
-      // "Klaviyo was blocked" is the COMMON case, not an edge case. The backstop decision
-      // therefore has to be made AFTER the Klaviyo result is known — on EVERY path,
-      // including a successful auto-cancel, or Jeff gets no email at all for a real
-      // cancellation (verbatim the ticket). Both requests set keepalive:true, so the
-      // retry survives the Step 5 close-and-reload.
-      if (!klaviyoP) { runBackstop(); return; }
-
-      // C2: a BLOCKED Klaviyo rejects fast; a BLACKHOLED one (Pi-hole answering 0.0.0.0,
-      // captive portal, corporate proxy dropping packets) never settles at all. Waiting on
-      // a settlement that never comes meant the 8s hard timeout was the only thing that
-      // fired and /contact was never even attempted — Jeff got nothing for a real
-      // cancellation, and the churn reason plus free-text feedback were lost for good
-      // (Appstle's endpoint carries no free-text field).
-      graceTimer = setTimeout(function() { graceTimer = null; runBackstop(); }, KLAVIYO_GRACE_MS);
+      if (!klaviyoP) { finish(false); return; }
 
       klaviyoP.then(function(okKlaviyo) {
-        if (graceTimer) { clearTimeout(graceTimer); graceTimer = null; }
-        if (okKlaviyo) {
-          // Anything a human must action gets both channels; delivery is already assured.
-          if (props.needs_manual_action === true) dispatchBackstop();
-          finish(true);
-          return;
-        }
-        runBackstop();
+        finish(!!okKlaviyo);
       }, function(err) {
         bnLog('notify failed', err);
-        runBackstop();
+        finish(false);
       });
     } catch (err) {
       bnLog('notify threw', err);
