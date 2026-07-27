@@ -238,7 +238,16 @@
               <h2 class="acct__welcome-title" style="font-size:1.5rem;">Monthly Subscription</h2>
               <p class="acct__welcome-meta">{{ settings.sub_plan_monthly_per_month | default: '$20/mo' }}</p>
             </div>
-            <p class="acct__welcome-meta">Member since {{ customer.created_at | date: '%B %Y' }}</p>
+            {%- comment -%}
+              `customer.created_at` is NOT a property of Shopify's Liquid customer object, so it
+              always renders empty — this line read "Member since" followed by nothing. The
+              welcome card at the top of this template already guards for that; this one did not.
+              Fall back to the first subscription order, which is the real "member since" anyway,
+              and render nothing at all rather than a dangling label.
+            {%- endcomment -%}
+            {%- if earliest_sub_order -%}
+              <p class="acct__welcome-meta">Member since {{ earliest_sub_order.created_at | date: '%B %Y' }}</p>
+            {%- endif -%}
           </div>
 
           <!-- Billing Countdown -->
