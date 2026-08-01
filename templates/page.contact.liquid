@@ -25,25 +25,7 @@
             <h3 style="font-size: var(--font-size-lg); font-weight: 600;">Email Us</h3>
           </div>
           <p style="color: var(--color-text-light); margin-bottom: var(--spacing-sm);">For general inquiries and support</p>
-          <a href="mailto:{{ settings.contact_email | default: 'hello@basenotes.com' }}" style="color: var(--color-secondary); font-weight: 500; font-size: var(--font-size-lg);">{{ settings.contact_email | default: 'hello@basenotes.com' }}</a>
-        </div>
-
-        <div class="contact-block" style="margin-bottom: var(--spacing-2xl);">
-          <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
-            <div style="width: 48px; height: 48px; background: var(--color-background-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="1.5">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                <circle cx="12" cy="10" r="3"/>
-              </svg>
-            </div>
-            <h3 style="font-size: var(--font-size-lg); font-weight: 600;">Visit Us</h3>
-          </div>
-          <p style="color: var(--color-text-light); line-height: 1.7;">
-            {{ settings.contact_company_name | default: 'Base Note Inc.' }}<br>
-            {{ settings.contact_address_line1 | default: '123 Fragrance Avenue, Suite 400' }}<br>
-            {{ settings.contact_address_line2 | default: 'New York, NY 10013' }}<br>
-            {{ settings.contact_country | default: 'United States' }}
-          </p>
+          <a href="mailto:{{ settings.contact_email | default: 'hello@basenotescent.com' }}" style="color: var(--color-secondary); font-weight: 500; font-size: var(--font-size-lg);">{{ settings.contact_email | default: 'hello@basenotes.com' }}</a>
         </div>
 
         <div class="contact-block" style="margin-bottom: var(--spacing-2xl);">
