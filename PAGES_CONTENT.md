@@ -184,7 +184,7 @@ Copy this content into Shopify: **Online Store → Pages → Add page**
 
       <div style="margin: 2rem 0;">
         <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Email</h3>
-        <p><a href="mailto:hello@basenotes.com">hello@basenotes.com</a></p>
+        <p><a href="mailto:hello@basenotescent.com">hello@basenotescent.com</a></p>
       </div>
 
       <div style="margin: 2rem 0;">
@@ -287,11 +287,11 @@ Copy this content into Shopify: **Online Store → Pages → Add page**
   <p>We want you to love your fragrance. If you're not completely satisfied with your first order, contact us within 30 days and we'll make it right—whether that's a replacement scent or a full refund.</p>
 
   <h3>Damaged or Defective Items</h3>
-  <p>Received a damaged or defective product? Contact us immediately at <a href="mailto:hello@basenotes.com">hello@basenotes.com</a> with a photo and we'll send a replacement at no cost.</p>
+  <p>Received a damaged or defective product? Contact us immediately at <a href="mailto:hello@basenotescent.com">hello@basenotescent.com</a> with a photo and we'll send a replacement at no cost.</p>
 
   <h3>How to Return</h3>
   <ol>
-    <li>Email <a href="mailto:hello@basenotes.com">hello@basenotes.com</a> with your order number and reason for return</li>
+    <li>Email <a href="mailto:hello@basenotescent.com">hello@basenotescent.com</a> with your order number and reason for return</li>
     <li>We'll provide a prepaid return label</li>
     <li>Ship the unused product back to us</li>
     <li>Receive your refund within 5-7 business days of us receiving the return</li>
@@ -303,7 +303,7 @@ Copy this content into Shopify: **Online Store → Pages → Add page**
   <hr style="margin: 2rem 0;">
 
   <h2>Questions?</h2>
-  <p>Contact our support team at <a href="mailto:hello@basenotes.com">hello@basenotes.com</a> or call <a href="tel:+18885551234">1-888-555-1234</a>.</p>
+  <p>Contact our support team at <a href="mailto:hello@basenotescent.com">hello@basenotescent.com</a> or call <a href="tel:+18885551234">1-888-555-1234</a>.</p>
 
 </div>
 ```
@@ -353,7 +353,7 @@ Copy this content into Shopify: **Online Store → Pages → Add page**
   <p>We reserve the right to modify these terms at any time. Changes will be posted on this page with an updated "Last updated" date. Continued use of our services after changes constitutes acceptance of the new terms.</p>
 
   <h2>10. Contact</h2>
-  <p>Questions about these terms? Contact us at <a href="mailto:legal@basenotes.com">legal@basenotes.com</a>.</p>
+  <p>Questions about these terms? Contact us at <a href="mailto:hello@basenotescent.com">hello@basenotescent.com</a>.</p>
 
 </div>
 ```
@@ -440,7 +440,7 @@ Copy this content into Shopify: **Online Store → Pages → Add page**
 
   <h2>10. Contact Us</h2>
   <p>For privacy-related inquiries:<br>
-  Email: <a href="mailto:privacy@basenotes.com">privacy@basenotes.com</a><br>
+  Email: <a href="mailto:hello@basenotescent.com">hello@basenotescent.com</a><br>
   Address: Basenotes Inc., 123 Fragrance Avenue, Suite 400, New York, NY 10013</p>
 
 </div>
