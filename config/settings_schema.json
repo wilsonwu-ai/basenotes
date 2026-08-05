@@ -4,8 +4,8 @@
     "theme_name": "Base Note",
     "theme_version": "1.0.0",
     "theme_author": "Base Note",
-    "theme_documentation_url": "https://basenotes.com/help",
-    "theme_support_url": "https://basenotes.com/support"
+    "theme_documentation_url": "https://basenotescent.com/pages/contact",
+    "theme_support_url": "https://basenotescent.com/pages/contact"
   },
   {
     "name": "Colors",
@@ -136,7 +136,7 @@
         "type": "text",
         "id": "contact_email",
         "label": "Contact email",
-        "default": "hello@basenotes.com"
+        "default": "hello@basenotescent.com"
       },
       {
         "type": "header",
