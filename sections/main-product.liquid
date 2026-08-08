@@ -366,9 +366,23 @@
             Bug D guard (July 16 2026): if this product is NOT attached to the Appstle selling-plan
             group (selling_plan_groups.size == 0), the submit button would silently add a plain
             ONE-TIME purchase (no subscription, no first-month discount, no Appstle contract — a
-            revenue leak). Base Note has no intentional one-time SKUs, so size==0 is always a
+            revenue leak). For any product rendered by THIS section, size==0 is always a
             misconfiguration. Show a calm unavailable state instead of letting it add to cart. The
             real fix is attaching the product to the plan in Appstle admin.
+
+            SANCTIONED EXCEPTION (Aug 2026, free-5ml giveaway campaign): the giveaway SKU IS an
+            intentional one-time purchase (free bottle + $4.99 flat tracked shipping, no
+            subscription). It does NOT go through this section. It has its own template and
+            section — templates/product.giveaway.json / sections/product-giveaway.liquid — which
+            deliberately posts a plain /cart/add.js with {id, quantity:1} and NO selling_plan.
+            It must stay that way: a selling plan cannot be attached to the giveaway product
+            because Appstle derives the recurring charge from product price, so a $0 product
+            would recur at $0 forever.
+
+            Therefore: DO NOT loosen or remove this guard to "make the giveaway work." The
+            exception is handled by routing the giveaway product to its own template, not by
+            weakening the check here. Any product that lands on main-product.liquid with
+            selling_plan_groups.size == 0 is still a misconfiguration and must still be blocked.
           {%- endcomment -%}
           {%- if product.selling_plan_groups.size > 0 -%}
             {%- assign sp = product.selling_plan_groups.first.selling_plans.first -%}

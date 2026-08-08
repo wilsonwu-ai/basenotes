@@ -1,6 +1,8 @@
 {%- comment -%}
   Product Card Component
   Usage: {% render 'product-card', product: product, show_quick_add: true %}
+
+  CAMPAIGN / NON-SUBSCRIPTION SKUs ARE SKIPPED ENTIRELY — see `skip_card` below.
 {%- endcomment -%}
 
 {%- liquid
@@ -8,6 +10,34 @@
   assign current_variant = product.selected_or_first_available_variant
   assign featured_image = product.featured_image
   assign secondary_image = product.images[1]
+
+  comment
+    This card is hardcoded to the subscription catalogue: the price is always
+    `settings.subscription_price` ("$20"), the label is always "Monthly
+    Subscription", and any product without a selling-plan group falls into the
+    Bug D branch and renders a dead "Coming Soon" button.
+
+    The free 5ml giveaway SKU hits both: it is a $0 one-time product with no
+    selling plan, so in any grid it would advertise the free bottle at $20 with
+    an unclickable button — a price claim that is wrong by $20 on a page whose
+    whole point is that the bottle is free.
+
+    It must never appear in a grid at all (it is an Unlisted product reachable
+    only by the ad link), so the card is skipped rather than special-cased.
+    Two independent triggers, because either one alone can be true first:
+      1. the product is on the giveaway template;
+      2. the product is $0 with no selling plan — i.e. anything the
+         subscription pricing above would misprice, campaign SKU or not.
+    Neither can fire for the 22 subscription fragrances: they all carry a
+    selling plan, and none uses the giveaway suffix.
+  endcomment
+  assign skip_card = false
+  if product.template_suffix == 'giveaway'
+    assign skip_card = true
+  endif
+  if product.selling_plan_groups.size == 0 and current_variant.price == 0
+    assign skip_card = true
+  endif
 
   # Get seasons from metafield or tags
   assign seasons = product.metafields.fragrance.season.value | default: nil
@@ -51,6 +81,9 @@
   endif
 -%}
 
+{%- if skip_card -%}
+  {%- comment -%} Renders nothing. Grid parents are plain flex/grid containers, so an omitted child leaves no gap. {%- endcomment -%}
+{%- else -%}
 <article class="product-card" data-product-id="{{ product.id }}">
   <a href="{{ product.url }}" class="product-card__link">
     <div class="product-card__media">
@@ -242,6 +275,7 @@
     </div>
   {%- endif -%}
 </article>
+{%- endif -%}
 
 <style>
   .product-card {

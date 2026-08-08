@@ -1,0 +1,36 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main-giveaway": {
+      "type": "product-giveaway",
+      "settings": {
+        "eyebrow": "Base Note · Limited release",
+        "headline": "Your first 5ml is on us.",
+        "subhead": "One 5ml atomizer of this month's featured fragrance, sent to your door. No subscription.",
+        "ship_amount": "$4.99",
+        "cap": 40,
+        "claim_label": "Claim my free 5ml",
+        "claim_label_short": "Claim my free 5ml",
+        "show_sticky": true,
+        "soldout_pill": "This release is finished",
+        "waitlist_button": "Notify me",
+        "option_b_url": "/collections/all",
+        "option_b_kicker": "The monthly rotation",
+        "option_b_heading": "Rather start the rotation instead?",
+        "option_b_body": "A 5ml atomizer of any fragrance in the collection, every month. Shipping included. Swap your pick before each billing date, skip a month, or cancel from your account.",
+        "option_b_button": "See the fragrances and subscribe",
+        "option_b_fineprint": "Separate offer, separate price. Charged on the same date each month until you cancel.",
+        "faq_heading": "Straight answers"
+      }
+    }
+  },
+  "order": ["main-giveaway"]
+}
