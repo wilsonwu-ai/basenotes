@@ -29,6 +29,15 @@
       {% comment %} Cart Items {% endcomment %}
       <div class="cart-drawer__items" id="cartDrawerItems">
         {%- for item in cart.items -%}
+          {%- comment -%}
+            Identify the giveaway line by the underscore-prefixed property the giveaway section
+            sends with /cart/add.js (sections/product-giveaway.liquid: properties[_bn_offer]).
+            Underscore properties are hidden from the customer but readable here.
+          {%- endcomment -%}
+          {%- assign item_is_giveaway = false -%}
+          {%- if item.properties['_bn_offer'] == 'free-5ml' -%}
+            {%- assign item_is_giveaway = true -%}
+          {%- endif -%}
           <div class="cart-drawer-item" data-cart-item="{{ item.key }}">
             <a href="{{ item.url }}" class="cart-drawer-item__image">
               {%- if item.image != blank -%}
@@ -80,8 +89,17 @@
                     </svg>
                     Swap Fragrance
                   </a>
+                {%- elsif item_is_giveaway -%}
+                  {%- comment -%}
+                    The giveaway SKU has no selling plan BY DESIGN, so it would otherwise fall
+                    into the branch below and get working +/- controls. Nine taps on "+" is ten
+                    free bottles against one flat shipping charge, which breaks the "one per
+                    customer" and "40 bottles total" conditions the offer page states as binding.
+                    Static quantity here; Remove (outside this branch) still works.
+                  {%- endcomment -%}
+                  <span class="cart-drawer-item__qty-static">Qty {{ item.quantity }} &middot; one per customer</span>
                 {%- else -%}
-                  {%- comment -%} Non-subscription items: normal quantity controls {%- endcomment -%}
+                  {%- comment -%} Non-subscription, non-giveaway items: normal quantity controls {%- endcomment -%}
                   <div class="cart-drawer-item__quantity">
                     <button
                       type="button"
@@ -134,6 +152,37 @@
 
       {% comment %} Footer {% endcomment %}
       <div class="cart-drawer__footer">
+        {%- comment -%}
+          Must be computed BEFORE the summary block: free shipping is a subscription perk, so a
+          one-time cart showing "Shipping FREE" contradicts what Shopify charges at checkout.
+
+          Same rule as templates/cart.liquid: never infer "one-time" from the ABSENCE of a
+          selling plan. Appstle has twice stripped selling plans at /cart/add.js store-wide
+          (incident Jul 16-17 2026). Here the stakes are higher than copy — the non-subscription
+          branch below links straight to /checkout, bypassing the cart page where the ROSCA
+          consent checkbox lives. So the one-time branch requires POSITIVE identification:
+          no plan on any line AND every line is the giveaway SKU. Anything else fails SAFE into
+          the subscription branch, which routes through the cart page and its consent gate.
+        {%- endcomment -%}
+        {%- assign drawer_has_plan_line = false -%}
+        {%- assign drawer_has_giveaway = false -%}
+        {%- assign drawer_all_giveaway = true -%}
+        {%- for item in cart.items -%}
+          {%- if item.selling_plan_allocation -%}
+            {%- assign drawer_has_plan_line = true -%}
+          {%- endif -%}
+          {%- if item.properties['_bn_offer'] == 'free-5ml' -%}
+            {%- assign drawer_has_giveaway = true -%}
+          {%- else -%}
+            {%- assign drawer_all_giveaway = false -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- assign drawer_has_subscription = true -%}
+        {%- if drawer_has_plan_line == false and drawer_all_giveaway -%}
+          {%- assign drawer_has_subscription = false -%}
+        {%- endif -%}
+
         <div class="cart-drawer__summary">
           <div class="cart-drawer__summary-line">
             <span>Subtotal</span>
@@ -142,22 +191,22 @@
           <div class="cart-drawer__summary-line">
             <span>Shipping</span>
             <span>
-              <span style="color: var(--color-secondary); font-weight: 600;">FREE</span>
+              {%- comment -%}
+                The giveaway line carries its own flat shipping charge, so a mixed cart must not
+                assert FREE. Rates resolve from the shipping profiles at checkout.
+              {%- endcomment -%}
+              {%- if drawer_has_subscription and drawer_has_giveaway == false -%}
+                <span style="color: var(--color-secondary); font-weight: 600;">FREE</span>
+              {%- else -%}
+                Calculated at checkout
+              {%- endif -%}
             </span>
           </div>
           <div class="cart-drawer__summary-line cart-drawer__summary-line--total">
-            <span>Total</span>
+            <span>{% if drawer_has_subscription and drawer_has_giveaway == false %}Total{% else %}Total before shipping{% endif %}</span>
             <span class="cart-drawer__subtotal-price">{{ cart.total_price | money }}</span>
           </div>
         </div>
-
-        {%- assign drawer_has_subscription = false -%}
-        {%- for item in cart.items -%}
-          {%- if item.selling_plan_allocation -%}
-            {%- assign drawer_has_subscription = true -%}
-            {%- break -%}
-          {%- endif -%}
-        {%- endfor -%}
 
         {%- if drawer_has_subscription -%}
           {% render 'subscription-pricing-summary', surface: 'drawer' %}
@@ -174,16 +223,15 @@
                 <polyline points="12 5 19 12 12 19"/>
               </svg>
             </a>
-          {%- elsif customer -%}
-            <a href="/checkout" class="btn btn--primary btn--full" data-checkout-btn>
-              Checkout
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="5" y1="12" x2="19" y2="12"/>
-                <polyline points="12 5 19 12 12 19"/>
-              </svg>
-            </a>
           {%- else -%}
-            <a href="{{ routes.account_register_url }}?redirect=%2Fcheckout" class="btn btn--primary btn--full" data-checkout-btn>
+            {%- comment -%}
+              Non-subscription cart. Guest checkout approved for the one-time path: logged-out
+              buyers previously hit account_register_url?redirect=/checkout, which forced account
+              creation before they could pay. Subscription carts never reach here — they take the
+              "Review Subscription" branch above, where Appstle and the ROSCA cancel path still
+              require the customer record.
+            {%- endcomment -%}
+            <a href="/checkout" class="btn btn--primary btn--full" data-checkout-btn>
               Checkout
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="5" y1="12" x2="19" y2="12"/>
@@ -202,15 +250,23 @@
             </svg>
             Secure
           </span>
-          <span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="1" y="3" width="15" height="13"/>
-              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-              <circle cx="5.5" cy="18.5" r="2.5"/>
-              <circle cx="18.5" cy="18.5" r="2.5"/>
-            </svg>
-            Free Shipping $50+
-          </span>
+          {%- comment -%}
+            There is no $50 threshold in this store: subscribers ship free unconditionally and
+            everyone else pays the rate from the shipping profile. The old unconditional
+            "Free Shipping $50+" badge was wrong in both directions, and sat one row under the
+            "Shipping — Calculated at checkout" line it contradicted.
+          {%- endcomment -%}
+          {%- if drawer_has_subscription -%}
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="1" y="3" width="15" height="13"/>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                <circle cx="5.5" cy="18.5" r="2.5"/>
+                <circle cx="18.5" cy="18.5" r="2.5"/>
+              </svg>
+              Free shipping on every subscription
+            </span>
+          {%- endif -%}
         </div>
       </div>
 
@@ -514,6 +570,15 @@
     min-width: 24px;
     text-align: center;
     font-size: var(--font-size-sm);
+  }
+
+  /* Giveaway line: quantity is fixed at one per customer, so it is stated, not editable. */
+  .cart-drawer-item__qty-static {
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    letter-spacing: 0.02em;
   }
 
   .cart-drawer-item__price {
@@ -899,7 +964,7 @@
       // Sub upsell accept
       var acceptBtn = e.target.closest('#cartDrawer [data-accept-sub-upsell]');
       if (acceptBtn) {
-        window.location.href = '/pages/subscription';
+        window.location.href = '/collections/fragrances';
         return;
       }
     });

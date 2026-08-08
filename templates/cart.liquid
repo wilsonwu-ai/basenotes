@@ -14,18 +14,55 @@
 
     {%- if cart.item_count > 0 -%}
 
-      {%- comment -%} Detect if cart has subscription items {%- endcomment -%}
-      {%- assign has_subscription = false -%}
+      {%- comment -%}
+        Cart-state detection.
+
+        NEVER infer "one-time" from the ABSENCE of a selling plan. Appstle has twice stripped
+        selling plans at /cart/add.js store-wide (incident Jul 16-17 2026). In that state a real
+        $20/mo subscription line is indistinguishable from a plain product line, and inferring
+        "one-time" from the absence would silently drop the ROSCA consent gate on an actual
+        recurring purchase. So the one-time branch requires a POSITIVE identification instead.
+
+        has_plan_line  — POSITIVE test: at least one line carries a real selling plan.
+        all_giveaway   — POSITIVE test: EVERY line is the giveaway SKU, identified by the
+                         underscore-prefixed line property the giveaway section sends with
+                         /cart/add.js (sections/product-giveaway.liquid: properties[_bn_offer]).
+                         Underscore properties are hidden from the customer but readable here.
+        has_giveaway   — at least one giveaway line. Used to stop subscription copy
+                         (ship date, renewal, free-shipping claims) describing the $0 bottle.
+
+        has_subscription is the FRAMING decision, not a raw plan test. It stays TRUE unless the
+        cart is PROVABLY the one-time giveaway. A plan-less line that is NOT the giveaway fails
+        SAFE into subscription framing, keeping the disclosure and the consent checkbox.
+      {%- endcomment -%}
+      {%- assign has_plan_line = false -%}
+      {%- assign has_giveaway = false -%}
+      {%- assign all_giveaway = true -%}
       {%- for item in cart.items -%}
         {%- if item.selling_plan_allocation -%}
-          {%- assign has_subscription = true -%}
-          {%- break -%}
+          {%- assign has_plan_line = true -%}
+        {%- endif -%}
+        {%- if item.properties['_bn_offer'] == 'free-5ml' -%}
+          {%- assign has_giveaway = true -%}
+        {%- else -%}
+          {%- assign all_giveaway = false -%}
         {%- endif -%}
       {%- endfor -%}
 
+      {%- assign has_subscription = true -%}
+      {%- if has_plan_line == false and all_giveaway -%}
+        {%- comment -%} Provably the one-time giveaway: no plan anywhere AND every line is the offer. {%- endcomment -%}
+        {%- assign has_subscription = false -%}
+      {%- endif -%}
+
       <div class="cart-header">
-        <h1 class="cart-header__title">Your Subscription</h1>
-        <p class="cart-header__subtitle">Review your next fragrance before checkout</p>
+        {%- if has_subscription -%}
+          <h1 class="cart-header__title">Your Subscription</h1>
+          <p class="cart-header__subtitle">Review your next fragrance before checkout</p>
+        {%- else -%}
+          <h1 class="cart-header__title">Your Cart</h1>
+          <p class="cart-header__subtitle">Review your order before checkout</p>
+        {%- endif -%}
       </div>
 
       <form action="{{ routes.cart_url }}" method="post" class="cart-form">
@@ -41,24 +78,48 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
                     <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
                   </svg>
-                  Your Next Fragrance
+                  {% if has_subscription %}Your Next Fragrance{% else %}Your Order{% endif %}
                 </h2>
-                <p class="cart-items__section-subtitle">This fragrance ships with your next subscription order</p>
+                {%- if has_subscription and has_giveaway -%}
+                  {%- comment -%} Mixed cart: the $0 giveaway bottle is NOT part of the subscription shipment. {%- endcomment -%}
+                  <p class="cart-items__section-subtitle">Your subscription fragrance ships with your next subscription order. Your free 5ml ships separately.</p>
+                {%- elsif has_subscription -%}
+                  <p class="cart-items__section-subtitle">This fragrance ships with your next subscription order</p>
+                {%- else -%}
+                  <p class="cart-items__section-subtitle">One-time order. No subscription, no recurring charge.</p>
+                {%- endif -%}
               </div>
-              {%- assign current_day = 'now' | date: '%d' | plus: 0 -%}
-              {%- if current_day <= 25 -%}
-                {%- assign ship_date = 'now' | date: '%B 25, %Y' -%}
-              {%- else -%}
-                {%- assign next_month_ts = 'now' | date: '%s' | plus: 2592000 -%}
-                {%- assign ship_date = next_month_ts | date: '%B 25, %Y' -%}
+              {%- comment -%} The 25th-of-month cadence is the subscription fulfilment cycle only {%- endcomment -%}
+              {%- if has_subscription -%}
+                {%- assign current_day = 'now' | date: '%d' | plus: 0 -%}
+                {%- if current_day <= 25 -%}
+                  {%- assign ship_date = 'now' | date: '%B 25, %Y' -%}
+                {%- else -%}
+                  {%- assign next_month_ts = 'now' | date: '%s' | plus: 2592000 -%}
+                  {%- assign ship_date = next_month_ts | date: '%B 25, %Y' -%}
+                {%- endif -%}
+                <p class="cart-section__ship-date">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                  {% if has_giveaway %}Subscription fragrance ships{% else %}Expected ship date{% endif %}: <strong>{{ ship_date }}</strong>
+                </p>
+                {%- if has_giveaway -%}
+                  {%- comment -%} The 25th-of-month cadence is the subscription cycle. It must never describe the giveaway line. {%- endcomment -%}
+                  <p class="cart-section__ship-date">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+                      <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+                    </svg>
+                    Your free 5ml ships separately, within 2 business days.
+                  </p>
+                {%- endif -%}
               {%- endif -%}
-              <p class="cart-section__ship-date">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-                Expected ship date: <strong>{{ ship_date }}</strong>
-              </p>
               {%- for item in cart.items -%}
+                {%- comment -%} Per-line offer identification — see the detection block at the top of this template. {%- endcomment -%}
+                {%- assign item_is_giveaway = false -%}
+                {%- if item.properties['_bn_offer'] == 'free-5ml' -%}
+                  {%- assign item_is_giveaway = true -%}
+                {%- endif -%}
                 <div class="cart-item" data-item-key="{{ item.key }}">
                   <div class="cart-item__image">
                     {%- if item.image -%}
@@ -87,7 +148,15 @@
                       {%- if item.variant.title != 'Default Title' -%}
                         <p class="cart-item__variant">{{ item.variant.title }}</p>
                       {%- endif -%}
-                      <p class="cart-item__size">5ml Atomizer (~45 sprays)</p>
+                      {%- comment -%}
+                        Subscription lines and the giveaway line are both 5ml vials. The giveaway
+                        campaign's entire proposition IS the 5ml size, so this must render for it.
+                        60 sprays is the store-wide figure (PDP, FAQ, subscription landing, the
+                        giveaway page itself).
+                      {%- endcomment -%}
+                      {%- if item.selling_plan_allocation or item_is_giveaway -%}
+                        <p class="cart-item__size">5ml Atomizer (~60 sprays)</p>
+                      {%- endif -%}
 
                       {%- if item.selling_plan_allocation -%}
                         <p class="cart-item__selling-plan">{{ item.selling_plan_allocation.selling_plan.name }}</p>
@@ -205,15 +274,18 @@
             </div>
 
             {%- comment -%} Subscription Plan {%- endcomment -%}
-            <div class="plan-selector">
-              <div class="plan-option is-selected" data-plan="monthly">
-                <span class="plan-option__name">Monthly Subscription</span>
-                <span class="plan-option__price">{{ monthly_per_mo }}</span>
-                <span class="plan-option__detail">Billed monthly. Cancel anytime.</span>
+            {%- if has_subscription -%}
+              <div class="plan-selector">
+                <div class="plan-option is-selected" data-plan="monthly">
+                  <span class="plan-option__name">Monthly Subscription</span>
+                  <span class="plan-option__price">{{ monthly_per_mo }}</span>
+                  <span class="plan-option__detail">Billed monthly. Cancel anytime.</span>
+                </div>
               </div>
-            </div>
+            {%- endif -%}
 
-            {%- comment -%} Perks {%- endcomment -%}
+            {%- comment -%} Perks — all three are subscription-only benefits, incl. "free shipping, always" {%- endcomment -%}
+            {%- if has_subscription -%}
             <div class="cart-perks">
               <h3 class="cart-perks__heading">What's Included</h3>
               <div class="cart-perks__grid">
@@ -224,8 +296,14 @@
                     </svg>
                   </div>
                   <div>
-                    <strong>Free shipping, always</strong>
-                    <p>Every order ships free to the US & Canada</p>
+                    {%- comment -%} Scoped to the subscription when a giveaway line is present — it pays its own flat shipping. {%- endcomment -%}
+                    {%- if has_giveaway -%}
+                      <strong>Free shipping on every subscription order</strong>
+                      <p>Your subscription orders ship free to the US & Canada</p>
+                    {%- else -%}
+                      <strong>Free shipping, always</strong>
+                      <p>Every order ships free to the US & Canada</p>
+                    {%- endif -%}
                   </div>
                 </div>
                 <div class="cart-perk">
@@ -252,6 +330,7 @@
                 </div>
               </div>
             </div>
+            {%- endif -%}
 
           </div>
 
@@ -260,23 +339,65 @@
             <div class="cart-summary__card">
               <h2 class="cart-summary__title">Order Summary</h2>
 
-              {%- comment -%} Order lines {%- endcomment -%}
-              {%- for item in cart.items -%}
+              {%- comment -%}
+                Order lines. Subscription branch keeps the "Included / Monthly Plan / Shipping FREE"
+                framing. Non-subscription branch MUST show real line prices and must not promise
+                free shipping — the rate comes from the shipping profile and is charged at checkout.
+              {%- endcomment -%}
+              {%- if has_subscription -%}
+
+                {%- comment -%}
+                  PER-LINE, not cart-wide. A mixed cart is the funnel's own designed path (claim
+                  the free bottle, then subscribe), so "Included" must be keyed on the line's own
+                  selling plan. Printing "Included" against a $0 giveaway line under a "Then
+                  $X/month" heading frames the free bottle as part of the recurring charge.
+                {%- endcomment -%}
+                {%- for item in cart.items -%}
+                  <div class="cart-summary__row">
+                    {%- if item.selling_plan_allocation -%}
+                      <span>{{ item.product.title }} (5ml)</span>
+                      <span class="text-gold">Included</span>
+                    {%- else -%}
+                      <span>{{ item.product.title }}{% if item.quantity > 1 %} &times; {{ item.quantity }}{% endif %}</span>
+                      <span>{{ item.final_line_price | money }}</span>
+                    {%- endif -%}
+                  </div>
+                {%- endfor -%}
+
                 <div class="cart-summary__row">
-                  <span>{{ item.product.title }} (5ml)</span>
-                  <span class="text-gold">Included</span>
+                  <span data-summary-plan-label>Monthly Plan</span>
+                  <span data-summary-plan-price>{{ cart.total_price | money }}</span>
                 </div>
-              {%- endfor -%}
 
-              <div class="cart-summary__row">
-                <span data-summary-plan-label>Monthly Plan</span>
-                <span data-summary-plan-price>{{ cart.total_price | money }}</span>
-              </div>
+                <div class="cart-summary__row cart-summary__row--light">
+                  <span>Shipping</span>
+                  {%- if has_giveaway -%}
+                    {%- comment -%}
+                      Free shipping is a subscription perk, but the giveaway line carries its own
+                      flat shipping charge. Asserting FREE on a mixed cart contradicts the offer
+                      page. The rate is resolved from the shipping profiles at checkout.
+                    {%- endcomment -%}
+                    <span>Calculated at checkout</span>
+                  {%- else -%}
+                    <span class="text-success">FREE</span>
+                  {%- endif -%}
+                </div>
 
-              <div class="cart-summary__row cart-summary__row--light">
-                <span>Shipping</span>
-                <span class="text-success">FREE</span>
-              </div>
+              {%- else -%}
+
+                {%- for item in cart.items -%}
+                  <div class="cart-summary__row">
+                    <span>{{ item.product.title }}{% if item.quantity > 1 %} &times; {{ item.quantity }}{% endif %}</span>
+                    <span>{{ item.final_line_price | money }}</span>
+                  </div>
+                {%- endfor -%}
+
+                <div class="cart-summary__row cart-summary__row--light">
+                  <span>Shipping</span>
+                  <span>Calculated at checkout</span>
+                </div>
+
+              {%- endif -%}
 
               {%- if cart.cart_level_discount_applications.size > 0 -%}
                 {%- for discount in cart.cart_level_discount_applications -%}
@@ -289,14 +410,30 @@
 
               <div class="cart-summary__divider"></div>
 
-              <div class="cart-summary__row cart-summary__row--total">
-                <span>Due Today</span>
-                <span data-summary-total>{{ cart.total_price | money }}</span>
-              </div>
+              {%- if has_subscription -%}
 
-              <p class="cart-summary__renewal" data-summary-renewal>
-                Then {{ cart.total_price | money }}/month. Cancel anytime.
-              </p>
+                <div class="cart-summary__row cart-summary__row--total">
+                  <span>{% if has_giveaway %}Due Today (before shipping){% else %}Due Today{% endif %}</span>
+                  <span data-summary-total>{{ cart.total_price | money }}</span>
+                </div>
+
+                <p class="cart-summary__renewal" data-summary-renewal>
+                  Then {{ cart.total_price | money }}/month. Cancel anytime.
+                  {%- if has_giveaway %} Your free 5ml is a one-time item and is not part of the recurring charge. Its shipping is charged once, at checkout.{% endif -%}
+                </p>
+
+              {%- else -%}
+
+                <div class="cart-summary__row cart-summary__row--total">
+                  <span>Subtotal</span>
+                  <span data-summary-total>{{ cart.total_price | money }}</span>
+                </div>
+
+                <p class="cart-summary__renewal">
+                  Shipping and taxes calculated at checkout. One-time purchase. No subscription and no recurring charge.
+                </p>
+
+              {%- endif -%}
 
               {%- comment -%} Promo Code {%- endcomment -%}
               <div class="cart-promo">
@@ -321,7 +458,12 @@
                 {% render 'subscription-pricing-summary', surface: 'cart' %}
               {%- endif -%}
 
-              {%- comment -%} Subscription Disclosure (FTC Compliant) {%- endcomment -%}
+              {%- comment -%}
+                Subscription Disclosure (FTC / ROSCA). Subscription carts only: on a one-time cart
+                this box asserts a recurring charge that will never happen, and its checkbox is what
+                blocks a non-subscription buyer from ever reaching checkout.
+              {%- endcomment -%}
+              {%- if has_subscription -%}
               <div class="cart-disclosure">
                 <div class="cart-disclosure__icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
@@ -344,14 +486,21 @@
                   </p>
                 </div>
               </div>
+              {%- endif -%}
 
-              {%- comment -%} Checkout Button {%- endcomment -%}
+              {%- comment -%}
+                Checkout Button. The disabled condition is deliberately the SAME expression that
+                gates the disclosure block above, so the button is only ever disabled when a
+                checkbox actually exists to un-disable it. Provable giveaway-only carts have no
+                checkbox and so must not start disabled — that would be an unreachable checkout.
+                Every other cart, including the plan-less fail-safe case, keeps the gate.
+              {%- endcomment -%}
               <button
                 type="submit"
                 name="checkout"
                 id="checkoutBtn"
                 class="btn btn--primary btn--full btn--large cart-checkout-btn"
-                {% if settings.sub_disclosure_checkbox_required != false %}disabled{% endif %}
+                {% if has_subscription and settings.sub_disclosure_checkbox_required != false %}disabled{% endif %}
               >
                 PROCEED TO CHECKOUT
               </button>
@@ -370,12 +519,18 @@
                   </svg>
                   <span>Satisfaction Guarantee</span>
                 </div>
-                <div class="cart-trust__item">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-                    <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-                  </svg>
-                  <span>Free Shipping</span>
-                </div>
+                {%- comment -%}
+                  "Free Shipping" is a subscription perk — not true of a one-time cart, and an
+                  unqualified badge would contradict the giveaway's own flat shipping charge.
+                {%- endcomment -%}
+                {%- if has_subscription -%}
+                  <div class="cart-trust__item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                      <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+                    </svg>
+                    <span>{% if has_giveaway %}Free Subscription Shipping{% else %}Free Shipping{% endif %}</span>
+                  </div>
+                {%- endif -%}
               </div>
             </div>
           </div>
