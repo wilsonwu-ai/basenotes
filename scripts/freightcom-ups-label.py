@@ -6,46 +6,52 @@ Freightcom is a multi-carrier aggregator: you send ONE shipment to Freightcom
 and it brokers to UPS / FedEx / Purolator / etc. This script asks Freightcom
 for rates, picks a UPS service, books the shipment, and downloads the label PDF.
 
-Run it locally after filling out a shipment JSON file:
+Run it locally after saving your token into .env:
 
+    python3 scripts/freightcom-ups-label.py --check                    # verify token + endpoint
     python3 scripts/freightcom-ups-label.py --sample > shipment.json   # make a template
     # edit shipment.json: put in your real from/to addresses + package size/weight
-    python3 scripts/freightcom-ups-label.py shipment.json              # get the label
+    python3 scripts/freightcom-ups-label.py shipment.json              # book + get the label
 
-The API key is read from .env (FREIGHTCOM_API_KEY). It never touches the theme
+The token is read from .env (FREIGHTCOM_API_KEY). It never touches the theme
 or the browser — labels can only be generated server-side, never from Liquid,
-or the key would leak to every store visitor.
+or the token would leak to every store visitor.
+
+  # .env
+  FREIGHTCOM_API_KEY=your-token-here
+  # Optional endpoint control (defaults to the TEST sandbox):
+  #   FREIGHTCOM_ENV=prod            # use the production host
+  #   FREIGHTCOM_API_BASE=https://.. # or pin an exact base URL
 
 --------------------------------------------------------------------------------
-VERIFY-AGAINST-YOUR-ACCOUNT NOTES
+ENDPOINT / SCHEMA NOTES
 --------------------------------------------------------------------------------
-Freightcom's live docs (https://developer.freightcom.com/) are behind a login,
-so the three constants below reflect the v2 API's documented shape but should be
-confirmed against the docs you see when logged in. They're isolated at the top
-so a fix is a one-line edit:
+The TEST base URL (https://customer-external-api.ssd-test.freightcom.com) is
+confirmed from Freightcom's token email. The production host and the exact
+rate/shipment JSON field names in build_rate_request() should still be checked
+against the docs at https://developer-test.freightcom.com/ (login-gated). The
+async rate -> poll -> book -> poll -> download flow is the standard v2 pattern;
+auth is a raw token in the `Authorization` header (no "Bearer " prefix).
 
-  * BASE_URL        — the v2 customer API host
-  * AUTH_HEADER     — Freightcom v2 uses a raw API key in the `Authorization`
-                      header (NOT `Bearer <key>`). Confirm on the "Authentication"
-                      page of your docs.
-  * The rate/shipment JSON field names in build_rate_request().
-
-Everything else (the async rate -> poll -> book -> poll -> download flow) is the
-standard Freightcom v2 pattern.
+Start with `--check` against the TEST token before booking anything real.
 """
 from __future__ import annotations
 
 import json
-import os
 import sys
 import time
 import urllib.error
 import urllib.request
 from pathlib import Path
 
-# --- Constants to confirm against your logged-in docs (see docstring) ---------
-BASE_URL = "https://external-api.freightcom.com"
-AUTH_HEADER = "Authorization"  # value is the raw API key, no "Bearer " prefix
+# --- Endpoints ----------------------------------------------------------------
+# TEST (sandbox) endpoint confirmed by Freightcom's token email (Aug 2026).
+# Production almost certainly drops the "ssd-test" segment; confirm before flipping.
+DEFAULT_TEST_BASE = "https://customer-external-api.ssd-test.freightcom.com"
+DEFAULT_PROD_BASE = "https://customer-external-api.freightcom.com"  # VERIFY before live use
+# Freightcom v2 uses a raw token in the `Authorization` header (no "Bearer " prefix).
+# Confirm on the Authentication page of https://developer-test.freightcom.com/
+AUTH_HEADER = "Authorization"
 # ------------------------------------------------------------------------------
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -56,24 +62,44 @@ POLL_INTERVAL_SECONDS = 3
 POLL_TIMEOUT_SECONDS = 120
 
 
-def load_api_key() -> str:
+def _read_env(name: str) -> str | None:
     if not ENV_PATH.exists():
-        sys.exit(
-            f"ERROR: {ENV_PATH} not found. Add a line:\n"
-            "  FREIGHTCOM_API_KEY=your-key-here"
-        )
+        return None
     for line in ENV_PATH.read_text().splitlines():
-        if line.startswith("FREIGHTCOM_API_KEY="):
-            key = line.split("=", 1)[1].strip()
-            if key:
-                return key
-    sys.exit("ERROR: FREIGHTCOM_API_KEY not found (or empty) in .env")
+        if line.startswith(f"{name}="):
+            return line.split("=", 1)[1].strip()
+    return None
+
+
+def load_api_key() -> str:
+    key = _read_env("FREIGHTCOM_API_KEY")
+    if not key:
+        sys.exit(
+            f"ERROR: FREIGHTCOM_API_KEY not found (or empty) in {ENV_PATH}.\n"
+            "Open the token link Freightcom emailed you, copy the token, and add:\n"
+            "  FREIGHTCOM_API_KEY=your-token-here"
+        )
+    return key
+
+
+def load_base_url() -> str:
+    """Base URL resolution, in priority order:
+      1. FREIGHTCOM_API_BASE in .env (explicit override — use the prod URL here when live)
+      2. FREIGHTCOM_ENV=prod  -> production default
+      3. test sandbox default (what your first token is for)
+    """
+    explicit = _read_env("FREIGHTCOM_API_BASE")
+    if explicit:
+        return explicit.rstrip("/")
+    if (_read_env("FREIGHTCOM_ENV") or "test").lower() == "prod":
+        return DEFAULT_PROD_BASE
+    return DEFAULT_TEST_BASE
 
 
 def api(method: str, path: str, key: str, body: dict | None = None) -> dict:
     """One HTTP call to the Freightcom API. Exits with the server's error body
     on a non-2xx so you can see exactly which field it rejected."""
-    url = f"{BASE_URL}{path}"
+    url = f"{load_base_url()}{path}"
     data = json.dumps(body).encode() if body is not None else None
     req = urllib.request.Request(
         url,
@@ -177,15 +203,45 @@ def rate_total(rate: dict) -> float:
         return float("inf")
 
 
+def check(key: str) -> int:
+    """Verify the token + endpoint without booking anything: fire one rate
+    request (a quote is side-effect-free) and report whether auth works."""
+    base = load_base_url()
+    print(f"Endpoint: {base}")
+    print("Sending a test rate request (no shipment is booked)...")
+    started = api("POST", "/rate", key, build_rate_request(SAMPLE_SHIPMENT))
+    request_id = started.get("request_id") or started.get("id")
+    if not request_id:
+        print(f"⚠ Reached the API but got an unexpected response: {started}")
+        return 1
+    result = poll(
+        f"/rate/{request_id}",
+        key,
+        done_when=lambda p: p.get("status", {}).get("done") is True
+        or p.get("status") == "done"
+        or bool(p.get("rates")),
+    )
+    rates = result.get("rates", [])
+    ups = [r for r in rates if is_ups(r)]
+    print(f"\n✓ Token works — {len(rates)} rate(s) returned, {len(ups)} from UPS.")
+    if not ups:
+        print("  (No UPS rate on the sample route — fine for a connectivity check;")
+        print("   check with Freightcom that UPS is enabled for your real lanes.)")
+    return 0
+
+
 def main() -> int:
     if len(sys.argv) == 2 and sys.argv[1] == "--sample":
         print(json.dumps(SAMPLE_SHIPMENT, indent=2))
         return 0
+    if len(sys.argv) == 2 and sys.argv[1] == "--check":
+        return check(load_api_key())
     if len(sys.argv) != 2:
         sys.exit(
             "usage:\n"
             "  python3 scripts/freightcom-ups-label.py --sample > shipment.json\n"
-            "  python3 scripts/freightcom-ups-label.py shipment.json"
+            "  python3 scripts/freightcom-ups-label.py --check          # verify token + endpoint\n"
+            "  python3 scripts/freightcom-ups-label.py shipment.json    # book + download label"
         )
 
     shipment_path = Path(sys.argv[1]).resolve()
