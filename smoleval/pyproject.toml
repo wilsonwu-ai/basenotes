@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smoleval"
+version = "0.1.0"
+description = "Small, honest eval harness for small code models: HumanEval + MBPP, sandboxed execution, unbiased pass@k, held-out set locking."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "requests>=2.31",
+    "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+hf = [
+    "torch>=2.1",
+    "transformers>=4.40",
+]
+test = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+smoleval = "smoleval.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["smoleval*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
