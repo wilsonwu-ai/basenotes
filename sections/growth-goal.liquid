@@ -112,8 +112,8 @@
   "settings": [
     { "type": "header", "content": "Numbers" },
     { "type": "text", "id": "endpoint", "label": "Live count endpoint (JSON: {active, goal})", "default": "https://basenote-media.wilson-af8.workers.dev/member-count", "info": "Leave as is. Falls back to the numbers below if unreachable." },
-    { "type": "range", "id": "goal", "label": "Member goal", "min": 20, "max": 500, "step": 5, "default": 60 },
-    { "type": "range", "id": "fallback_active", "label": "Fallback active members (shown until the live count loads)", "min": 0, "max": 500, "step": 1, "default": 17 },
+    { "type": "number", "id": "goal", "label": "Member goal", "default": 60 },
+    { "type": "number", "id": "fallback_active", "label": "Fallback active members (shown until the live count loads)", "default": 17 },
     { "type": "text", "id": "deadline_date", "label": "Deadline (YYYY-MM-DD)", "default": "2026-11-30" },
     { "type": "text", "id": "deadline_label", "label": "Deadline label", "default": "Nov 30" },
     { "type": "checkbox", "id": "show_bar", "label": "Show progress bar", "default": true },
