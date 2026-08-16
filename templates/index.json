@@ -514,7 +514,10 @@
     },
     "growth-goal": {
       "type": "growth-goal",
-      "settings": {}
+      "settings": {
+        "goal": 60,
+        "fallback_active": 17
+      }
     }
   },
   "order": [
