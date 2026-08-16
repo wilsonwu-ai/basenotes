@@ -1,0 +1,239 @@
+{%- comment -%}
+  bn-marquee.liquid — Base Note facelift Phase A, Direction A.
+
+  House ticker + claims ticker. One [data-marquee] wrapper per row containing a
+  single track; bn-motion.js clones that track once and animates both halves
+  with the shared bn-marq keyframe, pausing on hover and off-screen.
+
+  No JS here. Without bn-motion.js the track renders static and fully readable,
+  and under prefers-reduced-motion bn-motion.js clones but never animates.
+
+  Items are written as one string separated by "·" so the editor never has to
+  think about markup; the separator is re-rendered in brass.
+{%- endcomment -%}
+
+{%- liquid
+  assign scheme_class = 'bn-on-ink'
+  case section.settings.color_scheme
+    when 'bone'
+      assign scheme_class = 'bn-on-bone'
+    when 'forest'
+      assign scheme_class = 'bn-on-forest'
+  endcase
+-%}
+
+<section class="bn-marquee {{ scheme_class }}" id="bn-marquee-{{ section.id }}" aria-label="{{ section.settings.aria_label | default: 'Fragrance houses carried by Base Note' | escape }}">
+  {%- for block in section.blocks -%}
+    {%- liquid
+      assign items = block.settings.text | split: '·'
+      assign repeat = block.settings.repeat | default: 2
+      assign speed = block.settings.speed | default: 26
+    -%}
+    <div
+      class="bn-marquee__row bn-marquee__row--{{ block.settings.style }}"
+      {{ block.shopify_attributes }}
+    >
+      <div
+        class="bn-marquee__viewport"
+        data-marquee
+        data-marquee-speed="{{ speed }}s"
+      >
+        <div class="bn-marquee__track">
+          {%- for i in (1..repeat) -%}
+            {%- for item in items -%}
+              {%- assign label = item | strip -%}
+              {%- if label != blank -%}
+                <span class="bn-marquee__item">{{ label }}</span>
+                <span class="bn-marquee__sep" aria-hidden="true">&middot;</span>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  {%- endfor -%}
+</section>
+
+<style>
+  #bn-marquee-{{ section.id }} {
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid var(--bn-line, var(--bn-line-on-ink));
+    border-bottom: 1px solid var(--bn-line, var(--bn-line-on-ink));
+  }
+
+  #bn-marquee-{{ section.id }} .bn-marquee__row + .bn-marquee__row {
+    border-top: 1px solid var(--bn-line, var(--bn-line-on-ink));
+  }
+
+  #bn-marquee-{{ section.id }} .bn-marquee__viewport {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+    padding-block: var(--bn-space-xs);
+    -webkit-mask-image: linear-gradient(90deg, transparent, currentColor 7%, currentColor 93%, transparent);
+            mask-image: linear-gradient(90deg, transparent, currentColor 7%, currentColor 93%, transparent);
+  }
+
+  #bn-marquee-{{ section.id }} .bn-marquee__track {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: var(--bn-space-md);
+    padding-right: var(--bn-space-md);
+    white-space: nowrap;
+  }
+
+  #bn-marquee-{{ section.id }} .bn-marquee__item {
+    font-family: var(--bn-font-display);
+    font-weight: 400;
+    font-variation-settings: 'wdth' 100;
+    font-size: var(--bn-text-sm);
+    letter-spacing: var(--bn-track-label);
+    text-transform: uppercase;
+    color: var(--bn-text-muted, var(--bn-text-on-ink-dim));
+  }
+
+  #bn-marquee-{{ section.id }} .bn-marquee__sep {
+    color: var(--bn-metal-text, var(--bn-brass));
+    font-size: var(--bn-text-sm);
+    line-height: 1;
+  }
+
+  /* Claims row — brass, tighter, quieter than the house list. */
+  #bn-marquee-{{ section.id }} .bn-marquee__row--claims .bn-marquee__item {
+    font-family: var(--bn-font-body);
+    font-weight: var(--bn-weight-strong);
+    font-variation-settings: normal;
+    font-size: var(--bn-text-2xs);
+    letter-spacing: var(--bn-track-label);
+    color: var(--bn-metal-text, var(--bn-brass));
+  }
+
+  #bn-marquee-{{ section.id }} .bn-marquee__row--claims .bn-marquee__sep {
+    color: var(--bn-text-muted, var(--bn-text-on-ink-dim));
+  }
+
+  #bn-marquee-{{ section.id }} .bn-marquee__row--claims .bn-marquee__viewport {
+    padding-block: var(--bn-space-2xs);
+  }
+
+  @media (max-width: 600px) {
+    #bn-marquee-{{ section.id }} .bn-marquee__track {
+      gap: var(--bn-space-sm);
+      padding-right: var(--bn-space-sm);
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "BN Marquee",
+  "tag": "section",
+  "class": "bn-marquee-section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colour scheme",
+      "options": [
+        {
+          "value": "ink",
+          "label": "Ink"
+        },
+        {
+          "value": "bone",
+          "label": "Bone"
+        },
+        {
+          "value": "forest",
+          "label": "Forest"
+        }
+      ],
+      "default": "ink"
+    },
+    {
+      "type": "text",
+      "id": "aria_label",
+      "label": "Accessible label",
+      "default": "Fragrance houses carried by Base Note"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Ticker row",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Items",
+          "info": "Separate items with · — the separator is re-drawn in brass.",
+          "default": "Creed · Tom Ford · Parfums de Marly · Xerjoff · Bond No. 9 · Initio · Dior · YSL · Prada · Armani"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Row style",
+          "options": [
+            {
+              "value": "houses",
+              "label": "Houses (display face)"
+            },
+            {
+              "value": "claims",
+              "label": "Claims (brass micro-label)"
+            }
+          ],
+          "default": "houses"
+        },
+        {
+          "type": "range",
+          "id": "speed",
+          "label": "Loop duration",
+          "min": 14,
+          "max": 60,
+          "step": 2,
+          "unit": "s",
+          "default": 26
+        },
+        {
+          "type": "range",
+          "id": "repeat",
+          "label": "Repeat items per track",
+          "info": "Raise this if the row runs out of items on a wide screen.",
+          "min": 1,
+          "max": 4,
+          "step": 1,
+          "default": 2
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "BN Marquee",
+      "blocks": [
+        {
+          "type": "row",
+          "settings": {
+            "text": "Creed · Tom Ford · Parfums de Marly · Xerjoff · Bond No. 9 · Initio · Dior · YSL · Prada · Armani",
+            "style": "houses",
+            "speed": 26,
+            "repeat": 2
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "text": "$20 flat · no surcharges · cancel anytime",
+            "style": "claims",
+            "speed": 38,
+            "repeat": 4
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

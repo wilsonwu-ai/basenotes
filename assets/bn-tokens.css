@@ -203,7 +203,15 @@
   --radius-lg:   var(--bn-radius-lg);
   --radius-full: var(--bn-radius-pill);
 
-  --header-height: 110px;
+  /* Layout geometry — single source of truth. Consumers alias --header-height.
+     Slim ink bar (Direction A): 72px desktop / 64px <=767px, 32px ticker above it. */
+  --bn-header-height: 72px;
+  --bn-ticker-height: 32px;
+  --header-height: var(--bn-header-height);
+}
+
+@media (max-width: 767px){
+  :root{ --bn-header-height: 64px; }
 }
 
 /* ============================================================================

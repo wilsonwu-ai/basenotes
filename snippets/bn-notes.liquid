@@ -1,0 +1,320 @@
+{%- comment -%}
+  bn-notes — Base Note facelift, Phase A.
+  Fragrance note pyramid + scent-family key. One source of truth for both.
+
+  USAGE
+    {% render 'bn-notes', product: product, mode: 'card', panel_id: 'bn-notes-123' %}
+      Compact 3-line notes panel (Top / Heart / Base) plus the family chip.
+      Emits NO CSS — the card styles live in snippets/product-card.liquid so a
+      grid of 24 cards does not repeat a style block 24 times.
+
+    {% render 'bn-notes', product: product, mode: 'pdp' %}
+      Full pyramid with its own <style> block. Rendered once per PDP.
+      NOT wired into main-product.liquid — that is Phase B.
+
+    {%- capture bn_data -%}{%- render 'bn-notes', product: product, mode: 'data' -%}{%- endcapture -%}
+      Returns a pipe-separated triple and no markup:
+        "<family-token>|<Family Label>|<1|0 has-notes>"
+      e.g. "woody|Woody|1"  ·  "|" + "|0" when nothing is known.
+      This is how product-card.liquid gets the family key for its data-family
+      tint hook without duplicating the parsing logic.
+
+  WHERE THE NOTES COME FROM (in order)
+    1. product.metafields.custom.top_notes / heart_notes / base_notes
+       Handles both a plain text metafield and a list.* metafield.
+    2. product.description, which on this catalogue reads
+         <p><strong>Top Notes:</strong> A, B<br><strong>Heart Notes:</strong> C
+         <br><strong>Base Notes:</strong> D</p>
+       Parsed with split filters, bounded by </p> so a trailing paragraph is
+       never swallowed. Casing variants and "Middle Notes" are normalised first.
+
+  FAMILY KEY
+    First match wins against product.tags (bare tag or "family:<key>"), in the
+    priority order below. Mapped to a --bn-family-* token via [data-family] in
+    assets/bn-tokens.css. 'citrus' and 'musky' have no token of their own and
+    borrow 'fresh' and 'powdery'; the human label still says Citrus / Musky.
+{%- endcomment -%}
+
+{%- liquid
+  assign bn_mode = mode | default: 'card'
+
+  # ── 1. Notes from metafields ────────────────────────────────────────────
+  assign bn_top = ''
+  assign bn_heart = ''
+  assign bn_base = ''
+
+  assign mf_top = product.metafields.custom.top_notes
+  assign mf_heart = product.metafields.custom.heart_notes
+  assign mf_base = product.metafields.custom.base_notes
+
+  if mf_top
+    if mf_top.type contains 'list'
+      assign bn_top = mf_top.value | join: ', '
+    else
+      assign bn_top = mf_top.value | strip_html | strip
+    endif
+  endif
+
+  if mf_heart
+    if mf_heart.type contains 'list'
+      assign bn_heart = mf_heart.value | join: ', '
+    else
+      assign bn_heart = mf_heart.value | strip_html | strip
+    endif
+  endif
+
+  if mf_base
+    if mf_base.type contains 'list'
+      assign bn_base = mf_base.value | join: ', '
+    else
+      assign bn_base = mf_base.value | strip_html | strip
+    endif
+  endif
+
+  # ── 2. Notes from the description, normalised for casing / wording ──────
+  assign bn_body = product.description | replace: 'TOP NOTES:', 'Top Notes:' | replace: 'Top notes:', 'Top Notes:' | replace: 'HEART NOTES:', 'Heart Notes:' | replace: 'Heart notes:', 'Heart Notes:' | replace: 'MIDDLE NOTES:', 'Heart Notes:' | replace: 'Middle Notes:', 'Heart Notes:' | replace: 'Middle notes:', 'Heart Notes:' | replace: 'BASE NOTES:', 'Base Notes:' | replace: 'Base notes:', 'Base Notes:'
+
+  if bn_top == blank and bn_body contains 'Top Notes:'
+    assign bn_top = bn_body | split: 'Top Notes:' | last | split: '</p>' | first | split: 'Heart Notes:' | first | split: 'Base Notes:' | first | strip_html | strip
+  endif
+
+  if bn_heart == blank and bn_body contains 'Heart Notes:'
+    assign bn_heart = bn_body | split: 'Heart Notes:' | last | split: '</p>' | first | split: 'Base Notes:' | first | strip_html | strip
+  endif
+
+  if bn_base == blank and bn_body contains 'Base Notes:'
+    assign bn_base = bn_body | split: 'Base Notes:' | last | split: '</p>' | first | strip_html | strip
+  endif
+
+  # Display form — commas become middots, the house separator.
+  assign bn_top_out = bn_top | replace: ', ', ' · ' | replace: ',', ' · '
+  assign bn_heart_out = bn_heart | replace: ', ', ' · ' | replace: ',', ' · '
+  assign bn_base_out = bn_base | replace: ', ', ' · ' | replace: ',', ' · '
+
+  assign bn_has_notes = false
+  if bn_top != blank or bn_heart != blank or bn_base != blank
+    assign bn_has_notes = true
+  endif
+
+  # ── 3. Family key from tags ─────────────────────────────────────────────
+  assign bn_fam_keys = 'fresh,woody,amber,oriental,floral,gourmand,green,aromatic,spicy,clean,citrus,musky,fruity,leather,powdery,smoky,sweet,vanilla' | split: ','
+  assign bn_family = ''
+
+  for bn_key in bn_fam_keys
+    if bn_family != blank
+      break
+    endif
+    assign bn_key_prefixed = 'family:' | append: bn_key
+    for bn_tag in product.tags
+      assign bn_tag_l = bn_tag | downcase | strip
+      if bn_tag_l == bn_key or bn_tag_l == bn_key_prefixed
+        assign bn_family = bn_key
+        break
+      endif
+    endfor
+  endfor
+
+  assign bn_family_token = bn_family
+  if bn_family == 'citrus'
+    assign bn_family_token = 'fresh'
+  elsif bn_family == 'musky'
+    assign bn_family_token = 'powdery'
+  endif
+
+  assign bn_family_label = bn_family | capitalize
+-%}
+
+{%- case bn_mode -%}
+
+{%- when 'data' -%}
+{{- bn_family_token }}|{{ bn_family_label }}|{% if bn_has_notes %}1{% else %}0{% endif -%}
+
+{%- when 'card' -%}
+{%- if bn_has_notes or bn_family != blank -%}
+  <div class="bn-notes bn-notes--card" data-family="{{ bn_family_token }}">
+    {%- if bn_family != blank -%}
+      <span class="bn-notes__chip">
+        <span class="bn-notes__dot" aria-hidden="true"></span>{{ bn_family_label }}
+      </span>
+    {%- endif -%}
+    {%- if bn_has_notes -%}
+      <div class="bn-notes__panel"{% if panel_id %} id="{{ panel_id }}"{% endif %}>
+        <dl class="bn-notes__rows">
+          {%- if bn_top != blank -%}
+            <dt>Top</dt>
+            <dd>{{ bn_top_out }}</dd>
+          {%- endif -%}
+          {%- if bn_heart != blank -%}
+            <dt>Heart</dt>
+            <dd>{{ bn_heart_out }}</dd>
+          {%- endif -%}
+          {%- if bn_base != blank -%}
+            <dt>Base</dt>
+            <dd>{{ bn_base_out }}</dd>
+          {%- endif -%}
+        </dl>
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{%- when 'pdp' -%}
+{%- if bn_has_notes or bn_family != blank -%}
+  <section class="bn-notes bn-notes--pdp" data-family="{{ bn_family_token }}" data-reveal-group>
+    <header class="bn-notes__head" data-reveal>
+      <span class="bn-notes__eyebrow">{{ heading | default: 'The pyramid' }}</span>
+      {%- if bn_family != blank -%}
+        <span class="bn-notes__chip">
+          <span class="bn-notes__dot" aria-hidden="true"></span>{{ bn_family_label }}
+        </span>
+      {%- endif -%}
+    </header>
+
+    {%- if bn_has_notes -%}
+      <ol class="bn-notes__pyramid">
+        {%- if bn_top != blank -%}
+          <li class="bn-notes__tier bn-notes__tier--top" data-reveal>
+            <span class="bn-notes__tier-key">Top</span>
+            <span class="bn-notes__tier-val">{{ bn_top_out }}</span>
+          </li>
+        {%- endif -%}
+        {%- if bn_heart != blank -%}
+          <li class="bn-notes__tier bn-notes__tier--heart" data-reveal>
+            <span class="bn-notes__tier-key">Heart</span>
+            <span class="bn-notes__tier-val">{{ bn_heart_out }}</span>
+          </li>
+        {%- endif -%}
+        {%- if bn_base != blank -%}
+          <li class="bn-notes__tier bn-notes__tier--base" data-reveal>
+            <span class="bn-notes__tier-key">Base</span>
+            <span class="bn-notes__tier-val">{{ bn_base_out }}</span>
+          </li>
+        {%- endif -%}
+      </ol>
+    {%- endif -%}
+  </section>
+
+  <style>
+    /* bn-notes — PDP pyramid. Emitted only in pdp mode, once per page. */
+    .bn-notes--pdp {
+      display: block;
+      padding: var(--bn-space-lg) 0;
+      color: var(--bn-text-on-bone);
+    }
+
+    .bn-notes--pdp .bn-notes__head {
+      display: flex;
+      align-items: center;
+      gap: var(--bn-space-sm);
+      margin-bottom: var(--bn-space-md);
+    }
+
+    .bn-notes--pdp .bn-notes__eyebrow {
+      font-family: var(--bn-font-body);
+      font-size: var(--bn-text-2xs);
+      font-weight: var(--bn-weight-strong);
+      letter-spacing: var(--bn-track-label);
+      text-transform: uppercase;
+      color: var(--bn-brass-ink);
+    }
+
+    .bn-notes--pdp .bn-notes__head::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--bn-line-on-bone);
+      order: 1;
+    }
+
+    .bn-notes--pdp .bn-notes__chip {
+      order: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 13px 6px 10px;
+      border: 1px solid var(--bn-line-on-bone);
+      border-radius: var(--bn-radius-pill);
+      font-family: var(--bn-font-body);
+      font-size: var(--bn-text-2xs);
+      font-weight: var(--bn-weight-strong);
+      letter-spacing: var(--bn-track-label);
+      text-transform: uppercase;
+      color: var(--bn-text-on-bone);
+      background: var(--bn-bone-2);
+      background: color-mix(in oklab, var(--bn-family, var(--bn-family-default)) 22%, var(--bn-bone));
+    }
+
+    .bn-notes--pdp .bn-notes__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex: none;
+      background: var(--bn-family, var(--bn-family-default));
+    }
+
+    .bn-notes--pdp .bn-notes__pyramid {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .bn-notes--pdp .bn-notes__tier {
+      display: grid;
+      grid-template-columns: 5.5rem 1fr;
+      align-items: baseline;
+      gap: var(--bn-space-sm);
+      padding: var(--bn-space-sm) var(--bn-space-md);
+      border-left: 1px solid var(--bn-family, var(--bn-family-default));
+      background: var(--bn-bone-2);
+    }
+
+    .bn-notes--pdp .bn-notes__tier--top {
+      background: color-mix(in oklab, var(--bn-family, var(--bn-family-default)) 8%, var(--bn-bone));
+    }
+
+    .bn-notes--pdp .bn-notes__tier--heart {
+      background: color-mix(in oklab, var(--bn-family, var(--bn-family-default)) 16%, var(--bn-bone));
+      border-left-width: 2px;
+    }
+
+    .bn-notes--pdp .bn-notes__tier--base {
+      background: color-mix(in oklab, var(--bn-family, var(--bn-family-default)) 26%, var(--bn-bone));
+      border-left-width: 3px;
+    }
+
+    .bn-notes--pdp .bn-notes__tier-key {
+      font-family: var(--bn-font-body);
+      font-size: var(--bn-text-2xs);
+      font-weight: var(--bn-weight-strong);
+      letter-spacing: var(--bn-track-label);
+      text-transform: uppercase;
+      color: var(--bn-brass-ink);
+    }
+
+    .bn-notes--pdp .bn-notes__tier-val {
+      font-family: var(--bn-font-accent);
+      font-style: italic;
+      font-size: var(--bn-text-md);
+      line-height: 1.35;
+      color: var(--bn-text-on-bone);
+    }
+
+    /* The pyramid reads as a pyramid only where there is room for the inset. */
+    @media (min-width: 700px) {
+      .bn-notes--pdp .bn-notes__tier--top { margin-inline: 10% 0; }
+      .bn-notes--pdp .bn-notes__tier--heart { margin-inline: 5% 0; }
+    }
+
+    @media (max-width: 600px) {
+      .bn-notes--pdp .bn-notes__tier {
+        grid-template-columns: 1fr;
+        gap: var(--bn-space-3xs);
+      }
+    }
+  </style>
+{%- endif -%}
+
+{%- endcase -%}

@@ -18,7 +18,7 @@
   var DENY = [
     'form[action*="/cart/add"]', '#sellingPlanSelector', '[name="selling_plan"]',
     '#addToCartButton', '[data-quick-add]', '[data-cart-drawer]', '[data-cart-count]',
-    '[data-cart-items]', '#cartDrawer', '#bn-queue', '[data-bn-appstle]'
+    '[data-cart-items]', '[data-cart-open]', '#cartDrawer', '#bn-queue', '[data-bn-appstle]'
   ].join(',');
 
   function isSafe(el) {
@@ -86,6 +86,11 @@
 
       var clone = track.cloneNode(true);
       clone.setAttribute('aria-hidden', 'true');
+      // The clone is decorative: pull its interactive nodes out of the tab order
+      // or a keyboard user tabs through an invisible duplicate of the ticker.
+      clone.querySelectorAll('a,button,input,select,textarea').forEach(function (n) {
+        n.setAttribute('tabindex', '-1');
+      });
       track.dataset.bnCloned = '1';
       wrap.appendChild(clone);
 

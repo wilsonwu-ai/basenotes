@@ -132,7 +132,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  {% comment %} Preload critical assets {% endcomment %}
+  {% comment %} Preload critical assets. bn-tokens.css must land before base.css. {% endcomment %}
+  <link rel="preload" href="{{ 'bn-tokens.css' | asset_url }}" as="style">
   <link rel="preload" href="{{ 'base.css' | asset_url }}" as="style">
 
   {% comment %} Preload LCP image for homepage {% endcomment %}
@@ -148,51 +149,108 @@
 
   {% comment %} Critical CSS inlined for faster first paint {% endcomment %}
   <style>
-    :root{--color-primary:#2D4641;--color-secondary:#C9A962;--color-accent:#B8860B;--color-background:#FAF8F5;--color-text:#2D2D2D;--color-text-light:#5A5A5A;--font-heading:'Cormorant Garamond',Georgia,serif;--font-body:'Lato',-apple-system,sans-serif;--header-height:110px;--spacing-md:1rem;--spacing-lg:1.5rem;--spacing-xl:2rem;--spacing-2xl:3rem;--radius-full:9999px}
+    /* Facelift Direction A "Editorial Grotesque" — critical first-paint layer.
+       These are the SAME values as assets/bn-tokens.css, inlined only because
+       that file loads async. bn-tokens.css re-declares them identically, so the
+       handoff is invisible. Do not edit one without the other. */
+    :root{
+      --bn-ink:#0F1211;--bn-ink-2:#171B19;--bn-bone:#F3EFE7;--bn-bone-2:#E9E3D8;
+      --bn-forest:#1F3A34;--bn-forest-deep:#16302B;--bn-brass:#B99A5B;--bn-brass-ink:#6B5426;
+      --bn-text-on-ink:#F3EFE7;--bn-text-on-ink-dim:#A9A39A;--bn-text-on-bone:#0F1211;--bn-text-on-bone-dim:#565B57;
+      --bn-line-on-ink:rgba(243,239,231,.14);--bn-line-on-bone:rgba(15,18,17,.13);
+      --bn-font-display:'Bricolage Grotesque','Helvetica Neue',Georgia,serif;
+      --bn-font-accent:'Instrument Serif',Georgia,'Times New Roman',serif;
+      --bn-font-body:'Instrument Sans',ui-sans-serif,'Helvetica Neue',sans-serif;
+      --bn-display-vf:'wdth' 86,'opsz' 96;--bn-weight-display:250;--bn-weight-strong:600;
+      --bn-track-display:-.045em;--bn-track-title:-.025em;--bn-track-label:.2em;--bn-track-nav:.16em;
+      --bn-leading-display:.9;--bn-leading-title:1.06;--bn-leading-body:1.62;
+      --bn-text-2xs:.625rem;
+      --bn-text-xs:clamp(.6875rem,.66rem + .12vw,.75rem);
+      --bn-text-sm:clamp(.8125rem,.79rem + .12vw,.875rem);
+      --bn-text-base:clamp(.9375rem,.90rem + .16vw,1.0625rem);
+      --bn-text-md:clamp(1.0625rem,1.00rem + .28vw,1.25rem);
+      --bn-text-lg:clamp(1.25rem,1.13rem + .51vw,1.625rem);
+      --bn-text-xl:clamp(1.5rem,1.26rem + 1.02vw,2.25rem);
+      --bn-text-2xl:clamp(1.875rem,1.42rem + 1.90vw,3.25rem);
+      --bn-text-3xl:clamp(2.25rem,1.35rem + 3.81vw,5rem);
+      --bn-text-4xl:clamp(2.5rem,.97rem + 6.48vw,7rem);
+      --bn-gutter:clamp(1rem,3vw,2.75rem);--bn-container:1520px;
+      --bn-ease:cubic-bezier(.22,1,.36,1);--bn-dur-fast:250ms;--bn-dur-slow:620ms;
+      --bn-reveal-distance:22px;
+      /* legacy aliases — every un-migrated component reads these */
+      --color-primary:var(--bn-forest);--color-primary-dark:var(--bn-forest-deep);
+      --color-secondary:var(--bn-brass);--color-accent:var(--bn-brass);
+      --color-background:var(--bn-bone);--color-background-secondary:var(--bn-bone-2);
+      --color-text:var(--bn-text-on-bone);--color-text-light:var(--bn-text-on-bone-dim);
+      --color-border:var(--bn-line-on-bone);
+      --font-heading:var(--bn-font-display);--font-body:var(--bn-font-body);
+      --bn-header-height:72px;--bn-ticker-height:32px;--header-height:var(--bn-header-height);--spacing-md:1rem;--spacing-lg:1.5rem;--spacing-xl:2rem;--spacing-2xl:3rem;
+      --radius-sm:0px;--radius-full:999px;
+    }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{font-size:16px;scroll-behavior:smooth}
-    body{font-family:var(--font-body);line-height:1.6;color:var(--color-text);background:var(--color-background);-webkit-font-smoothing:antialiased}
-    h1,h2,h3,h4,h5,h6{font-family:var(--font-heading);font-weight:600;line-height:1.2}
-    .container{max-width:1400px;margin:0 auto;padding:0 1.5rem}
-    .header{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--color-primary);height:var(--header-height)}
-    .header__action-btn,.header__action-btn svg{color:white !important;stroke:white !important}
-    .header__nav-link{color:white}
-    .header__logo-text{color:white}
+    body{font-family:var(--bn-font-body);font-size:var(--bn-text-base);line-height:var(--bn-leading-body);color:var(--bn-text-on-bone);background:var(--bn-bone);-webkit-font-smoothing:antialiased}
+    h1,h2,h3,h4,h5,h6{font-family:var(--bn-font-display);font-weight:var(--bn-weight-display);font-variation-settings:var(--bn-display-vf);line-height:var(--bn-leading-title);letter-spacing:var(--bn-track-title)}
+    h1{font-size:var(--bn-text-3xl);line-height:var(--bn-leading-display);letter-spacing:var(--bn-track-display)}
+    h2{font-size:var(--bn-text-2xl);letter-spacing:var(--bn-track-display)}
+    h1 em,h2 em{font-family:var(--bn-font-accent);font-style:italic;font-weight:400;font-variation-settings:normal}
+    .container{width:100%;max-width:var(--bn-container);margin:0 auto;padding:0 var(--bn-gutter)}
+    .header{background:var(--bn-ink);color:var(--bn-text-on-ink);height:var(--header-height);border-bottom:1px solid var(--bn-line-on-ink)}
+    .header__action-btn,.header__action-btn svg{color:var(--bn-text-on-ink) !important;stroke:var(--bn-text-on-ink) !important}
+    .header__nav-link{color:var(--bn-text-on-ink)}
+    .header__logo-text{color:var(--bn-text-on-ink)}
     .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
     img,video{max-width:100%;height:auto;display:block}
-    .btn{display:inline-flex;align-items:center;justify-content:center;padding:.875rem 1.75rem;font-weight:600;border-radius:4px;cursor:pointer;transition:all .2s;text-decoration:none;text-transform:uppercase;letter-spacing:.08em;font-size:.9rem}
-    .btn--primary{background:var(--color-primary);color:#fff;border:2px solid var(--color-primary)}
-    .btn--gold{background:var(--color-accent);color:var(--color-primary);border:2px solid var(--color-accent)}
-    .btn--outline-light{background:transparent;color:#fff;border:2px solid #fff}
-    .btn--large{padding:1.25rem 2.5rem;font-size:1rem}
-    .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#2D4641}
-    .hero--minimal{min-height:auto;padding:calc(var(--header-height) + 4rem) 2rem 4rem;background:linear-gradient(135deg,#2D4641 0%,#1a2927 100%)}
-    .hero__content{position:relative;z-index:1;text-align:center;color:#fff;max-width:800px;padding:0 var(--spacing-xl)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:1rem 1.75rem;font-family:var(--bn-font-body);font-size:var(--bn-text-xs);font-weight:var(--bn-weight-strong);border:1px solid transparent;border-radius:0;cursor:pointer;transition:background-color var(--bn-dur-fast) var(--bn-ease),color var(--bn-dur-fast) var(--bn-ease),border-color var(--bn-dur-fast) var(--bn-ease);text-decoration:none;text-transform:uppercase;letter-spacing:var(--bn-track-nav)}
+    .btn--primary{background:var(--bn-ink);color:var(--bn-text-on-ink);border-color:var(--bn-ink)}
+    .btn--gold{background:var(--bn-brass);color:var(--bn-ink);border-color:var(--bn-brass)}
+    .btn--outline-light{background:transparent;color:var(--bn-bone);border-color:var(--bn-bone)}
+    .btn--large{padding:1.125rem 2.5rem;font-size:var(--bn-text-sm)}
+    .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bn-ink);color:var(--bn-text-on-ink)}
+    .hero--minimal{min-height:auto;padding:calc(var(--header-height) + 4rem) var(--bn-gutter) 4rem;background:var(--bn-ink)}
+    .hero__content{position:relative;z-index:1;text-align:center;color:var(--bn-text-on-ink);max-width:800px;padding:0 var(--spacing-xl)}
     .hero--minimal .hero__content{padding:var(--spacing-2xl) var(--spacing-xl)}
-    .hero__eyebrow{display:inline-block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.25em;color:#C9A962;margin-bottom:var(--spacing-lg);padding:.5rem 1.5rem;border:1px solid #C9A962;border-radius:var(--radius-full)}
-    .hero__title{font-family:var(--font-heading);font-size:clamp(2rem,4vw,3rem);font-weight:600;line-height:1.1;margin-bottom:var(--spacing-lg)}
-    .hero__description{font-size:clamp(1rem,1.5vw,1.125rem);line-height:1.7;opacity:.85;max-width:560px;margin:0 auto var(--spacing-xl);color:rgba(255,255,255,.9)}
+    .hero__eyebrow{display:inline-block;font-family:var(--bn-font-body);font-size:var(--bn-text-2xs);font-weight:var(--bn-weight-strong);text-transform:uppercase;letter-spacing:var(--bn-track-label);color:var(--bn-brass);margin-bottom:var(--spacing-lg);padding:0;border:0;border-radius:0}
+    .hero__title{font-family:var(--bn-font-display);font-weight:var(--bn-weight-display);font-variation-settings:var(--bn-display-vf);font-size:var(--bn-text-3xl);line-height:var(--bn-leading-display);letter-spacing:var(--bn-track-display);margin-bottom:var(--spacing-lg)}
+    .hero__description{font-size:var(--bn-text-md);line-height:var(--bn-leading-body);color:var(--bn-text-on-ink-dim);max-width:46ch;margin:0 auto var(--spacing-xl)}
     .hero__cta{display:flex;flex-wrap:wrap;gap:var(--spacing-md);justify-content:center}
-    .hero__accent{margin-top:var(--spacing-2xl);padding-top:var(--spacing-xl);border-top:1px solid rgba(201,169,98,.3)}
-    .hero__price{display:block;font-family:var(--font-heading);font-size:2.5rem;font-weight:600;color:#C9A962;margin-bottom:.5rem}
-    .hero__price span{font-size:1.25rem;font-weight:400;opacity:.8}
-    .hero__price-note{display:block;font-size:.875rem;color:rgba(255,255,255,.6);letter-spacing:.05em}
-    .header__inner{display:flex;align-items:center;justify-content:space-between;height:100%;padding:0 1.5rem}
-    .header__logo{font-family:var(--font-heading);font-size:1.5rem;font-weight:600;letter-spacing:.05em}
+    .hero__accent{margin-top:var(--spacing-2xl);padding-top:var(--spacing-xl);border-top:1px solid var(--bn-line-on-ink)}
+    .hero__price{display:block;font-family:var(--bn-font-display);font-variation-settings:var(--bn-display-vf);font-size:var(--bn-text-2xl);font-weight:400;letter-spacing:var(--bn-track-display);color:var(--bn-brass);margin-bottom:.5rem}
+    .hero__price span{font-size:var(--bn-text-md);font-weight:400;color:var(--bn-text-on-ink-dim)}
+    .hero__price-note{display:block;font-family:var(--bn-font-body);font-size:var(--bn-text-2xs);text-transform:uppercase;letter-spacing:var(--bn-track-label);color:var(--bn-text-on-ink-dim)}
+    .header__inner{display:flex;align-items:center;justify-content:space-between;height:100%;padding:0 var(--bn-gutter)}
+    .header__logo{font-family:var(--bn-font-display);font-size:var(--bn-text-md);font-weight:var(--bn-weight-strong);letter-spacing:var(--bn-track-label);text-transform:uppercase}
     .header__logo a{color:inherit;text-decoration:none}
-    .announcement-bar{background:var(--color-primary);color:#fff;text-align:center;padding:.625rem 1rem;font-size:.8125rem}
-    .announcement-bar a{color:var(--color-secondary);text-decoration:none}
-    @media(max-width:768px){.hero--minimal{padding:calc(var(--header-height) + 2rem) 1rem 2.5rem}.hero__price{font-size:2rem}}
+    .announcement-bar{background:var(--bn-bone);color:var(--bn-text-on-bone);border-bottom:1px solid var(--bn-line-on-bone);text-align:center;padding:.625rem var(--bn-gutter);font-family:var(--bn-font-body);font-size:var(--bn-text-2xs);text-transform:uppercase;letter-spacing:var(--bn-track-label)}
+    .announcement-bar a{color:var(--bn-brass-ink);text-decoration:none}
+    /* Reveal primitive, inlined so the first-paint state is correct the moment
+       bn-motion.js adds .bn-js. Without .bn-js everything stays visible. */
+    [data-reveal]{opacity:1;transform:none}
+    .bn-js [data-reveal]{opacity:0;transform:translate3d(0,var(--bn-reveal-distance),0);transition:opacity var(--bn-dur-slow) var(--bn-ease),transform var(--bn-dur-slow) var(--bn-ease);transition-delay:var(--bn-reveal-delay,0ms)}
+    .bn-js [data-reveal].is-revealed{opacity:1;transform:none}
+    @media(max-width:767px){:root{--bn-header-height:64px}}
+    @media(max-width:768px){.hero--minimal{padding:calc(var(--header-height) + 2rem) 1rem 2.5rem}}
+    @media(max-width:600px){:root{--bn-track-display:-.030em;--bn-text-4xl:clamp(1.875rem,1.20rem + 8.5vw,2.75rem);--bn-text-3xl:clamp(1.75rem,1.30rem + 5.6vw,2.5rem)}}
+    @media(prefers-reduced-motion:reduce){.bn-js [data-reveal]{opacity:1;transform:none;transition:none}*,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}}
   </style>
 
-  {% comment %} Load Google Fonts asynchronously to prevent render-blocking {% endcomment %}
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Lato:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet"></noscript>
+  {% comment %}
+    Facelift Direction A type stack, loaded async so it never blocks first paint.
+    Bricolage Grotesque = display, Instrument Serif italic = accent, Instrument Sans = body.
+  {% endcomment %}
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Instrument+Sans:ital,wdth,wght@0,75..100,400..700;1,75..100,400..700&family=Instrument+Serif:ital@0;1&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Instrument+Sans:ital,wdth,wght@0,75..100,400..700;1,75..100,400..700&family=Instrument+Serif:ital@0;1&display=swap"></noscript>
 
-  {% comment %} Load CSS with low priority for non-critical styles {% endcomment %}
+  {% comment %}
+    Load CSS with low priority for non-critical styles.
+    Order is load-bearing: bn-tokens.css defines the --bn-* layer and the legacy
+    aliases, base.css consumes them, component-variables.css consumes both.
+  {% endcomment %}
+  <link rel="stylesheet" href="{{ 'bn-tokens.css' | asset_url }}" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="{{ 'base.css' | asset_url }}" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="{{ 'component-variables.css' | asset_url }}" media="print" onload="this.media='all'">
   <noscript>
+    {{ 'bn-tokens.css' | asset_url | stylesheet_tag }}
     {{ 'base.css' | asset_url | stylesheet_tag }}
     {{ 'component-variables.css' | asset_url | stylesheet_tag }}
   </noscript>
@@ -207,6 +265,11 @@
   </script>
   <script src="{{ 'queue-scheduler.js' | asset_url }}" defer></script>
   <script src="{{ 'bn-appstle-swap.js' | asset_url }}" defer></script>
+  {% comment %}
+    Facelift motion layer. Presentational only, defer-loaded, and it filters every
+    candidate element through its own funnel deny-list before touching anything.
+  {% endcomment %}
+  <script src="{{ 'bn-motion.js' | asset_url }}" defer></script>
 </head>
 
 <body class="template-{{ template.name }}{% if template.suffix %} template-{{ template.name }}-{{ template.suffix }}{% endif %}">

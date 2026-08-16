@@ -1,6 +1,12 @@
 /* ============================================
    BASENOTES - Premium Fragrance Subscription
    Base Styles & Components
+   --------------------------------------------
+   FACELIFT PHASE A — Direction A "Editorial Grotesque".
+   Loads AFTER assets/bn-tokens.css. Every value below resolves through a
+   --bn-* token; the :root block here is now an ALIAS layer only, so the
+   legacy class names keep working while the look changes underneath them.
+   No selector was renamed. No new hex was introduced.
    ============================================ */
 
 /* CSS Reset & Base */
@@ -11,66 +17,69 @@
 }
 
 :root {
-  /* Colors - Per Brand Spec with WCAG AA compliance */
-  --color-primary: #2D4641; /* Dark Teal */
-  --color-secondary: #C9A962; /* Warm Gold */
-  --color-accent: #B8860B; /* Rich Amber for CTAs */
-  --color-background: #FAF8F5; /* Warm Cream */
-  --color-background-secondary: #F5F3F0;
-  --color-text: #2D2D2D; /* Charcoal */
-  --color-text-light: #5A5A5A; /* Warm Gray - WCAG AA compliant */
-  --color-text-muted: #6B6B6B; /* Lighter warm gray */
-  --color-border: #E8E6E3;
-  --color-border-dark: #D5D3D0;
-  --color-success: #2e7d32;
-  --color-error: #c62828;
+  /* Colors — aliases onto the bn token layer.
+     Each carries the bn-tokens.css literal as a fallback so a failed
+     token-file load degrades to the right palette instead of to nothing. */
+  --color-primary: var(--bn-forest, #1F3A34);            /* heritage green */
+  --color-primary-dark: var(--bn-forest-deep, #16302B);
+  --color-secondary: var(--bn-brass, #B99A5B);           /* METAL — rules, stamps, on-ink text only */
+  --color-accent: var(--bn-brass, #B99A5B);
+  --color-background: var(--bn-bone, #F3EFE7);
+  --color-background-secondary: var(--bn-bone-2, #E9E3D8);
+  --color-text: var(--bn-text-on-bone, #0F1211);
+  --color-text-light: var(--bn-text-on-bone-dim, #565B57);
+  --color-text-muted: var(--bn-text-on-bone-dim, #565B57);
+  --color-border: var(--bn-line-on-bone, rgba(15, 18, 17, 0.13));
+  --color-border-dark: var(--bn-line-on-bone, rgba(15, 18, 17, 0.13));
+  --color-success: var(--bn-ok, #4C7A5B);
+  --color-error: var(--bn-error, #A2372A);
 
-  /* Typography - Elegant serif for headings, clean sans for body */
-  --font-heading: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
-  --font-body: 'Lato', 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-size-xs: 0.8125rem;
-  --font-size-sm: 0.9375rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 2rem;
-  --font-size-4xl: 2.5rem;
-  --font-size-5xl: 3.5rem;
-  --font-size-6xl: 4.5rem;
+  /* Typography — grotesque display, serif italic accent, sans body */
+  --font-heading: var(--bn-font-display, 'Bricolage Grotesque', 'Helvetica Neue', Georgia, serif);
+  --font-body: var(--bn-font-body, 'Instrument Sans', ui-sans-serif, 'Helvetica Neue', sans-serif);
+  --font-size-xs: var(--bn-text-xs, 0.75rem);
+  --font-size-sm: var(--bn-text-sm, 0.875rem);
+  --font-size-base: var(--bn-text-base, 1rem);
+  --font-size-lg: var(--bn-text-md, 1.125rem);
+  --font-size-xl: var(--bn-text-lg, 1.375rem);
+  --font-size-2xl: var(--bn-text-xl, 1.75rem);
+  --font-size-3xl: var(--bn-text-xl, 2rem);
+  --font-size-4xl: var(--bn-text-2xl, 2.5rem);
+  --font-size-5xl: var(--bn-text-3xl, 3.5rem);
+  --font-size-6xl: var(--bn-text-4xl, 4.5rem);
 
   /* Spacing */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-2xl: 3rem;
-  --spacing-3xl: 4rem;
-  --spacing-4xl: 6rem;
+  --spacing-xs: var(--bn-space-3xs, 0.25rem);
+  --spacing-sm: var(--bn-space-2xs, 0.5rem);
+  --spacing-md: var(--bn-space-sm, 1rem);
+  --spacing-lg: var(--bn-space-md, 1.5rem);
+  --spacing-xl: var(--bn-space-lg, 2rem);
+  --spacing-2xl: var(--bn-space-xl, 3rem);
+  --spacing-3xl: var(--bn-space-2xl, clamp(3rem, 6vw, 5rem));
+  --spacing-4xl: var(--bn-space-3xl, clamp(4rem, 9vw, 8rem));
 
   /* Layout */
-  --container-max-width: 1400px;
-  --container-padding: 1.5rem;
-  --header-height: 110px;
+  --container-max-width: var(--bn-container, 1520px);
+  --container-padding: var(--bn-gutter, clamp(1rem, 3vw, 2.75rem));
+  --header-height: var(--bn-header-height, 72px);
 
-  /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-base: 300ms ease;
-  --transition-slow: 500ms ease;
+  /* Transitions — the house curve, not `ease` */
+  --transition-fast: var(--bn-dur-instant, 120ms) var(--bn-ease, cubic-bezier(0.22, 1, 0.36, 1));
+  --transition-base: var(--bn-dur-fast, 250ms) var(--bn-ease, cubic-bezier(0.22, 1, 0.36, 1));
+  --transition-slow: var(--bn-dur-base, 450ms) var(--bn-ease, cubic-bezier(0.22, 1, 0.36, 1));
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+  --shadow-sm: 0 1px 2px rgba(15, 18, 17, 0.06);
+  --shadow-md: 0 6px 16px rgba(15, 18, 17, 0.10);
+  --shadow-lg: var(--bn-shadow-card, 0 20px 46px rgba(15, 18, 17, 0.16));
+  --shadow-xl: var(--bn-shadow-card, 0 20px 46px rgba(15, 18, 17, 0.16));
 
-  /* Border Radius */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 20px;
-  --radius-full: 9999px;
+  /* Border Radius — Direction A is square by intent */
+  --radius-sm: var(--bn-radius-sm, 0px);
+  --radius-md: var(--bn-radius-md, 0px);
+  --radius-lg: var(--bn-radius-lg, 0px);
+  --radius-xl: var(--bn-radius-lg, 0px);
+  --radius-full: var(--bn-radius-pill, 999px);
 }
 
 html {
@@ -80,12 +89,12 @@ html {
 }
 
 body {
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  font-weight: 400;
-  line-height: 1.6;
-  color: var(--color-text);
-  background-color: var(--color-background);
+  font-family: var(--bn-font-body);
+  font-size: var(--bn-text-base);
+  font-weight: var(--bn-weight-body, 400);
+  line-height: var(--bn-leading-body, 1.62);
+  color: var(--bn-text-on-bone);
+  background-color: var(--bn-bone);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -95,35 +104,65 @@ body {
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  font-family: var(--bn-font-display);
+  font-weight: var(--bn-weight-display, 250);
+  font-variation-settings: var(--bn-display-vf);
+  line-height: var(--bn-leading-title, 1.06);
+  letter-spacing: var(--bn-track-title, -0.025em);
 }
 
 h1, .h1 {
-  font-size: var(--font-size-5xl);
-  font-weight: 700;
+  font-size: var(--bn-text-3xl);
+  font-weight: var(--bn-weight-display, 250);
+  line-height: var(--bn-leading-display, 0.9);
+  letter-spacing: var(--bn-track-display, -0.045em);
 }
 
 h2, .h2 {
-  font-size: var(--font-size-4xl);
+  font-size: var(--bn-text-2xl);
+  line-height: var(--bn-leading-display, 0.9);
+  letter-spacing: var(--bn-track-display, -0.045em);
 }
 
 h3, .h3 {
-  font-size: var(--font-size-3xl);
+  font-size: var(--bn-text-xl);
+  font-weight: 400;
+  font-variation-settings: 'wdth' 92, 'opsz' 36;
 }
 
 h4, .h4 {
-  font-size: var(--font-size-2xl);
+  font-size: var(--bn-text-lg);
+  font-weight: 500;
+  font-variation-settings: 'wdth' 92, 'opsz' 24;
 }
 
 h5, .h5 {
-  font-size: var(--font-size-xl);
+  font-size: var(--bn-text-md);
+  font-weight: 500;
+  font-variation-settings: 'wdth' 92, 'opsz' 24;
 }
 
 h6, .h6 {
-  font-size: var(--font-size-lg);
+  font-size: var(--bn-text-base);
+  font-weight: var(--bn-weight-strong, 600);
+  font-variation-settings: 'wdth' 92, 'opsz' 16;
+}
+
+/* The italic accent line. Instrument Serif italic is the ONLY italic in the
+   system; it carries the heritage green on bone and the metal on ink. */
+h1 em, h2 em, h3 em,
+.h1 em, .h2 em, .h3 em {
+  font-family: var(--bn-font-accent);
+  font-style: italic;
+  font-weight: 400;
+  font-variation-settings: normal;
+  letter-spacing: var(--bn-track-title, -0.025em);
+  color: var(--bn-forest);
+}
+
+.section--dark :is(h1, h2, h3) em,
+.hero :is(h1, h2, h3) em {
+  color: var(--bn-brass);
 }
 
 p {
@@ -137,7 +176,15 @@ a {
 }
 
 a:hover {
-  color: var(--color-secondary);
+  color: var(--bn-brass-ink);
+}
+
+/* Brass is 2.3:1 on bone. It is only legal as text on an ink ground. */
+.section--dark a:hover,
+.header a:hover,
+.footer a:hover,
+.hero a:hover {
+  color: var(--bn-brass);
 }
 
 img {
@@ -161,9 +208,9 @@ img {
 
 .container {
   width: 100%;
-  max-width: var(--container-max-width);
+  max-width: var(--bn-container, 1520px);
   margin: 0 auto;
-  padding: 0 var(--container-padding);
+  padding: 0 var(--bn-gutter, 1.5rem);
 }
 
 .container--narrow {
@@ -178,9 +225,14 @@ img {
 .text-center { text-align: center; }
 .text-left { text-align: left; }
 .text-right { text-align: right; }
-.text-uppercase { text-transform: uppercase; letter-spacing: 0.15em; }
-.text-muted { color: var(--color-text-light); }
-.text-accent { color: var(--color-secondary); }
+.text-uppercase { text-transform: uppercase; letter-spacing: var(--bn-track-label, 0.2em); }
+.text-muted { color: var(--bn-text-on-bone-dim); }
+.text-accent { color: var(--bn-brass-ink); }
+
+.section--dark .text-muted,
+.hero .text-muted { color: var(--bn-text-on-ink-dim); }
+.section--dark .text-accent,
+.hero .text-accent { color: var(--bn-brass); }
 
 /* Spacing Utilities */
 .mt-0 { margin-top: 0; }
@@ -197,97 +249,148 @@ img {
 .mb-4 { margin-bottom: var(--spacing-xl); }
 .mb-5 { margin-bottom: var(--spacing-2xl); }
 
-/* Buttons */
+/* ============================================
+   Buttons
+   Square, 1px rule, uppercase micro-label.
+   Brief §4.5: black primary, grey secondary, metal reserved for the accent.
+   ============================================ */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  padding: 1rem 2.5rem;
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  font-weight: 600;
+  padding: 1rem 1.75rem;
+  font-family: var(--bn-font-body);
+  font-size: var(--bn-text-xs);
+  font-weight: var(--bn-weight-strong, 600);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--bn-track-nav, 0.16em);
   text-decoration: none;
-  border: 2px solid transparent;
-  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  border-radius: var(--bn-radius-sm, 0px);
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: background-color var(--transition-base),
+              color var(--transition-base),
+              border-color var(--transition-base);
   white-space: nowrap;
   min-height: 52px;
 }
 
+.btn:focus-visible {
+  outline: 2px solid var(--bn-brass);
+  outline-offset: 2px;
+}
+
 .btn--primary {
-  background-color: var(--color-primary);
-  color: var(--color-background);
-  border-color: var(--color-primary);
+  background-color: var(--bn-ink);
+  color: var(--bn-text-on-ink);
+  border-color: var(--bn-ink);
 }
 
 .btn--primary:hover {
-  background-color: transparent;
-  color: var(--color-primary);
+  background-color: var(--bn-forest);
+  color: var(--bn-text-on-ink);
+  border-color: var(--bn-forest);
 }
 
+/* On an ink ground the primary inverts to bone, or it disappears. */
+.section--dark .btn--primary,
+.hero .btn--primary,
+.footer .btn--primary {
+  background-color: var(--bn-bone);
+  color: var(--bn-ink);
+  border-color: var(--bn-bone);
+}
+
+.section--dark .btn--primary:hover,
+.hero .btn--primary:hover,
+.footer .btn--primary:hover {
+  background-color: var(--bn-brass);
+  color: var(--bn-ink);
+  border-color: var(--bn-brass);
+}
+
+/* Secondary is the quiet grey step, never a second loud colour. */
 .btn--secondary {
-  background-color: var(--color-secondary);
-  color: var(--color-background);
-  border-color: var(--color-secondary);
+  background-color: var(--bn-bone-2);
+  color: var(--bn-text-on-bone);
+  border-color: var(--bn-line-on-bone);
 }
 
 .btn--secondary:hover {
-  background-color: transparent;
-  color: var(--color-secondary);
+  background-color: var(--bn-ink);
+  color: var(--bn-text-on-ink);
+  border-color: var(--bn-ink);
 }
 
 .btn--outline {
   background-color: transparent;
-  color: var(--color-primary);
-  border-color: var(--color-primary);
+  color: var(--bn-text-on-bone);
+  border-color: var(--bn-line-on-bone);
+  border-color: color-mix(in oklab, var(--bn-ink) 34%, transparent);
 }
 
 .btn--outline:hover {
-  background-color: var(--color-primary);
-  color: var(--color-background);
+  background-color: var(--bn-ink);
+  color: var(--bn-text-on-ink);
+  border-color: var(--bn-ink);
 }
 
 .btn--outline-light {
   background-color: transparent;
-  color: var(--color-background);
-  border-color: var(--color-background);
+  color: var(--bn-text-on-ink);
+  border-color: var(--bn-line-on-ink);
+  border-color: color-mix(in oklab, var(--bn-bone) 34%, transparent);
 }
 
 .btn--outline-light:hover {
-  background-color: var(--color-background);
-  color: var(--color-primary);
+  background-color: transparent;
+  color: var(--bn-brass);
+  border-color: var(--bn-brass);
 }
 
+/* The one metal button. Ink text on brass is 7.0:1 — legal. */
 .btn--gold {
-  background-color: var(--color-accent);
-  color: var(--color-primary);
-  border-color: var(--color-accent);
+  background-color: var(--bn-brass);
+  color: var(--bn-ink);
+  border-color: var(--bn-brass);
 }
 
 .btn--gold:hover {
   background-color: transparent;
-  color: var(--color-accent);
+  color: var(--bn-brass-ink);
+  border-color: var(--bn-brass-ink);
+}
+
+.section--dark .btn--gold:hover,
+.hero .btn--gold:hover,
+.footer .btn--gold:hover {
+  color: var(--bn-brass);
+  border-color: var(--bn-brass);
 }
 
 .btn--large {
-  padding: 1.25rem 3.5rem;
-  font-size: var(--font-size-lg);
-  min-height: 60px;
+  padding: 1.125rem 2.5rem;
+  font-size: var(--bn-text-sm);
+  min-height: 58px;
   margin-bottom: 24px; /* adjust this value to taste */
 }
 
 .btn--small {
-  padding: 0.75rem 1.75rem;
-  font-size: var(--font-size-sm);
-  min-height: 44px;
+  padding: 0.6875rem 1.125rem;
+  font-size: var(--bn-text-2xs, 0.625rem);
+  letter-spacing: var(--bn-track-label, 0.2em);
+  min-height: 40px;
 }
 
 .btn--full {
   width: 100%;
+}
+
+.btn[disabled],
+.btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
 }
 
 /* Form Elements */
@@ -298,22 +401,24 @@ img {
 .form-label {
   display: block;
   margin-bottom: var(--spacing-sm);
-  font-size: var(--font-size-sm);
-  font-weight: 500;
+  font-family: var(--bn-font-body);
+  font-size: var(--bn-text-2xs, 0.625rem);
+  font-weight: var(--bn-weight-strong, 600);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--bn-track-label, 0.2em);
+  color: var(--bn-text-on-bone-dim);
 }
 
 .form-input,
 .form-select,
 .form-textarea {
   width: 100%;
-  padding: 1rem 1.25rem;
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  color: var(--color-text);
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
+  padding: 0.9375rem 1.125rem;
+  font-family: var(--bn-font-body);
+  font-size: var(--bn-text-sm);
+  color: var(--bn-text-on-bone);
+  background-color: var(--bn-bone);
+  border: 1px solid var(--bn-line-on-bone);
   border-radius: 0;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
@@ -322,12 +427,13 @@ img {
 .form-select:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: var(--color-secondary);
-  box-shadow: 0 0 0 3px rgba(201, 168, 108, 0.1);
+  border-color: var(--bn-ink);
+  box-shadow: 0 0 0 2px rgba(185, 154, 91, 0.38);
 }
 
-.form-input::placeholder {
-  color: var(--color-text-muted);
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--bn-text-on-bone-dim);
 }
 
 .form-textarea {
@@ -335,22 +441,35 @@ img {
   resize: vertical;
 }
 
+/* Forms sitting on an ink ground */
+.section--dark .form-input,
+.section--dark .form-select,
+.section--dark .form-textarea {
+  background-color: transparent;
+  color: var(--bn-text-on-ink);
+  border-color: var(--bn-line-on-ink);
+}
+
+.section--dark .form-label { color: var(--bn-text-on-ink-dim); }
+.section--dark .form-input::placeholder { color: var(--bn-text-on-ink-dim); }
+
 /* Cards */
 .card {
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  background-color: var(--bn-bone);
+  border: 1px solid var(--bn-line-on-bone);
+  transition: transform var(--transition-slow), box-shadow var(--transition-slow);
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-5px);
+  box-shadow: var(--bn-shadow-card);
 }
 
 .card__image {
   position: relative;
   overflow: hidden;
   aspect-ratio: 3/4;
+  background-color: var(--bn-bone-2);
 }
 
 .card__image img {
@@ -361,7 +480,7 @@ img {
 }
 
 .card:hover .card__image img {
-  transform: scale(1.05);
+  transform: scale(1.045);
 }
 
 .card__content {
@@ -369,21 +488,26 @@ img {
 }
 
 .card__title {
-  font-family: var(--font-heading);
-  font-size: var(--font-size-xl);
+  font-family: var(--bn-font-display);
+  font-weight: 500;
+  font-variation-settings: 'wdth' 92, 'opsz' 24;
+  font-size: var(--bn-text-md);
+  letter-spacing: var(--bn-track-title, -0.025em);
   margin-bottom: var(--spacing-sm);
 }
 
 .card__subtitle {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-light);
+  font-family: var(--bn-font-body);
+  font-size: var(--bn-text-2xs, 0.625rem);
+  color: var(--bn-text-on-bone-dim);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--bn-track-label, 0.2em);
 }
 
 .card__price {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
+  font-size: var(--bn-text-sm);
+  font-weight: var(--bn-weight-strong, 600);
+  letter-spacing: 0.06em;
   margin-top: var(--spacing-md);
 }
 
@@ -427,39 +551,61 @@ img {
   padding: var(--spacing-4xl) 0;
 }
 
+/* Two-colour system, brief §4.3: the dark ground is ink, not green. */
 .section--dark {
-  background-color: var(--color-primary);
-  color: var(--color-background);
+  background-color: var(--bn-ink);
+  color: var(--bn-text-on-ink);
+  --color-text-light: var(--bn-text-on-ink-dim);
+  --color-text-muted: var(--bn-text-on-ink-dim);
+  --color-border: var(--bn-line-on-ink);
 }
 
 .section--cream {
-  background-color: var(--color-background-secondary);
+  background-color: var(--bn-bone-2);
 }
 
+/* Editorial left-aligned section headers. Flip `text-align` back to center
+   here if a page needs the old symmetry — nothing else depends on it. */
 .section__header {
-  text-align: center;
-  max-width: 700px;
-  margin: 0 auto var(--spacing-3xl);
+  text-align: left;
+  max-width: 46ch;
+  margin: 0 0 var(--spacing-3xl);
 }
 
 .section__eyebrow {
-  display: block;
-  font-size: var(--font-size-xs);
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-family: var(--bn-font-body);
+  font-size: var(--bn-text-2xs, 0.625rem);
+  font-weight: var(--bn-weight-strong, 600);
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--color-secondary);
+  letter-spacing: var(--bn-track-label, 0.2em);
+  color: var(--bn-brass-ink);
   margin-bottom: var(--spacing-md);
 }
+
+.section__eyebrow::before {
+  content: '';
+  width: 26px;
+  height: 1px;
+  background: var(--bn-brass);
+  flex: none;
+}
+
+.section--dark .section__eyebrow { color: var(--bn-brass); }
 
 .section__title {
   margin-bottom: var(--spacing-md);
 }
 
 .section__description {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-light);
+  font-size: var(--bn-text-md);
+  line-height: var(--bn-leading-body, 1.62);
+  color: var(--bn-text-on-bone-dim);
 }
+
+.section--dark .section__description { color: var(--bn-text-on-ink-dim); }
 
 /* Overlay */
 .overlay {
@@ -468,7 +614,7 @@ img {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(15, 18, 17, 0.62);
   opacity: 0;
   visibility: hidden;
   transition: opacity var(--transition-base), visibility var(--transition-base);
@@ -507,9 +653,12 @@ img {
   width: 100%;
   max-width: 900px;
   max-height: 90vh;
-  background-color: var(--color-background);
+  background-color: var(--bn-bone);
+  border: 1px solid var(--bn-line-on-bone);
+  border-radius: var(--bn-radius-md, 0px);
+  box-shadow: var(--bn-shadow-card);
   overflow-y: auto;
-  transform: scale(0.95);
+  transform: scale(0.98);
   transition: transform var(--transition-base);
 }
 
@@ -527,10 +676,19 @@ img {
   align-items: center;
   justify-content: center;
   font-size: 24px;
+  line-height: 1;
+  color: var(--bn-text-on-bone);
   background: none;
-  border: none;
+  border: 1px solid var(--bn-line-on-bone);
+  border-radius: 0;
   cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
   z-index: 1;
+}
+
+.modal__close:hover {
+  background-color: var(--bn-ink);
+  color: var(--bn-text-on-ink);
 }
 
 .modal__body {
@@ -540,29 +698,30 @@ img {
 /* Badge */
 .badge {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
-  font-size: var(--font-size-xs);
-  font-weight: 600;
+  padding: 0.3125rem 0.625rem;
+  font-family: var(--bn-font-body);
+  font-size: var(--bn-text-2xs, 0.625rem);
+  font-weight: var(--bn-weight-strong, 600);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-radius: var(--radius-sm);
+  letter-spacing: var(--bn-track-label, 0.2em);
+  border-radius: var(--bn-radius-sm, 0px);
 }
 
 .badge--gold {
-  background-color: var(--color-accent);
-  color: var(--color-primary);
+  background-color: var(--bn-brass);
+  color: var(--bn-ink);
 }
 
 .badge--dark {
-  background-color: var(--color-primary);
-  color: var(--color-background);
+  background-color: var(--bn-ink);
+  color: var(--bn-text-on-ink);
 }
 
 /* Divider */
 .divider {
   width: 60px;
   height: 1px;
-  background-color: var(--color-secondary);
+  background-color: var(--bn-brass);
 }
 
 /* Skip to Content */
@@ -572,8 +731,12 @@ img {
   left: 50%;
   transform: translateX(-50%) translateY(-100%);
   padding: var(--spacing-md) var(--spacing-lg);
-  background-color: var(--color-primary);
-  color: var(--color-background);
+  font-family: var(--bn-font-body);
+  font-size: var(--bn-text-2xs, 0.625rem);
+  text-transform: uppercase;
+  letter-spacing: var(--bn-track-label, 0.2em);
+  background-color: var(--bn-ink);
+  color: var(--bn-text-on-ink);
   z-index: 9999;
   transition: transform var(--transition-fast);
 }
@@ -601,8 +764,8 @@ img {
   width: 24px;
   height: 24px;
   margin: -12px 0 0 -12px;
-  border: 2px solid var(--color-border);
-  border-top-color: var(--color-secondary);
+  border: 2px solid var(--bn-line-on-bone);
+  border-top-color: var(--bn-brass);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -640,31 +803,41 @@ img {
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.6s ease forwards;
+  animation: fadeIn var(--bn-dur-slow, 620ms) var(--bn-ease, ease) forwards;
 }
 
 .animate-slide-up {
-  animation: slideUp 0.6s ease forwards;
+  animation: slideUp var(--bn-dur-slow, 620ms) var(--bn-ease, ease) forwards;
 }
 
-/* Responsive Typography */
+/* Responsive Typography
+   The type scale is fluid (clamp) and bn-tokens.css floors the display sizes
+   and loosens display tracking below 600px, so no per-breakpoint font-size
+   overrides are needed here any more. Spacing still steps down. */
 @media (max-width: 768px) {
-  :root {
-    --font-size-5xl: 2.5rem;
-    --font-size-4xl: 2rem;
-    --font-size-3xl: 1.75rem;
-  }
-
   .section {
     padding: var(--spacing-3xl) 0;
+  }
+
+  .modal__body {
+    padding: var(--spacing-xl);
   }
 }
 
 @media (max-width: 480px) {
-  :root {
-    --font-size-5xl: 2rem;
-    --font-size-4xl: 1.75rem;
-    --font-size-3xl: 1.5rem;
-    --container-padding: 1rem;
+  .section__header {
+    max-width: none;
   }
+}
+
+/* Reduced motion — belt and braces alongside the guard in bn-tokens.css */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-slide-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  html { scroll-behavior: auto; }
 }

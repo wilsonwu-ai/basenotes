@@ -1,10 +1,11 @@
-<footer class="footer">
+<footer class="footer bn-on-ink">
   {% comment %} Newsletter Section {% endcomment %}
   {%- if section.settings.newsletter_enabled -%}
-  <div class="footer__newsletter">
+  <div class="footer__newsletter bn-on-forest">
     <div class="container">
       <div class="footer__newsletter-inner">
         <div class="footer__newsletter-content">
+          <p class="footer__newsletter-eyebrow">Newsletter</p>
           <h3 class="footer__newsletter-title">{{ section.settings.newsletter_heading | default: 'Join the Inner Circle' }}</h3>
           <p class="footer__newsletter-text">{{ section.settings.newsletter_description | default: 'Subscribe for exclusive offers, fragrance tips, and early access to new releases.' }}</p>
         </div>
@@ -35,9 +36,9 @@
   {% comment %} Main Footer {% endcomment %}
   <div class="footer__main">
     <div class="container">
-      <div class="footer__grid">
+      <div class="footer__grid" data-reveal-group>
         {% comment %} Brand Column {% endcomment %}
-        <div class="footer__brand">
+        <div class="footer__brand" data-reveal>
           <div class="footer__logo">
             {%- if section.settings.logo != blank -%}
               <a href="{{ routes.root_url }}">
@@ -45,8 +46,8 @@
                   src="{{ section.settings.logo | image_url: width: 200 }}"
                   alt="{{ shop.name }}"
                   loading="lazy"
-                  width="150"
-                  height="auto"
+                  width="{{ section.settings.logo.width }}"
+                  height="{{ section.settings.logo.height }}"
                 >
               </a>
             {%- else -%}
@@ -58,6 +59,7 @@
           {% comment %} Contact Info {% endcomment %}
           {%- if section.settings.show_contact -%}
           <div class="footer__contact">
+            <p class="footer__label">Contact</p>
             {%- if section.settings.email != blank -%}
             <a href="mailto:{{ section.settings.email }}" class="footer__contact-item">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -126,19 +128,28 @@
         </div>
 
         {% comment %} Menu Columns {% endcomment %}
-        {%- for block in section.blocks -%}
-          <div class="footer__column" {{ block.shopify_attributes }}>
-            <h4 class="footer__heading">{{ block.settings.heading }}</h4>
-            <ul class="footer__list">
-              {%- for link in block.settings.menu.links -%}
-                <li>
-                  <a href="{{ link.url }}" class="footer__link">{{ link.title }}</a>
-                </li>
-              {%- endfor -%}
-            </ul>
-          </div>
-        {%- endfor -%}
+        <div class="footer__columns">
+          {%- for block in section.blocks -%}
+            <div class="footer__column" data-reveal {{ block.shopify_attributes }}>
+              <h4 class="footer__heading">{{ block.settings.heading }}</h4>
+              <ul class="footer__list">
+                {%- for link in block.settings.menu.links -%}
+                  <li>
+                    <a href="{{ link.url }}" class="footer__link">{{ link.title }}</a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- endfor -%}
+        </div>
       </div>
+    </div>
+  </div>
+
+  {% comment %} Giant wordmark {% endcomment %}
+  <div class="footer__mark">
+    <div class="container">
+      <a href="{{ routes.root_url }}" class="footer__mark-word" data-reveal>{{ shop.name }}</a>
     </div>
   </div>
 
@@ -175,48 +186,99 @@
 </footer>
 
 <style>
+  /* ==========================================================================
+     BASE NOTE — Footer, Direction A "Editorial Grotesque"
+     Forest newsletter band · ink body · giant Bricolage wordmark.
+     Surface classes (.bn-on-ink / .bn-on-forest) come from bn-tokens.css and
+     supply --bn-text-muted, --bn-line and --bn-metal-text at legal contrast.
+     ========================================================================== */
+
   .footer {
-    background: var(--color-primary);
-    color: white;
+    /* .bn-on-ink already sets background + colour + the three surface vars. */
+    font-family: var(--bn-font-body);
   }
 
-  /* Newsletter Section */
+  .footer .container {
+    max-width: var(--bn-container);
+    padding-left: var(--bn-gutter);
+    padding-right: var(--bn-gutter);
+  }
+
+  /* Small-caps utility label — the footer's only repeating micro-type. */
+  .footer__label,
+  .footer__heading,
+  .footer__newsletter-eyebrow,
+  .footer__payments-label {
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-label);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  /* ── Newsletter band ────────────────────────────────────────────────── */
   .footer__newsletter {
-    background: linear-gradient(135deg, var(--color-secondary) 0%, #d4b88a 100%);
-    padding: var(--spacing-3xl) 0;
+    padding: var(--bn-space-2xl) 0;
+    border-bottom: 1px solid var(--bn-hairline);
   }
 
   .footer__newsletter-inner {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-2xl);
-    align-items: center;
+    gap: var(--bn-space-xl);
+    align-items: end;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
     .footer__newsletter-inner {
       grid-template-columns: 1fr;
-      text-align: center;
+      text-align: left;
+      gap: var(--bn-space-lg);
     }
   }
 
+  /* Bone, not brass: brass clears 4.5:1 on ink but only just on forest, so on
+     this band the metal is the rule and the text stays bone. */
+  .footer__newsletter-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--bn-space-2xs);
+    color: var(--bn-text-on-ink);
+    margin: 0 0 var(--bn-space-sm);
+  }
+
+  .footer__newsletter-eyebrow::before {
+    content: '';
+    width: 26px;
+    height: 1px;
+    flex: none;
+    background: var(--bn-brass);
+  }
+
   .footer__newsletter-title {
-    font-size: var(--font-size-2xl);
-    font-weight: 700;
-    color: var(--color-primary);
-    margin: 0 0 var(--spacing-sm);
+    font-family: var(--bn-font-display);
+    font-variation-settings: var(--bn-display-vf);
+    font-weight: var(--bn-weight-display);
+    font-size: var(--bn-text-2xl);
+    line-height: var(--bn-leading-title);
+    letter-spacing: var(--bn-track-display);
+    color: inherit;
+    margin: 0 0 var(--bn-space-2xs);
+    max-width: 16ch;
   }
 
   .footer__newsletter-text {
-    color: var(--color-primary);
-    opacity: 0.8;
+    color: var(--bn-text-muted);
     margin: 0;
-    font-size: var(--font-size-sm);
+    font-size: var(--bn-text-sm);
+    line-height: var(--bn-leading-body);
+    max-width: 44ch;
   }
 
   .footer__newsletter-input-wrapper {
     display: flex;
-    gap: var(--spacing-sm);
+    gap: var(--bn-space-2xs);
   }
 
   @media (max-width: 576px) {
@@ -225,150 +287,161 @@
     }
   }
 
-  .footer__newsletter-input {
+  .footer__newsletter .footer__newsletter-input {
     flex: 1;
-    padding: var(--spacing-md) var(--spacing-lg);
-    font-size: var(--font-size-sm);
+    min-width: 0;
+    padding: var(--bn-space-xs) 0;
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-base);
+    color: var(--bn-text-on-ink);
     border: none;
-    border-radius: var(--radius-sm);
-    background: white;
+    border-bottom: 1px solid var(--bn-line);
+    border-radius: var(--bn-radius-none);
+    background: transparent;
+    transition: border-color var(--bn-dur-fast) var(--bn-ease);
   }
 
-  .footer__newsletter-input:focus {
+  .footer__newsletter .footer__newsletter-input::placeholder {
+    color: var(--bn-text-muted);
+  }
+
+  .footer__newsletter .footer__newsletter-input:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.2);
+    box-shadow: none;
+    border-bottom-color: var(--bn-brass);
   }
 
-  .footer__newsletter-btn {
-    background: var(--color-primary);
-    color: white;
+  .footer__newsletter .footer__newsletter-btn {
+    flex: none;
+    background: var(--bn-bone);
+    color: var(--bn-ink);
+    border: 1px solid var(--bn-bone);
+    border-radius: var(--bn-radius-sm);
+    padding: var(--bn-space-xs) var(--bn-space-md);
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-label);
+    text-transform: uppercase;
     white-space: nowrap;
+    cursor: pointer;
+    transition: background var(--bn-dur-fast) var(--bn-ease),
+                border-color var(--bn-dur-fast) var(--bn-ease),
+                color var(--bn-dur-fast) var(--bn-ease);
   }
 
-  .footer__newsletter-btn:hover {
-    background: #2a2a2a;
+  .footer__newsletter .footer__newsletter-btn:hover {
+    background: var(--bn-brass);
+    border-color: var(--bn-brass);
+    color: var(--bn-ink);
   }
 
   .footer__newsletter-privacy {
-    font-size: var(--font-size-xs);
-    color: var(--color-primary);
-    opacity: 0.6;
-    margin: var(--spacing-sm) 0 0;
+    font-size: var(--bn-text-2xs);
+    letter-spacing: var(--bn-track-nav);
+    text-transform: uppercase;
+    color: var(--bn-text-muted);
+    margin: var(--bn-space-xs) 0 0;
   }
 
-  /* Main Footer */
+  /* ── Main footer — brand column + three menu columns ────────────────── */
   .footer__main {
-    padding: var(--spacing-3xl) 0;
+    padding: var(--bn-space-2xl) 0 var(--bn-space-xl);
   }
 
   .footer__grid {
     display: grid;
-    grid-template-columns: 1.5fr repeat(3, 1fr);
-    gap: var(--spacing-2xl);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: var(--bn-space-xl) var(--bn-space-2xl);
+    align-items: start;
   }
 
-  @media (max-width: 992px) {
-    .footer__grid {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .footer__brand {
-      grid-column: span 2;
-      margin-bottom: var(--spacing-xl);
-    }
+  .footer__columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--bn-space-lg) var(--bn-space-md);
   }
 
-  @media (max-width: 576px) {
+  @media (max-width: 900px) {
     .footer__grid {
       grid-template-columns: 1fr;
     }
+  }
 
-    .footer__brand {
-      grid-column: span 1;
-      text-align: center;
+  @media (max-width: 520px) {
+    .footer__columns {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
   /* Brand Column */
   .footer__logo {
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--bn-space-md);
   }
 
   .footer__logo img {
     display: block;
+    width: auto;
     height: auto;
-    max-width: 150px;
-  }
-
-  @media (max-width: 576px) {
-    .footer__logo img {
-      margin: 0 auto;
-    }
+    max-width: 130px;
   }
 
   .footer__logo-text {
-    font-size: var(--font-size-xl);
-    font-weight: 700;
-    color: white;
+    display: block;
+    font-family: var(--bn-font-display);
+    font-variation-settings: 'wdth' 100, 'opsz' 24;
+    font-size: var(--bn-text-sm);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: inherit;
     text-decoration: none;
   }
 
   .footer__tagline {
-    font-size: var(--font-size-sm);
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.6;
-    margin: 0 0 var(--spacing-lg);
-    max-width: 300px;
-  }
-
-  @media (max-width: 576px) {
-    .footer__tagline {
-      max-width: none;
-    }
+    font-size: var(--bn-text-sm);
+    color: var(--bn-text-muted);
+    line-height: var(--bn-leading-body);
+    margin: 0 0 var(--bn-space-md);
+    max-width: 34ch;
   }
 
   /* Contact Info */
   .footer__contact {
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--bn-space-md);
+  }
+
+  .footer__label {
+    color: var(--bn-metal-text);
+    margin: 0 0 var(--bn-space-2xs);
   }
 
   .footer__contact-item {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    font-size: var(--font-size-sm);
-    color: rgba(255, 255, 255, 0.8);
+    gap: var(--bn-space-2xs);
+    font-size: var(--bn-text-sm);
+    color: var(--bn-text-muted);
     text-decoration: none;
-    margin-bottom: var(--spacing-sm);
-    transition: color 0.2s;
+    margin-bottom: var(--bn-space-3xs);
+    transition: color var(--bn-dur-fast) var(--bn-ease);
   }
 
   .footer__contact-item:hover {
-    color: var(--color-secondary);
+    color: var(--bn-text-on-ink);
   }
 
   .footer__contact-item svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     flex-shrink: 0;
-  }
-
-  @media (max-width: 576px) {
-    .footer__contact-item {
-      justify-content: center;
-    }
   }
 
   /* Social Links */
   .footer__social {
     display: flex;
-    gap: var(--spacing-sm);
-  }
-
-  @media (max-width: 576px) {
-    .footer__social {
-      justify-content: center;
-    }
+    flex-wrap: wrap;
+    gap: var(--bn-space-2xs);
   }
 
   .footer__social-link {
@@ -377,21 +450,24 @@
     justify-content: center;
     width: 40px;
     height: 40px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    color: white;
-    transition: background 0.2s, color 0.2s, transform 0.2s;
+    background: transparent;
+    border: 1px solid var(--bn-line);
+    border-radius: var(--bn-radius-sm);
+    color: var(--bn-text-on-ink);
+    transition: background var(--bn-dur-fast) var(--bn-ease),
+                color var(--bn-dur-fast) var(--bn-ease),
+                border-color var(--bn-dur-fast) var(--bn-ease);
   }
 
   .footer__social-link:hover {
-    background: var(--color-secondary);
-    color: var(--color-primary);
-    transform: translateY(-2px);
+    background: var(--bn-bone);
+    border-color: var(--bn-bone);
+    color: var(--bn-ink);
   }
 
   .footer__social-link svg {
-    width: 18px;
-    height: 18px;
+    width: 17px;
+    height: 17px;
   }
 
   /* Menu Columns */
@@ -400,12 +476,10 @@
   }
 
   .footer__heading {
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--color-secondary);
-    margin: 0 0 var(--spacing-lg);
+    color: var(--bn-metal-text);
+    margin: 0 0 var(--bn-space-sm);
+    padding-bottom: var(--bn-space-2xs);
+    border-bottom: 1px solid var(--bn-line);
   }
 
   .footer__list {
@@ -415,24 +489,55 @@
   }
 
   .footer__list li {
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--bn-space-3xs);
   }
 
   .footer__link {
-    font-size: var(--font-size-sm);
-    color: rgba(255, 255, 255, 0.8);
+    display: inline-block;
+    padding: var(--bn-space-3xs) 0;
+    font-size: var(--bn-text-sm);
+    color: var(--bn-text-muted);
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color var(--bn-dur-fast) var(--bn-ease);
   }
 
   .footer__link:hover {
-    color: var(--color-secondary);
+    color: var(--bn-text-on-ink);
   }
 
-  /* Bottom Bar */
+  /* ── Giant wordmark ─────────────────────────────────────────────────── */
+  .footer__mark {
+    padding: var(--bn-space-md) 0 0;
+    overflow: hidden;
+  }
+
+  .footer__mark-word {
+    display: block;
+    font-family: var(--bn-font-display);
+    font-variation-settings: var(--bn-display-vf);
+    font-weight: var(--bn-weight-display);
+    /* 31vw sets the wordmark to run the full gutter-to-gutter measure for a
+       nine-character shop name; overflow:hidden on the parent is the backstop
+       for longer names. */
+    font-size: clamp(2.5rem, 31vw, 26rem);
+    line-height: 0.82;
+    letter-spacing: var(--bn-track-display);
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    /* Clipped at the baseline against the bottom-bar rule — deliberate. */
+    margin-bottom: calc(var(--bn-space-2xs) * -1);
+    transition: color var(--bn-dur-base) var(--bn-ease);
+  }
+
+  .footer__mark-word:hover {
+    color: var(--bn-brass);
+  }
+
+  /* ── Bottom Bar ─────────────────────────────────────────────────────── */
   .footer__bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding: var(--spacing-xl) 0;
+    border-top: 1px solid var(--bn-line);
+    padding: var(--bn-space-md) 0 var(--bn-space-lg);
   }
 
   .footer__bottom-inner {
@@ -440,114 +545,124 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--spacing-lg);
+    gap: var(--bn-space-sm) var(--bn-space-lg);
   }
 
   @media (max-width: 768px) {
     .footer__bottom-inner {
       flex-direction: column;
-      text-align: center;
+      align-items: flex-start;
+      text-align: left;
     }
   }
 
   .footer__copyright p {
-    font-size: var(--font-size-xs);
-    color: rgba(255, 255, 255, 0.6);
+    font-size: var(--bn-text-2xs);
+    letter-spacing: var(--bn-track-nav);
+    text-transform: uppercase;
+    color: var(--bn-text-muted);
     margin: 0;
   }
 
   .footer__legal {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--spacing-md);
-    justify-content: center;
+    gap: var(--bn-space-2xs) var(--bn-space-md);
+    justify-content: flex-start;
   }
 
   .footer__legal a {
-    font-size: var(--font-size-xs);
-    color: rgba(255, 255, 255, 0.6);
+    font-size: var(--bn-text-2xs);
+    letter-spacing: var(--bn-track-nav);
+    text-transform: uppercase;
+    color: var(--bn-text-muted);
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color var(--bn-dur-fast) var(--bn-ease);
   }
 
   .footer__legal a:hover {
-    color: var(--color-secondary);
+    color: var(--bn-text-on-ink);
   }
 
   /* Payment Icons */
   .footer__payments {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
+    gap: var(--bn-space-2xs);
   }
 
   @media (max-width: 768px) {
     .footer__payments {
-      flex-direction: column;
-      gap: var(--spacing-sm);
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: var(--bn-space-2xs);
     }
   }
 
   .footer__payments-label {
-    font-size: var(--font-size-xs);
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--bn-text-muted);
     white-space: nowrap;
   }
 
   .footer__payments-icons {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--spacing-xs);
-    justify-content: center;
+    gap: var(--bn-space-3xs);
+    justify-content: flex-start;
   }
 
   .footer__payment-icon {
-    height: 24px;
+    height: 22px;
     width: auto;
-    opacity: 0.7;
-    transition: opacity 0.2s;
+    opacity: 0.65;
+    transition: opacity var(--bn-dur-fast) var(--bn-ease);
   }
 
   .footer__payment-icon:hover {
     opacity: 1;
   }
 
-  /* Back to Top Button (optional enhancement) */
+  /* ── Back-to-top (created by the script below) ──────────────────────── */
   .footer__back-to-top {
     position: fixed;
-    bottom: var(--spacing-xl);
-    right: var(--spacing-xl);
-    width: 48px;
-    height: 48px;
+    bottom: var(--bn-space-md);
+    right: var(--bn-space-md);
+    width: 46px;
+    height: 46px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--color-secondary);
-    color: var(--color-primary);
-    border: none;
-    border-radius: 50%;
+    background: var(--bn-ink);
+    color: var(--bn-bone);
+    border: 1px solid var(--bn-brass);
+    border-radius: var(--bn-radius-sm);
     cursor: pointer;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(20px);
-    transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
-    z-index: 99;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translate3d(0, var(--bn-reveal-distance), 0);
+    transition: opacity var(--bn-dur-fast) var(--bn-ease),
+                visibility var(--bn-dur-fast) var(--bn-ease),
+                transform var(--bn-dur-fast) var(--bn-ease),
+                background var(--bn-dur-fast) var(--bn-ease),
+                color var(--bn-dur-fast) var(--bn-ease);
+    z-index: var(--bn-z-sticky);
+    box-shadow: var(--bn-shadow-lift);
   }
 
   .footer__back-to-top.is-visible {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: none;
   }
 
   .footer__back-to-top:hover {
-    transform: translateY(-4px);
+    background: var(--bn-brass);
+    color: var(--bn-ink);
   }
 
   .footer__back-to-top svg {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
   }
 </style>
 

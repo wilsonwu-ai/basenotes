@@ -1,0 +1,769 @@
+{%- comment -%}
+  bn-hero.liquid — Base Note facelift Phase A, Direction A "Editorial Grotesque".
+
+  100svh editorial hero on ink. Giant two-line grotesque headline with an
+  Instrument Serif italic accent line, brass price stamp, CTA pair, scroll cue.
+
+  Every colour, size and duration reads a --bn-* token from assets/bn-tokens.css.
+  Motion is bn-motion.js data attributes only ([data-reveal], [data-magnetic]);
+  [data-reveal] starts VISIBLE and only hides once .bn-js lands on <html>, so a
+  JS failure can never blank the hero.
+
+  Touches nothing in the subscription funnel. No form, no selling plan, no cart.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+
+  assign has_video = false
+  if s.video != blank
+    assign has_video = true
+  endif
+
+  assign has_image = false
+  if s.image != blank or s.image_url != blank
+    assign has_image = true
+  endif
+
+  assign poster = s.video_poster | default: s.image
+
+  assign alt_text = s.image_alt
+  if alt_text == blank
+    assign alt_text = 'Editorial photograph of a Base Note 5 ml fragrance atomizer resting on a dark surface, luxury fragrance subscription'
+  endif
+
+  assign scrim = s.overlay_opacity | default: 62
+  assign ring_text = s.stamp_ring_text
+-%}
+
+<section
+  class="bn-hero bn-on-ink"
+  id="bn-hero-{{ section.id }}"
+  data-reveal-group
+  style="--bn-hero-scrim: {{ scrim | divided_by: 100.0 }};"
+>
+  {%- if has_video or has_image -%}
+    <div class="bn-hero__media" aria-hidden="true">
+      {%- if has_video -%}
+        {%- if poster != blank -%}
+          {{
+            poster
+            | image_url: width: 2400
+            | image_tag:
+              widths: '480, 720, 960, 1280, 1600, 1920, 2400',
+              sizes: '100vw',
+              loading: 'eager',
+              fetchpriority: 'high',
+              decoding: 'async',
+              class: 'bn-hero__img',
+              alt: alt_text
+          }}
+        {%- endif -%}
+        <video
+          class="bn-hero__video"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          disablepictureinpicture
+          tabindex="-1"
+          width="1920"
+          height="1080"
+          {% if poster != blank %}poster="{{ poster | image_url: width: 1920 }}"{% endif %}
+        >
+          <source src="{{ s.video }}" type="video/mp4">
+        </video>
+      {%- elsif s.image != blank -%}
+        {{
+          s.image
+          | image_url: width: 2400
+          | image_tag:
+            widths: '480, 720, 960, 1280, 1600, 1920, 2400',
+            sizes: '100vw',
+            loading: 'eager',
+            fetchpriority: 'high',
+            decoding: 'async',
+            class: 'bn-hero__img',
+            alt: alt_text
+        }}
+      {%- else -%}
+        <img
+          class="bn-hero__img"
+          src="{{ s.image_url }}"
+          alt="{{ alt_text | escape }}"
+          width="1920"
+          height="1080"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        >
+      {%- endif -%}
+
+      <span class="bn-hero__scrim"></span>
+      <span class="bn-hero__scrim bn-hero__scrim--foot"></span>
+      {%- if s.show_grain -%}<span class="bn-hero__grain"></span>{%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="bn-hero__inner">
+    <div class="bn-hero__content">
+
+      {%- if s.show_stamp -%}
+        <div class="bn-hero__stamp" data-reveal>
+          {%- if ring_text != blank -%}
+            <svg class="bn-hero__ring" viewBox="0 0 100 100" role="presentation" focusable="false" aria-hidden="true">
+              <defs>
+                <path
+                  id="bn-ring-{{ section.id }}"
+                  fill="none"
+                  d="M 50 50 m -41 0 a 41 41 0 1 1 82 0 a 41 41 0 1 1 -82 0"
+                ></path>
+              </defs>
+              <text>
+                <textPath href="#bn-ring-{{ section.id }}" startOffset="0">{{ ring_text }}</textPath>
+              </text>
+            </svg>
+          {%- endif -%}
+          <span class="bn-hero__stamp-face">
+            <b class="bn-hero__stamp-amount">{{ s.stamp_amount }}</b>
+            <span class="bn-hero__stamp-period">{{ s.stamp_period }}</span>
+            {%- if s.stamp_note != blank -%}
+              <i class="bn-hero__stamp-note">{{ s.stamp_note }}</i>
+            {%- endif -%}
+          </span>
+        </div>
+      {%- endif -%}
+
+      {%- if s.eyebrow != blank -%}
+        <p class="bn-hero__eyebrow" data-reveal>{{ s.eyebrow }}</p>
+      {%- endif -%}
+
+      <h1 class="bn-hero__title" data-reveal>
+        {%- if s.heading_line_1 != blank -%}
+          <span class="bn-hero__line">{{ s.heading_line_1 }}</span>
+        {%- endif -%}
+        {%- if s.heading_line_2 != blank -%}
+          <span class="bn-hero__line">{{ s.heading_line_2 }}</span>
+        {%- endif -%}
+        {%- if s.accent_line != blank -%}
+          <em class="bn-hero__accent">{{ s.accent_line }}</em>
+        {%- endif -%}
+      </h1>
+
+      {%- if s.tagline != blank -%}
+        <p class="bn-hero__sub" data-reveal>{{ s.tagline }}</p>
+      {%- endif -%}
+
+      {%- if s.button_label != blank or s.secondary_button_label != blank -%}
+        <div class="bn-hero__cta" data-reveal>
+          {%- if s.button_label != blank -%}
+            <a
+              class="bn-hero__btn bn-hero__btn--solid"
+              href="{{ s.button_link | default: '/pages/find-your-scent' }}"
+              data-magnetic
+            >
+              {{ s.button_label }}
+              <span class="bn-hero__arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          {%- endif -%}
+          {%- if s.secondary_button_label != blank -%}
+            <a
+              class="bn-hero__btn bn-hero__btn--ghost"
+              href="{{ s.secondary_button_link | default: '/collections/fragrances' }}"
+            >
+              {{ s.secondary_button_label }}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if s.reassurance != blank -%}
+        <p class="bn-hero__reassurance" data-reveal>{{ s.reassurance }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- if s.show_scroll_indicator -%}
+      <a class="bn-hero__cue" href="#bn-hero-{{ section.id }}-end" aria-label="{{ s.scroll_label | default: 'Scroll' | escape }}">
+        <span class="bn-hero__cue-label">{{ s.scroll_label | default: 'Scroll' }}</span>
+        <span class="bn-hero__cue-rail" aria-hidden="true"><i></i></span>
+      </a>
+    {%- endif -%}
+  </div>
+
+  <span id="bn-hero-{{ section.id }}-end" class="bn-hero__anchor" aria-hidden="true"></span>
+</section>
+
+<style>
+  #bn-hero-{{ section.id }} {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--bn-ink);
+    color: var(--bn-text-on-ink);
+  }
+
+  /* ---- Media ---------------------------------------------------------- */
+  #bn-hero-{{ section.id }} .bn-hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__img,
+  #bn-hero-{{ section.id }} .bn-hero__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__video {
+    z-index: 1;
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: var(--bn-ink);
+    opacity: var(--bn-hero-scrim, .62);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__scrim--foot {
+    background: linear-gradient(180deg, transparent 38%, var(--bn-ink) 100%);
+    opacity: .92;
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__grain {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background-image: var(--bn-grain);
+    background-repeat: repeat;
+    opacity: var(--bn-grain-opacity, .05);
+    mix-blend-mode: overlay;
+  }
+
+  /* ---- Shell ---------------------------------------------------------- */
+  #bn-hero-{{ section.id }} .bn-hero__inner {
+    position: relative;
+    z-index: 4;
+    box-sizing: border-box;
+    max-width: var(--bn-container);
+    margin: 0 auto;
+    padding-inline: var(--bn-gutter);
+    padding-block: calc(var(--header-height, 72px) + var(--bn-space-lg)) var(--bn-space-xl);
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--bn-space-lg);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__content {
+    position: relative;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__anchor {
+    display: block;
+    height: 0;
+    overflow: hidden;
+  }
+
+  /* ---- Eyebrow -------------------------------------------------------- */
+  #bn-hero-{{ section.id }} .bn-hero__eyebrow {
+    margin: 0 0 var(--bn-space-md);
+    display: flex;
+    align-items: center;
+    gap: var(--bn-space-2xs);
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-label);
+    text-transform: uppercase;
+    color: var(--bn-brass);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__eyebrow::before {
+    content: '';
+    width: 1.75rem;
+    height: 1px;
+    background: var(--bn-brass);
+    flex: none;
+  }
+
+  /* ---- Headline ------------------------------------------------------- */
+  #bn-hero-{{ section.id }} .bn-hero__title {
+    margin: 0;
+    max-width: 15ch;
+    font-family: var(--bn-font-display);
+    font-weight: var(--bn-weight-display);
+    font-variation-settings: var(--bn-display-vf);
+    font-size: var(--bn-text-4xl);
+    line-height: var(--bn-leading-display);
+    letter-spacing: var(--bn-track-display);
+    color: var(--bn-text-on-ink);
+    text-wrap: balance;
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__line {
+    display: block;
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__accent {
+    display: block;
+    font-family: var(--bn-font-accent);
+    font-style: italic;
+    font-weight: 400;
+    font-variation-settings: normal;
+    letter-spacing: -0.012em;
+    color: var(--bn-brass);
+  }
+
+  /* ---- Sub + reassurance ---------------------------------------------- */
+  #bn-hero-{{ section.id }} .bn-hero__sub {
+    margin: var(--bn-space-md) 0 0;
+    max-width: 42ch;
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-md);
+    line-height: var(--bn-leading-body);
+    color: var(--bn-text-on-ink-dim);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__reassurance {
+    margin: var(--bn-space-md) 0 0;
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    letter-spacing: var(--bn-track-label);
+    text-transform: uppercase;
+    color: var(--bn-text-on-ink-dim);
+  }
+
+  /* ---- CTA pair ------------------------------------------------------- */
+  #bn-hero-{{ section.id }} .bn-hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--bn-space-2xs);
+    margin-top: var(--bn-space-lg);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--bn-space-2xs);
+    padding: 1rem 1.5rem;
+    border: 1px solid transparent;
+    border-radius: var(--bn-radius-sm);
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-nav);
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background var(--bn-dur-fast) var(--bn-ease),
+      color var(--bn-dur-fast) var(--bn-ease),
+      border-color var(--bn-dur-fast) var(--bn-ease);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__btn--solid {
+    background: var(--bn-bone);
+    border-color: var(--bn-bone);
+    color: var(--bn-ink);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__btn--solid:hover,
+  #bn-hero-{{ section.id }} .bn-hero__btn--solid:focus-visible {
+    background: var(--bn-brass);
+    border-color: var(--bn-brass);
+    color: var(--bn-ink);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__btn--ghost {
+    background: transparent;
+    border-color: var(--bn-line-on-ink);
+    color: var(--bn-text-on-ink);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__btn--ghost:hover,
+  #bn-hero-{{ section.id }} .bn-hero__btn--ghost:focus-visible {
+    border-color: var(--bn-brass);
+    color: var(--bn-brass);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__btn:focus-visible {
+    outline: 2px solid var(--bn-brass);
+    outline-offset: 3px;
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__arrow {
+    transition: transform var(--bn-dur-fast) var(--bn-ease);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__btn:hover .bn-hero__arrow {
+    transform: translateX(4px);
+  }
+
+  /* ---- Price stamp ---------------------------------------------------- */
+  #bn-hero-{{ section.id }} .bn-hero__stamp {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 5;
+    width: clamp(7rem, 11vw, 10.5rem);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    color: var(--bn-brass);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__stamp-face {
+    grid-area: 1 / 1;
+    width: 78%;
+    aspect-ratio: 1;
+    border: 1px solid var(--bn-brass);
+    border-radius: 50%;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    rotate: -9deg;
+    box-shadow: inset 0 0 0 4px var(--bn-line-on-ink);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__stamp-amount {
+    display: block;
+    font-family: var(--bn-font-display);
+    font-weight: 500;
+    font-variation-settings: 'wdth' 100;
+    font-size: var(--bn-text-lg);
+    line-height: 1;
+    letter-spacing: var(--bn-track-title);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__stamp-period {
+    display: block;
+    margin-top: var(--bn-space-3xs);
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    letter-spacing: var(--bn-track-label);
+    text-transform: uppercase;
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__stamp-note {
+    display: block;
+    margin-top: var(--bn-space-3xs);
+    padding-top: var(--bn-space-3xs);
+    border-top: 1px solid var(--bn-line-on-ink);
+    font-family: var(--bn-font-body);
+    font-style: normal;
+    font-size: var(--bn-text-2xs);
+    letter-spacing: var(--bn-track-nav);
+    text-transform: uppercase;
+    color: var(--bn-text-on-ink-dim);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__ring {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: var(--bn-brass);
+    font-family: var(--bn-font-body);
+    font-size: 6.6px;
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: 1.1px;
+    text-transform: uppercase;
+    transform-origin: 50% 50%;
+    animation: bn-hero-ring-{{ section.id }} 26s linear infinite;
+  }
+
+  @keyframes bn-hero-ring-{{ section.id }} {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ---- Scroll cue ----------------------------------------------------- */
+  #bn-hero-{{ section.id }} .bn-hero__cue {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--bn-space-2xs);
+    text-decoration: none;
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    letter-spacing: var(--bn-track-label);
+    text-transform: uppercase;
+    color: var(--bn-text-on-ink-dim);
+    transition: color var(--bn-dur-fast) var(--bn-ease);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__cue:hover,
+  #bn-hero-{{ section.id }} .bn-hero__cue:focus-visible {
+    color: var(--bn-brass);
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__cue-rail {
+    position: relative;
+    display: block;
+    width: 3.5rem;
+    height: 1px;
+    background: var(--bn-line-on-ink);
+    overflow: hidden;
+  }
+
+  #bn-hero-{{ section.id }} .bn-hero__cue-rail i {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 40%;
+    background: var(--bn-brass);
+    animation: bn-hero-cue-{{ section.id }} 2.6s var(--bn-ease-in-out) infinite;
+  }
+
+  @keyframes bn-hero-cue-{{ section.id }} {
+    0%   { transform: translateX(-100%); }
+    60%  { transform: translateX(250%); }
+    100% { transform: translateX(250%); }
+  }
+
+  /* ---- Breakpoints ---------------------------------------------------- */
+  @media (max-width: 900px) {
+    #bn-hero-{{ section.id }} .bn-hero__stamp {
+      position: static;
+      width: clamp(5.5rem, 24vw, 7.5rem);
+      margin-bottom: var(--bn-space-md);
+    }
+
+    #bn-hero-{{ section.id }} .bn-hero__title {
+      max-width: 18ch;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #bn-hero-{{ section.id }} .bn-hero__stamp {
+      width: clamp(4.5rem, 20vw, 6rem);
+      margin-bottom: var(--bn-space-sm);
+    }
+
+    #bn-hero-{{ section.id }} .bn-hero__inner {
+      padding-block: calc(var(--header-height, 72px) + var(--bn-space-md)) var(--bn-space-md);
+      gap: var(--bn-space-md);
+    }
+
+    #bn-hero-{{ section.id }} .bn-hero__btn {
+      flex: 1 1 100%;
+      justify-content: center;
+    }
+
+    #bn-hero-{{ section.id }} .bn-hero__sub {
+      font-size: var(--bn-text-base);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #bn-hero-{{ section.id }} .bn-hero__video {
+      display: none;
+    }
+
+    #bn-hero-{{ section.id }} .bn-hero__ring,
+    #bn-hero-{{ section.id }} .bn-hero__cue-rail i {
+      animation: none;
+    }
+
+    #bn-hero-{{ section.id }} .bn-hero__cue-rail i {
+      width: 100%;
+      transform: none;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "BN Hero",
+  "tag": "section",
+  "class": "bn-hero-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Copy"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "One flat price"
+    },
+    {
+      "type": "text",
+      "id": "heading_line_1",
+      "label": "Headline line 1",
+      "default": "One flat price."
+    },
+    {
+      "type": "text",
+      "id": "heading_line_2",
+      "label": "Headline line 2",
+      "default": "Every luxury fragrance."
+    },
+    {
+      "type": "text",
+      "id": "accent_line",
+      "label": "Italic accent line",
+      "info": "Set in Instrument Serif italic, brass. Keep it short.",
+      "default": "Build your signature rotation."
+    },
+    {
+      "type": "textarea",
+      "id": "tagline",
+      "label": "Supporting line",
+      "default": "$20 a month, 5 ml at a time. No surcharge on Creed, Tom Ford or Parfums de Marly — every fragrance is the same price."
+    },
+    {
+      "type": "text",
+      "id": "reassurance",
+      "label": "Reassurance line",
+      "default": "Free shipping · Swap anytime · Cancel anytime"
+    },
+    {
+      "type": "header",
+      "content": "Price stamp"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stamp",
+      "label": "Show price stamp",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "stamp_amount",
+      "label": "Stamp amount",
+      "default": "$20"
+    },
+    {
+      "type": "text",
+      "id": "stamp_period",
+      "label": "Stamp period",
+      "default": "/ month"
+    },
+    {
+      "type": "text",
+      "id": "stamp_note",
+      "label": "Stamp footnote",
+      "default": "flat"
+    },
+    {
+      "type": "text",
+      "id": "stamp_ring_text",
+      "label": "Rotating ring text",
+      "info": "Optional. Leave blank for a plain stamp. Uppercase reads best.",
+      "default": "BASE NOTE · ONE FLAT PRICE · NO SURCHARGES · "
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Primary button label",
+      "default": "Find My Scent"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Primary button link",
+      "info": "Defaults to /pages/find-your-scent"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_label",
+      "label": "Secondary button label",
+      "default": "View the Scent Vault"
+    },
+    {
+      "type": "url",
+      "id": "secondary_button_link",
+      "label": "Secondary button link",
+      "info": "Defaults to /collections/fragrances"
+    },
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background image"
+    },
+    {
+      "type": "text",
+      "id": "image_url",
+      "label": "Background image URL (external)",
+      "info": "Used only when no image is uploaded above."
+    },
+    {
+      "type": "url",
+      "id": "video",
+      "label": "Background video (MP4)",
+      "info": "6–10s muted loop. Hidden under reduced motion — always set a poster."
+    },
+    {
+      "type": "image_picker",
+      "id": "video_poster",
+      "label": "Video poster image"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Image alt text",
+      "info": "[type] + [subject] + [action] + [keyword], 50–125 characters."
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Scrim opacity",
+      "min": 20,
+      "max": 90,
+      "step": 2,
+      "unit": "%",
+      "default": 62
+    },
+    {
+      "type": "checkbox",
+      "id": "show_grain",
+      "label": "Show paper grain",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Scroll cue"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scroll_indicator",
+      "label": "Show scroll cue",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "scroll_label",
+      "label": "Scroll cue label",
+      "default": "Scroll"
+    }
+  ],
+  "presets": [
+    {
+      "name": "BN Hero"
+    }
+  ]
+}
+{% endschema %}

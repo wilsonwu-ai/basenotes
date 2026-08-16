@@ -1,0 +1,495 @@
+{%- comment -%}
+  bn-price-table.liquid — Base Note facelift Phase A, Direction A.
+
+  Token-driven port of the "Price Comparison" _blocks entry that shipped in
+  templates/index.json (ai_gen_block_9faa96e). Every claim and every number is
+  carried across verbatim — copy lives in settings so nothing is baked in.
+
+  The old block hard-coded 21 hex values. This one has none: colour, type,
+  spacing and motion all read --bn-* tokens.
+
+  Semantics kept real: a <table> with column and row headers, wrapped in a
+  keyboard-scrollable region so 390px never needs a fake-table layout.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign scheme_class = 'bn-on-bone'
+  if s.color_scheme == 'ink'
+    assign scheme_class = 'bn-on-ink'
+  endif
+-%}
+
+<section class="bn-pt {{ scheme_class }}" id="bn-pt-{{ section.id }}" data-reveal-group>
+  <div class="bn-pt__inner">
+    <header class="bn-pt__head">
+      {%- if s.eyebrow != blank -%}
+        <p class="bn-pt__eyebrow" data-reveal>{{ s.eyebrow }}</p>
+      {%- endif -%}
+      {%- if s.title != blank -%}
+        <h2 class="bn-pt__title" data-reveal>{{ s.title }}</h2>
+      {%- endif -%}
+      {%- if s.subtitle != blank -%}
+        <p class="bn-pt__sub" data-reveal>{{ s.subtitle }}</p>
+      {%- endif -%}
+    </header>
+
+    <div
+      class="bn-pt__scroller"
+      role="region"
+      tabindex="0"
+      aria-label="{{ s.title | default: 'Price comparison' | strip_html | escape }}"
+      data-reveal
+    >
+      <table class="bn-pt__table">
+        <thead>
+          <tr>
+            <th scope="col" class="bn-pt__th bn-pt__th--name">{{ s.column_1_header }}</th>
+            <th scope="col" class="bn-pt__th bn-pt__th--them">{{ s.column_2_header }}</th>
+            <th scope="col" class="bn-pt__th bn-pt__th--us">{{ s.column_3_header }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for block in section.blocks -%}
+            {%- assign no = forloop.index | prepend: '0' | slice: -2, 2 -%}
+            <tr class="bn-pt__tr" {{ block.shopify_attributes }}>
+              <th scope="row" class="bn-pt__td bn-pt__td--name">
+                {%- if s.show_numbers -%}
+                  <span class="bn-pt__no">No. {{ no }}</span>
+                {%- endif -%}
+                <span class="bn-pt__product">{{ block.settings.product }}</span>
+              </th>
+              <td class="bn-pt__td bn-pt__td--them">
+                <span class="bn-pt__them">{{ block.settings.competitor }}</span>
+              </td>
+              <td class="bn-pt__td bn-pt__td--us">
+                {%- if s.show_checkmark -%}
+                  <span class="bn-pt__check" aria-hidden="true">&#10003;</span>
+                {%- endif -%}
+                <span class="bn-pt__price">{{ block.settings.price }}</span>
+              </td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+    </div>
+
+    {%- if s.footnote != blank -%}
+      <p class="bn-pt__foot" data-reveal>{{ s.footnote }}</p>
+    {%- endif -%}
+
+    {%- if s.button_label != blank -%}
+      <div class="bn-pt__cta" data-reveal>
+        <a class="bn-pt__btn" href="{{ s.button_link | default: '/collections/fragrances' }}">
+          {{ s.button_label }}
+          <span class="bn-pt__arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+<style>
+  #bn-pt-{{ section.id }} {
+    padding-block: var(--bn-space-3xl);
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__inner {
+    box-sizing: border-box;
+    max-width: var(--bn-container);
+    margin: 0 auto;
+    padding-inline: var(--bn-gutter);
+  }
+
+  /* ---- Head ----------------------------------------------------------- */
+  #bn-pt-{{ section.id }} .bn-pt__head {
+    max-width: var(--bn-measure);
+    margin-bottom: var(--bn-space-2xl);
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__eyebrow {
+    margin: 0 0 var(--bn-space-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--bn-space-2xs);
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-label);
+    text-transform: uppercase;
+    color: var(--bn-metal-text, var(--bn-brass-ink));
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__eyebrow::before {
+    content: '';
+    width: 1.75rem;
+    height: 1px;
+    background: currentColor;
+    flex: none;
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__title {
+    margin: 0;
+    font-family: var(--bn-font-display);
+    font-weight: var(--bn-weight-display);
+    font-variation-settings: var(--bn-display-vf);
+    font-size: var(--bn-text-2xl);
+    line-height: var(--bn-leading-title);
+    letter-spacing: var(--bn-track-display);
+    color: inherit;
+    text-wrap: balance;
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__sub {
+    margin: var(--bn-space-md) 0 0;
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-md);
+    line-height: var(--bn-leading-body);
+    color: var(--bn-text-muted, var(--bn-text-on-bone-dim));
+  }
+
+  /* ---- Table ---------------------------------------------------------- */
+  #bn-pt-{{ section.id }} .bn-pt__scroller {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__scroller:focus-visible {
+    outline: 2px solid var(--bn-metal-text, var(--bn-brass-ink));
+    outline-offset: 4px;
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__table {
+    width: 100%;
+    min-width: 34rem;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__th {
+    padding: 0 var(--bn-space-sm) var(--bn-space-xs);
+    border-bottom: 1px solid var(--bn-line, var(--bn-line-on-bone));
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-label);
+    text-transform: uppercase;
+    color: var(--bn-text-muted, var(--bn-text-on-bone-dim));
+    vertical-align: bottom;
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__th--name {
+    padding-left: 0;
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__th--us {
+    color: inherit;
+    border-bottom-color: var(--bn-hairline, var(--bn-brass));
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__td {
+    padding: var(--bn-space-md) var(--bn-space-sm);
+    border-bottom: 1px solid var(--bn-line, var(--bn-line-on-bone));
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-base);
+    font-weight: var(--bn-weight-body);
+    vertical-align: baseline;
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__td--name {
+    padding-left: 0;
+    color: inherit;
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__no {
+    display: block;
+    margin-bottom: var(--bn-space-3xs);
+    font-family: var(--bn-font-display);
+    font-variation-settings: 'wdth' 100;
+    font-size: var(--bn-text-2xs);
+    letter-spacing: var(--bn-track-label);
+    color: var(--bn-metal-text, var(--bn-brass-ink));
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__product {
+    display: block;
+    font-weight: var(--bn-weight-body);
+    letter-spacing: var(--bn-track-body);
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__them {
+    color: var(--bn-text-muted, var(--bn-text-on-bone-dim));
+    font-variant-numeric: tabular-nums;
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__td--us {
+    white-space: nowrap;
+    background: var(--bn-bone-2);
+    border-bottom-color: var(--bn-line, var(--bn-line-on-bone));
+  }
+
+  #bn-pt-{{ section.id }}.bn-on-ink .bn-pt__td--us {
+    background: var(--bn-ink-2);
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__check {
+    margin-right: var(--bn-space-3xs);
+    color: var(--bn-metal-text, var(--bn-brass-ink));
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__price {
+    font-family: var(--bn-font-display);
+    font-variation-settings: 'wdth' 100;
+    font-weight: 500;
+    font-size: var(--bn-text-md);
+    letter-spacing: var(--bn-track-title);
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__tr:last-child .bn-pt__td {
+    border-bottom-color: var(--bn-hairline, var(--bn-brass));
+  }
+
+  /* ---- Foot + CTA ----------------------------------------------------- */
+  #bn-pt-{{ section.id }} .bn-pt__foot {
+    margin: var(--bn-space-md) 0 0;
+    max-width: var(--bn-measure);
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-xs);
+    line-height: var(--bn-leading-body);
+    color: var(--bn-text-muted, var(--bn-text-on-bone-dim));
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__cta {
+    margin-top: var(--bn-space-lg);
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--bn-space-2xs);
+    padding: 1rem 1.5rem;
+    border: 1px solid var(--bn-ink);
+    border-radius: var(--bn-radius-sm);
+    background: var(--bn-ink);
+    color: var(--bn-bone);
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-nav);
+    text-transform: uppercase;
+    text-decoration: none;
+    transition:
+      background var(--bn-dur-fast) var(--bn-ease),
+      border-color var(--bn-dur-fast) var(--bn-ease),
+      color var(--bn-dur-fast) var(--bn-ease);
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__btn:hover,
+  #bn-pt-{{ section.id }} .bn-pt__btn:focus-visible {
+    background: var(--bn-forest-deep);
+    border-color: var(--bn-forest-deep);
+    color: var(--bn-bone);
+  }
+
+  #bn-pt-{{ section.id }}.bn-on-ink .bn-pt__btn {
+    background: var(--bn-bone);
+    border-color: var(--bn-bone);
+    color: var(--bn-ink);
+  }
+
+  #bn-pt-{{ section.id }}.bn-on-ink .bn-pt__btn:hover,
+  #bn-pt-{{ section.id }}.bn-on-ink .bn-pt__btn:focus-visible {
+    background: var(--bn-brass);
+    border-color: var(--bn-brass);
+    color: var(--bn-ink);
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__arrow {
+    transition: transform var(--bn-dur-fast) var(--bn-ease);
+  }
+
+  #bn-pt-{{ section.id }} .bn-pt__btn:hover .bn-pt__arrow {
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 600px) {
+    #bn-pt-{{ section.id }} .bn-pt__table {
+      min-width: 30rem;
+    }
+
+    #bn-pt-{{ section.id }} .bn-pt__td {
+      padding: var(--bn-space-sm) var(--bn-space-2xs);
+      font-size: var(--bn-text-sm);
+    }
+
+    #bn-pt-{{ section.id }} .bn-pt__btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "BN Price Table",
+  "tag": "section",
+  "class": "bn-price-table-section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Colour scheme",
+      "options": [
+        {
+          "value": "bone",
+          "label": "Bone"
+        },
+        {
+          "value": "ink",
+          "label": "Ink"
+        }
+      ],
+      "default": "bone"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "The anti-surcharge wedge"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "No surcharges. Ever."
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Most fragrance subscriptions charge $5–15 extra on luxury brands like Creed and Parfums de Marly. Base Note doesn't. Every fragrance is $20 flat."
+    },
+    {
+      "type": "header",
+      "content": "Columns"
+    },
+    {
+      "type": "text",
+      "id": "column_1_header",
+      "label": "Column 1 header",
+      "default": "Fragrance"
+    },
+    {
+      "type": "text",
+      "id": "column_2_header",
+      "label": "Column 2 header",
+      "default": "Typical sub with luxury surcharge"
+    },
+    {
+      "type": "text",
+      "id": "column_3_header",
+      "label": "Column 3 header",
+      "default": "Base Note"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_checkmark",
+      "label": "Show checkmark on the Base Note price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_numbers",
+      "label": "Number the rows (No. 01)",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Below the table"
+    },
+    {
+      "type": "textarea",
+      "id": "footnote",
+      "label": "Footnote",
+      "info": "Optional. Use it to source the comparison prices."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Browse the catalogue"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link",
+      "info": "Defaults to /collections/fragrances"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Comparison row",
+      "settings": [
+        {
+          "type": "text",
+          "id": "product",
+          "label": "Fragrance",
+          "default": "Creed Aventus 5ml"
+        },
+        {
+          "type": "text",
+          "id": "competitor",
+          "label": "Typical subscription price",
+          "default": "$45"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Base Note price",
+          "default": "$20 / month"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "BN Price Table",
+      "blocks": [
+        {
+          "type": "row",
+          "settings": {
+            "product": "Creed Aventus 5ml",
+            "competitor": "$45",
+            "price": "$20 / month"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "product": "Parfums de Marly Layton 5ml",
+            "competitor": "$40",
+            "price": "$20 / month"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "product": "Tom Ford Oud Wood 5ml",
+            "competitor": "$32",
+            "price": "$20 / month"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "product": "Bond No. 9 Bleecker St. 5ml",
+            "competitor": "$42",
+            "price": "$20 / month"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

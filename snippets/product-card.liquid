@@ -51,7 +51,36 @@
   endif
 -%}
 
-<article class="product-card" data-product-id="{{ product.id }}">
+{%- comment -%}
+  ── Facelift Phase A ────────────────────────────────────────────────────────
+  Everything below this line is ADDITIVE. No existing element, class, id,
+  data-* hook or the script block at the foot of this file was altered.
+  Three things are added:
+    · data-family / data-has-notes on the article — the tint + notes hooks
+    · {% render 'bn-notes' %} inside the media — family chip + notes panel
+    · a touch-only "Notes" toggle, rendered OUTSIDE .product-card__link so it
+      can never swallow a card click and never sits inside the quick-add path
+  The family key and the has-notes flag both come from bn-notes in 'data' mode
+  so the parsing logic lives in exactly one file.
+{%- endcomment -%}
+
+{%- capture bn_card_data -%}{%- render 'bn-notes', product: product, mode: 'data' -%}{%- endcapture -%}
+{%- assign bn_card_bits = bn_card_data | strip | split: '|' -%}
+{%- assign bn_family_token = bn_card_bits[0] -%}
+{%- assign bn_has_notes = bn_card_bits[2] -%}
+{%- assign bn_panel_id = 'bn-notes-' | append: product.id -%}
+
+{%- assign bn_card_no = '' -%}
+{%- assign bn_n = catalogue_number | plus: 0 -%}
+{%- if bn_n > 0 -%}
+  {%- if bn_n < 10 -%}
+    {%- assign bn_card_no = bn_n | prepend: 'No. 0' -%}
+  {%- else -%}
+    {%- assign bn_card_no = bn_n | prepend: 'No. ' -%}
+  {%- endif -%}
+{%- endif -%}
+
+<article class="product-card" data-product-id="{{ product.id }}" data-family="{{ bn_family_token }}" data-has-notes="{{ bn_has_notes }}" data-reveal>
   <a href="{{ product.url }}" class="product-card__link">
     <div class="product-card__media">
       {% comment %} Badges {% endcomment %}
@@ -156,9 +185,15 @@
         </div>
       {%- endif -%}
 
+      {% comment %} Facelift: scent-family chip + hover/tap notes panel {% endcomment %}
+      {% render 'bn-notes', product: product, mode: 'card', panel_id: bn_panel_id %}
+
     </div>
 
     <div class="product-card__content">
+      {%- if bn_card_no != blank -%}
+        <span class="product-card__number">{{ bn_card_no }}</span>
+      {%- endif -%}
       <span class="product-card__vendor">{{ product.vendor | default: 'Base Note Atelier' }}</span>
       <h3 class="product-card__title">{{ product.title }}</h3>
 
@@ -215,6 +250,25 @@
       </div>
     </div>
   </a>
+
+  {% comment %} Facelift: touch-only notes toggle. Deliberately a sibling of
+     .product-card__link, not a child — a button nested in an anchor is invalid
+     markup and would fight the card click. Hidden on pointer devices, where the
+     notes panel is a hover reveal instead. {% endcomment %}
+  {%- if bn_has_notes == '1' -%}
+    <button
+      class="product-card__notes-toggle"
+      type="button"
+      data-notes-toggle
+      aria-expanded="false"
+      aria-controls="{{ bn_panel_id }}"
+    >
+      <span>Notes</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="m6 9 6 6 6-6"/>
+      </svg>
+    </button>
+  {%- endif -%}
 
   {% comment %} Quick Add Button {% endcomment %}
   {%- if show_quick_add and product.available and product.selling_plan_groups.size > 0 -%}
@@ -722,6 +776,500 @@
       border-radius: 0;
     }
   }
+  /* ==========================================================================
+     FACELIFT — PHASE A · Direction A "Editorial Grotesque"
+     Appended, not merged: every rule above is untouched and these override by
+     source order at equal specificity. Colour/type/space come from --bn-*
+     tokens in assets/bn-tokens.css. No new hard-coded values.
+     ========================================================================== */
+
+  /* --- Card shell ---------------------------------------------------------- */
+  .product-card {
+    background: var(--bn-bone);
+    border: 1px solid var(--bn-line-on-bone);
+    border-radius: var(--bn-radius-md);
+    box-shadow: none;
+    transition: transform var(--bn-dur-base) var(--bn-ease),
+                box-shadow var(--bn-dur-base) var(--bn-ease),
+                border-color var(--bn-dur-base) var(--bn-ease);
+  }
+
+  /* Design sheet spec 08: y -5px, 450ms, house curve. */
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--bn-shadow-card);
+    border-color: transparent;
+  }
+
+  /* The reveal primitive owns transform on this element and lands on
+     .bn-js [data-reveal].is-revealed { transform: none } (0,2,1). The lift has
+     to out-specify that or it silently never fires once the card has revealed. */
+  .bn-js .product-card[data-reveal].is-revealed:hover {
+    transform: translateY(-5px);
+  }
+
+  /* --- Defensive: assets/component-variables.css also carries a .product-card
+     block, and its .product-card__badge is absolutely pinned to the card's
+     top-left, which would stack every badge on top of the others inside
+     .product-card__badges. It also treats .product-card__image as a container,
+     which it is in the placeholder markup but NOT here, where it is the <img>. */
+  .product-card__badge {
+    position: static;
+    top: auto;
+    left: auto;
+  }
+
+  img.product-card__image {
+    background: none;
+    aspect-ratio: auto;
+  }
+
+  /* --- Media: family-tinted ground, packshot floats on it ------------------ */
+  .product-card__media {
+    background: var(--bn-bone-2);
+    background: color-mix(in oklab, var(--bn-family, var(--bn-family-default)) 15%, var(--bn-bone));
+    /* Pins the blend group for the multiply below to this box, so the packshot
+       always composites against the family tint and never the page behind it. */
+    isolation: isolate;
+  }
+
+  .product-card__image {
+    object-fit: contain;
+    box-sizing: border-box;
+    padding: 11% 13% 13%;
+    /* The catalogue packshots are shot on white. Multiply drops that white into
+       the family tint so the bottle sits on the ground instead of in a box. */
+    mix-blend-mode: multiply;
+    transition: opacity var(--bn-dur-base) var(--bn-ease),
+                transform var(--bn-dur-slow) var(--bn-ease);
+  }
+
+  .product-card:hover .product-card__image {
+    transform: scale(1.045) translateY(-1.5%);
+  }
+
+  .product-card__placeholder {
+    color: var(--bn-text-on-bone-dim);
+  }
+
+  /* --- Overlay: retired. The hover payload is the notes panel now (brief §4.7) */
+  .product-card__overlay {
+    display: none;
+  }
+
+  .product-card__sold-out-overlay {
+    background: color-mix(in srgb, var(--bn-ink) 58%, transparent);
+  }
+
+  .product-card__sold-out-banner {
+    background: var(--bn-ink);
+    color: var(--bn-text-on-ink);
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-label);
+    border-radius: var(--bn-radius-sm);
+    transform: none;
+  }
+
+  /* --- Badges: ink and bone only ------------------------------------------- */
+  .product-card__badge {
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-label);
+    padding: 5px 9px;
+    border-radius: var(--bn-radius-sm);
+  }
+
+  .product-card__badge--new,
+  .product-card__badge--bestseller {
+    background: var(--bn-ink);
+    color: var(--bn-text-on-ink);
+  }
+
+  .product-card__badge--exclusive,
+  .product-card__badge--limited {
+    background: var(--bn-bone);
+    color: var(--bn-text-on-bone);
+    box-shadow: inset 0 0 0 1px var(--bn-brass);
+  }
+
+  .product-card__badge--sold-out {
+    background: var(--bn-bone-2);
+    color: var(--bn-text-on-bone-dim);
+  }
+
+  /* --- Wishlist: square, on-token, always reachable on touch --------------- */
+  .product-card__wishlist {
+    width: 32px;
+    height: 32px;
+    background: var(--bn-bone);
+    border: 1px solid var(--bn-line-on-bone);
+    border-radius: var(--bn-radius-sm);
+    box-shadow: none;
+    transition: opacity var(--bn-dur-fast) var(--bn-ease),
+                transform var(--bn-dur-fast) var(--bn-ease),
+                background var(--bn-dur-fast) var(--bn-ease);
+  }
+
+  .product-card__wishlist:hover {
+    background: var(--bn-ink);
+  }
+
+  .product-card__wishlist-icon {
+    color: var(--bn-text-on-bone);
+  }
+
+  .product-card__wishlist:hover .product-card__wishlist-icon {
+    color: var(--bn-text-on-ink);
+  }
+
+  .product-card__wishlist.is-active .product-card__wishlist-icon {
+    fill: var(--bn-ink);
+    stroke: var(--bn-ink);
+  }
+
+  @media (hover: none) {
+    .product-card__wishlist {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* --- Season icons: monochrome, moved clear of the family chip ------------ */
+  .product-card__seasons {
+    left: auto;
+    right: var(--bn-space-2xs);
+    bottom: var(--bn-space-2xs);
+    transition: opacity var(--bn-dur-fast) var(--bn-ease);
+  }
+
+  .product-card__season {
+    width: 22px;
+    height: 22px;
+    background: var(--bn-bone);
+    border: 1px solid var(--bn-line-on-bone);
+    border-radius: var(--bn-radius-sm);
+    box-shadow: none;
+  }
+
+  .product-card__season--spring,
+  .product-card__season--summer,
+  .product-card__season--fall,
+  .product-card__season--winter {
+    color: var(--bn-text-on-bone-dim);
+  }
+
+  /* --- Scent family chip + notes panel (markup from snippets/bn-notes) ------ */
+  .product-card .bn-notes--card {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  .product-card .bn-notes__chip {
+    position: absolute;
+    left: var(--bn-space-2xs);
+    bottom: var(--bn-space-2xs);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 12px 6px 9px;
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-label);
+    text-transform: uppercase;
+    color: var(--bn-text-on-bone);
+    border: 1px solid var(--bn-line-on-bone);
+    border-radius: var(--bn-radius-pill);
+    background: var(--bn-bone);
+    background: color-mix(in oklab, var(--bn-family, var(--bn-family-default)) 22%, var(--bn-bone));
+    transition: opacity var(--bn-dur-fast) var(--bn-ease);
+  }
+
+  .product-card .bn-notes__dot {
+    width: 8px;
+    height: 8px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--bn-family, var(--bn-family-default));
+  }
+
+  .product-card .bn-notes__panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+    padding: var(--bn-space-sm);
+    background: var(--bn-ink);
+    color: var(--bn-text-on-ink);
+    transform: translateY(101%);
+    transition: transform var(--bn-dur-panel) var(--bn-ease);
+  }
+
+  .product-card .bn-notes__rows {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 5px 12px;
+    margin: 0;
+  }
+
+  .product-card .bn-notes__rows dt {
+    margin: 0;
+    padding-top: 1px;
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-label);
+    text-transform: uppercase;
+    color: var(--bn-brass);            /* 7.1:1 on ink — the legal metal pairing */
+  }
+
+  .product-card .bn-notes__rows dd {
+    margin: 0;
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-xs);
+    line-height: 1.42;
+    color: var(--bn-text-on-ink-dim);
+  }
+
+  /* Hover reveal on pointer devices only. */
+  @media (hover: hover) and (pointer: fine) {
+    .product-card:hover .bn-notes__panel,
+    .product-card:focus-within .bn-notes__panel {
+      transform: translateY(0);
+    }
+
+    .product-card:hover .bn-notes__chip,
+    .product-card:hover .product-card__seasons {
+      opacity: 0;
+    }
+  }
+
+  /* Tap reveal on touch, driven by the toggle below. */
+  .product-card.is-notes-open .bn-notes__panel {
+    transform: translateY(0);
+  }
+
+  .product-card.is-notes-open .bn-notes__chip,
+  .product-card.is-notes-open .product-card__seasons {
+    opacity: 0;
+  }
+
+  /* --- Touch-only "Notes" toggle ------------------------------------------- */
+  .product-card__notes-toggle {
+    display: none;
+  }
+
+  @media (hover: none) {
+    .product-card__notes-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--bn-space-2xs);
+      width: 100%;
+      padding: var(--bn-space-2xs) var(--bn-space-sm);
+      font-family: var(--bn-font-body);
+      font-size: var(--bn-text-2xs);
+      font-weight: var(--bn-weight-strong);
+      letter-spacing: var(--bn-track-label);
+      text-transform: uppercase;
+      color: var(--bn-text-on-bone-dim);
+      background: var(--bn-bone);
+      border: 0;
+      border-top: 1px solid var(--bn-line-on-bone);
+      border-radius: 0;
+      cursor: pointer;
+    }
+
+    .product-card__notes-toggle svg {
+      width: 13px;
+      height: 13px;
+      flex: none;
+      transition: transform var(--bn-dur-fast) var(--bn-ease);
+    }
+
+    .product-card.is-notes-open .product-card__notes-toggle {
+      color: var(--bn-text-on-bone);
+    }
+
+    .product-card.is-notes-open .product-card__notes-toggle svg {
+      transform: rotate(180deg);
+    }
+  }
+
+  /* --- Content: left-aligned editorial stack ------------------------------- */
+  .product-card__content {
+    text-align: left;
+    padding: var(--bn-space-sm) var(--bn-space-sm) var(--bn-space-xs);
+    min-height: 0;
+  }
+
+  .product-card__number {
+    display: block;
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-label);
+    font-variant-numeric: tabular-nums;
+    color: var(--bn-brass-ink);
+    margin-bottom: var(--bn-space-3xs);
+  }
+
+  .product-card__vendor {
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-label);
+    color: var(--bn-text-on-bone-dim);
+    margin-bottom: var(--bn-space-3xs);
+  }
+
+  /* Title face resolved by the integrator: display grotesque, matching
+     design-sheet.html §04 and assets/component-variables.css. The Instrument
+     Serif italic variant is retired — the accent face stays on heading <em>. */
+  .product-card__title {
+    font-family: var(--bn-font-display);
+    font-variation-settings: 'wdth' 92, 'opsz' 24;
+    font-style: normal;
+    font-weight: 500;
+    font-size: var(--bn-text-lg);
+    line-height: var(--bn-leading-title);
+    letter-spacing: var(--bn-track-title);
+    color: var(--bn-text-on-bone);
+    margin: 0 0 var(--bn-space-2xs);
+    min-height: 2.12em;
+  }
+
+  .product-card__origin {
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    letter-spacing: var(--bn-track-label);
+    color: var(--bn-text-on-bone-dim);
+  }
+
+  /* The tag-derived note line is the fallback only. When bn-notes found real
+     top/heart/base copy the panel carries it and the card stays quiet (§4.7). */
+  .product-card__notes {
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-xs);
+    color: var(--bn-text-on-bone-dim);
+  }
+
+  .product-card[data-has-notes="1"] .product-card__notes {
+    display: none;
+  }
+
+  /* --- Footer -------------------------------------------------------------- */
+  .product-card__footer {
+    align-items: flex-start;
+    gap: 2px;
+    padding-top: var(--bn-space-2xs);
+    border-top: 1px solid var(--bn-line-on-bone);
+  }
+
+  .product-card__pricing {
+    justify-content: flex-start;
+  }
+
+  .product-card__price {
+    font-family: var(--bn-font-display);
+    font-variation-settings: var(--bn-display-vf);
+    font-weight: var(--bn-weight-strong);
+    font-size: var(--bn-text-md);
+    letter-spacing: var(--bn-track-title);
+    font-variant-numeric: tabular-nums;
+    color: var(--bn-text-on-bone);
+  }
+
+  .product-card__plan-label {
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-label);
+    color: var(--bn-text-on-bone-dim);
+  }
+
+  .product-card__rating {
+    justify-content: flex-start;
+    margin-top: var(--bn-space-3xs);
+  }
+
+  .product-card__stars svg {
+    fill: var(--bn-brass-ink);
+    stroke: var(--bn-brass-ink);
+  }
+
+  .product-card__rating-count {
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    color: var(--bn-text-on-bone-dim);
+  }
+
+  /* --- The full-width subscription bar. Verb, hooks and markup unchanged. --- */
+  .product-card__add-btn {
+    padding: var(--bn-space-sm);
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-label);
+    color: var(--bn-text-on-ink);
+    background: var(--bn-ink);
+    border-radius: var(--bn-radius-sm);
+    transition: background var(--bn-dur-fast) var(--bn-ease),
+                color var(--bn-dur-fast) var(--bn-ease);
+  }
+
+  .product-card__add-btn:hover {
+    background: var(--bn-forest);
+  }
+
+  .product-card__add-btn.is-added {
+    background: var(--bn-ok);
+    color: var(--bn-text-on-ink);
+  }
+
+  .product-card__add-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .product-card__sold-out-btn {
+    padding: var(--bn-space-sm);
+    font-family: var(--bn-font-body);
+    font-size: var(--bn-text-2xs);
+    font-weight: var(--bn-weight-strong);
+    letter-spacing: var(--bn-track-label);
+    color: var(--bn-text-on-bone-dim);
+    background: var(--bn-bone-2);
+    border-top: 1px solid var(--bn-line-on-bone);
+  }
+
+  /* --- List view keeps the same language ----------------------------------- */
+  .is-list-view .product-card__content {
+    padding: var(--bn-space-md);
+  }
+
+  .is-list-view .product-card__add-btn,
+  .is-list-view .product-card__sold-out-btn {
+    border-radius: var(--bn-radius-sm);
+  }
+
+  /* --- Reduced motion ------------------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .product-card:hover,
+    .bn-js .product-card[data-reveal].is-revealed:hover {
+      transform: none;
+    }
+
+    .product-card:hover .product-card__image {
+      transform: none;
+    }
+  }
 </style>
 
 <script>
@@ -843,6 +1391,27 @@
       if (wishlist.includes(btn.dataset.wishlistToggle)) {
         btn.classList.add('is-active');
       }
+    });
+  })();
+</script>
+
+<script>
+  /* Facelift Phase A — touch-only notes toggle.
+     Separate from the block above, which is unchanged. Guarded so a page with
+     24 cards registers exactly one listener. Touches nothing in the cart path. */
+  (function () {
+    if (window.__bnNotesToggleBound) return;
+    window.__bnNotesToggleBound = true;
+
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('[data-notes-toggle]') : null;
+      if (!btn) return;
+      e.preventDefault();
+      e.stopPropagation();
+      var card = btn.closest('.product-card');
+      if (!card) return;
+      var open = card.classList.toggle('is-notes-open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
   })();
 </script>

@@ -11,6 +11,7 @@
   "sections": {
     "hero": {
       "type": "hero",
+      "disabled": true,
       "settings": {
         "image": "shopify://shop_images/case-forest-green.png",
         "image_url": "",
@@ -196,6 +197,7 @@
         "ai_gen_block_9faa96e_EXAHBD"
       ],
       "name": "Price Comparison",
+      "disabled": true,
       "settings": {}
     },
     "1775502539958abd4e": {
@@ -515,13 +517,133 @@
     "growth-goal": {
       "type": "growth-goal",
       "settings": {}
+    },
+    "bn-hero": {
+      "type": "bn-hero",
+      "settings": {
+        "eyebrow": "One flat price",
+        "heading_line_1": "One flat price.",
+        "heading_line_2": "Every luxury fragrance.",
+        "accent_line": "Build your signature rotation.",
+        "tagline": "$20 a month, 5 ml at a time. No surcharge on Creed, Tom Ford or Parfums de Marly \u2014 every fragrance is the same price.",
+        "reassurance": "Free shipping \u00b7 Swap anytime \u00b7 Cancel anytime",
+        "show_stamp": true,
+        "stamp_amount": "$20",
+        "stamp_period": "/ month",
+        "stamp_note": "flat",
+        "stamp_ring_text": "BASE NOTE \u00b7 ONE FLAT PRICE \u00b7 NO SURCHARGES \u00b7 ",
+        "button_label": "Find My Scent",
+        "button_link": "/pages/find-your-scent",
+        "secondary_button_label": "View the Scent Vault",
+        "secondary_button_link": "shopify://collections/fragrances",
+        "image": "shopify://shop_images/case-forest-green.png",
+        "image_url": "",
+        "video": "",
+        "image_alt": "Editorial photograph of a Base Note 5 ml fragrance atomizer resting on a dark forest-green case, luxury fragrance subscription",
+        "overlay_opacity": 62,
+        "show_grain": true,
+        "show_scroll_indicator": true,
+        "scroll_label": "Scroll"
+      }
+    },
+    "bn-marquee": {
+      "type": "bn-marquee",
+      "blocks": {
+        "houses": {
+          "type": "row",
+          "settings": {
+            "text": "Creed \u00b7 Tom Ford \u00b7 Parfums de Marly \u00b7 Xerjoff \u00b7 Bond No. 9 \u00b7 Initio \u00b7 Dior \u00b7 YSL \u00b7 Prada \u00b7 Armani",
+            "style": "houses",
+            "speed": 26,
+            "repeat": 2
+          }
+        },
+        "claims": {
+          "type": "row",
+          "settings": {
+            "text": "$20 flat \u00b7 no surcharges \u00b7 cancel anytime",
+            "style": "claims",
+            "speed": 38,
+            "repeat": 4
+          }
+        }
+      },
+      "block_order": [
+        "houses",
+        "claims"
+      ],
+      "settings": {
+        "color_scheme": "ink",
+        "aria_label": "Fragrance houses carried by Base Note"
+      }
+    },
+    "bn-price-table": {
+      "type": "bn-price-table",
+      "blocks": {
+        "row-1": {
+          "type": "row",
+          "settings": {
+            "product": "Creed Aventus 5ml",
+            "competitor": "$45",
+            "price": "$20 / month"
+          }
+        },
+        "row-2": {
+          "type": "row",
+          "settings": {
+            "product": "Parfums de Marly Layton 5ml",
+            "competitor": "$40",
+            "price": "$20 / month"
+          }
+        },
+        "row-3": {
+          "type": "row",
+          "settings": {
+            "product": "Tom Ford Oud Wood 5ml",
+            "competitor": "$32",
+            "price": "$20 / month"
+          }
+        },
+        "row-4": {
+          "type": "row",
+          "settings": {
+            "product": "Bond No. 9 Bleecker St. 5ml",
+            "competitor": "$42",
+            "price": "$20 / month"
+          }
+        }
+      },
+      "block_order": [
+        "row-1",
+        "row-2",
+        "row-3",
+        "row-4"
+      ],
+      "name": "Price Comparison",
+      "settings": {
+        "color_scheme": "bone",
+        "eyebrow": "The anti-surcharge wedge",
+        "title": "No surcharges. Ever.",
+        "subtitle": "Most fragrance subscriptions charge $5\u201315 extra on luxury brands like Creed and Parfums de Marly. Base Note doesn't. Every fragrance is $20 flat.",
+        "column_1_header": "Fragrance",
+        "column_2_header": "Typical sub with luxury surcharge",
+        "column_3_header": "Base Note",
+        "show_checkmark": true,
+        "show_numbers": true,
+        "footnote": "",
+        "button_label": "Browse the catalogue",
+        "button_link": "shopify://collections/fragrances"
+      }
     }
   },
   "order": [
+    "bn-hero",
     "hero",
     "growth-goal",
+    "bn-marquee",
     "17768546331d8577f5",
     "delivery-explainer",
+    "bn-price-table",
     "1775503735ef6a96df",
     "1775502539958abd4e",
     "how-it-works",
