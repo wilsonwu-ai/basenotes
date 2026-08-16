@@ -516,7 +516,8 @@
       "type": "growth-goal",
       "settings": {
         "goal": 60,
-        "fallback_active": 17
+        "fallback_active": 17,
+        "show_bar": true
       }
     }
   },
