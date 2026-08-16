@@ -1,0 +1,55 @@
+{
+  "articles": {
+    "best-fragrance-subscriptions-2026-comparison": {
+      "file": "growth-audit/blog-post-01-best-fragrance-subscriptions-2026.html",
+      "gid": null,
+      "image": null,
+      "is_published": true,
+      "post_no": 1,
+      "published_at": "2026-04-22",
+      "scheduled_for": null,
+      "title": "Best Fragrance Subscriptions of 2026: An Honest Comparison",
+      "url": "https://basenotescent.com/blogs/hub/best-fragrance-subscriptions-2026-comparison"
+    },
+    "fragrance-trends-2026": {
+      "file": null,
+      "gid": null,
+      "image": "(shopify)",
+      "is_published": true,
+      "post_no": null,
+      "published_at": "2026-04-23",
+      "scheduled_for": null,
+      "title": "Fragrance Trends 2026: Six Scent Rotations Worth Trying This Season",
+      "url": "https://basenotescent.com/blogs/hub/fragrance-trends-2026"
+    },
+    "scentbird-alternatives-what-subscribers-switch-to": {
+      "file": "growth-audit/blog-post-02-scentbird-alternatives.html",
+      "gid": null,
+      "image": null,
+      "is_published": true,
+      "post_no": 2,
+      "published_at": "2026-04-22",
+      "scheduled_for": null,
+      "title": "Scentbird Alternatives: What Subscribers Are Switching To and Why",
+      "url": "https://basenotescent.com/blogs/hub/scentbird-alternatives-what-subscribers-switch-to"
+    }
+  },
+  "blog": "hub",
+  "drafts_unpublished": [
+    "growth-audit/blog-post-03",
+    "growth-audit/blog-post-04",
+    "growth-audit/blog-post-05",
+    "growth-audit/blog-post-06",
+    "growth-audit/blog-post-07",
+    "growth-audit/blog-post-08",
+    "growth-audit/blog-post-09",
+    "growth-audit/blog-post-10",
+    "growth-audit/blog-post-11",
+    "growth-audit/blog-post-12",
+    "growth-audit/blog-post-13",
+    "growth-audit/blog-post-14",
+    "growth-audit/blog-post-15",
+    "growth-audit/blog-post-16"
+  ],
+  "updated_at": "2026-08-16T03:59:45+00:00"
+}

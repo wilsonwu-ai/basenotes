@@ -1,0 +1,1735 @@
+[
+ {
+  "handle": "acqua-di-gio-profondo-parfum",
+  "title": "Acqua di Gio Profondo Parfum",
+  "vendor": "Giorgio Armani",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Profondo.webp?v=1772239294",
+  "url": "https://basenotescent.com/products/acqua-di-gio-profondo-parfum",
+  "description": "The icon of modern aquatic sophistication, Acqua di Gi\u00f2 Profondo dives deep into the essence of the sea for a fresh, intense masculine aura. A crisp, aromatic marine masterpiece that opens with invigorating sea notes and green mandarin alongside bergamot, evolves through herbal rosemary, lavender, and cypress with a touch of mastic, and settles into a mysterious woody-mineral depth of patchouli, m",
+  "top_notes": [
+   "Sea Notes",
+   "Green Mandarin",
+   "Bergamot",
+   "Aquozone"
+  ],
+  "heart_notes": [
+   "Rosemary",
+   "Lavender",
+   "Cypress",
+   "Mastic (Lentisque)"
+  ],
+  "base_notes": [
+   "Mineral Notes",
+   "Musk",
+   "Patchouli",
+   "Amber"
+  ],
+  "families": [
+   "clean",
+   "fresh"
+  ],
+  "seasons": [
+   "spring",
+   "summer"
+  ],
+  "events": [
+   "daytime",
+   "office"
+  ],
+  "tags": [
+   "clean",
+   "daytime",
+   "event:daytime",
+   "event:office",
+   "everyday wear",
+   "fresh",
+   "origin:france",
+   "season:spring",
+   "season:summer",
+   "sexy",
+   "warm weather"
+  ]
+ },
+ {
+  "handle": "bond-no-9-bleecker-street",
+  "title": "Bond No. 9 Bleecker Street",
+  "vendor": "Bond No. 9",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Bleecker_Street_f56c2fce-679b-43a6-825e-95e27e885240.jpg?v=1774466835",
+  "url": "https://basenotescent.com/products/bond-no-9-bleecker-street",
+  "description": "Bond No. 9 Bleecker Street captures the vibrant energy of New York's iconic neighborhood. This sophisticated fragrance blends fresh citrus and floral notes with warm undertones, creating a distinctive scent that's both refined and approachable. Perfect for those who appreciate urban elegance and timeless style, this fragrance makes a memorable impression whether worn day or night.\nTop Note: Violet",
+  "top_notes": [
+   "Violet Leaf",
+   "Blueberry",
+   "Cassis",
+   "Thyme"
+  ],
+  "heart_notes": [
+   "Cedar",
+   "Jasmine",
+   "Cinnamon"
+  ],
+  "base_notes": [
+   "Oakmoss",
+   "Suede",
+   "Patchouli",
+   "Amber",
+   "Vanilla",
+   "Caramel"
+  ],
+  "families": [
+   "fruity",
+   "gourmand",
+   "oriental",
+   "vanilla",
+   "woody"
+  ],
+  "seasons": [
+   "spring",
+   "summer"
+  ],
+  "events": [
+   "office"
+  ],
+  "tags": [
+   "event:office",
+   "flowery",
+   "fruity",
+   "gourmand",
+   "oriental",
+   "origin:usa",
+   "season:spring",
+   "season:summer",
+   "urban",
+   "vanilla",
+   "wedding/formal",
+   "woody"
+  ]
+ },
+ {
+  "handle": "bond-no-9-fidi",
+  "title": "Bond No. 9 FiDi",
+  "vendor": "Bond No. 9",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-04-12at8.15.47AM.png?v=1776219133",
+  "url": "https://basenotescent.com/products/bond-no-9-fidi",
+  "description": "Bond No. 9 FiDi captures the essence of New York's Financial District with a sophisticated blend of crisp citrus, warm amber, and subtle woody notes. This elegant fragrance opens with bright bergamot and lemon, transitioning to a refined heart of amber and musk that lingers beautifully on the skin. Perfect for those who appreciate urban sophistication and timeless elegance in a bottle.",
+  "top_notes": [
+   "Black Pepper",
+   "Bergamot",
+   "Mandarin Orange"
+  ],
+  "heart_notes": [
+   "Lotus",
+   "Nutmeg"
+  ],
+  "base_notes": [
+   "Musk",
+   "Cedar",
+   "Vanilla"
+  ],
+  "families": [
+   "floral",
+   "fresh",
+   "powdery",
+   "spicy",
+   "woody"
+  ],
+  "seasons": [
+   "fall",
+   "spring",
+   "summer"
+  ],
+  "events": [
+   "daytime",
+   "office"
+  ],
+  "tags": [
+   "citrusy",
+   "daytime",
+   "event:daytime",
+   "event:office",
+   "everyday wear",
+   "floral",
+   "fresh",
+   "origin:usa",
+   "powdery",
+   "season:fall",
+   "season:spring",
+   "season:summer",
+   "spicy",
+   "urban",
+   "woody"
+  ]
+ },
+ {
+  "handle": "bond-no-9-nomad",
+  "title": "Bond No. 9 Nomad",
+  "vendor": "Bond No. 9",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-04-07at11.27.44AM.png?v=1775622138",
+  "url": "https://basenotescent.com/products/bond-no-9-nomad",
+  "description": "Bond No. 9 Nomad is a sophisticated fragrance that captures the spirit of wanderlust and urban exploration. This captivating scent blends warm spices, woody notes, and subtle florals to create a versatile composition that transitions seamlessly from day to evening. Perfect for those who embrace adventure and appreciate refined, distinctive fragrances. A modern classic for the contemporary traveler",
+  "top_notes": [
+   "Pear",
+   "Quince",
+   "Blackcurrant"
+  ],
+  "heart_notes": [
+   "Rose",
+   "Oud Accord",
+   "Violet Leaves",
+   "Orris"
+  ],
+  "base_notes": [
+   "Amber",
+   "Vanilla",
+   "Sandalwood"
+  ],
+  "families": [
+   "aromatic",
+   "fruity",
+   "powdery",
+   "spicy",
+   "vanilla",
+   "woody"
+  ],
+  "seasons": [
+   "fall",
+   "winter"
+  ],
+  "events": [
+   "date-night",
+   "evening-out"
+  ],
+  "tags": [
+   "aromatic",
+   "date night",
+   "evening",
+   "event:date-night",
+   "event:evening-out",
+   "fruity",
+   "origin:usa",
+   "Oud",
+   "powdery",
+   "season:fall",
+   "season:winter",
+   "spicy",
+   "vanilla",
+   "wedding/formal",
+   "woody"
+  ]
+ },
+ {
+  "handle": "bond-no-9-the-scent-of-peace",
+  "title": "Bond No. 9 The Scent of Peace for Him",
+  "vendor": "Bond No. 9",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-02-24at7.15.33PM.png?v=1771982318",
+  "url": "https://basenotescent.com/products/bond-no-9-the-scent-of-peace",
+  "description": "Bond No. 9 The Scent of Peace is a refined fragrance designed to evoke calm and tranquility. This luxurious scent features a carefully balanced blend of notes that work together to create a peaceful, elegant aroma. Versatile enough for daily wear or special occasions, it delivers a lasting impression throughout the day. Experience the quality and artistry Bond No. 9 is celebrated for.\nTop Note:\u00a0Pi",
+  "top_notes": [
+   "Pineapple",
+   "Juniper Berries",
+   "Bergamot"
+  ],
+  "heart_notes": [
+   "Currant buds"
+  ],
+  "base_notes": [
+   "Cedar",
+   "Vetiver"
+  ],
+  "families": [
+   "clean",
+   "fresh",
+   "fruity",
+   "sweet"
+  ],
+  "seasons": [
+   "spring",
+   "summer"
+  ],
+  "events": [
+   "daytime",
+   "office"
+  ],
+  "tags": [
+   "clean",
+   "daytime",
+   "event:daytime",
+   "event:office",
+   "everyday wear",
+   "fresh",
+   "fruity",
+   "masculine",
+   "origin:usa",
+   "performance",
+   "season:spring",
+   "season:summer",
+   "sweet",
+   "warm weather"
+  ]
+ },
+ {
+  "handle": "bvlgari-le-gemme-orom",
+  "title": "Bvlgari Le Gemme Orom",
+  "vendor": "Bvlgari",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-08-05at7.30.40PM.png?v=1786021237",
+  "url": "https://basenotescent.com/products/bvlgari-le-gemme-orom",
+  "description": "Bvlgari built the Le Gemme collection on a strange premise for a fragrance house: treat scent like high jewelry. Each release traces a historic \"gem route,\" the old trade paths that once carried precious stones across continents, and gives that stone a scent instead of a setting. Orom is built around labradorite, a stone found in Madagascar that looks almost dull in flat light and then, tilted, fl",
+  "top_notes": [
+   "Bourbon Vanilla"
+  ],
+  "heart_notes": [
+   "Siam Benzoin"
+  ],
+  "base_notes": [
+   "Agarwood (Oud)"
+  ],
+  "families": [],
+  "seasons": [
+   "fall",
+   "winter"
+  ],
+  "events": [
+   "date-night",
+   "evening-out"
+  ],
+  "tags": [
+   "5ml",
+   "Amber",
+   "Benzoin",
+   "boozy",
+   "Bvlgari",
+   "cool weather",
+   "date night",
+   "Decant",
+   "evening",
+   "event:date-night",
+   "event:evening-out",
+   "Le Gemme",
+   "luxurious",
+   "Luxury",
+   "Niche",
+   "Oriental",
+   "origin:italy",
+   "Oud",
+   "season:fall",
+   "season:winter",
+   "Unisex",
+   "Vanilla",
+   "wedding/formal",
+   "Woody"
+  ]
+ },
+ {
+  "handle": "creed-aventus",
+  "title": "Creed Aventus",
+  "vendor": "Creed",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/aventus-100ml-bottle_3413e5f4-3eee-40b3-8451-2546a370ec5b.jpg?v=1771981378",
+  "url": "https://basenotescent.com/products/creed-aventus",
+  "description": "The legendary king of fragrances that has defined masculine sophistication for over a decade. A fruity, smoky masterpiece opening with blackcurrant and Italian bergamot, evolving into birch and Moroccan jasmine, settling into musk and oakmoss.",
+  "top_notes": [
+   "Blackcurrant",
+   "Italian Bergamot",
+   "Apple",
+   "Pineapple"
+  ],
+  "heart_notes": [
+   "Birch",
+   "Moroccan Jasmine",
+   "Patchouli"
+  ],
+  "base_notes": [
+   "Musk",
+   "Oakmoss",
+   "Ambergris",
+   "Vanilla"
+  ],
+  "families": [
+   "fresh",
+   "fruity",
+   "smoky",
+   "sweet",
+   "woody"
+  ],
+  "seasons": [
+   "fall",
+   "spring",
+   "summer",
+   "winter"
+  ],
+  "events": [
+   "date-night",
+   "evening-out"
+  ],
+  "tags": [
+   "date night",
+   "event:date-night",
+   "event:evening-out",
+   "everyday wear",
+   "fresh",
+   "fruity",
+   "origin:france",
+   "season:fall",
+   "season:spring",
+   "season:summer",
+   "season:winter",
+   "signature",
+   "smoky",
+   "sweet",
+   "tropical",
+   "wedding/formal",
+   "woody"
+  ]
+ },
+ {
+  "handle": "creed-green-irish-tweed",
+  "title": "Creed Green Irish Tweed",
+  "vendor": "Creed",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/1500x1500_GIT_0002_Layer_1_1.jpg?v=1771981341",
+  "url": "https://basenotescent.com/products/creed-green-irish-tweed",
+  "description": "A timeless classic epitomizing fresh elegance and sophisticated refinement. Opening with French verbena and Florentine iris, revealing a heart of violet leaves, settling into Mysore sandalwood and ambergris. The scent of rolling green hills.",
+  "top_notes": [
+   "French Verbena",
+   "Lemon Verbena"
+  ],
+  "heart_notes": [
+   "Florentine Iris",
+   "Violet Leaves"
+  ],
+  "base_notes": [
+   "Mysore Sandalwood",
+   "Ambergris"
+  ],
+  "families": [
+   "amber",
+   "fresh",
+   "green"
+  ],
+  "seasons": [
+   "spring",
+   "summer"
+  ],
+  "events": [
+   "daytime",
+   "office"
+  ],
+  "tags": [
+   "amber",
+   "classic",
+   "classy",
+   "daytime",
+   "elegant",
+   "event:daytime",
+   "event:office",
+   "everyday wear",
+   "fresh",
+   "green",
+   "masculine",
+   "origin:france",
+   "season:spring",
+   "season:summer",
+   "Spring scent"
+  ]
+ },
+ {
+  "handle": "creed-santal",
+  "title": "Creed Santal",
+  "vendor": "Creed",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-03-29at8.43.03AM.png?v=1774838289",
+  "url": "https://basenotescent.com/products/creed-santal",
+  "description": "Creed Santal was born from a vision to celebrate sandalwood, one of perfumery's most revered ingredients. Drawing from centuries of fragrance tradition, this composition honors the luxury of Mysore sandalwood through masterful blending and exceptional raw materials. The result bridges heritage and modernity\u2014a scent for those who understand that true elegance is built on quality, intention, and tim",
+  "top_notes": [
+   "Juniper Berries",
+   "Ginger",
+   "Coriander",
+   "Rosemary",
+   "Bergamot",
+   "Cinnamon."
+  ],
+  "heart_notes": [
+   "Sandalwood (Mysore)",
+   "Lavender",
+   "Geranium",
+   "Orange Blossom."
+  ],
+  "base_notes": [
+   "Tonka Bean",
+   "Vanilla",
+   "White Musk",
+   "Cedarwood",
+   "Benzoin."
+  ],
+  "families": [
+   "spicy",
+   "woody"
+  ],
+  "seasons": [
+   "fall",
+   "spring",
+   "winter"
+  ],
+  "events": [
+   "daytime"
+  ],
+  "tags": [
+   "citrusy",
+   "event:daytime",
+   "everyday wear",
+   "origin:france",
+   "season:fall",
+   "season:spring",
+   "season:winter",
+   "spicy",
+   "woody"
+  ]
+ },
+ {
+  "handle": "creed-silver-mountain-water",
+  "title": "Creed Silver Mountain Water",
+  "vendor": "Creed",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-04-07at11.01.05AM.png?v=1775578837",
+  "url": "https://basenotescent.com/products/creed-silver-mountain-water",
+  "description": "In the heart of untouched alpine peaks, where crystalline streams flow through ancient valleys and morning mist clings to towering summits, Creed Silver Mountain Water was born. This fragrance captures a moment of pure discovery\u2014the invigorating rush of crisp mountain air meeting pristine waters, a sensory journey to those rare, elevated places where nature reveals its most refined essence. It's a",
+  "top_notes": [
+   "Bergamot",
+   "Mandarin Orange"
+  ],
+  "heart_notes": [
+   "Green Tea",
+   "Black Currant"
+  ],
+  "base_notes": [
+   "Musk",
+   "Petitgrain",
+   "Sandalwood",
+   "Galbanum"
+  ],
+  "families": [
+   "fruity",
+   "green"
+  ],
+  "seasons": [
+   "spring",
+   "summer"
+  ],
+  "events": [
+   "daytime"
+  ],
+  "tags": [
+   "citrusy",
+   "daytime",
+   "event:daytime",
+   "fruity",
+   "green",
+   "origin:france",
+   "season:spring",
+   "season:summer",
+   "warm weather"
+  ]
+ },
+ {
+  "handle": "dior-sauvage",
+  "title": "Dior Sauvage",
+  "vendor": "Dior",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-04-12at7.56.12AM_a3627620-4c09-43f3-ba46-2c9ffd04cf80.png?v=1775999151",
+  "url": "https://basenotescent.com/products/dior-sauvage",
+  "description": "Dior Sauvage is a timeless men's fragrance that captures the essence of understated elegance and raw masculinity. Built on a foundation of ambroxan and spicy ambrette seed, this opens with bright citrus notes of bergamot and pepper. Perfect for the modern man who appreciates refined simplicity, Sauvage transitions seamlessly from day to evening wear. Its clean, versatile profile makes it an essent",
+  "top_notes": [
+   "Bergamot"
+  ],
+  "heart_notes": [
+   "Sichuan Pepper",
+   "Lavender",
+   "Star Anise",
+   "Nutmeg"
+  ],
+  "base_notes": [
+   "Ambroxan",
+   "Vanilla"
+  ],
+  "families": [
+   "amber",
+   "aromatic",
+   "spicy",
+   "vanilla",
+   "woody"
+  ],
+  "seasons": [
+   "fall",
+   "spring",
+   "winter"
+  ],
+  "events": [
+   "evening-out"
+  ],
+  "tags": [
+   "amber",
+   "aromatic",
+   "citrusy",
+   "evening",
+   "event:evening-out",
+   "everyday wear",
+   "origin:france",
+   "season:fall",
+   "season:spring",
+   "season:winter",
+   "spicy",
+   "vanilla",
+   "woody"
+  ]
+ },
+ {
+  "handle": "dolce-gabbana-light-blue",
+  "title": "Dolce & Gabbana Light Blue",
+  "vendor": "Dolce and Gabbana",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-08-06at8.22.13AM.png?v=1786026546",
+  "url": "https://basenotescent.com/products/dolce-gabbana-light-blue",
+  "description": "The Light Blue story starts in Sicily, and specifically with the fact that Domenico Dolce and Stefano Gabbana's early collections didn't work. It wasn't until they stopped chasing Milan and turned back to Dolce's own Sicilian roots \u2014 the coastline, the heat, the specific blue of that sea \u2014 that the brand found its voice. The original women's Light Blue took perfumer Olivier Cresp over two years to",
+  "top_notes": [
+   "Grapefruit",
+   "Bergamot",
+   "Sicilian Mandarin",
+   "Juniper"
+  ],
+  "heart_notes": [
+   "Pepper",
+   "Rosemary",
+   "Brazilian Rosewood"
+  ],
+  "base_notes": [
+   "Musk",
+   "Incense",
+   "Oakmoss"
+  ],
+  "families": [
+   "aromatic",
+   "clean",
+   "fresh",
+   "fruity"
+  ],
+  "seasons": [
+   "spring",
+   "summer"
+  ],
+  "events": [
+   "daytime"
+  ],
+  "tags": [
+   "aromatic",
+   "citrusy",
+   "clean",
+   "daytime",
+   "event:daytime",
+   "fresh",
+   "fruity",
+   "origin:italy",
+   "season:spring",
+   "season:summer",
+   "tropical",
+   "warm weather"
+  ]
+ },
+ {
+  "handle": "dolce-gabbana-the-one",
+  "title": "Dolce & Gabbana The One",
+  "vendor": "Dolce and Gabbana",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-08-06at8.22.56AM.png?v=1786419314",
+  "url": "https://basenotescent.com/products/dolce-gabbana-the-one",
+  "description": "Stefano Gabbana had one instruction when The One launched in 2008: make something that wouldn't feel dated in ten years, in a category that usually chases whatever's trending. It's the least experimental brief a perfumer can get, and also the hardest to pull off. The campaign that followed \u2014 years of Matthew McConaughey, all Southern charm and unhurried confidence \u2014 became almost inseparable from ",
+  "top_notes": [
+   "Grapefruit",
+   "Coriander",
+   "Basil"
+  ],
+  "heart_notes": [
+   "Cardamom",
+   "Ginger",
+   "Orange Blossom"
+  ],
+  "base_notes": [
+   "Amber",
+   "Tobacco",
+   "Cedar"
+  ],
+  "families": [
+   "amber",
+   "aromatic",
+   "woody"
+  ],
+  "seasons": [
+   "fall",
+   "winter"
+  ],
+  "events": [
+   "date-night",
+   "evening-out",
+   "office"
+  ],
+  "tags": [
+   "amber",
+   "aromatic",
+   "cool weather",
+   "date night",
+   "evening",
+   "event:date-night",
+   "event:evening-out",
+   "event:office",
+   "origin:italy",
+   "season:fall",
+   "season:winter",
+   "woody"
+  ]
+ },
+ {
+  "handle": "emporio-armani-stronger-with-you-intensely",
+  "title": "Emporio Armani Stronger With You Intensely",
+  "vendor": "Emporio Armani",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-02-27at7.03.12PM.png?v=1772240755",
+  "url": "https://basenotescent.com/products/emporio-armani-stronger-with-you-intensely",
+  "description": "Emporio Armani Stronger With You Intensely is a bold fragrance that captures raw masculinity and confidence. This intense eau de parfum blends spicy and woody notes to create a powerful signature scent. Perfect for the man who commands attention, it delivers lasting depth and sophistication throughout the day. An ideal choice for those seeking a fragrance with character and presence.\nTop Note: Jun",
+  "top_notes": [
+   "Juniper",
+   "Pink Pepper",
+   "Violet"
+  ],
+  "heart_notes": [
+   "Toffee",
+   "Cinnamon",
+   "Lavender",
+   "Sage"
+  ],
+  "base_notes": [
+   "Vanilla",
+   "Tonka Bean",
+   "Amber",
+   "Suede"
+  ],
+  "families": [
+   "gourmand",
+   "spicy",
+   "sweet",
+   "vanilla"
+  ],
+  "seasons": [
+   "fall",
+   "winter"
+  ],
+  "events": [
+   "date-night",
+   "evening-out"
+  ],
+  "tags": [
+   "boozy",
+   "cool weather",
+   "date night",
+   "event:date-night",
+   "event:evening-out",
+   "gourmand",
+   "origin:france",
+   "season:fall",
+   "season:winter",
+   "sexy",
+   "spicy",
+   "sweet",
+   "vanilla"
+  ]
+ },
+ {
+  "handle": "givenchy-gentleman",
+  "title": "Givenchy Gentleman",
+  "vendor": "Givenchy",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-08-06at8.25.53AM_891fb03a-6f31-40c8-9389-23fbca67cb22.png?v=1786070310",
+  "url": "https://basenotescent.com/products/givenchy-gentleman",
+  "description": "Gentleman started as a man, not a scent. In 1969, Hubert de Givenchy \u2014 tall, precise, obsessive about elegance \u2014 named his first menswear line after himself, calling it simply \"Gentleman Givenchy.\" The fragrance followed in 1974, built to capture whatever it was about him that made a room notice: quiet, not loud, but unmistakable. Decades later, the modern version keeps that same instinct but shar",
+  "top_notes": [
+   "Pepper Essence",
+   "Lavender"
+  ],
+  "heart_notes": [
+   "Orris (Iris)",
+   "Tolu Balm"
+  ],
+  "base_notes": [
+   "Patchouli",
+   "Black Vanilla"
+  ],
+  "families": [
+   "floral",
+   "powdery",
+   "spicy",
+   "vanilla",
+   "woody"
+  ],
+  "seasons": [
+   "fall",
+   "winter"
+  ],
+  "events": [
+   "date-night",
+   "evening-out"
+  ],
+  "tags": [
+   "classy",
+   "cool weather",
+   "date night",
+   "evening",
+   "event:date-night",
+   "event:evening-out",
+   "floral",
+   "origin:france",
+   "powdery",
+   "season:fall",
+   "season:winter",
+   "spicy",
+   "vanilla",
+   "woody"
+  ]
+ },
+ {
+  "handle": "initio-side-effect",
+  "title": "Initio Side Effect",
+  "vendor": "Initio",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-08-06at8.29.35AM.png?v=1786419499",
+  "url": "https://basenotescent.com/products/initio-side-effect",
+  "description": "Initio takes its name from Latin, where it means both \"origin\" and \"initiation\" \u2014 a deliberate double meaning for a house that built its whole identity around Patrick S\u00fcskind's novel Perfume, the story of a man who could smell what other people couldn't and used it as a form of control. Initio's founders lean into that: scent not as accessory but as a kind of power you wield. Side Effect, part of ",
+  "top_notes": [
+   "Rum",
+   "Cinnamon"
+  ],
+  "heart_notes": [
+   "Tobacco",
+   "Saffron"
+  ],
+  "base_notes": [
+   "Sandalwood",
+   "Hedione"
+  ],
+  "families": [
+   "oriental",
+   "smoky",
+   "spicy",
+   "woody"
+  ],
+  "seasons": [
+   "fall",
+   "winter"
+  ],
+  "events": [
+   "date-night",
+   "evening-out"
+  ],
+  "tags": [
+   "boozy",
+   "cool weather",
+   "date night",
+   "evening",
+   "event:date-night",
+   "event:evening-out",
+   "oriental",
+   "origin:france",
+   "season:fall",
+   "season:winter",
+   "smoky",
+   "spicy",
+   "unisex",
+   "woody"
+  ]
+ },
+ {
+  "handle": "mont-blanc-legend-eau-de-parfum",
+  "title": "Mont Blanc Legend Eau De Parfum",
+  "vendor": "Mont Blanc",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/social.62583.jpg?v=1772239116",
+  "url": "https://basenotescent.com/products/mont-blanc-legend-eau-de-parfum",
+  "description": "Mont Blanc Legend Eau de Parfum captures timeless sophistication in a bottle. This iconic fragrance blends aromatic depth with refined elegance, creating a signature scent that transitions beautifully throughout the day. Perfect for the modern man who appreciates classic luxury with contemporary appeal.\nTop Note:\u00a0Bergamot, Grapefruit, Lavender\u00a0\nHeart Note:\u00a0Amber, Cedarwood, Tonka Bean\nBase Note:\u00a0S",
+  "top_notes": [
+   "Bergamot",
+   "Grapefruit",
+   "Lavender"
+  ],
+  "heart_notes": [
+   "Amber",
+   "Cedarwood",
+   "Tonka Bean"
+  ],
+  "base_notes": [
+   "Sandalwood",
+   "Musk",
+   "Vetiver"
+  ],
+  "families": [
+   "aromatic",
+   "clean",
+   "fruity",
+   "sweet"
+  ],
+  "seasons": [
+   "fall",
+   "spring",
+   "summer",
+   "winter"
+  ],
+  "events": [
+   "daytime",
+   "office"
+  ],
+  "tags": [
+   "aromatic",
+   "classy",
+   "clean",
+   "event:daytime",
+   "event:office",
+   "everyday wear",
+   "fruity",
+   "masculine",
+   "origin:france",
+   "season:fall",
+   "season:spring",
+   "season:summer",
+   "season:winter",
+   "sweet",
+   "woodsy"
+  ]
+ },
+ {
+  "handle": "pdm-althair",
+  "title": "Parfums de Marly Althair",
+  "vendor": "Parfums de Marly",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/ALTHAIR-PERFUME-75-PACK1-1X1_CENTERED_8e536321-9220-4ece-91fd-de6b13f6896d.png?v=1769043066",
+  "url": "https://basenotescent.com/products/pdm-althair",
+  "description": "A gourmand masterpiece named after one of the brightest stars in the sky. Opening with tropical passionfruit and bergamot, developing into praline and heliotrope, settling into vanilla, tonka bean, and white musk. Sweet sophistication perfected.",
+  "top_notes": [
+   "Passionfruit",
+   "Bergamot"
+  ],
+  "heart_notes": [
+   "Praline",
+   "Heliotrope"
+  ],
+  "base_notes": [
+   "Vanilla",
+   "Tonka Bean",
+   "White Musk"
+  ],
+  "families": [
+   "gourmand",
+   "sweet",
+   "vanilla"
+  ],
+  "seasons": [
+   "fall",
+   "winter"
+  ],
+  "events": [
+   "date-night",
+   "evening-out"
+  ],
+  "tags": [
+   "citrusy",
+   "evening",
+   "event:date-night",
+   "event:evening-out",
+   "gourmand",
+   "luxurious",
+   "masculine",
+   "origin:france",
+   "season:fall",
+   "season:winter",
+   "sweet",
+   "vanilla",
+   "wedding/formal"
+  ]
+ },
+ {
+  "handle": "parfums-de-marly-haltane",
+  "title": "Parfums de Marly Haltane",
+  "vendor": "Parfums de Marly",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-08-06at8.21.03AM.png?v=1786419408",
+  "url": "https://basenotescent.com/products/parfums-de-marly-haltane",
+  "description": "Every Parfums de Marly fragrance takes its name from a horse bred for nobility, a nod to Louis XV's court and his passion for the hunt and the racetrack. Haltane carries that same restless energy \u2014 the name itself was chosen not for meaning but for mood, something between discipline and wildness, like a horse held just before it bolts. The scent follows that same arc: a cold, sharp opening that gi",
+  "top_notes": [
+   "Bergamot",
+   "Pink Peppercorn"
+  ],
+  "heart_notes": [
+   "Saffron",
+   "Praline",
+   "Lavender",
+   "Clary Sage"
+  ],
+  "base_notes": [
+   "Oud",
+   "Patchouli",
+   "Vetiver",
+   "Leather"
+  ],
+  "families": [
+   "gourmand",
+   "leather",
+   "oriental",
+   "smoky",
+   "spicy",
+   "woody"
+  ],
+  "seasons": [
+   "fall",
+   "winter"
+  ],
+  "events": [
+   "date-night",
+   "evening-out"
+  ],
+  "tags": [
+   "cool weather",
+   "date night",
+   "evening",
+   "event:date-night",
+   "event:evening-out",
+   "gourmand",
+   "leather",
+   "oriental",
+   "origin:france",
+   "season:fall",
+   "season:winter",
+   "smoky",
+   "spicy",
+   "wedding/formal",
+   "woody"
+  ]
+ },
+ {
+  "handle": "pdm-layton",
+  "title": "Parfums de Marly Layton",
+  "vendor": "Parfums de Marly",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/LAYTON-PERFUME-75-PACK1-1X1_CENTERED_1329b06a-d102-4594-87b8-26f2a32b99ce.png?v=1769043062",
+  "url": "https://basenotescent.com/products/pdm-layton",
+  "description": "A refined and opulent fragrance bridging classic and modern perfumery. Opening with crisp apple and lavender, moving into geranium and violet, before settling into an addictive base of vanilla, cardamom, and sandalwood. Pure elegant sophistication.",
+  "top_notes": [
+   "Apple",
+   "Lavender",
+   "Bergamot"
+  ],
+  "heart_notes": [
+   "Jasmine",
+   "Violet",
+   "Geranium"
+  ],
+  "base_notes": [
+   "Vanilla",
+   "Cardamom",
+   "Sandalwood",
+   "Pepper",
+   "Guaiac Wood"
+  ],
+  "families": [
+   "oriental",
+   "spicy",
+   "vanilla"
+  ],
+  "seasons": [
+   "fall",
+   "winter"
+  ],
+  "events": [
+   "date-night",
+   "evening-out"
+  ],
+  "tags": [
+   "elegant",
+   "event:date-night",
+   "event:evening-out",
+   "luxurious",
+   "masculine",
+   "oriental",
+   "origin:france",
+   "popular",
+   "season:fall",
+   "season:winter",
+   "spicy",
+   "vanilla",
+   "wedding/formal"
+  ]
+ },
+ {
+  "handle": "pdm-pegasus",
+  "title": "Parfums de Marly Pegasus",
+  "vendor": "Parfums de Marly",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/PEGASUS-PERFUME-75-PACK1-1X1_CENTERED_54e9798a-d4d6-4527-988c-d0927f891047.png?v=1772238998",
+  "url": "https://basenotescent.com/products/pdm-pegasus",
+  "description": "A majestic fragrance inspired by the mythical winged horse, noble and utterly captivating. Opening with bitter almond and bergamot, unfolding into lavender and jasmine, landing on a powerful base of vanilla, sandalwood, and amber.",
+  "top_notes": [
+   "Bitter Almond",
+   "Bergamot",
+   "Heliotrope"
+  ],
+  "heart_notes": [
+   "Lavender",
+   "Jasmine"
+  ],
+  "base_notes": [
+   "Vanilla",
+   "Sandalwood",
+   "Amber",
+   "Guaiac Wood"
+  ],
+  "families": [
+   "floral",
+   "gourmand",
+   "vanilla",
+   "woody"
+  ],
+  "seasons": [
+   "fall",
+   "winter"
+  ],
+  "events": [
+   "date-night"
+  ],
+  "tags": [
+   "almond",
+   "evening",
+   "event:date-night",
+   "floral",
+   "gourmand",
+   "masculine",
+   "origin:france",
+   "season:fall",
+   "season:winter",
+   "signature",
+   "unisex",
+   "vanilla",
+   "wedding/formal",
+   "woody"
+  ]
+ },
+ {
+  "handle": "pdm-perseus",
+  "title": "Parfums de Marly Perseus",
+  "vendor": "Parfums de Marly",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/PERSEUS-PERFUME-75-PACK1-1X1_CENTERED_7eca8202-5df3-4379-8a88-fdcaac627b74.png?v=1769043064",
+  "url": "https://basenotescent.com/products/pdm-perseus",
+  "description": "Named after the heroic Greek demigod, Perseus is a fresh and invigorating masculine scent. Opening with crisp grapefruit and bergamot, flowing into lavender and geranium, settling into musk, amber, and woody notes. Modern masculinity refined.",
+  "top_notes": [
+   "Grapefruit",
+   "Bergamot",
+   "Green Apple"
+  ],
+  "heart_notes": [
+   "Lavender",
+   "Geranium",
+   "Violet Leaf"
+  ],
+  "base_notes": [
+   "Musk",
+   "Amber",
+   "Woody Notes"
+  ],
+  "families": [
+   "aromatic",
+   "clean",
+   "fresh",
+   "woody"
+  ],
+  "seasons": [
+   "spring",
+   "summer"
+  ],
+  "events": [
+   "daytime",
+   "office"
+  ],
+  "tags": [
+   "aromatic",
+   "citrusy",
+   "clean",
+   "daytime",
+   "event:daytime",
+   "event:office",
+   "everyday wear",
+   "fresh",
+   "masculine",
+   "origin:france",
+   "season:spring",
+   "season:summer",
+   "warm weather",
+   "woody"
+  ]
+ },
+ {
+  "handle": "prada-paradigme",
+  "title": "Prada Paradigme",
+  "vendor": "Prada",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-08-06at8.27.41AM.png?v=1786070736",
+  "url": "https://basenotescent.com/products/prada-paradigme",
+  "description": "Every fragrance pyramid works the same way: light notes on top, heavy ones at the bottom, evaporating in that order. Paradigme's perfumers \u2014 Marie Salamagne, Bruno Jovanovic, and Nicolas Bonneville \u2014 decided to build it backward on purpose, tracing the structure from the base up. It's a nod to the Prada triangle, the brand's own logo turned into a philosophy: what if the usual order isn't the only",
+  "top_notes": [
+   "Calabrian Bergamot",
+   "Airy Musks"
+  ],
+  "heart_notes": [
+   "Green Bourbon Geranium",
+   "Rosy Facets"
+  ],
+  "base_notes": [
+   "Peru Balm",
+   "Benzoin",
+   "Guaiac Wood"
+  ],
+  "families": [
+   "floral",
+   "woody"
+  ],
+  "seasons": [
+   "fall",
+   "spring",
+   "winter"
+  ],
+  "events": [
+   "daytime",
+   "office"
+  ],
+  "tags": [
+   "daytime",
+   "event:daytime",
+   "event:office",
+   "everyday wear",
+   "floral",
+   "origin:italy",
+   "season:fall",
+   "season:spring",
+   "season:winter",
+   "woody"
+  ]
+ },
+ {
+  "handle": "paco-rabanne-mesh-metal",
+  "title": "Rabanne Mesh Metal",
+  "vendor": "Rabanne",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/social.95693.jpg?v=1772238911",
+  "url": "https://basenotescent.com/products/paco-rabanne-mesh-metal",
+  "description": "Rabanne Mesh Metal is an iconic fragrance that captures the essence of modern luxury. This distinctive scent blends metallic and mineral notes with warm undertones, creating a bold and contemporary aroma. Perfect for those who appreciate avant-garde design and sophisticated elegance, Mesh Metal delivers a memorable olfactory experience that transitions beautifully throughout the day.\nTop Note: Lim",
+  "top_notes": [
+   "Lime",
+   "Petitgrain Bigarade"
+  ],
+  "heart_notes": [
+   "Orange Blossom"
+  ],
+  "base_notes": [
+   "Ambergris"
+  ],
+  "families": [
+   "clean"
+  ],
+  "seasons": [
+   "spring",
+   "summer"
+  ],
+  "events": [
+   "daytime",
+   "office"
+  ],
+  "tags": [
+   "citrusy",
+   "classy",
+   "clean",
+   "event:daytime",
+   "event:office",
+   "origin:spain",
+   "season:spring",
+   "season:summer"
+  ]
+ },
+ {
+  "handle": "tom-ford-ombre-leather",
+  "title": "Tom Ford Oud Wood",
+  "vendor": "Tom Ford",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-02-23at8.20.05PM.png?v=1771900713",
+  "url": "https://basenotescent.com/products/tom-ford-ombre-leather",
+  "description": "Tom Ford Oud Wood is a luxurious oriental fragrance built on rare oud wood, cardamom, and spiced notes. The composition unfolds through a heart of oud and amber, finishing with sandalwood, vetiver, and vanilla. Perfect for those seeking a bold, complex woody fragrance with lasting presence and sophistication.",
+  "top_notes": [
+   "Agarwood (Oud)",
+   "Brazilian Rosewood",
+   "Sandalwood",
+   "Cardamom",
+   "Vanilla",
+   "Sichuan Pepper",
+   "Vetiver",
+   "Tonka Bean",
+   "Amber"
+  ],
+  "heart_notes": [
+   "Oud",
+   "Sandalwood",
+   "Vetiver"
+  ],
+  "base_notes": [
+   "Amber",
+   "Tonka bean",
+   "Vanilla"
+  ],
+  "families": [
+   "leather",
+   "oriental",
+   "woody"
+  ],
+  "seasons": [
+   "fall",
+   "winter"
+  ],
+  "events": [
+   "date-night",
+   "evening-out"
+  ],
+  "tags": [
+   "bold",
+   "cool weather",
+   "date night",
+   "evening",
+   "event:date-night",
+   "event:evening-out",
+   "leather",
+   "oriental",
+   "origin:usa",
+   "Oud",
+   "season:fall",
+   "season:winter",
+   "wedding/formal",
+   "woody"
+  ]
+ },
+ {
+  "handle": "valentino-born-in-roma-intense",
+  "title": "Valentino Born in Roma Intense",
+  "vendor": "Valentino",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-08-06at9.29.16PM.png?v=1786070176",
+  "url": "https://basenotescent.com/products/valentino-born-in-roma-intense",
+  "description": "The Born in Roma bottle was designed to tell time without a clock \u2014 it fades from black at the base to pink at the shoulder, a gradient meant to mimic dusk settling over the city, the exact moment a Roman evening tips over into night. The Intense version pushes that story further into the dark, less the party itself than the walk home through empty streets after. Rome at its most romantic isn't al",
+  "top_notes": [
+   "Vanilla Bourbon"
+  ],
+  "heart_notes": [
+   "Lavender"
+  ],
+  "base_notes": [
+   "Smoked Vetiver"
+  ],
+  "families": [
+   "amber",
+   "smoky",
+   "vanilla"
+  ],
+  "seasons": [
+   "fall",
+   "spring",
+   "winter"
+  ],
+  "events": [
+   "date-night",
+   "evening-out"
+  ],
+  "tags": [
+   "amber",
+   "bold",
+   "boozy",
+   "date night",
+   "evening",
+   "event:date-night",
+   "event:evening-out",
+   "origin:italy",
+   "season:fall",
+   "season:spring",
+   "season:winter",
+   "smoky",
+   "vanilla"
+  ]
+ },
+ {
+  "handle": "versace-eros",
+  "title": "Versace Eros",
+  "vendor": "Versace",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-08-06at8.26.44AM.png?v=1786069518",
+  "url": "https://basenotescent.com/products/versace-eros",
+  "description": "Gianni Versace grew up steeped in Greek mythology, and years after his death, Donatella built the house's biggest men's launch in his memory around exactly that. Eros \u2014 named for the Greek god of desire, son of Aphrodite \u2014 carries Medusa's head molded into the cap, the Greek key pattern etched into the glass, and a blue tuned specifically to the color of the Mediterranean, all deliberate callbacks",
+  "top_notes": [
+   "Mint",
+   "Green Apple",
+   "Lemon"
+  ],
+  "heart_notes": [
+   "Tonka Bean",
+   "Ambroxan",
+   "Geranium"
+  ],
+  "base_notes": [
+   "Madagascar Vanilla",
+   "Cedar",
+   "Vetiver",
+   "Oakmoss"
+  ],
+  "families": [
+   "aromatic"
+  ],
+  "seasons": [
+   "fall",
+   "spring",
+   "summer",
+   "winter"
+  ],
+  "events": [
+   "date-night",
+   "daytime",
+   "evening-out",
+   "office"
+  ],
+  "tags": [
+   "aromatic",
+   "date night",
+   "daytime",
+   "event:date-night",
+   "event:daytime",
+   "event:evening-out",
+   "event:office",
+   "everyday wear",
+   "origin:italy",
+   "season:fall",
+   "season:spring",
+   "season:summer",
+   "season:winter",
+   "woodsy"
+  ]
+ },
+ {
+  "handle": "viktor-rolf-spicebomb-extreme",
+  "title": "Viktor & Rolf Spicebomb Extreme",
+  "vendor": "Viktor & Rolf",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-08-06at8.28.35AM.png?v=1786418867",
+  "url": "https://basenotescent.com/products/viktor-rolf-spicebomb-extreme",
+  "description": "When Viktor & Rolf built the original Spicebomb, the concept was almost mathematical: whatever flowers are to a women's fragrance, spice should be to a men's \u2014 and if Flowerbomb was their explosive floral, Spicebomb had to be its equal on the other side of the aisle. The bottle, still shaped like a hand grenade with a heavy copper collar, was never subtle about the metaphor. Extreme, built by perf",
+  "top_notes": [
+   "Lavender",
+   "Black Pepper",
+   "Saffron",
+   "Caraway"
+  ],
+  "heart_notes": [
+   "Cinnamon",
+   "Cumin",
+   "Tobacco"
+  ],
+  "base_notes": [
+   "Vanilla",
+   "Amber",
+   "Pipe Tobacco"
+  ],
+  "families": [
+   "amber",
+   "oriental",
+   "spicy",
+   "vanilla"
+  ],
+  "seasons": [
+   "fall",
+   "winter"
+  ],
+  "events": [
+   "evening-out"
+  ],
+  "tags": [
+   "amber",
+   "bold",
+   "cool weather",
+   "evening",
+   "event:evening-out",
+   "oriental",
+   "origin:france",
+   "season:fall",
+   "season:winter",
+   "spicy",
+   "vanilla"
+  ]
+ },
+ {
+  "handle": "xerjoff-alexandria-ii",
+  "title": "Xerjoff Alexandria II",
+  "vendor": "Xerjoff",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-03-03at3.00.42PM.png?v=1774838194",
+  "url": "https://basenotescent.com/products/xerjoff-alexandria-ii",
+  "description": "Xerjoff Alexandria II is a luxurious fragrance that captures the essence of timeless elegance and sophistication. This exquisite perfume blends rich, complex notes to create a memorable olfactory experience. Perfect for those who appreciate fine craftsmanship and distinctive scents, Alexandria II delivers a refined presence that lingers beautifully throughout the day. An ideal choice for special o",
+  "top_notes": [
+   "Lavender",
+   "Bulgarian Rose",
+   "Cardamom",
+   "Cumin"
+  ],
+  "heart_notes": [
+   "Oud",
+   "Amber",
+   "Orris",
+   "Cypriol Oil Or Nagarmotha",
+   "Wormwood",
+   "Clary Sage",
+   "Civet",
+   "Mint"
+  ],
+  "base_notes": [
+   "Vanilla",
+   "Australian Sandalwood",
+   "Musk"
+  ],
+  "families": [
+   "amber",
+   "powdery",
+   "spicy",
+   "vanilla",
+   "woody"
+  ],
+  "seasons": [
+   "fall",
+   "winter"
+  ],
+  "events": [
+   "date-night",
+   "evening-out"
+  ],
+  "tags": [
+   "amber",
+   "classy",
+   "cool weather",
+   "date night",
+   "event:date-night",
+   "event:evening-out",
+   "luxurious",
+   "origin:italy",
+   "Oud",
+   "powdery",
+   "season:fall",
+   "season:winter",
+   "spicy",
+   "unisex",
+   "vanilla",
+   "wedding/formal",
+   "woody"
+  ]
+ },
+ {
+  "handle": "xerjoff-erba-pura",
+  "title": "Xerjoff Erba Pura",
+  "vendor": "Xerjoff",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-02-23at7.53.35PM.png?v=1771900419",
+  "url": "https://basenotescent.com/products/xerjoff-erba-pura",
+  "description": "Xerjoff Erba Pura is an Italian green fragrance that opens with crisp herbal and citrus notes evoking fresh grass and morning dew. Soft florals and a woody base create a refined, balanced composition perfect for daytime wear or layering.\nTop Note:\u00a0Sicilian Orange, Calabrian bergamot, Sicilian Lemon\nHeart Note:\u00a0Fruits\nBase Note:\u00a0White Musk, Madagascar Vanilla, Amber",
+  "top_notes": [
+   "Sicilian Orange",
+   "Calabrian bergamot",
+   "Sicilian Lemon"
+  ],
+  "heart_notes": [
+   "Fruits"
+  ],
+  "base_notes": [
+   "White Musk",
+   "Madagascar Vanilla",
+   "Amber"
+  ],
+  "families": [
+   "amber",
+   "fruity",
+   "sweet"
+  ],
+  "seasons": [
+   "spring",
+   "summer"
+  ],
+  "events": [
+   "daytime"
+  ],
+  "tags": [
+   "amber",
+   "citrusy",
+   "daytime",
+   "event:daytime",
+   "everyday wear",
+   "fruity",
+   "origin:italy",
+   "season:spring",
+   "season:summer",
+   "sweet",
+   "tropical",
+   "unisex",
+   "warm weather"
+  ]
+ },
+ {
+  "handle": "xerjoff-torino-21",
+  "title": "Xerjoff Torino 21",
+  "vendor": "Xerjoff",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-04-12at8.52.11AM.png?v=1776001997",
+  "url": "https://basenotescent.com/products/xerjoff-torino-21",
+  "description": "Xerjoff Torino 21 is a fresh seasonal fragrance perfect for spring and summer. This vibrant composition opens with bright lemon and crisp mint, complemented by aromatic basil notes that create an invigorating and herbaceous character. Light yet sophisticated, it captures the essence of Italian gardens with a clean, uplifting profile ideal for warm weather wear. A refreshing choice for those seekin",
+  "top_notes": [
+   "Mint",
+   "Lemon",
+   "Basil",
+   "Thyme"
+  ],
+  "heart_notes": [
+   "Black Currant",
+   "Lavender",
+   "Rosemary",
+   "Jasmine"
+  ],
+  "base_notes": [
+   "Lemon Verbena",
+   "Musk"
+  ],
+  "families": [
+   "aromatic",
+   "fresh",
+   "spicy"
+  ],
+  "seasons": [
+   "spring",
+   "summer"
+  ],
+  "events": [
+   "daytime",
+   "office"
+  ],
+  "tags": [
+   "aromatic",
+   "citrusy",
+   "daytime",
+   "event:daytime",
+   "event:office",
+   "everyday wear",
+   "fresh",
+   "origin:italy",
+   "season:spring",
+   "season:summer",
+   "spicy",
+   "unisex"
+  ]
+ },
+ {
+  "handle": "ysl-y-intense",
+  "title": "YSL Y Intense",
+  "vendor": "YSL",
+  "type": "Fragrance",
+  "price_cents": 2000,
+  "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/files/Screenshot2026-02-23at8.05.52PM.png?v=1771900567",
+  "url": "https://basenotescent.com/products/ysl-y-intense",
+  "description": "YSL Y Intense is a sophisticated eau de parfum featuring citrus, spice, amber, and wood notes. Built for lasting power and presence, it's an excellent choice for evening occasions and those who value refined, complex fragrances.\nTop Note:\u00a0Ginger, Bergamot, Juniper Berries\nHeart Note:\u00a0Sage, Geranium, Lavender\nBase Note:\u00a0Vetiver, Patchouli, Cedar",
+  "top_notes": [
+   "Ginger",
+   "Bergamot",
+   "Juniper Berries"
+  ],
+  "heart_notes": [
+   "Sage",
+   "Geranium",
+   "Lavender"
+  ],
+  "base_notes": [
+   "Vetiver",
+   "Patchouli",
+   "Cedar"
+  ],
+  "families": [
+   "aromatic",
+   "clean",
+   "fresh",
+   "spicy",
+   "woody"
+  ],
+  "seasons": [
+   "fall",
+   "spring",
+   "summer",
+   "winter"
+  ],
+  "events": [
+   "date-night",
+   "office"
+  ],
+  "tags": [
+   "aromatic",
+   "clean",
+   "date night",
+   "event:date-night",
+   "event:office",
+   "everyday wear",
+   "fresh",
+   "masculine",
+   "origin:france",
+   "season:fall",
+   "season:spring",
+   "season:summer",
+   "season:winter",
+   "spicy",
+   "woodsy",
+   "woody"
+  ]
+ }
+]
