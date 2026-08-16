@@ -115,6 +115,12 @@
   "image_url": "https://basenote-media.wilson-af8.workers.dev/img/sample-before-you-buy-full-bottle/hero.jpg",
   "image_alt": "A small 5 ml fragrance atomizer standing beside a large full-size perfume bottle on a travertine surface in warm daylight",
   "inline": {
+   "fig-01": {
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/sample-before-you-buy-full-bottle/fig-01.jpg",
+    "alt": "A single spray of fragrance on a bare wrist beside an untouched paper blotter strip, shown in warm daylight",
+    "w": 1536,
+    "h": 1024
+   },
    "fig-02": {
     "url": "https://basenote-media.wilson-af8.workers.dev/img/sample-before-you-buy-full-bottle/fig-02.jpg",
     "alt": "Five small unbranded atomizers arranged in a row on linen beside a handwritten notebook and pencil",
@@ -145,6 +151,12 @@
    "fig-01": {
     "url": "https://basenote-media.wilson-af8.workers.dev/img/best-fragrance-notes-oily-skin/fig-01.jpg",
     "alt": "Two-column comparison: dry structural materials on the left, sweet resinous materials on the right, split by a brass divider",
+    "w": 1536,
+    "h": 1024
+   },
+   "fig-02": {
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/best-fragrance-notes-oily-skin/fig-02.jpg",
+    "alt": "Five identical unlabelled 5 ml atomizers in a row on linen, each beside its key raw material",
     "w": 1536,
     "h": 1024
    }
@@ -199,7 +211,7 @@
    "skin-chemistry"
   ],
   "author": "Jeff Theefs",
-  "image_url": "https://basenote-media.wilson-af8.workers.dev/img/designer-vs-niche-fragrance-whats-the-difference/hero.jpg",
+  "image_url": "https://basenote-media.wilson-af8.workers.dev/img/baccarat-rouge-540-love-it-or-hate-it/hero.jpg",
   "image_alt": "A small clear fragrance atomizer standing on a deep red surface in warm directional light, casting a long shadow",
   "inline": {
    "fig-01": {
@@ -216,8 +228,7 @@
    }
   },
   "publish_at": "2026-09-30T12:00:00Z",
-  "post_no": 24,
-  "_hero_note": "TEMP fallback hero (credits exhausted) \u2014 regenerate"
+  "post_no": 24
  },
  {
   "handle": "foods-that-cause-body-odor",
@@ -236,6 +247,12 @@
   "image_url": "https://basenote-media.wilson-af8.workers.dev/img/foods-that-cause-body-odor/hero.jpg",
   "image_alt": "Whole garlic bulbs, halved red onions and broccoli florets arranged on a dark stone surface in warm side light",
   "inline": {
+   "fig-01": {
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/foods-that-cause-body-odor/fig-01.jpg",
+    "alt": "Diagram-style flat lay showing the path from food to bloodstream to skin",
+    "w": 1536,
+    "h": 1024
+   },
    "fig-02": {
     "url": "https://basenote-media.wilson-af8.workers.dev/img/foods-that-cause-body-odor/fig-02.jpg",
     "alt": "Folded cotton shirt beside a small unbranded glass atomizer on linen in warm light",
@@ -266,6 +283,12 @@
    "fig-01": {
     "url": "https://basenote-media.wilson-af8.workers.dev/img/32-luxury-fragrances-ranked/fig-01.jpg",
     "alt": "Five 5 ml atomizers standing in a row in front of a stack of the rest, suggesting a ranked top five",
+    "w": 1536,
+    "h": 1024
+   },
+   "fig-02": {
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/32-luxury-fragrances-ranked/fig-02.jpg",
+    "alt": "Three 5 ml atomizers spaced apart on linen beside a small brass tray, suggesting a three-month rotation",
     "w": 1536,
     "h": 1024
    }
@@ -320,7 +343,7 @@
    "tuscan-leather"
   ],
   "author": "Jeff Theefs",
-  "image_url": "https://basenote-media.wilson-af8.workers.dev/img/best-fall-fragrances-men-2026-guide/hero.jpg",
+  "image_url": "https://basenote-media.wilson-af8.workers.dev/img/tom-ford-ombre-leather-review/hero.jpg",
   "image_alt": "A small unbranded 5 ml glass atomizer resting on a folded dark brown leather jacket in warm afternoon light",
   "inline": {
    "fig-01": {
@@ -337,8 +360,7 @@
    }
   },
   "publish_at": "2026-10-19T12:00:00Z",
-  "post_no": 28,
-  "_hero_note": "TEMP fallback hero (credits exhausted) \u2014 regenerate"
+  "post_no": 28
  },
  {
   "handle": "black-friday-2026-fragrance-deals",
@@ -357,6 +379,12 @@
   "image_url": "https://basenote-media.wilson-af8.workers.dev/img/black-friday-2026-fragrance-deals/hero.jpg",
   "image_alt": "A crossed-out paper discount tag beside a small amber atomizer on a travertine surface",
   "inline": {
+   "fig-01": {
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/black-friday-2026-fragrance-deals/fig-01.jpg",
+    "alt": "Close-up of a hand tilting a plain glass bottle to read the batch code etched on its base",
+    "w": 1536,
+    "h": 1024
+   },
    "fig-02": {
     "url": "https://basenote-media.wilson-af8.workers.dev/img/black-friday-2026-fragrance-deals/fig-02.jpg",
     "alt": "Twelve small atomizers arranged in a grid beside one large bottle, comparing a year of variety to a single purchase",

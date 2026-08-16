@@ -13,30 +13,53 @@
    "ABCC11"
   ],
   "author": "Jeff Theefs",
-  "image_url": "https://basenote-media.wilson-af8.workers.dev/img/how-to-find-your-signature-scent/hero.jpg",
-  "image_alt": "A person testing fragrance on the inside of the wrist beside a tray of small sample vials",
+  "image_url": "https://basenote-media.wilson-af8.workers.dev/img/why-you-smell-the-way-you-do/hero.jpg",
+  "image_alt": "Two people standing close together in warm afternoon light, one leaning in mid-conversation, relaxed and confident",
   "inline": {
+   "fig-01": {
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/why-you-smell-the-way-you-do/fig-01.jpg",
+    "alt": "A person mid-day in a cotton shirt, sleeve rolled, resting an arm on a warm stone surface",
+    "w": 1536,
+    "h": 1024
+   },
+   "fig-02": {
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/why-you-smell-the-way-you-do/fig-02.jpg",
+    "alt": "A pairing table: a seared steak beside a glass of red wine, and a wedge of blue cheese beside a glass of sweet wine",
+    "w": 1536,
+    "h": 1024
+   },
+   "fig-03": {
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/why-you-smell-the-way-you-do/fig-03.jpg",
+    "alt": "The morning after a night out: a rumpled shirt on a chair, a glass of water, soft early light",
+    "w": 1536,
+    "h": 1024
+   },
+   "fig-04": {
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/why-you-smell-the-way-you-do/fig-04.jpg",
+    "alt": "Folded cotton shirts, a head of garlic, a glass of water and a linen towel arranged on stone",
+    "w": 1536,
+    "h": 1024
+   },
    "fig-05": {
-    "url": "https://basenote-media.wilson-af8.workers.dev/img/fragrance-projection-sillage-longevity-explained/hero.jpg",
-    "alt": "A wrist releasing a fine mist of fragrance in warm window light",
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/why-you-smell-the-way-you-do/fig-05.jpg",
+    "alt": "Split frame showing two different people's inner wrists in the same light",
     "w": 1536,
     "h": 864
    },
    "fig-06": {
-    "url": "https://basenote-media.wilson-af8.workers.dev/img/fragrance-families-explained-woody-oriental-fresh-fougere/hero.jpg",
-    "alt": "A wheel of raw fragrance materials arranged by scent family on dark linen",
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/why-you-smell-the-way-you-do/fig-06.jpg",
+    "alt": "Six small still lifes of raw fragrance ingredients arranged in a grid on stone",
     "w": 1536,
     "h": 864
    },
    "fig-07": {
-    "url": "https://basenote-media.wilson-af8.workers.dev/img/fragrance-notes-explained-top-heart-base-perfume-pyramid/hero.jpg",
-    "alt": "A pyramid of citrus, flowers, woods and resins representing top, heart and base notes",
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/why-you-smell-the-way-you-do/fig-07.jpg",
+    "alt": "Close-up of base note materials: sandalwood, vanilla, amber resin and raw musk-like powder",
     "w": 1536,
-    "h": 864
+    "h": 1024
    }
   },
   "publish_now": true,
-  "post_no": 17,
-  "_note": "TEMP: reusing existing CDN heroes until bespoke pillar images are generated (fal/OpenAI credits exhausted 2026-08-16)"
+  "post_no": 17
  }
 ]

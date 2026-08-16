@@ -1,0 +1,10 @@
+{
+  "model": "fal-ai/nano-banana-2",
+  "prompt": "Luxury editorial photograph for a fragrance magazine. Warm natural window light, shallow depth of field, muted warm palette (ivory, travertine, brass, deep green), tactile textures, cinematic composition, photorealistic, no text, no logos, no watermarks, no branded bottles. Editorial photoreal 16:9. Six small still lifes arranged as a clean grid on a travertine slab, each on its own small linen square: green tea leaves, a vanilla pod, dried iris root, sandalwood chips, a bergamot half, and coarse sea salt with a sprig of rosemary. Soft directional daylight from the left, delicate shadows, brass tweezers resting at one edge, one deep green leaf. 60mm macro, shallow but consistent depth across the grid. Precise and quiet, like a perfumer's reference tray. No text, no labels, no logos, no bottles.",
+  "aspect": "16:9",
+  "resolution": "2K",
+  "request_id": "01a00ac1-5d56-7a60-9a71-5a574591fcfc",
+  "source_url": "https://v3b.fal.media/files/b/0aa692be/3OjAS5kDN8GZoMy0QT7Lw_r1ZBL8eI.jpg",
+  "bytes": 272301,
+  "extra": null
+}

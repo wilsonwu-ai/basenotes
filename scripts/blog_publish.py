@@ -81,6 +81,10 @@ FIG_TMPL = ('<figure class="article__figure" style="margin:1.75em 0;">'
             '<img src="{url}" alt="{alt}" loading="lazy" decoding="async" width="{w}" height="{h}" style="width:100%;height:auto;border-radius:12px;display:block;">'
             '{cap}</figure>')
 
+def wrap_tables(body):
+    """Mobile: the theme's article template has no scroll container for wide tables, so wrap each <table> in one."""
+    return re.sub(r"(<table\b.*?</table>)", r'<div class="bn-table-scroll" style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:1.25em 0;">\1</div>', body, flags=re.S | re.I)
+
 def insert_figures(body, inline):
     """Replace <!-- img:ID --> placeholders. inline: {id: {url, alt, caption?, w?, h?}}. Unknown ids are removed (never leaked to HTML)."""
     inline = inline or {}
@@ -96,7 +100,7 @@ def insert_figures(body, inline):
 def upsert(row, dry=False):
     """row: {handle, file, title?, summary?, tags?, author?, image_url?, image_alt?, publish_at?|publish_now?|draft?}"""
     body_raw = (ROOT / row["file"]).read_text(encoding="utf-8")
-    body = to_entities(insert_figures(strip_h1(body_raw), row.get("inline")))
+    body = to_entities(wrap_tables(insert_figures(strip_h1(body_raw), row.get("inline"))))
     if "<!--META" in body: body = body.split("<!--META")[0]
     title = row.get("title") or derive_title(body_raw) or row["handle"].replace("-", " ").title()
     summary = row.get("summary") or derive_summary(body_raw) or ""

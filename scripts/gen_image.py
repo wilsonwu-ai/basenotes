@@ -20,13 +20,19 @@ VID_DEFAULT = "bytedance/seedance-2.0/image-to-video"
 VID_FALLBACKS = ["bytedance/seedance-2.0/fast/image-to-video", "fal-ai/kling-video/v2.5-turbo/pro/image-to-video"]
 
 def load_key():
-    for k in ("FAL_KEY", "FAL_API_KEY"):
-        if os.environ.get(k): return os.environ[k]
+    # .env wins over the shell (the shell profile may carry a stale key); FAL_KEY beats FAL_API_KEY.
     envf = ROOT / ".env"
+    found = {}
     if envf.exists():
         for line in envf.read_text().splitlines():
             for k in ("FAL_KEY", "FAL_API_KEY"):
-                if line.startswith(k + "="): return line.split("=", 1)[1].strip().strip('"').strip("'")
+                if line.startswith(k + "="):
+                    v = line.split("=", 1)[1].strip().strip('"').strip("'")
+                    if v: found[k] = v
+    for k in ("FAL_KEY", "FAL_API_KEY"):
+        if found.get(k): return found[k]
+    for k in ("FAL_KEY", "FAL_API_KEY"):
+        if os.environ.get(k): return os.environ[k]
     sys.exit("no FAL_KEY / FAL_API_KEY found")
 
 KEY = None
