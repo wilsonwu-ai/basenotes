@@ -111,14 +111,14 @@
   "class": "growth-goal-section",
   "settings": [
     { "type": "header", "content": "Numbers" },
-    { "type": "text", "id": "endpoint", "label": "Live count endpoint (JSON: {active, goal})", "default": "https://basenote-media.wilson-af8.workers.dev/member-count", "info": "Leave as is. Falls back to the numbers below if unreachable." },
+    { "type": "text", "id": "endpoint", "label": "Live count endpoint URL", "default": "https://basenote-media.wilson-af8.workers.dev/member-count", "info": "Leave as is. Falls back to the numbers below if unreachable." },
     { "type": "number", "id": "goal", "label": "Member goal", "default": 60 },
-    { "type": "number", "id": "fallback_active", "label": "Fallback active members (shown until the live count loads)", "default": 17 },
+    { "type": "number", "id": "fallback_active", "label": "Fallback active members (until live count loads)", "default": 17 },
     { "type": "text", "id": "deadline_date", "label": "Deadline (YYYY-MM-DD)", "default": "2026-11-30" },
     { "type": "text", "id": "deadline_label", "label": "Deadline label", "default": "Nov 30" },
     { "type": "checkbox", "id": "show_bar", "label": "Show progress bar", "default": true },
     { "type": "checkbox", "id": "hide_after_deadline", "label": "Hide section after the deadline", "default": true },
-    { "type": "header", "content": "Copy — tokens: {active} {goal} {remaining} {next} {deadline}" },
+    { "type": "header", "content": "Copy (tokens: {active} {goal} {remaining} {next})" },
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Founding Members · 2026" },
     { "type": "text", "id": "headline", "label": "Headline", "default": "{active} of {goal} founding members. You'd be #{next}." },
     { "type": "textarea", "id": "body", "label": "Body", "default": "We're building Base Note to {goal} members by {deadline}. Founding members keep the flat $20/month for as long as they stay — no surcharges on any house, ever." },
@@ -129,7 +129,7 @@
     { "type": "text", "id": "referral_heading", "label": "Referral heading", "default": "Know someone who'd love this?" },
     { "type": "textarea", "id": "referral_blurb", "label": "Referral blurb", "default": "Send them your link. When they start a subscription, your next month is on us." },
     { "type": "textarea", "id": "share_text", "label": "Share message", "default": "I'm using Base Note — one flat $20/month for real luxury fragrances (Creed, Tom Ford, Parfums de Marly) in 5 ml atomizers. First month 25% off:" },
-    { "type": "text", "id": "referral_code", "label": "Discount code for the friend (optional, e.g. FRIEND10 — must exist in Shopify)" }
+    { "type": "text", "id": "referral_code", "label": "Friend discount code (optional, must exist in Shopify)" }
   ],
   "presets": [ { "name": "Growth goal / Founding 60" } ]
 }
