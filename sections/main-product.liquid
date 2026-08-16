@@ -2091,49 +2091,14 @@
           }
           return response.json();
         })
-       .then(function(data) {
-  if (!sellingPlan) return data;
-
-  function checkCart(attemptsLeft) {
-    return fetch('/cart.js')
-      .then(function(r) { return r.json(); })
-      .then(function(cart) {
-        var applied = cart.items.some(function(item) {
-          return item.variant_id === parseInt(variantId) && item.selling_plan_allocation;
-        });
-        if (!applied && attemptsLeft > 1) {
-          // Not applied yet — wait 500ms and retry
-          return new Promise(function(resolve) { setTimeout(resolve, 500); })
-            .then(function() { return checkCart(attemptsLeft - 1); });
-        }
-        if (!applied) {
-          // All retries exhausted — roll back
-          if (data.key) {
-            fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
-          }
-          console.error('[BaseNote] Subscription plan not applied after retries — rolled back. sellingPlan=', sellingPlan);
-          throw new Error('selling_plan_not_applied');
-        }
-        return data;
-      });
-  }
-
-  // Initial 300ms delay then start retry loop (3 attempts, 500ms apart = up to 1.3s total)
-  return new Promise(function(resolve) { setTimeout(resolve, 300); })
-    .then(function() { return checkCart(3); });
-})
-
+        .then(function(data) {
           // Subscription safety-net v2 (Jul 19, Jeff's approach): verify against the LIVE CART,
           // not the add response — /cart/add.js can omit selling_plan_allocation even when the
           // plan attached correctly, which made v1 roll back good subscriptions. Only roll back
           // when the cart itself confirms the plan is missing.
           if (!sellingPlan) return data;
-          return fetch('/cart.js')
-            .then(function(r) { return r.json(); })
-            .then(function(cart) {
-              var applied = cart.items.some(function(item) {
-                return item.variant_id === parseInt(variantId) && item.selling_plan_allocation;
-              });
+          return bnCartPlanApplied(variantId, 3)
+            .then(function(applied) {
               if (!applied) {
                 if (data.key) {
                   fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
@@ -2174,6 +2139,29 @@
     }
 
     // ─── doAddToCart helper (used by subscription swap flow) ───
+// Cart-verified plan check with retry (Jul 20 intent, ported properly): /cart.js can lag
+// the add by a few hundred ms, so wait 300ms then check up to 3 times, 500ms apart, before
+// concluding the selling plan is missing. Resolves true/false, never throws.
+function bnCartPlanApplied(variantId, attempts) {
+  attempts = attempts || 3;
+  function check(left) {
+    return fetch('/cart.js', { credentials: 'same-origin' })
+      .then(function(r) { return r.json(); })
+      .then(function(cart) {
+        var applied = (cart.items || []).some(function(item) {
+          return item.variant_id === parseInt(variantId) && item.selling_plan_allocation;
+        });
+        if (applied) return true;
+        if (left > 1) {
+          return new Promise(function(resolve) { setTimeout(resolve, 500); }).then(function() { return check(left - 1); });
+        }
+        return false;
+      })
+      .catch(function() { return left > 1 ? check(left - 1) : false; });
+  }
+  return new Promise(function(resolve) { setTimeout(resolve, 300); }).then(function() { return check(attempts); });
+}
+
 function doAddToCart(variantId, sellingPlan, originalText) {
   var payload = { id: parseInt(variantId), quantity: 1 };
   if (sellingPlan) payload.selling_plan = parseInt(sellingPlan);
@@ -2191,20 +2179,14 @@ function doAddToCart(variantId, sellingPlan, originalText) {
     }
     return response.json();
   })
-  return new Promise(function(resolve) { setTimeout(resolve, 800); })
-  .then(function() { return fetch('/cart.js'); })
-
+  .then(function(data) {
     // Verify selling plan was applied by checking cart directly.
     // /cart/add.js does not reliably return selling_plan_allocation
     // even when the plan was successfully attached — so we confirm
     // against the live cart instead of trusting the add response.
     if (!sellingPlan) return data;
-    return fetch('/cart.js')
-      .then(function(r) { return r.json(); })
-      .then(function(cart) {
-        var applied = cart.items.some(function(item) {
-          return item.variant_id === parseInt(variantId) && item.selling_plan_allocation;
-        });
+    return bnCartPlanApplied(variantId, 3)
+      .then(function(applied) {
         if (!applied) {
           // Roll back and fail loudly
           if (data.key) {
