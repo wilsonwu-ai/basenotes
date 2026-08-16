@@ -1,5 +1,5 @@
 {%- comment -%}
-  Captures ?ref=<id> from any landing URL, keeps it 90 days in localStorage, and writes it onto the cart as
+  Captures ?ref=<id> from any landing URL (sync-probe 2026-08-16), keeps it 90 days in localStorage, and writes it onto the cart as
   attributes.referred_by / referred_at so it appears on the order ("Additional details") for Jeff to credit
   the referrer. Idempotent; silent on failure. Rendered once from layout/theme.liquid.
 {%- endcomment -%}
