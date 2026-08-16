@@ -2078,7 +2078,7 @@
         const cartPayload = { id: parseInt(variantId), quantity: 1 };
         if (sellingPlan) cartPayload.selling_plan = parseInt(sellingPlan);
 
-        fetch('/cart/add.js', {
+        (window.__bnFetch || window.fetch)('/cart/add.js', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(cartPayload)
@@ -2166,7 +2166,7 @@ function doAddToCart(variantId, sellingPlan, originalText) {
   var payload = { id: parseInt(variantId), quantity: 1 };
   if (sellingPlan) payload.selling_plan = parseInt(sellingPlan);
 
-  fetch('/cart/add.js', {
+  (window.__bnFetch || window.fetch)('/cart/add.js', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
