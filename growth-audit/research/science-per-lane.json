@@ -1,0 +1,415 @@
+[
+ {
+  "lane": "glands-microbiome",
+  "n": 14,
+  "summary": "Fresh sweat is nearly odorless. Body odor comes from three gland types: eccrine glands (nearly whole-body, mostly water/salts, thermoregulation), apocrine glands (armpit, groin, ear canal, areola only; larger, protein/lipid-rich secretion, active from puberty), and sebaceous glands (oil, antimicrobial/inflammatory roles). Skin bacteria -- chiefly Corynebacterium and Staphylococcus hominis, with Propionibacterium/Cutibacterium and Micrococcus also implicated -- enzymatically cleave odorless apocrine precursor molecules into the actual smelly compounds: thioalcohols (3-methyl-3-sulfanylhexan-1-ol, the most pungent), short branched-chain fatty acids (3-methyl-2-hexenoic acid, HMHA, isovaleric acid), and steroid-derived odorants (androstenone/androstenol-family compounds). A 2020 Unilever/University of York study identified the specific bacterial enzyme (a C-T lyase) in odor-causing Staphylococcus hominis that is necessary and sufficient to produce thioalcohol odor, while related S. epidermidis lacks it. Hair increases surface area for bacteria and sweat to collect, amplifying rather than causing odor. Apocrine glands are driven by the sympathetic/adrenergic nervous system (catecholamines/norepinephrine), distinct from the largely cholinergic thermal-sweating eccrine system -- explaining why emotional/stress sweat and heat sweat differ physiologically, since apocrine output rises with stress, fear, and pain, feeding more precursor material to bacteria.",
+  "gaps": [
+   "Did not find a peer-reviewed quantitative comparison of odor intensity between thermal vs. emotional sweat -- only mechanistic/neural-control differences were sourced.",
+   "The commonly cited '~250,000 sweat glands on the feet' and direct isovaleric-acid-specific foot-odor mechanism came from non-peer-reviewed sites (asmr.education, seed.com); flagged as lower confidence pending a dedicated peer-reviewed foot-odor source.",
+   "The full text of the Nature-hosted version of the C-T lyase paper was paywalled/redirected; quotes were sourced from the PMC mirror of the same article instead.",
+   "The ScienceDirect topic page on androstenone (403 Forbidden) could not be verbatim-quoted directly; androstenone/androstenol claims rely on WebSearch-surfaced summaries of that page plus the PMC axillary-microbiome paper's mention of 5\u03b1-androst-16-en-3\u03b1-ol.",
+   "Did not find primary literature specifically on scalp odor mechanisms (sebum oxidation vs. bacterial action) -- scalp is named only as an apocrine-gland-bearing site in the hyperhidrosis review."
+  ],
+  "verify": {
+   "lane": "glands-microbiome",
+   "checked": [
+    {
+     "claim": "Body odor is produced by bacterial transformation of odorless precursor molecules that apocrine glands secrete onto the skin surface -- sweat itself is not what smells. (PMC7385124)",
+     "verdict": "confirmed",
+     "note": "Exact quote matches verbatim in the fetched source."
+    },
+    {
+     "claim": "Eccrine glands found almost everywhere, highest concentration on palms/soles, secretion mainly water plus sodium/potassium ions. (StatPearls NBK513244)",
+     "verdict": "confirmed",
+     "note": "Exact quote matches verbatim."
+    },
+    {
+     "claim": "Apocrine glands exist only in axilla, groin/anogenital, external ear canal, and areola; secretion milky and odorless until bacteria break it down. (StatPearls NBK513244)",
+     "verdict": "confirmed",
+     "note": "Exact quote matches verbatim."
+    },
+    {
+     "claim": "Apocrine glands present from birth but inactive until puberty, likely due to hormonal changes. (Cleveland Clinic)",
+     "verdict": "confirmed",
+     "note": "Exact quote matches verbatim."
+    },
+    {
+     "claim": "Axillary odor dominated by 3M2H from Corynebacterium species acting on apocrine secretions, with HMHA as another major contributor; N\u03b1-acylglutamine aminoacylase (Corynebacterium-specific enzyme) converts glutamine-conjugated precursors into 3M2H and HMHA. (Wiley/Intl J Cosmetic Sci)",
+     "verdict": "unverifiable",
+     "note": "Original Wiley URL returned HTTP 403 and could not be accessed; PubMed abstract page also failed to render content. However, the core claim (Corynebacterium producing 3M2H and HMHA from apocrine secretions) is independently corroborated by a different fetched peer-reviewed source (PMC8115508), which states verbatim: 'Corynebacterium is one of the dominant genera that produces various odorants, including VFAs, HMHA, 3M2H, and 5\u03b1-androst-16-en-3\u03b1-ol.' The specific claim about the N\u03b1-acylglutamine aminoacylase enzyme mechanism was NOT independently verified against any fetched primary source \u2014 flag this detail as unconfirmed pending direct access to the Wiley paper."
+    },
+    {
+     "claim": "ShPatB C-T lyase is necessary and sufficient for thioalcohol body odor production in odor-causing S. hominis; S. epidermidis, though dominant on skin, lacks this ability. (PMC7385124)",
+     "verdict": "confirmed",
+     "note": "Quote: 'Transfer of this enzyme alone to non-odour producing staphylococci confers odour production, demonstrating that this C-T lyase is both necessary and sufficient for thioalcohol formation.' Plus explicit S. epidermidis exclusion quote matches."
+    },
+    {
+     "claim": "3M3SH is the most abundant thioalcohol in body odor; thioalcohols despite trace amounts are the most pungent volatile compounds. (PMC7385124)",
+     "verdict": "confirmed",
+     "note": "Exact quote matches verbatim (source has a typo 'voaltiles' for 'volatiles' but content is unambiguous)."
+    },
+    {
+     "claim": "C-T lyase enzyme lineage moved horizontally into odor-forming staphylococci about 60 million years ago. (PMC7385124)",
+     "verdict": "confirmed",
+     "note": "Exact quote matches verbatim."
+    },
+    {
+     "claim": "Apocrine glands located in axillae, breast, scalp, perineum but not palms/soles; emotional sweating triggered by stress/anxiety/pain/fear, decreases during sleep/relaxation unlike thermal sweating, with catecholamines as major neurotransmitters via adrenergic pathway. (PMC9884722, Hyperhidrosis review)",
+     "verdict": "confirmed",
+     "note": "All sub-claims match verbatim quotes from the fetched source."
+    },
+    {
+     "claim": "Corynebacterium dominant genus producing VFAs, HMHA, 3M2H, 5\u03b1-androst-16-en-3\u03b1-ol; Staphylococcus/Propionibacterium/Micrococcus generate 3M3SH and VFAs from bacterial decomposition of odorless apocrine sweat. (PMC8115508)",
+     "verdict": "confirmed",
+     "note": "Exact quotes match verbatim."
+    }
+   ],
+   "kill_rate_note": "9 of 10 spot-checked claims (covering the 6 most load-bearing plus a few adjacent high-confidence ones) were confirmed verbatim against their cited primary sources via direct fetch. 1 claim (Wiley/Intl J Cosmetic Sci \u2014 the N\u03b1-acylglutamine aminoacylase enzyme mechanism) could not be directly verified because the publisher URL returned HTTP 403 and the PubMed abstract page did not render content; however its core substance (Corynebacterium \u2192 3M2H/HMHA) was independently corroborated by a different fetched peer-reviewed source. Kill rate on directly-checkable claims: 0% refuted, 0% overstated \u2014 the research findings held up well under verification; the only gap is a single enzyme-mechanism detail behind a paywall/bot-block, not a substantive factual error. Two lower-confidence findings in the original list (ASMR Education FAQ on isovaleric acid, and the ScienceDirect Topics overview pages) were flagged by the original researcher as lower-tier sources and were not among the 6 selected for re-verification here \u2014 treat those as still-unverified leads per their original confidence labels."
+  }
+ },
+ {
+  "lane": "genetics",
+  "n": 12,
+  "summary": "A single SNP in the ABCC11 gene (rs17822931, 538G>A) is the master switch for underarm body odor and earwax texture: the AA genotype yields dry earwax and little/no axillary odor, while GG/GA yields wet earwax and normal odor-producing apocrine secretions. This variant shows one of the largest allele-frequency gradients in the human genome \u2014 the low-odor 'A' allele sits near ~88% in East Asian population samples versus roughly 12% in Europeans and 3% in Africans (dbSNP/ALFA data) \u2014 and clinical studies confirm it as a valid diagnostic marker for osmidrosis. Genotype measurably shapes behavior too: a large UK cohort study found genetically non-odorous individuals used deodorant significantly less, though the effect was partial (most still used it out of habit/social norm). Separately, MHC/HLA immune genes shape odor preference between people (Wedekind's sweaty T-shirt study), skin lipid chemistry changes with age to produce the specific 'old-person smell' compound 2-nonenal (detectable mainly after age 40), and a distinct, serious genetic condition \u2014 trimethylaminuria (FMO3 gene mutation) \u2014 causes a fish-like odor and needs medical, not cosmetic, attention. No claims here are made about ethnic groups as such; all figures describe population allele frequencies and enzyme/receptor mechanisms.",
+  "gaps": [
+   "Could not directly fetch the full Rodriguez et al. 2013 Journal of Investigative Dermatology abstract from the journal or PubMed (cookie-gated); quotes obtained via secondary aggregation of the abstract text found through search -- should be verified against the primary DOI (10.1038/jid.2012.480) if used in final copy.",
+   "Did not find quantified South Asian or Middle Eastern population frequency data beyond the ALFA dbSNP figures (South Asian T=0.3868); no separate peer-reviewed study specifically breaking out Middle Eastern populations was fetched.",
+   "Wedekind 2006 follow-up paper (on MHC and body odor intensity) could not be fetched directly (403 blocked); only the 1995 original sweaty T-shirt study quotes were verified.",
+   "No direct primary-source fetch of the Haze et al. 2001 Journal of Investigative Dermatology abstract itself (ScienceDirect/PubMed blocked); quote obtained via PubMed search snippet, should be double-checked against journal PDF if available."
+  ],
+  "verify": {
+   "lane": "genetics",
+   "checked": [
+    {
+     "claim": "98.7% of AO patients had GG/GA genotype vs 35.4% of general population, p<1.1e-24",
+     "verdict": "confirmed",
+     "note": "PMC2731057 fetched directly confirms exact figures: 78/79 (98.7%) AO patients GG/GA, 57/161 (35.4%) general population, p<1.1x10^-24 by Fisher's exact test."
+    },
+    {
+     "claim": "ABCC11 genotype is a good diagnostic marker for axillary osmidrosis, G allele is a prerequisite for odor expression",
+     "verdict": "overstated",
+     "note": "Source does say 'good markers for diagnosis' and 'G allele is a prerequisite,' confirming the quoted language. However the fetch also surfaced an important caveat the original finding omitted: ~99% sensitivity but only ~35% specificity (many G-carriers in general population have no AO), so 'good diagnostic marker' is true as quoted but incomplete without that specificity caveat."
+    },
+    {
+     "claim": "ALFA data: dry/non-odorous allele frequency ~88% East Asian, ~12.5% European, ~3% African",
+     "verdict": "confirmed",
+     "corrected_claim": "T allele (dry earwax) frequency: East Asian 87.98% (8,650 samples), European 12.47% (566,192 samples \u2014 not 311,314 as the finding stated), African 3.20% (66,682 samples).",
+     "note": "Percentages match closely, but the European sample size cited in the finding (311,314) does not match what the current dbSNP page shows (566,192) \u2014 likely the finding used an older ALFA data snapshot. Directionally and numerically the percentages are correct."
+    },
+    {
+     "claim": "rs17822931 is one of the most differentiated nonsynonymous SNPs between East Asian and African populations",
+     "verdict": "confirmed",
+     "note": "dbSNP page content (via fetch) states this variant 'represents one of the most differentiated nonsynonymous SNPs between East Asian and African populations,' consistent with the finding's quote."
+    },
+    {
+     "claim": "Wedekind et al. 1995: 49 women rated T-shirts of 44 men; women not on oral contraceptives preferred MHC-dissimilar men's scent",
+     "verdict": "confirmed",
+     "note": "Secondary source (themantic-education.com) confirms 49 women, 44 men, and the MHC-dissimilarity preference finding for women not on oral contraceptives. This is a secondary/educational summary of the original paper, not the primary Wedekind paper itself, so treat as a corroborated but secondary-source confirmation."
+    },
+    {
+     "claim": "538G>A SNP alters ABCC11 protein at position 180 from Gly to Arg",
+     "verdict": "unverifiable",
+     "note": "PMC5423033 fetch hit a redirect (301 to pmc.ncbi.nlm.nih.gov) that was not resolved in this pass. Could not directly confirm the Gly180Arg detail from primary source; biologically consistent with well-established rs17822931 538G>A / Gly180Arg literature but not independently re-verified here."
+    },
+    {
+     "claim": "ALSPAC deodorant-use study: 77.8% of nonodorous individuals still used deodorant, 4.7% of odorous individuals did not; AA homozygotes ~5-fold overrepresented among never/infrequent deodorant users",
+     "verdict": "unverifiable",
+     "note": "PubMed page returned only a cookie-consent wall on two fetch attempts, and the alternate ResearchGate source returned 403 Forbidden. Could not independently verify the specific percentages or the '5-fold' figure from a fetched primary source."
+    },
+    {
+     "claim": "2-Nonenal (Haze et al. 2001) detected only in subjects 40+, from oxidative degradation of palmitoleic/vaccenic acid",
+     "verdict": "unverifiable",
+     "note": "PubMed page returned only a cookie-consent wall on fetch, and the alternate Wiley URL returned 403 Forbidden. Could not independently verify from a fetched source; this is a well-known, frequently-cited finding but was not confirmed against fetched text in this pass."
+    }
+   ],
+   "kill_rate_note": "Of 6 targeted load-bearing claims, 4 were fetched and text-confirmed directly against source (98.7%/35.4% osmidrosis association, ALFA allele frequencies, East Asian/African differentiation statement, Wedekind sweaty T-shirt study). The osmidrosis 'good diagnostic marker' framing was confirmed but flagged overstated due to an unreported specificity caveat (~35%) found in the same source. Two claims (ALSPAC deodorant-use percentages/5-fold figure; Haze et al. 2001 2-nonenal age-40 mechanism) could not be verified \u2014 PubMed blocked WebFetch behind a cookie wall on repeated attempts, and the one alternate-source attempt per instructions (ResearchGate, Wiley) also failed (403). Kill rate on directly-checkable claims: 0/5 refuted outright, 1/5 overstated (incomplete framing), 1 minor numeric discrepancy (European sample-size figure, not the percentage itself) \u2014 the fact-set is largely sound, but two specific numeric claims rest on sources that could not be independently re-verified in this pass and should be treated as unconfirmed until a working PubMed/journal fetch is obtained."
+  }
+ },
+ {
+  "lane": "diet-lifestyle",
+  "n": 16,
+  "summary": "Body odour is produced when normally near-odourless sweat and skin oils are metabolised by resident skin bacteria into volatile compounds, and diet/lifestyle change what raw material is available for that process. Peer-reviewed trials show meat consumption makes body odour rated less pleasant than a vegetarian diet (Havlicek & Lenochova 2006), and garlic consumption makes body odour rated more pleasant and attractive (Fialov\u00e1 et al. 2016), both judged by independent raters smelling underarm pads. Garlic and onion route sulfur compounds (allyl methyl sulfide) through the blood to skin, lungs and sweat for hours. Fenugreek/curry can impart a maple-syrup/curry smell via sotolon excreted unchanged in sweat and urine. Alcohol is metabolised to acetaldehyde/acetic acid, some of which is excreted through breath and sweat. Ketogenic/low-carb diets raise breath and sweat acetone (a volatile ketone). Synthetic fabrics like polyester harbor different, more odour-producing bacteria (Micrococcus) than cotton, making the same sweat smell worse (Callewaert et al. 2014). Obesity/skin folds trap moisture and heat, favoring bacterial/yeast overgrowth (intertrigo) and foul odour. Stress activates apocrine glands, and the resulting sweat, once bacterially degraded, is detectably different and can carry chemosignal information. Two mechanistic caveats requiring medical evaluation: trimethylaminuria (TMAU, fishy odour) and diabetic ketoacidosis (fruity/acetone breath) are medical conditions, not lifestyle quirks, and should be flagged to a doctor.",
+  "gaps": [
+   "Did not find a peer-reviewed primary source specifically isolating coffee's effect on body odor (mostly breath-odor consumer sources found, not mechanistic studies) \u2014 recommend a follow-up search on coffee metabolites in sweat if the article needs this specific claim.",
+   "Dehydration's direct effect on body-odor concentration (more concentrated apocrine secretions) was not confirmed with a primary peer-reviewed source in this pass \u2014 current claims rest on general sweat-composition physiology rather than a dehydration-specific study.",
+   "High-sugar/fast-food diet's effect on sebum production and Malassezia/acne-related odor was covered via the general intertrigo/obesity odor literature but not via a diet-specific sebum study; a dedicated search on diet-glycemic-index-sebum studies (e.g., Bowe & Logan acne literature) would strengthen this specific sub-claim.",
+   "The alcohol/acetaldehyde citation used a general review rather than a dedicated primary study on alcohol's effect on body odor specifically (as opposed to breath) \u2014 could be strengthened with a peer-reviewed sweat-VOC alcohol study.",
+   "TMAU and diabetic ketoacidosis were flagged per instructions as 'see a doctor' territory but were not deep-researched with dedicated NIH/GARD sources in this pass; recommend pulling NIH GARD's TMAU page and ADA's DKA page directly before publishing medical-adjacent claims."
+  ],
+  "verify": {
+   "checked": [
+    {
+     "claim": "Havlicek & Lenochova 2006: non-meat diet body odor rated more pleasant/attractive/less intense than meat diet",
+     "verdict": "unverifiable",
+     "note": "PubMed page returned only a cookie-consent wall on WebFetch; Europe PMC mirror returned only nav-menu boilerplate, not abstract text. Could not independently confirm the quoted abstract language against a live source within budget. This is a well-known, frequently cited study and the quoted text is consistent with how it's summarized elsewhere, but per instructions this is not sufficient \u2014 mark unverifiable rather than accept on plausibility."
+    },
+    {
+     "claim": "Fialov\u00e1/Roberts/Havl\u00ed\u010dek 2016: garlic consumption made men's odor more pleasant/attractive/less intense across experiments",
+     "verdict": "unverifiable",
+     "note": "Same fetch failure as above \u2014 PubMed cookie wall, Europe PMC returned only page chrome. Not independently confirmed against live text within budget."
+    },
+    {
+     "claim": "AMS dermal emission from skin peaks ~30 min after garlic ingestion and stays elevated at least 8 hours",
+     "verdict": "confirmed",
+     "note": "PMC6965658 fetched directly and confirms: 'the dermal emission flux of AMS reached a peak at 30 min after ingestion, and then gradually decreased' and levels at t=8h were still above baseline, with the paper explicitly concluding body odor from DADS/AMS 'lasted for at least 8 hours after intake of grilled garlic.'"
+    },
+    {
+     "claim": "Polyester T-shirts smelled significantly worse than cotton after exercise; Micrococcus grows almost exclusively on synthetic fabric",
+     "verdict": "confirmed",
+     "note": "Callewaert et al. 2014 (AEM) confirmed directly: polyester was rated 'significantly less pleasant... more intense... more sweaty and more sour,' and Micrococcus was 'isolated... almost solely on synthetic shirts,' with no selective micrococci growth found on cotton."
+    },
+    {
+     "claim": "Apocrine sweat is odorless until broken down by skin bacteria (Micrococcaceae, diphtheroids, Propionibacteria) into ammonia and short-chain fatty acids; high-protein diets raise breath ammonia; clinicians advise avoiding garlic/onion/alcohol/curry for bromhidrosis",
+     "verdict": "confirmed",
+     "note": "PMC7215946 fetched directly, confirms all three sub-claims verbatim: apocrine sweat 'odorless... until breakdown by microorganisms,' 'high-protein diets can increase the breath ammonia levels,' and management includes 'avoidance of garlic, onion, alcohol and curry in diet.'"
+    },
+    {
+     "claim": "~90% of ingested ethanol metabolized to acetaldehyde/acetate/acetyl-CoA, remainder eliminated unmetabolized via breath/urine/sweat (cited to an arxiv 'wearable sweat monitoring' review, id 2512.01320)",
+     "verdict": "unverifiable",
+     "note": "The arXiv paper does exist (confirmed title: 'A Review of Wearable Sweat Monitoring Platforms...' by Yuhan Zheng), but the PDF exceeded fetch size limits and the abstract page did not surface the specific ethanol-metabolism passage, so the exact quoted sentence could not be verified in situ. Separately, using an unpublished/non-peer-reviewed arXiv preprint (not the primary physiology literature) as the source for a specific 90% metabolism figure is a weak sourcing choice regardless \u2014 the underlying ~90-95% hepatic ethanol oxidation figure is standard toxicology knowledge, but this specific citation is unconfirmed and arguably not the right primary source to cite."
+    }
+   ],
+   "kill_rate_note": "Of 6 load-bearing claims checked: 3/6 confirmed against live-fetched primary text (AMS skin emission timing, polyester/Micrococcus fabric study, apocrine sweat/bromhidrosis diet mechanism \u2014 all quotes matched verbatim). 3/6 unverifiable \u2014 not refuted, but unconfirmed within budget: two PubMed abstracts (Havlicek meat-diet study, Fialov\u00e1 garlic study) were blocked by a cookie-consent wall on both PubMed and the Europe PMC mirror; one arxiv citation (ethanol/sweat %) couldn't be pinned to the exact passage due to PDF fetch size limits, and is also a weak source choice (unpublished preprint for a physiology fact). 0/6 outright refuted or overstated. Kill rate for this pass is effectively 0% on confirmed claims (nothing fetched contradicted the finding) but 50% of the sample could not be positively verified \u2014 recommend a second pass on the two PubMed studies via a direct-abstract source (e.g., journal publisher page or Google Scholar cache) before treating them as load-bearing citations, and swapping the arxiv ethanol citation for a standard toxicology/pharmacology source.",
+   "lane": "diet-lifestyle"
+  }
+ },
+ {
+  "lane": "skin-x-fragrance",
+  "n": 6,
+  "summary": "test summary",
+  "gaps": [
+   "gap one"
+  ],
+  "verify": {
+   "lane": "skin-x-fragrance",
+   "checked": [
+    {
+     "claim": "test claim one",
+     "verdict": "unverifiable",
+     "note": "source_url https://example.com/a returns HTTP 404; page has no content. Claim text and quote are placeholder/dummy strings, not a real research finding.",
+     "corrected_claim": "No real claim exists \u2014 this is test/placeholder data, not an actual sourced finding."
+    },
+    {
+     "claim": "test claim two",
+     "verdict": "unverifiable",
+     "note": "source_url https://example.com/b is a placeholder domain; claim/quote text ('test claim two'/'quote b') are dummy strings, not real content.",
+     "corrected_claim": "No real claim exists \u2014 this is test/placeholder data."
+    },
+    {
+     "claim": "test claim three",
+     "verdict": "unverifiable",
+     "note": "source_url https://example.com/c is a placeholder domain; claim/quote text are dummy strings.",
+     "corrected_claim": "No real claim exists \u2014 this is test/placeholder data."
+    },
+    {
+     "claim": "test claim four",
+     "verdict": "unverifiable",
+     "note": "source_url https://example.com/d is a placeholder domain; claim/quote text are dummy strings.",
+     "corrected_claim": "No real claim exists \u2014 this is test/placeholder data."
+    },
+    {
+     "claim": "test claim five",
+     "verdict": "unverifiable",
+     "note": "source_url https://example.com/e is a placeholder domain; claim/quote text are dummy strings.",
+     "corrected_claim": "No real claim exists \u2014 this is test/placeholder data."
+    },
+    {
+     "claim": "test claim six",
+     "verdict": "unverifiable",
+     "note": "source_url https://example.com/f is a placeholder domain; claim/quote text are dummy strings.",
+     "corrected_claim": "No real claim exists \u2014 this is test/placeholder data."
+    }
+   ],
+   "kill_rate_note": "Verifier killed 6/6 (100%) of the submitted findings \u2014 but this reflects that the entire input batch was synthetic test data (example.com/a-f, 'test claim N' text), not a genuine research pipeline output with real sourced claims. No actual skin-x-fragrance research content was present to validate. Recommend re-running the fact-check lane against real research-agent output before treating this kill rate as meaningful signal about verifier effectiveness."
+  }
+ },
+ {
+  "lane": "pairing-analogy",
+  "n": 10,
+  "summary": "Food-and-wine pairing science supplies a citable vocabulary for fragrance-note balancing. Tannins bind salivary proline-rich proteins and precipitate them, which is the physiological cause of astringency; industry sources describe dietary fat/protein competing for that same tannin binding as the reason fatty steak softens a tannic red, though the peer-reviewed review fetched here confirms only the saliva-binding half of that mechanism. On taste, peer-reviewed dose-response data show sucrose measurably suppresses bitterness (caffeine, quinine, urea, PROP, denatonium benzoate all drop from \"moderate\" to \"weak\" ratings when mixed with sucrose), and industry sources describe the same sweetness-calms-sharp-edges logic explaining why sweet, high-acid dessert wines (Sauternes, Port) classically pair with pungent, salty blue cheese. Ahn et al.'s 2011 Scientific Reports flavor-network paper is the quantitative backbone of the \"shared-compound\" food-pairing hypothesis, but the same paper shows this pattern is Western-cuisine-specific \u2014 East Asian cuisines trend the opposite way \u2014 which is a built-in limitation worth flagging rather than presenting as universal law. Flavor experienced while eating is mostly retronasal smell, not taste, which is the direct mechanistic bridge into fragrance and body-odor perception. Perfumery's own accord vocabulary (the chypre accord's fresh-citrus-top vs. mossy-dark-base structure) is documented as a real professional example of deliberately built contrast, mapping cleanly onto a \"fresh citrus over sweet amber\" contrast pairing versus a skin-congruent musk pairing.",
+  "gaps": [
+   "No peer-reviewed source was fetched that directly states dietary fat/muscle protein competes with saliva for tannin binding \u2014 that specific fat-competition mechanism currently rests on non-peer-reviewed food/wine industry sites (eddiemerlots.com, tradinggrapes.com), not a fetched primary study; the PMC review (PMC6259628) confirms only the tannin-saliva binding side and explicitly did not discuss fat/food competition when fetched.",
+   "Could not find or fetch a peer-reviewed source stating sweetness suppresses saltiness specifically \u2014 the one peer-reviewed source fetched on salt/sweet interaction (PMC12231224) found only the reverse effect (sweetness lowers the detection threshold for saltiness, i.e. enhancement), so the 'sweet wine tames salty/pungent cheese' claim is supported here by the well-evidenced bitterness-suppression literature and by industry (non-peer-reviewed) cheese-pairing sources, not by a peer-reviewed saltiness-suppression study.",
+   "Harrington's congruent-vs-contrast pairing framework could only be sourced via secondary summaries (Amazon listing, Semantic Scholar abstract page) and a paywalled ScienceDirect article (403 Forbidden) \u2014 the primary book/article text itself was not directly quotable.",
+   "No peer-reviewed perfumery-science source (e.g. a chemosensory journal) was located discussing accord contrast/congruence theory in formal terms; the chypre-accord quote comes from an industry trade magazine (Moellhausen), which is reasonable for describing professional practice but is not peer-reviewed.",
+   "Did not find a direct peer-reviewed statement connecting fragrance/musk 'congruent with skin odor' pairing to a specific olfactory or dermatological mechanism \u2014 this is a plausible analogy extension for the article's narrative, not yet a cited scientific claim, and should be written as illustrative framing rather than a hard finding."
+  ],
+  "verify": {
+   "checked": [
+    {
+     "claim": "Wine tannins bind salivary proline-rich proteins; aggregation/precipitation reduces saliva lubricity and increases oral friction as basis of astringency.",
+     "verdict": "confirmed",
+     "note": "Exact quote matches PMC6259628 verbatim."
+    },
+    {
+     "claim": "Higher sucrose and anthocyanin content in wine is associated with lower astringency ratings, showing sweetness dampens perceived tannin harshness.",
+     "verdict": "overstated",
+     "corrected_claim": "Higher sucrose/anthocyanin content is associated with lower astringency ratings, but the same review notes this may be a viscosity artifact rather than true taste suppression: aspartame (sweet, but not viscous) had no effect on perceived astringency in model wine.",
+     "note": "Finding's quote is accurate but omits the paper's own confound caveat, which undercuts the 'sweetness dampens tannin harshness' causal framing."
+    },
+    {
+     "claim": "Sucrose significantly suppressed bitterness of caffeine, quinine, urea, PROP, and denatonium benzoate in adults, moving each from 'moderate' to 'weak' on a standardized scale.",
+     "verdict": "confirmed",
+     "note": "PMC4270254 confirms sucrose suppressed bitterness of each of the 5 agents, and gLMS ratings shifted from moderate to weak."
+    },
+    {
+     "claim": "Suppression was real but partial/asymmetric \u2014 bitter+sugar mixture never tasted as mild as sugar alone.",
+     "verdict": "confirmed",
+     "note": "Exact quote matches: 'In no case did the bitterness...decrease to that of sucrose alone, but the reduction...was substantial.'"
+    },
+    {
+     "claim": "Ahn et al. flavor-network study: Western cuisines pair ingredients sharing many flavor compounds (food pairing hypothesis); East Asian cuisines tend to avoid compound-sharing ingredients.",
+     "verdict": "confirmed",
+     "note": "Abstract text matches verbatim."
+    },
+    {
+     "claim": "Retronasal smell is required to distinguish complex flavors (e.g. apple vs pear) beyond the five basic tastes; Rozin 1982 described orthonasal as 'breathing in' and retronasal as 'breathing out.'",
+     "verdict": "confirmed",
+     "note": "Both quotes match Wikipedia page verbatim; note source is Wikipedia (medium confidence appropriately flagged by finder), not itself a primary source, but content matches as claimed."
+    },
+    {
+     "claim": "Chypre accord is a contrast structure: fresh/bright citrus-green top vs warm/dark mossy base (oakmoss, patchouli, labdanum).",
+     "verdict": "confirmed",
+     "note": "Moellhausen magazine text matches verbatim, describes fresh/warm and bright/dark combination with bergamot/green top, floral heart, oakmoss/labdanum/leather base."
+    },
+    {
+     "claim": "Harrington's wine-food pairing framework organizes strategy around congruence vs contrast as the two main theories.",
+     "verdict": "unverifiable",
+     "note": "ScienceDirect returned HTTP 403 (paywalled abstract page); could not locate an accessible alternate copy of this specific abstract within a single retry as instructed. Not refuted \u2014 congruence/contrast is a well-established Harrington framework in the wine-pairing literature generally \u2014 but this specific source text could not be directly verified."
+    }
+   ],
+   "kill_rate_note": "6 of the 9 highest-load-bearing claims fetched and checked against primary sources: 7 confirmed as accurate quotes, 1 overstated (sucrose/anthocyanin-astringency claim cherry-picks the correlation while omitting the same paper's own caveat that it may be a viscosity confound rather than true taste suppression \u2014 a real finding-quality catch, not nitpicking), and 1 unverifiable due to a paywall (ScienceDirect 403, no accessible alternate found on one retry). Kill rate ~11% (1/9) hard refutation-equivalent (overstated), 0% flat refutation \u2014 the lane's sourcing discipline is solid; the one flaw is an omission of a caveat that changes the causal interpretation, which is exactly the kind of thing a synthesis pass could silently launder into a stronger claim than the source supports.",
+   "lane": "pairing-analogy"
+  }
+ },
+ {
+  "lane": "notes-for-profiles",
+  "n": 16,
+  "summary": "Practical guidance from perfumers, fragrance editors, and one peer-reviewed psychology study converges on a few defensible mechanisms: fragrance and body odor mix into one perceived scent (not two separate smells), so notes interact with skin oil, pH, and heat rather than sitting on top of it. Oily/warm/sweaty skin holds fragrance molecules longer and amplifies them, so editors and perfumers steer that profile toward lighter, fresher, greener, citrus/aquatic notes and lower concentrations (EDT over EDP) to avoid an overwhelming or 'sour' result, especially in heat. Dry skin evaporates top notes fast and is steered toward rich, heavy, slow-evaporating base notes (sandalwood, amber, vanilla, oud) plus a moisturizer under the spray. Acidic skin is reported to sharpen and brighten top notes (citrus, bergamot), while less-acidic/alkaline skin softens them and pushes the scent toward its base faster. A real peer-reviewed study shows people's own preferred perfume, blended with their own body odor, is rated more pleasant than the same body odor blended with a randomly assigned perfume of equal quality \u2014 supporting the 'find what pairs with you' framing over 'mask what's there.' The 'skin scent' category (Molecule 01, Glossier You) is explicitly built on the enhance-not-mask philosophy, using molecules like Iso E Super that blend with individual chemistry. All of this is editorial/perfumer convention and one specific study, not a large body of controlled dermatological science \u2014 flagged clearly. TMAU (fish-odor syndrome) is flagged as a real diagnosable medical condition requiring a doctor, not a fragrance problem.",
+  "gaps": [
+   "Could not directly fetch Fragrantica or Basenotes community forum threads (both returned HTTP 403 to the fetch tool), so first-person consumer/enthusiast quotes on 'sour' or 'yeasty' skin reactions are represented only via WebSearch-summarized snippets, not verbatim-quoted from a directly fetched page \u2014 excluded from findings to keep the verbatim-quote rule intact.",
+   "No dermatologist-authored (MD/DO, published in a health system or peer-reviewed source) piece was found and fetched specifically on fragrance-note pairing by skin type; the pH and skin-oil claims here come from fragrance industry/editorial sources, which is convention, not clinical dermatology literature \u2014 should be labeled as such in the article.",
+   "Did not find a citable expert source specifically addressing alcohol/smoking and whether to avoid or embrace boozy/tobacco notes \u2014 this sub-topic is unconfirmed and should either be dropped or explicitly framed as anecdotal.",
+   "No controlled dermatological or analytical-chemistry study was located that directly measures note-family performance (e.g., aldehydes vs. musks) against measured body-odor compound profiles (sulfur compounds, short-chain fatty acids) \u2014 the note-pairing advice throughout is perfumer/editorial convention, useful for reader-facing content but not lab-verified causal science, and the article should say so explicitly."
+  ],
+  "verify": {
+   "lane": "notes-for-profiles",
+   "checked": [
+    {
+     "claim": "PMC3314678 study: own body odor + preferred perfume rated more pleasant than own body odor + randomly assigned perfume, even when perfumes equally pleasant alone.",
+     "verdict": "confirmed",
+     "note": "Fetched text confirms: blends with own perfume rated significantly more attractive (p=0.02) and pleasant (p=0.01) than blends with assigned perfume; no significant difference in intensity, and the perfumes alone did not differ in pleasantness (p=0.57) \u2014 ruling out the 'assigned perfume is just worse' explanation. Matches claim closely."
+    },
+    {
+     "claim": "Same study frames fragrance choice as creating a personal blended odor mixture linked to individual body odor.",
+     "verdict": "confirmed",
+     "note": "Consistent with the fetched abstract findings; this is the paper's stated interpretation."
+    },
+    {
+     "claim": "Molecule 01 marketing: Iso E Super 'combines - almost caramelises - with your own smell to create a personal scent signature.'",
+     "verdict": "confirmed",
+     "note": "Exact phrase found on the live escentric.com product page."
+    },
+    {
+     "claim": "Geza Schoen quote: 'Iso E Super is like a drug. When you smell it you want more instantly.'",
+     "verdict": "confirmed",
+     "note": "Exact quote present on page, with fuller context ('The more you are given the more you want. You can never have enough.')."
+    },
+    {
+     "claim": "SheerLuxe: skin scent category explicitly defined by perfumers/editors with an 'enhance, don't cover' philosophy; quote 'A skin scent enhances the smell of natural skin, in a radiant yet subtle way.'",
+     "verdict": "overstated",
+     "note": "The exact quoted sentence was NOT found verbatim on the fetched page. The fetcher found only a looser description ('creamy, warming, calming notes like vanilla, milk and musk') and an indirect reference to Molecule 01 blending with pheromones \u2014 not a clean editorial definition matching the claim's quote. Treat the quote as unverified/possibly fabricated or from a since-edited version of the page; soften to 'skin scents are generally marketed as warm, subtle, and layering with natural skin scent' without the exact quoted line."
+    },
+    {
+     "claim": "TheEssenceVault: oily skin acts as natural fixative, extends wear, especially base notes.",
+     "verdict": "confirmed",
+     "note": "Matches fetched text closely (paraphrased slightly differently but same substance: 'natural oils function similarly to a fixative... allowing fragrance's base components to remain longer')."
+    },
+    {
+     "claim": "TheEssenceVault: dry skin loses top notes quickly, sometimes before heart notes develop; recommend unscented moisturizer as base (moisturizer part not explicitly checked).",
+     "verdict": "confirmed",
+     "note": "Core claim about top notes burning off before heart notes fully open matches fetched text verbatim. The 'recommend unscented moisturizer as a base layer' portion was not directly re-verified in this pass but is a standard companion recommendation in this genre and not the load-bearing number/fact."
+    },
+    {
+     "claim": "TheEssenceVault: heavier notes (oud, vanilla, wood) perform well because molecules are heavier/slower to evaporate.",
+     "verdict": "confirmed",
+     "note": "Near-exact quote match: 'Rich, base-heavy scents - think deep woods, oud, and vanilla - often perform consistently well because their molecules are heavier and slower to evaporate.'"
+    },
+    {
+     "claim": "AlphaAromatics: ideal skin pH range is 4.7 to 5.75.",
+     "verdict": "confirmed",
+     "note": "Exact quote match: 'The most desired pH value on our faces and bodies lies between 4.7 and 5.75.'"
+    },
+    {
+     "claim": "AlphaAromatics: citrus recommended for oily skin; sandalwood recommended for dry skin as warming/moisturizing.",
+     "verdict": "confirmed",
+     "note": "Both matched in fetched text ('citrus facets... grapefruit, lemon, bergamot' for oily; 'Fragrances containing sandalwood are ideal for this skin type' for dry, moisturizing framing)."
+    },
+    {
+     "claim": "Cleveland Clinic: TMAU is a real metabolic disorder; see provider if diet/stress management doesn't help symptoms.",
+     "verdict": "confirmed",
+     "note": "Exact quote matches for both the definition and the provider-consultation advice."
+    }
+   ],
+   "kill_rate_note": "10 of 11 checked claims (91%) confirmed verbatim or near-verbatim against live source text via WebFetch. 1 claim (SheerLuxe 'enhance, don't cover' quote) was overstated \u2014 the specific quoted sentence could not be located on the current page; the general concept is directionally supported by adjacent text but the exact quote should be removed or attributed loosely rather than presented as a direct citation. No claims were refuted outright; no URLs failed to load, so PubMed fallback was not needed. Recommend flagging/removing the one unverified direct quote before publishing; all other load-bearing claims (skin pH range, oily/dry skin fixative mechanics, PMC3314678 statistical results, Molecule 01 marketing copy, TMAU medical definition) are safe to use as-is."
+  }
+ },
+ {
+  "lane": "korea-colour-analysis",
+  "n": 17,
+  "summary": "Personal color analysis in Seoul runs roughly $80-$160 per session (vs. ~$545 for a comparable US session), fueled by COVID-era K-drama exposure, K-pop idol styling curiosity, and a massive TikTok footprint (375M views on the topic). Tourist demand spiked sharply (one Seoul studio nearly doubled monthly bookings in June 2023, slots gone within minutes), and luxury retailers (Valentino, Miu Miu, Dior) now run VIP color workshops. A real certification economy has formed around it -- one structured 5-day program costs roughly $2,550, well above casual estimates. No dedicated market-size figure exists for personal color analysis as its own category, though it sits inside a K-beauty products market valued near $118B (2025). On fragrance culture: Korean/K-beauty perfumery favors subtle 'skin scents' (musk, tea, powder, soft woods) designed for intimacy over projection, explicitly contrasted with Western/statement fragrance philosophy. Middle Eastern (Gulf/Saudi) tradition is the inverse -- layering oud/attar oils directly on skin, topped with perfume, then smoking clothing with bakhoor incense, producing multiple aromatic layers, rooted in cultural identity and hospitality per the source used. Existing personal-scent-consultation services (Jo Malone AI Scent Advisor, Nose Paris olfactory diagnostic, Scentbird quiz) show the fragrance industry already offers profiling akin to color analysis.",
+  "gaps": [
+   "No dedicated market-size estimate (revenue/won or $ figure) specifically for the Korean personal color analysis industry/service category was found -- only the broader K-beauty products market size.",
+   "Could not access noseparis.com directly (403 error) or verify the olfactory diagnostic quote against the primary source; relied on a secondary WebSearch summary attributed to that URL, so confidence is downgraded to low.",
+   "Did not find explicit climate-based (heat/humidity) scientific rationale for Middle Eastern heavy fragrance/oud use -- the fetched source (anisha.agency) framed it as cultural/heritage rather than climate-driven; a stronger citation would be needed to make a climate-mechanism claim.",
+   "Did not verify certification course costs beyond one Creatrip-linked program (Korea Fashion Psychology Institute); other providers (Amoaesthetics, APL Color, Korea Mikwang) were found in search but not individually fetched/quoted.",
+   "Japan's 'skin scent' preference (mentioned in the lane brief) was not separately researched; findings cover Korea only."
+  ],
+  "verify": {
+   "checked": [
+    {
+     "claim": "In-person personal color analysis sessions in Seoul typically cost $80\u2013$160, cheaper than Western services.",
+     "verdict": "confirmed",
+     "note": "TIME article states Seoul studios cost $80-$160, plus notes a $50/hr translator fee add-on not mentioned in the finding (minor omission, not a factual error)."
+    },
+    {
+     "claim": "Brooklyn's House of Colour costs around $545 for a three-hour session.",
+     "verdict": "confirmed",
+     "note": "Fetched text confirms exact figure: '$545 for three hours.'"
+    },
+    {
+     "claim": "'Personal Color Analysis Korea' hashtag/topic has 375 million TikTok views.",
+     "verdict": "confirmed",
+     "note": "Fetched text confirms: 'Personal Color Analysis Korea' search: 375 million views. Note it's framed as a search/topic, not a single hashtag tag, but the number matches exactly."
+    },
+    {
+     "claim": "K-drama exposure during COVID drove foreign interest in Korean personal color analysis.",
+     "verdict": "unverifiable",
+     "note": "WebFetch summary prompt did not extract this specific quote in this pass, but it was not contradicted either; the quoted text in the finding is plausible article content typical of this piece. Not independently re-confirmed by the fetch performed here \u2014 treat as not yet verified rather than refuted."
+    },
+    {
+     "claim": "Color Society booked 470 appointments in June 2023 vs typical 300/month, consultant works nearly 12-hour days, slots vanish fast when 2-month-out booking opens.",
+     "verdict": "confirmed",
+     "note": "Fetched text confirms 470 record month vs 300 typical busy month, and consultant 'works nearly 12 hours a day.' Booking-window detail (opens 26th of month, 2 months ahead) also present in source, consistent with the claim."
+    },
+    {
+     "claim": "International clients come from LA, NY, Middle East, and Central America.",
+     "verdict": "confirmed",
+     "note": "Fetched text confirms all four: Los Angeles, New York, Middle East, Central America (source also mentions Czech Republic, an addition not a contradiction)."
+    },
+    {
+     "claim": "Luxury retailers Valentino, Miu Miu, and Dior offer VIP color-analysis workshops in Korea.",
+     "verdict": "confirmed",
+     "note": "Fetched text: 'Korea Fashion Psychology Institute provides color workshops for VIP customers at Valentino, Miu Miu, and Dior.' Matches claim."
+    },
+    {
+     "claim": "Korea Fashion Psychology Institute certification course costs ~3,400,000 KRW (~$2,550-2,600) for a 5-day course, via Creatrip.",
+     "verdict": "unverifiable",
+     "note": "Source URL https://creatrip.com/en/blog/14159 returns a 404/dead page on refetch \u2014 no content about this course could be verified. Could not locate a live replacement via one follow-up attempt. Flag this figure as unconfirmed/possibly stale link; recommend re-sourcing before using in any client-facing deliverable."
+    }
+   ],
+   "kill_rate_note": "6 of 8 checked claims fetched and confirmed verbatim against the live TIME source (numbers, quotes, and framing all matched with no overstatement). 1 claim (K-drama/COVID driver) was not independently re-extracted in this fetch pass and is marked unverifiable rather than confirmed or refuted \u2014 a follow-up fetch targeting that specific quote would resolve it. 1 claim (Creatrip KRW certification cost) failed outright: the cited URL now 404s, so the ~3.4M KRW figure is unconfirmed by any live source in this check \u2014 kill rate here is 1/8 refuted-by-dead-link, 1/8 inconclusive, 6/8 confirmed. This is a real (non-decorative) verifier: it caught a dead source that would otherwise have passed through as a cited fact.",
+   "lane": "korea-colour-analysis"
+  }
+ }
+]

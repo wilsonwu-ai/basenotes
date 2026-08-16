@@ -1,0 +1,898 @@
+[
+ {
+  "lane": "topics-body-odour",
+  "title": "Why Do I Still Smell After Showering? The Science of Body Odor Bacteria",
+  "primary_keyword": "why do i smell after showering",
+  "secondary_keywords": [
+   "still smell after shower",
+   "body odor after washing",
+   "sweat smell won't go away"
+  ],
+  "intent": "informational",
+  "why": "Sourced article states: 'Bacteria are to blame, and there are at least three places where you could be missing them even with good hygiene: your skin, your hair, and your clothing... when sweat mixes with the bacteria on our skin, it produces an odor.' Multiple shower-mistake explainers (soap technique, exfoliation, washcloth hygiene) rank for this exact question, showing steady informational demand.",
+  "evidence_url": "https://www.zerotaboos.com/blogs/news/smell-after-shower",
+  "cluster": "Body odor science",
+  "angle": "notes education",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Sweat Doesn't Actually Smell \u2014 Here's the Bacteria (and Gene) Behind Body Odor",
+  "primary_keyword": "why does sweat smell",
+  "secondary_keywords": [
+   "sweat bacteria body odor",
+   "apocrine vs eccrine glands",
+   "ABCC11 gene body odor"
+  ],
+  "intent": "informational",
+  "why": "Cleveland Clinic-sourced explainer confirms 'sweat itself doesn't have a smell... body odor occurs when sweat comes in contact with bacteria on your skin,' naming Staphylococcus hominis and Corynebacterium as the specific microbes, and citing the ABCC11 gene: 'Among Europeans only about 2% carry it; in East Asia it's 80 to 95%.' This gene-frequency fact is a strong, citable hook with almost no competing content that explains it plainly.",
+  "evidence_url": "https://seed.com/cultured/sweat-and-the-skin-microbiome/",
+  "cluster": "Body odor science",
+  "angle": "notes education",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Sweat vs. Body Odor: What's Actually Happening on Your Skin",
+  "primary_keyword": "sweat vs body odor",
+  "secondary_keywords": [
+   "eccrine sweat vs apocrine sweat",
+   "does sweat smell",
+   "underarm sweat smell"
+  ],
+  "intent": "informational",
+  "why": "Same source draws the eccrine/apocrine distinction explicitly: 'sweat from eccrine glands is mostly water... it is odorless. Sweat from apocrine glands contains lipids, proteins, and other substances... it becomes smelly when broken down by bacteria on the skin.' This is a recurring PAA-style distinction that competitor dermatology/wellness content covers but fragrance brands rarely do \u2014 a differentiation angle for Base Note's blog.",
+  "evidence_url": "https://seed.com/cultured/sweat-and-the-skin-microbiome/",
+  "cluster": "Body odor science",
+  "angle": "notes education",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Do Some People Genetically Not Have Body Odor? The ABCC11 Gene Explained",
+  "primary_keyword": "why do some people not smell",
+  "secondary_keywords": [
+   "genetic body odor gene",
+   "ABCC11 no body odor",
+   "east asian body odor gene"
+  ],
+  "intent": "informational",
+  "why": "Zindeo's ranking article title 'Why Some People Don't Have Body Odor \u2014 The Science' plus the Seed-sourced ABCC11 population stat (2% Europe vs 80-95% East Asia) shows an active, under-served explainer niche with a hard scientific hook, ideal for organic sharing on Reddit/TikTok per Base Note's channel priority.",
+  "evidence_url": "https://www.zindeo.com/blogs/news/why-some-people-don-t-smell-at-all",
+  "cluster": "Body odor science",
+  "angle": "notes education",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Foods That Make You Smell: Garlic, Onions, and the Sulfur Compound Problem",
+  "primary_keyword": "foods that make you smell",
+  "secondary_keywords": [
+   "garlic body odor",
+   "onion sweat smell",
+   "foods that cause body odor"
+  ],
+  "intent": "informational",
+  "why": "Cleveland Clinic-sourced piece confirms 'garlic produces sulfur compounds that can linger in your sweat... onions have the same sulfur compounds that are absorbed into your bloodstream and later expelled through your sweat glands,' plus cruciferous vegetables, red meat, and spices as secondary culprits \u2014 a full PAA cluster ('garlic body odour' was explicitly requested) with several competing but generic AOL/Foxnews listicles Base Note can outrank with a fragrance-brand spin.",
+  "evidence_url": "https://health.clevelandclinic.org/how-7-different-foods-affect-your-body-odor",
+  "cluster": "Body odor science",
+  "angle": "honest",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Does Drinking Alcohol Make You Smell Worse? What's in Boozy Sweat",
+  "primary_keyword": "alcohol body odor",
+  "secondary_keywords": [
+   "does drinking make you smell",
+   "alcohol sweat smell",
+   "sweating out alcohol"
+  ],
+  "intent": "informational",
+  "why": "Sourced explainer states plainly: 'Alcohol is metabolized into acetic acid, which can be released through your sweat and give your body odor a sour note,' and 'people who drink alcohol frequently may have sweat that contains fatty acids that release a sweet and pungent odor' \u2014 directly matches the requested 'alcohol body odour' seed topic and has thin, forum-only competing coverage (Anandtech threads), leaving room for an authoritative brand article.",
+  "evidence_url": "https://www.aol.com/news/9-foods-cause-body-odor-180008906.html",
+  "cluster": "Body odor science",
+  "angle": "honest",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Why Does Perfume Smell Different on Me Than on the Bottle (or My Friend)?",
+  "primary_keyword": "why does perfume smell different on me",
+  "secondary_keywords": [
+   "skin chemistry perfume",
+   "perfume smells different on everyone",
+   "why perfume changes on skin"
+  ],
+  "intent": "informational",
+  "why": "Multiple ranking competitor blogs (Snif, Alpha Aromatics, So Avant Garde, Lescento) converge on the same explanation: 'more acidic skin (lower pH) breaks down fragrance molecules faster... oily skin tends to hold scent longer, as oils trap fragrance molecules... skin is around 37\u00b0C, and that warmth makes a difference.' High search volume evidenced by 7+ independent competitor articles targeting the identical phrase \u2014 a must-have pillar page for Base Note's 'build your signature rotation' positioning.",
+  "evidence_url": "https://snif.co/blogs/news/body-chemistry-perfume",
+  "cluster": "Skin chemistry & perfume performance",
+  "angle": "flat-price luxury",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Skin Chemistry and Perfume: Myth vs. Reality",
+  "primary_keyword": "skin chemistry perfume myth",
+  "secondary_keywords": [
+   "does skin chemistry affect perfume",
+   "perfume ph skin",
+   "body chemistry fragrance science"
+  ],
+  "intent": "informational",
+  "why": "The same cluster of competitor articles treats 'skin chemistry' as established fact rather than testing the myth angle \u2014 an opening for Base Note to write the more rigorous, mechanism-first version (pH, oil, temperature, hormones/diet) that was explicitly requested as a seed topic, positioning the 5ml rotation model as the practical solution to 'you can't know how it'll smell on you until you try it.'",
+  "evidence_url": "https://lescento.com/blogs/news/why-perfume-smells-different-on-everyone-skin-chemistry-memory-and-longevity-explained",
+  "cluster": "Skin chemistry & perfume performance",
+  "angle": "flat-price luxury",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Do Hormones and Your Cycle Change How Perfume Smells on You?",
+  "primary_keyword": "hormones perfume smell different",
+  "secondary_keywords": [
+   "perfume smells different during period",
+   "hormones body odor fragrance",
+   "menstrual cycle perfume"
+  ],
+  "intent": "informational",
+  "why": "Alpha Aromatics-sourced content notes: 'hormones can greatly alter a perfume's intrinsic nature; when estrogen levels drop... a woman may become overheated more easily and sweat a little more, which in turn will affect whatever perfume she may be wearing' \u2014 a specific, underexplored sub-angle inside the broader skin-chemistry cluster with essentially no dedicated competing article found in this research pass.",
+  "evidence_url": "https://www.alphaaromatics.com/blog/perfumes-smell-differently/",
+  "cluster": "Skin chemistry & perfume performance",
+  "angle": "notes education",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Best Fragrance Notes for Oily Skin (and Which Ones to Avoid)",
+  "primary_keyword": "best fragrance notes for oily skin",
+  "secondary_keywords": [
+   "perfume for oily skin",
+   "fragrance notes oily skin longevity",
+   "oily skin cologne recommendations"
+  ],
+  "intent": "commercial",
+  "why": "PerfumeOnSkin-sourced research explains 'scents with crisp citrus, green notes, woods, herbs, tea, iris, vetiver, pepper... perform well because they keep shape as the skin warms them up,' while warning 'vanilla-heavy gourmands, syrupy fruits, caramel accords, thick ambers... can become more intense on oily skin than the perfumer likely intended.' This is a direct hand-off to product: recommend specific woody/citrus fragrances from the 22-scent Base Note library.",
+  "evidence_url": "https://perfumeonskin.com/best-perfume-for-oily-skin/",
+  "cluster": "Skin chemistry & perfume performance",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "How to Make Cologne Last Longer: Pulse Points, Moisturizer, and Concentration",
+  "primary_keyword": "how to make cologne last longer",
+  "secondary_keywords": [
+   "make perfume last longer",
+   "cologne longevity tips",
+   "vaseline perfume trick"
+  ],
+  "intent": "informational",
+  "why": "Sourced tips confirm 'hydrated skin holds scent better,' the viral 'Vaseline hack... rub some Vaseline on your pulse points before you spritz,' and that 'an eau de parfum (EDP) tends to linger longer than an eau de toilette (EDT).' Multiple AOL/lifestyle roundups already rank for this exact phrase \u2014 high, evergreen informational demand explicitly requested as a seed topic.",
+  "evidence_url": "https://www.aol.com/news/apply-cologne-lasts-183022226.html",
+  "cluster": "Application & wear technique",
+  "angle": "notes education",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Best Fragrances for the Gym: Light Scents That Won't Clash with Sweat",
+  "primary_keyword": "best cologne for the gym",
+  "secondary_keywords": [
+   "fragrance for working out",
+   "gym cologne recommendations",
+   "light cologne for sweat"
+  ],
+  "intent": "commercial",
+  "why": "Ranking roundup content states 'for post-workout fragrances, light, fresh options work best, including citrusy bursts, oceanic breezes, and soft floral whispers that linger without overpowering,' and cites specific product picks (Fierce, Chance Eau Fra\u00eeche) \u2014 direct evidence of commercial-intent demand for a gym-specific fragrance guide, a natural vehicle for Base Note's flat-price rotation pitch versus buying single $150+ bottles for one use-case.",
+  "evidence_url": "https://gulfnews.com/best-buys/BestBuys-lifestyle/7-best-post-workout-perfumes-to-stay-fresh-when-youre-in-a-rush-uae-2025-1.500255211",
+  "cluster": "Application & wear technique",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Layering Fragrance with Matching Shower Gel and Lotion: Does It Actually Work?",
+  "primary_keyword": "fragrance layering shower gel",
+  "secondary_keywords": [
+   "scent layering technique",
+   "perfume lotion layering",
+   "make perfume last longer layering"
+  ],
+  "intent": "informational",
+  "why": "Same longevity-tips source lists 'layering with the corresponding bath or shower gel and lotion is another good practice to help your fragrance last longer' as a named technique alongside pulse points and Vaseline \u2014 a distinct, low-competition sub-topic within the broader 'make it last longer' cluster worth its own explainer plus product tie-in (sampling multiple scents means layering only makes sense per-fragrance, a natural rotation argument).",
+  "evidence_url": "https://www.aol.com/news/apply-cologne-lasts-183022226.html",
+  "cluster": "Application & wear technique",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "EDT vs EDP vs Parfum: Why Concentration Determines How Long Your Scent Lasts",
+  "primary_keyword": "edt vs edp difference",
+  "secondary_keywords": [
+   "eau de parfum vs eau de toilette",
+   "perfume concentration explained",
+   "which lasts longer edp or edt"
+  ],
+  "intent": "informational",
+  "why": "Confirmed by sourced content: 'An eau de parfum (EDP) tends to linger longer than an eau de toilette (EDT), since parfum is most concentrated.' This is one of the highest-volume, evergreen fragrance-education queries and a prerequisite concept for shoppers comparing Base Note's $20/month flat rate against buying full bottles at varying concentrations/prices.",
+  "evidence_url": "https://www.aol.com/news/apply-cologne-lasts-183022226.html",
+  "cluster": "Application & wear technique",
+  "angle": "flat-price luxury",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Why Base Notes Matter More Than Top Notes for All-Day Longevity",
+  "primary_keyword": "what are base notes in perfume",
+  "secondary_keywords": [
+   "base notes vs top notes",
+   "perfume pyramid explained",
+   "longest lasting fragrance notes"
+  ],
+  "intent": "informational",
+  "why": "PerfumeOnSkin content specifies 'base notes including vanilla, sandalwood, cedarwood, musk, and patchouli determine how long the fragrance truly lingers' \u2014 this is foundational fragrance-education content that also functions as brand-name reinforcement (Base Note = base notes), a natural pillar/glossary page tying directly to the brand identity.",
+  "evidence_url": "https://perfumeonskin.com/best-perfume-for-oily-skin/",
+  "cluster": "Notes education / glossary",
+  "angle": "notes education",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Garlic Body Odor: Why It Happens and How Long It Lasts",
+  "primary_keyword": "garlic body odor",
+  "secondary_keywords": [
+   "garlic sweat smell how long",
+   "does garlic make you smell",
+   "garlic BO remedy"
+  ],
+  "intent": "informational",
+  "why": "Directly evidenced: sulfur compounds from garlic 'linger in your sweat and create a pungent odor that seeps through your pores' (Cleveland Clinic-sourced), with a competing counter-narrative also found \u2014 'eating garlic could improve your body odor according to some research' (Psychology Today) \u2014 giving Base Note a genuinely balanced, 'here's the nuance nobody explains' honest-angle article distinct from generic listicles.",
+  "evidence_url": "https://www.psychologytoday.com/us/blog/attraction-evolved/201511/eating-garlic-makes-men-smell-more-attractive",
+  "cluster": "Body odor science",
+  "angle": "honest",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Deodorant vs. Cologne: Why You Still Need Both",
+  "primary_keyword": "deodorant vs cologne",
+  "secondary_keywords": [
+   "do i need deodorant and cologne",
+   "cologne doesn't cover body odor",
+   "deodorant and fragrance combo"
+  ],
+  "intent": "informational",
+  "why": "Directly implied by the body-odor-bacteria mechanism confirmed above: since BO originates from bacteria breaking down apocrine sweat at the source, fragrance applied elsewhere cannot neutralize it \u2014 competing dermatology/wellness content (Cleveland Clinic body odor page, Seed microbiome article) establishes the mechanism but no fragrance-brand content connects it explicitly to 'cologne is not a BO fix' \u2014 a high-trust, honest-angle piece that also upsells layering multiple scents from the rotation for different contexts.",
+  "evidence_url": "https://my.clevelandclinic.org/health/symptoms/17865-body-odor",
+  "cluster": "Body odor science",
+  "angle": "honest",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Hyperhidrosis and Excessive Sweating: When Body Odor Is a Medical Issue",
+  "primary_keyword": "excessive sweating body odor medical",
+  "secondary_keywords": [
+   "hyperhidrosis body odor",
+   "when to see a doctor about body odor",
+   "bromhidrosis"
+  ],
+  "intent": "informational",
+  "why": "Healthline's ranking bromhidrosis page and Cleveland Clinic's body odor symptoms page (both surfaced in this research pass) indicate steady informational + navigational demand for the medical edge case, distinct from routine BO \u2014 an opportunity for a short, honest 'when it's not just hygiene, talk to a doctor' article that builds trust rather than overselling fragrance as a cure, consistent with Base Note's non-clinical brand voice.",
+  "evidence_url": "https://www.healthline.com/health/bromhidrosis",
+  "cluster": "Body odor science",
+  "angle": "honest",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-body-odour",
+  "title": "Cruciferous Vegetables, Red Meat, and Spices: The Full List of Foods That Affect Body Odor",
+  "primary_keyword": "foods that cause body odor list",
+  "secondary_keywords": [
+   "cruciferous vegetables body odor",
+   "red meat body odor",
+   "spices sweat smell"
+  ],
+  "intent": "informational",
+  "why": "Sourced content specifies distinct mechanisms per food group: 'cruciferous vegetables like broccoli, cabbage, cauliflower and Brussels sprouts can cause body odor when they release sulfuric acid,' 'red meat is harder for your body to digest... can lead to an increase in body odor,' and 'spices like curry and cumin contain volatile compounds that are absorbed by the bloodstream and released through the sweat glands.' A comprehensive, single-URL competing piece (Cleveland Clinic) validates strong topic demand; Base Note can build a more visual/practical version tied to the 'know before your date/gym/interview' rotation use case.",
+  "evidence_url": "https://health.clevelandclinic.org/how-7-different-foods-affect-your-body-odor",
+  "cluster": "Body odor science",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Tom Ford Oud Wood Review: Is It Actually Worth the Private Blend Price?",
+  "primary_keyword": "tom ford oud wood review",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "is oud wood worth it",
+   "tom ford oud wood worth the money",
+   "oud wood overrated"
+  ],
+  "why": "Multiple 2026 review sites are actively litigating whether Oud Wood is worth Private Blend pricing, with reviewers split ('overhyped and overrated' vs. 'defined a category'), and longevity called 'underwhelming at Private Blend pricing' \u2014 classic try-before-you-buy demand.",
+  "evidence_url": "https://www.fragrantica.com/perfume/Tom-Ford/Oud-Wood-1826.html",
+  "cluster": "house-review:tom-ford",
+  "angle": "flat-price luxury",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Parfums de Marly Herod Review: Buy or Not? What 6,000 Fragrantica Voters Say",
+  "primary_keyword": "parfums de marly herod review",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "herod worth it",
+   "pdm herod buy or not",
+   "herod reformulation"
+  ],
+  "why": "Fragrantica has an active club thread literally titled 'Herod - Buy Or Not?' plus a second thread 'Herod Parfums de Marly?' \u2014 direct evidence of purchase-hesitation search intent; Herod holds 5,974 votes at 4.47/5.",
+  "evidence_url": "https://www.fragrantica.com/board/viewtopic.php?id=261124",
+  "cluster": "house-review:parfums-de-marly",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Parfums de Marly Pegasus Review: Is the Almond-Vanilla Hype Real?",
+  "primary_keyword": "parfums de marly pegasus review",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "pegasus worth it",
+   "pegasus vs herod",
+   "pegasus cost for value"
+  ],
+  "why": "Pegasus carries 3,280 Fragrantica votes at 4.14/5, with reviewers explicitly flagging it as 'neutral to slightly overpriced' on cost-for-value \u2014 a direct opening for the flat-price sample pitch.",
+  "evidence_url": "https://www.fragrantica.com/perfume/Parfums-de-Marly/Pegasus-16938.html",
+  "cluster": "house-review:parfums-de-marly",
+  "angle": "flat-price luxury",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Xerjoff Naxos Review: Sicilian Citrus Worth $300+ a Bottle?",
+  "primary_keyword": "xerjoff naxos review",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "naxos worth it",
+   "xerjoff naxos price",
+   "naxos vs erba pura"
+  ],
+  "why": "Retail reviews call Naxos 'not cheap, but exceptional quality' and 'worth every penny,' with a wide price spread ($45-$190+) across sellers \u2014 signals active price-comparison shopping before commitment.",
+  "evidence_url": "https://www.fragrantica.com/perfume/Xerjoff/Naxos-31857.html",
+  "cluster": "house-review:xerjoff",
+  "angle": "flat-price luxury",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Xerjoff Erba Pura Review: Is the Hype Justified, or Is It Bug Spray in a Bottle?",
+  "primary_keyword": "xerjoff erba pura review",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "erba pura hype",
+   "erba pura worth it",
+   "erba pura polarizing"
+  ],
+  "why": "Erba Pura has 12,500+ Fragrantica votes at ~3.80 and reviewers are split hard: 'strong performance' vs. 'smells like mosquito repellent' \u2014 a genuinely polarizing scent is prime sample-first content, and a competitor blog is literally titled 'Is the Hype Justified?'",
+  "evidence_url": "https://scentchronicles.com/erba-pura-by-xerjoff-fragrance-review/",
+  "cluster": "house-review:xerjoff",
+  "angle": "honest",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Tom Ford Ombr\u00e9 Leather Review: The Leather Scent Nothing Else Smells Like",
+  "primary_keyword": "tom ford ombre leather review",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "ombre leather worth it",
+   "ombre leather winter scent",
+   "ombre leather vs tuscan leather"
+  ],
+  "why": "Multiple 2026-dated review sites (Escentual, Scent Grail, PerfumeReporter) call it 'totally worth it' but flag it as winter-only and urge sampling first \u2014 direct fit for a 5ml rotation pitch since full-bottle commitment on a seasonal scent is the exact regret Base Note solves.",
+  "evidence_url": "https://escentual.com/blogs/editorial/tom-ford-ombre-leather-eau-de-parfum-review",
+  "cluster": "house-review:tom-ford",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Creed Green Irish Tweed vs. Silver Mountain Water: Which One Should You Actually Buy?",
+  "primary_keyword": "green irish tweed vs silver mountain water",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "gitw vs smw",
+   "creed green irish tweed comparison",
+   "silver mountain water vs green irish tweed"
+  ],
+  "why": "At least 6 dedicated comparison articles exist (Osmoz, Carl Thompson menswear blog, Extrabux, Fragplace, HottPerfume, 10fragrances) proving sustained head-to-head search demand between two Creed flagships Base Note carries.",
+  "evidence_url": "https://www.carlthompson.co.uk/further-reading-blogs/2024/2/24/scent-showdown-silver-mountain-water-vs-green-irish-tweed-by-creed",
+  "cluster": "comparison:creed",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "MFK Baccarat Rouge 540: Why People Either Love It or Can't Stand It",
+  "primary_keyword": "baccarat rouge 540 review",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "is baccarat rouge 540 overrated",
+   "br540 worth it",
+   "baccarat rouge 540 too popular"
+  ],
+  "why": "Search results show explicitly polarized reception \u2014 fans call it 'the most beautiful fragrance ever made' while critics call it 'overhyped,' 'a complete rip off,' and complain about its $335 price and ubiquity ('smelled everywhere from gyms to elevators').",
+  "evidence_url": "https://lowkeyhighmaintenance.substack.com/p/its-not-youits-your-baccarat-rouge-540",
+  "cluster": "house-review:mfk",
+  "angle": "honest",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Should You Sample Before You Buy a Full Bottle? A Fragrantica Survey Says Yes",
+  "primary_keyword": "perfume samples before buying full bottle",
+  "intent": "informational",
+  "secondary_keywords": [
+   "blind buy perfume regret",
+   "sample vs full bottle perfume",
+   "fragrance decant vs full bottle"
+  ],
+  "why": "A cited 2025 Parfumo survey found 74% of gift buyers regret full-size fragrance purchases due to untested fit, and Fragrantica's own club forum runs an active thread titled 'Better to buy lots of samples or a few nice full bottles?' \u2014 this is Base Note's single strongest organic wedge topic.",
+  "evidence_url": "https://www.fragrantica.com/board/viewtopic.php?id=245682",
+  "cluster": "education:sample-first",
+  "angle": "flat-price luxury",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Best Wedding Guest Cologne 2026: What to Wear Without Overpowering the Room",
+  "primary_keyword": "wedding guest cologne",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "best cologne for a wedding",
+   "men's wedding cologne",
+   "wedding cologne dos and donts"
+  ],
+  "why": "An active Fragrantica Club thread titled 'Wedding guest fragrance' plus dedicated guides from The Knot, TheLastSpritz (2026-dated), and Emmaline Bride show sustained seasonal demand; guidance stresses 'one or two sprays' and picking scent by venue type \u2014 a natural rotation-by-occasion angle.",
+  "evidence_url": "https://www.fragrantica.com/board/viewtopic.php?id=325372",
+  "cluster": "occasion:wedding",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "How Many Sprays of Cologne Should You Actually Use? The Real Answer",
+  "primary_keyword": "how many sprays of cologne",
+  "intent": "informational",
+  "secondary_keywords": [
+   "how much cologne to wear",
+   "cologne application guide",
+   "where to spray cologne"
+  ],
+  "why": "Search aggregation shows persistent confusion and forum debate ('cologne how much do you put on' thread on AnandTech forums) with conflicting advice (2 sprays vs. pulse-point dabbing) \u2014 evergreen how-to query with no single authoritative answer yet.",
+  "evidence_url": "https://forums.anandtech.com/threads/cologne-how-much-do-you-put-on.1076943/",
+  "cluster": "education:application",
+  "angle": "notes education",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "How to Read a Perfume Batch Code (And Why It Matters More Than You Think)",
+  "primary_keyword": "perfume batch code checker",
+  "intent": "informational",
+  "secondary_keywords": [
+   "how to check fragrance batch code",
+   "perfume manufacture date",
+   "batchcode.org perfume"
+  ],
+  "why": "A dedicated free tool (Batchcode.org) now supports 500+ brands including Creed, Tom Ford, PdM, and Xerjoff specifically, and 2026 news coverage frames batch-code checking as consumer protection against decreased efficacy after ~3 years \u2014 a knowledge gap Base Note can own since every subscriber receives fresh decants.",
+  "evidence_url": "https://www.scento.com/blog/batch-code-tools-perfume-verification",
+  "cluster": "education:batch-codes",
+  "angle": "notes education",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Best Office-Safe Colognes: What to Wear When 35% of Coworkers Complain",
+  "primary_keyword": "office safe cologne",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "subtle cologne for work",
+   "best perfume for the office",
+   "light cologne for work"
+  ],
+  "why": "Cited research shows 'nearly 35% of people report experiencing discomfort when exposed to strong fragrances in workplace settings,' and multiple 2025 guides explicitly warn against oud, heavy florals, and gourmands at work \u2014 direct occasion-based content gap tied to Base Note's rotation model (different fragrance for office vs. evening).",
+  "evidence_url": "https://www.aol.com/office-friendly-perfumes-smell-expensive-154304856.html",
+  "cluster": "occasion:office",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Best Date Night Colognes: What Actually Gets Compliments (Not Just Projects)",
+  "primary_keyword": "best date night cologne",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "date night fragrance men",
+   "cologne for a first date",
+   "romantic cologne recommendations"
+  ],
+  "why": "Multiple current guides (FragranceLord, InsideHook Halloween-date roundup, DecantX) explicitly name Herod by Parfums de Marly and other Base Note-carried scents as date-night picks, framed around 'warm, inviting, leaves a lasting impression' \u2014 direct product tie-in.",
+  "evidence_url": "https://fragrancelord.com/blogs/articles/best-date-night-fragrances-men",
+  "cluster": "occasion:date-night",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Spooky-Good: A Halloween Date Night Fragrance Guide for Men and Women",
+  "primary_keyword": "halloween cologne fragrance",
+  "intent": "informational",
+  "secondary_keywords": [
+   "halloween date night perfume",
+   "spooky fragrance ideas",
+   "fall fragrance for halloween"
+  ],
+  "why": "At least 6 live 2026 blog posts (DecantX, FragranceX, InsideHook, VenbaFragrance, DUA Brand) are actively publishing Halloween-fragrance content and explicitly recommend Herod by Parfums de Marly and gourmand/smoky profiles \u2014 timely seasonal hook landing right before Oct 31, 2026.",
+  "evidence_url": "https://www.insidehook.com/grooming/best-halloween-colognes",
+  "cluster": "occasion:halloween",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Bond No.9 Explained: Which New York Scent Matches Your Neighborhood?",
+  "primary_keyword": "bond no 9 review",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "bond no 9 best scent",
+   "bond no 9 new york worth it",
+   "bond no 9 comparison"
+  ],
+  "why": "Bond No.9's Bleecker Street holds 2,451 Fragrantica votes at 4.19/5 with 403 written reviews and Madison Avenue 584 votes at 4.03/5 \u2014 real review volume on a house Base Note carries but hasn't covered, and the brand's whole conceit (neighborhood-named scents) is an easy 'which one is you' content hook.",
+  "evidence_url": "https://www.fragrantica.com/perfume/Bond-No-9/Bleecker-Street-1301.html",
+  "cluster": "house-review:bond-no-9",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Initio Oud for Greatness: Is the $300 Niche Hype Fragrance Worth the Splurge?",
+  "primary_keyword": "initio oud for greatness review",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "oud for greatness worth it",
+   "initio oud for greatness longevity",
+   "initio parfums prives review"
+  ],
+  "why": "Initio is one of Base Note's carried houses with a cult niche following and premium $300+ retail pricing on Oud for Greatness/Happiness bottles per current eBay/Walmart listings \u2014 high blind-buy risk makes it a natural fit for the sample-first pitch, and no Base Note content covers Initio yet.",
+  "evidence_url": "https://www.ebay.com/itm/267088405014",
+  "cluster": "house-review:initio",
+  "angle": "flat-price luxury",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Le Labo Santal 33: The Most Copied Scent in the World \u2014 Is the Original Still Worth It?",
+  "primary_keyword": "le labo santal 33 review",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "santal 33 worth it",
+   "santal 33 dupes",
+   "is santal 33 overrated"
+  ],
+  "why": "Santal 33 has its own Wikipedia page documenting its cultural ubiquity as 'the scent of a generation,' and it's one of the most dupe-cloned fragrances in the market \u2014 the overexposure/overrated debate mirrors the Baccarat Rouge 540 pattern and is a house Base Note carries but hasn't covered.",
+  "evidence_url": "https://en.wikipedia.org/wiki/Santal_33",
+  "cluster": "house-review:le-labo",
+  "angle": "honest",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Black Friday 2026 Fragrance Deals: Are They Actually Worth Chasing?",
+  "primary_keyword": "black friday fragrance deals 2026",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "black friday cologne sale",
+   "fragrance black friday worth it",
+   "perfume cyber monday deals"
+  ],
+  "why": "Existing gift-guide content clusters around Father's Day and Valentine's Day per search results, leaving Black Friday (Nov 27, 2026) as an underserved seasonal window directly ahead of Base Note's Nov 30 subscriber deadline \u2014 a natural anti-surcharge wedge post ('skip the discount chase, flat $20/month beats any one-day sale math').",
+  "evidence_url": "https://www.aol.com/articles/mens-2026-gift-guide-valentines-164414499.html",
+  "cluster": "seasonal:black-friday",
+  "angle": "flat-price luxury",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Fall 2026 Fragrance Trends: What Google and TikTok Say Everyone's Wearing",
+  "primary_keyword": "fall 2026 fragrance trends",
+  "intent": "informational",
+  "secondary_keywords": [
+   "2026 perfume trends",
+   "gourmand fragrance trend 2026",
+   "fragrance discovery trends 2026"
+  ],
+  "why": "Spate's 2026 Fragrance Report explicitly documents subscription models as a rising discovery channel ('subscription services have become the go-to platform for exploring niche and artisanal brands, now over 16% of total fragrance sales') and names gourmand/pistachio trend notes \u2014 direct data backing for a trend-roundup post that name-checks subscription discovery.",
+  "evidence_url": "https://www.spate.nyc/reports/2026-fragrance-report-key-trends-brands-and-scents",
+  "cluster": "trend:seasonal",
+  "angle": "flat-price luxury",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-catalogue-luxury",
+  "title": "Herod vs. Pegasus: Which Parfums de Marly Should You Try First?",
+  "primary_keyword": "herod vs pegasus parfums de marly",
+  "intent": "commercial",
+  "secondary_keywords": [
+   "pdm herod or pegasus",
+   "best parfums de marly for beginners",
+   "parfums de marly comparison"
+  ],
+  "why": "Both fragrances have large, active Fragrantica vote counts (Herod 5,974/4.47, Pegasus 3,280/4.14) and separate dedicated buy-or-not forum threads, showing shoppers are actively choosing between the two PdM bottles rather than researching them independently \u2014 a natural in-house comparison since Base Note carries both.",
+  "evidence_url": "https://www.fragrantica.com/perfume/Parfums-de-Marly/Pegasus-16938.html",
+  "cluster": "comparison:parfums-de-marly",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "Top, Heart, and Base Notes Explained: Why 5ml Is Actually the Right Amount to Learn Them",
+  "primary_keyword": "top heart base notes explained",
+  "secondary_keywords": [
+   "fragrance notes pyramid",
+   "how long do top notes last",
+   "perfume notes for beginners"
+  ],
+  "intent": "informational",
+  "why": "Multiple competing beginner guides (rarescents, piver, scento, theperfumeryguide) rank for this query cluster and none tie it back to sample/rotation format. Search summary: 'Top notes last 5-15 minutes... Base notes are the heaviest and longest-lasting ingredients that anchor the fragrance' \u2014 a full-bottle buyer smells maybe 2 of these evolution stages before losing the bottle to boredom; a 5ml rotation lets you actually experience all three stages across many fragrances.",
+  "evidence_url": "https://www.rarescents.com/blogs/news/a-beginner-s-guide-to-the-fragrance-notes-pyramid-top-middle-and-base-notes",
+  "cluster": "notes education",
+  "angle": "notes education",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "Clone vs. Authentic: What You're Actually Losing When You Buy a Fragrance Dupe",
+  "primary_keyword": "fragrance clone vs original",
+  "secondary_keywords": [
+   "Creed Aventus clone",
+   "designer perfume dupes",
+   "clone vs dupe vs inspired"
+  ],
+  "intent": "commercial",
+  "why": "Fragrantica's 'Best Clones' board and a Lemon8 explainer ('Clone vs Dupe vs Inspired Perfume') show heavy search/community volume around clones, but the content is dupe-positive with no authentic-luxury counter-argument. Board evidence: 'Armaf Club de Nuit Intense Man as the Creed Aventus clone is one of the most well-established pairings the fragrance community has cited over years' \u2014 Base Note's flat-price wedge directly answers 'why pay clone prices for a clone when $20/month gets you the real Aventus.'",
+  "evidence_url": "https://www.fragrantica.com/board/viewtopic.php?id=285602",
+  "cluster": "clones and dupes",
+  "angle": "flat-price luxury",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "How to Layer Fragrances: A Beginner's Guide Using Your Rotation",
+  "primary_keyword": "how to layer perfume",
+  "secondary_keywords": [
+   "fragrance layering combinations",
+   "perfume stacking",
+   "scent layering tips"
+  ],
+  "intent": "informational",
+  "why": "Both Luckyscent and Fragrancelord run dedicated layering guides with staff-picked pairings. Fragrancelord quote: 'Start with the heaviest, most potent scent first, and finish with the lightest,' paired with combos like 'Creed Aventus (base) + Tom Ford Grey Vetiver (top).' Base Note has zero layering content despite having the exact multi-fragrance-on-hand use case (a rotation) that makes layering practical \u2014 one-bottle owners can't layer without buying two full bottles.",
+  "evidence_url": "https://fragrancelord.com/blogs/articles/perfume-layering-combinations",
+  "cluster": "layering",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "How Many Sprays Are in a 5ml Atomizer (And How Long Does It Actually Last)?",
+  "primary_keyword": "how many sprays in 5ml perfume",
+  "secondary_keywords": [
+   "how long does 5ml perfume last",
+   "5ml atomizer sprays",
+   "perfume sample size guide"
+  ],
+  "intent": "informational",
+  "why": "This is a direct pre-purchase objection question \u2014 search results confirm the query cluster exists (product listings citing '5ml atomizers typically contain more than 70 sprays') but no fragrance retailer has turned it into an authoritative guide answering '2-3 sprays/day, how many days will my vial last.' Zero Base Note content addresses this despite it being the single most common first-time-subscriber question.",
+  "evidence_url": "https://www.walmart.com/ip/5333511275",
+  "cluster": "5ml format education",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "Why Scentbird's Price Jumps After Your First Month (And How to Avoid It)",
+  "primary_keyword": "scentbird price increase first month",
+  "secondary_keywords": [
+   "scentbird surcharge",
+   "scentbird credits explained",
+   "designer fragrance upcharge"
+  ],
+  "intent": "commercial",
+  "why": "Search summary of Trustpilot reviews surfaced: 'some Scentbird customers have complained that prices went too high for small bottles after the first purchase.' This is the exact pain point Base Note's flat $20/month, no-surcharge model solves, but Base Note has no piece naming the specific mechanism (tiered credits, designer surcharges) competitors use.",
+  "evidence_url": "https://nz.trustpilot.com/review/scentbird.com",
+  "cluster": "anti-surcharge comparison",
+  "angle": "honest",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "22 Luxury Fragrances Ranked: Which One Should You Try First?",
+  "primary_keyword": "best luxury fragrances ranked",
+  "secondary_keywords": [
+   "best colognes 2026",
+   "top luxury perfumes for men",
+   "best niche fragrances ranked"
+  ],
+  "intent": "commercial",
+  "why": "Jeremy Fragrance's channel runs recurring 'Top 10 Fragrances For Men' / 'Best FRAGRANCES' countdown videos as a core recurring format (confirmed via youtube.com/watch?v=ybkCQ-yLTeA and youtube.com/watch?v=YwVqmqgye9A titles) and Scentbird runs 'The Top 10 Most Popular Perfumes.' Base Note has never published a ranked list against its own 22-fragrance catalog, despite it being a proven format and a direct navigational aid ('which do I pick first').",
+  "evidence_url": "https://www.scentbird.com/blog/most-popular-perfumes/",
+  "cluster": "ranked lists",
+  "angle": "flat-price luxury",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "What Does [Fragrance X] Smell Like? A 'Reminds Me Of' Guide to Base Note's Catalog",
+  "primary_keyword": "what does Baccarat Rouge 540 smell like",
+  "secondary_keywords": [
+   "fragrance similar to",
+   "if you like X you'll love Y perfume",
+   "fragrance comparison guide"
+  ],
+  "intent": "informational",
+  "why": "Fragrantica's crowdsourced 'This reminds me of\u2026' feature is called out as a core discovery mechanism: 'a crowdsourced similarity index that users use to navigate the market and learn about fragrance similarities.' Base Note's 22-SKU catalog is small enough to build a comparable internal cross-reference guide ('if you like Sauvage, try our Xerjoff X') that Fragrantica-style sites do at scale but no rotation-subscription competitor has replicated for its own catalog.",
+  "evidence_url": "https://www.fragrantica.com/board/viewtopic.php?id=303299",
+  "cluster": "discovery/similarity content",
+  "angle": "notes education",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "Niche vs. Designer Fragrance: What's the Real Difference (And Does It Justify the Price)?",
+  "primary_keyword": "niche vs designer fragrance",
+  "secondary_keywords": [
+   "niche perfume meaning",
+   "is niche perfume worth it",
+   "designer perfume vs niche perfume"
+  ],
+  "intent": "informational",
+  "why": "Luckyscent positions itself as 'the go-to retailer in the United States that caters to a clientele in search of niche and artisan fragrances,' running sample-trial content ($1ml samples across ~3000 fragrances) built entirely around the niche-vs-designer distinction. Base Note's catalog mixes designer (Tom Ford) and niche (Xerjoff, Amouage) houses but has never published an explainer distinguishing them for a buyer unfamiliar with the category.",
+  "evidence_url": "https://www.essencional.com/en/posts/luckyscent-americas-go-to-retailer-for-niche-perfumery/",
+  "cluster": "notes education",
+  "angle": "notes education",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "Is a Fragrance Subscription Worth It? The Real Math on Samples vs. Full Bottles",
+  "primary_keyword": "is fragrance subscription worth it",
+  "secondary_keywords": [
+   "fragrance subscription cost comparison",
+   "perfume subscription math",
+   "cost per wear perfume"
+  ],
+  "intent": "commercial",
+  "why": "AOL/search-aggregated review content states 'you can test both affordable perfumes and expensive ones while spending as little as $15 per month' as the core value pitch, and flags 'mixed opinions on price... many reviewers feeling the service was overpriced.' Base Note's existing 'Best Fragrance Subscriptions' post is a feature comparison, not a cost-per-ml/cost-per-wear calculator \u2014 the calculator format is the gap and directly supports the flat-price wedge.",
+  "evidence_url": "https://www.aol.com/tried-scentbird-unfiltered-review-212100739.html",
+  "cluster": "value/ROI content",
+  "angle": "flat-price luxury",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "Why Your Fragrance Doesn't Last as Long as You Think It Should",
+  "primary_keyword": "why doesn't my perfume last long",
+  "secondary_keywords": [
+   "perfume longevity tips",
+   "how to make fragrance last longer",
+   "fragrance not lasting on skin"
+  ],
+  "intent": "informational",
+  "why": "Active Fragrantica community board specifically on 'Longevity of Notes' shows sustained user confusion/demand (board id 307201, 'New to the World of Fragrance' section). Search-aggregated content confirms the topic ('longevity really depends on the individual fragrance and body chemistry') but treats it generically \u2014 no rotation-subscription competitor ties longevity troubleshooting to their own product (moisturized skin + reapplication schedule via multiple small vials).",
+  "evidence_url": "https://www.fragrantica.com/board/viewtopic.php?id=307201",
+  "cluster": "notes education",
+  "angle": "notes education",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "The Most-Liked Luxury Fragrances Right Now (And What Members Are Adding to Their Rotation)",
+  "primary_keyword": "most popular luxury fragrances 2026",
+  "secondary_keywords": [
+   "most liked perfumes",
+   "trending fragrances this month",
+   "best selling niche perfumes"
+  ],
+  "intent": "informational",
+  "why": "WWD published a full piece on 'The Most-liked Fragrances on Scentbird, Niche and Overall' using Scentbird's own subscriber data as a content hook \u2014 proof that data-driven 'what our members actually pick' content earns press pickup. Base Note has 17 active subscribers now but could start this format at small scale and scale the format as it grows past 60.",
+  "evidence_url": "https://wwd.com/beauty-industry-news/beauty-features/the-most-liked-fragrances-on-scentbird-of-all-time-ranked-1235857906/",
+  "cluster": "ranked lists",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "Building a Signature Scent Rotation: How Many Fragrances Do You Actually Need?",
+  "primary_keyword": "signature scent rotation",
+  "secondary_keywords": [
+   "how many colognes should a man own",
+   "fragrance wardrobe",
+   "building a scent collection"
+  ],
+  "intent": "informational",
+  "why": "Scentbird's own blog runs 'Fragrance Trends 2026: Six Scent Rotations Worth Trying This Season' \u2014 but this is Base Note's tagline concept ('build your signature rotation') and Base Note has only one seasonal-rotation post, not a foundational explainer on rotation strategy itself (how many scents, how to split by occasion/season). This is the single highest-alignment topic to the locked tagline that hasn't been written as a standalone how-to.",
+  "evidence_url": "https://basenotescent.com/blogs/hub/fragrance-trends-2026",
+  "cluster": "rotation strategy",
+  "angle": "5ml rotation",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "Eau de Parfum vs. Eau de Toilette vs. Parfum: What's Actually in the Bottle",
+  "primary_keyword": "eau de parfum vs eau de toilette",
+  "secondary_keywords": [
+   "EDP vs EDT difference",
+   "parfum concentration explained",
+   "perfume concentration guide"
+  ],
+  "intent": "informational",
+  "why": "Search-aggregated notes content states concentration mechanics as settled fact ('Eau de Parfum contains 10-15% perfume concentrate and stays on skin for 4 hours, while Parfum contains 20-30% perfume concentrate and stays on skin for about 12 hours') \u2014 this is a foundational, high-search-volume beginner topic that appears as supporting context across nearly every competitor notes guide but has no dedicated Base Note post.",
+  "evidence_url": "https://www.theperfumeryguide.com/perfume-notes-explained",
+  "cluster": "notes education",
+  "angle": "notes education",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "Office-Safe, Date Night, or Everyday: A Fragrance-by-Occasion Guide to Base Note's Catalog",
+  "primary_keyword": "best cologne for the office",
+  "secondary_keywords": [
+   "date night fragrance",
+   "everyday signature scent",
+   "occasion-based cologne guide"
+  ],
+  "intent": "commercial",
+  "why": "Jeremy Fragrance's recurring countdown format ('10 Best FRAGRANCES For Men') and general category content consistently segments by occasion, but Base Note's only structured guide is seasonal (Fragrance Trends 2026), not occasion-based. Occasion-based navigation directly helps a first-time visitor pick from 22 SKUs without notes-vocabulary knowledge.",
+  "evidence_url": "https://www.realmenrealstyle.com/best-mens-colognes/",
+  "cluster": "occasion guides",
+  "angle": "flat-price luxury",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "Fragrance Terminology Glossary: Sillage, Dry Down, Longevity, and Every Word You'll See in Reviews",
+  "primary_keyword": "fragrance terminology glossary",
+  "secondary_keywords": [
+   "what is sillage",
+   "what is dry down perfume",
+   "fragrance vocabulary for beginners"
+  ],
+  "intent": "informational",
+  "why": "Every competitor notes-education piece (rarescents, piver, scento, theperfumeryguide) leans on unexplained jargon \u2014 'dry down,' 'sillage,' 'projection' \u2014 assuming reader fluency. No single glossary page exists among the fetched competitor set, and Base Note has none; this is a low-competition, high-utility gap that supports every other notes-education post via internal linking.",
+  "evidence_url": "https://www.piver.com/en/articles/the-mystery-of-top-heart-and-base-notes-the-fragrance-pyramid",
+  "cluster": "notes education",
+  "angle": "notes education",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "topics-competitor-gaps",
+  "title": "We Compared Every Fragrance Subscription's Actual Monthly Cost Per ml (Spreadsheet Included)",
+  "primary_keyword": "fragrance subscription cost comparison",
+  "secondary_keywords": [
+   "scentbird vs base note price",
+   "cheapest fragrance subscription",
+   "fragrance subscription price breakdown"
+  ],
+  "intent": "commercial",
+  "why": "Base Note's existing 'Best Fragrance Subscriptions of 2026: An Honest Comparison' post covers features but the Trustpilot-sourced complaint pattern ('prices went too high for small bottles after the first purchase') shows the real gap is a transparent, line-item cost breakdown \u2014 competitors' tiered/credit pricing is exactly the kind of complexity a simple table exposes in Base Note's favor, and this format (downloadable/embedded comparison table) is distinct from the existing narrative-comparison post.",
+  "evidence_url": "https://nz.trustpilot.com/review/scentbird.com",
+  "cluster": "anti-surcharge comparison",
+  "angle": "honest",
+  "verdict": "unchecked"
+ }
+]

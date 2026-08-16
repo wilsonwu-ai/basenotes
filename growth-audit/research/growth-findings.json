@@ -1,0 +1,775 @@
+[
+ {
+  "lane": "engagement-patterns",
+  "claim": "'Load more' buttons combined with lazy-loading outperform both classic pagination and infinite scroll for balancing product exploration with usability in ecommerce lists.",
+  "source_url": "https://www.smashingmagazine.com/2016/03/pagination-infinite-scrolling-load-more-buttons/",
+  "source_title": "Infinite Scrolling, Pagination Or 'Load More' Buttons? Usability Findings In eCommerce \u2014 Smashing Magazine",
+  "quote": "\"Load more\" buttons combined with lazy-loading emerged as superior, delivering the most seamless experience across contexts.",
+  "confidence": "high",
+  "so_what": "Base Note's 22-fragrance collection page should use a 'Load more'/lazy-load pattern rather than full pagination or true infinite scroll to maximize how many fragrances a visitor browses per session while keeping footer/support links reachable.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "engagement-patterns",
+  "claim": "Pagination causes users to view significantly fewer products overall and to disproportionately over-focus on page 1, while infinite scroll makes footers and support links inaccessible and hurts search-result usability specifically.",
+  "source_url": "https://www.smashingmagazine.com/2016/03/pagination-infinite-scrolling-load-more-buttons/",
+  "source_title": "Infinite Scrolling, Pagination Or 'Load More' Buttons? Usability Findings In eCommerce \u2014 Smashing Magazine",
+  "quote": "Users explored significantly fewer products compared to other methods... Made footers inaccessible on long lists\u2014new content continuously pushed footer out of view, blocking vital links (support, shipping, returns)... Etsy's A/B test documented 'significant hit to the search experience.'",
+  "confidence": "high",
+  "so_what": "If Base Note adds search/filtering across its 22 fragrances, avoid true infinite scroll there; reserve infinite-style behavior only for a pure discovery feed (e.g. blog browsing), not the shop grid.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "engagement-patterns",
+  "claim": "Product finder quizzes convert at roughly 10x a standard email popup and drive substantial completion-to-purchase lifts across ecommerce verticals, including beauty/subscription brands.",
+  "source_url": "https://www.usekinetic.com/blog/quiz-funnel",
+  "source_title": "Quiz Funnel: The Complete Guide to Ecommerce Sales - Kinetic",
+  "quote": "Ecommerce quiz funnels convert 37.6% of starters into leads and 65% of starters finish the quiz, roughly 10x a standard email pop-up... Geologie saw a 50% lift in conversion from quiz completion to purchase... Quiz-driven discovery helped reduce customer acquisition cost by ~43% for Florae Beauty.",
+  "confidence": "medium",
+  "so_what": "A short 'Find Your Signature Rotation' quiz (3-5 questions: occasion, scent family, budget framing tied to the $20 flat price) is a proven, cheap discovery mechanism that also captures email for Klaviyo. Verify specific brand stats independently before quoting externally \u2014 source is a vendor blog (Octane AI/Kinetic ecosystem) with incentive to overstate.",
+  "verdict": "overstated",
+  "corrected": "Product finder quizzes convert roughly 10x a standard email popup (37.6% visitor-to-lead conversion per Interact's analysis of 80M+ quiz submissions); the source does not break out completion-to-purchase lift by vertical."
+ },
+ {
+  "lane": "engagement-patterns",
+  "claim": "Baymard's large-scale product page research finds most ecommerce sites still fail basic exploration-supporting features: 89% don't let guests use Save/wishlist, 81% don't show price-per-unit, 63% don't let users navigate reviewer-submitted images across reviews, and only 48% of desktop sites reach 'decent' or 'good' product page UX overall.",
+  "source_url": "https://baymard.com/blog/current-state-ecommerce-product-page-ux",
+  "source_title": "Product Page UX Best Practices 2026 \u2013 Baymard Institute",
+  "quote": "\"21% of respondents said they rely on 'Save' features,\" yet \"89% don't\" make these accessible to guest users... \"63% don't\" enable [reviewer image] navigation... \"only 48%\" of desktop sites achieve 'decent' or 'good' product page UX.",
+  "confidence": "high",
+  "so_what": "Guest-accessible wishlist/'My Rotation' save (which Base Note already has via localStorage) is ahead of 89% of competitors \u2014 worth surfacing this more prominently as a stated differentiator, since most rivals hide or gate it behind login.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "engagement-patterns",
+  "claim": "Baymard testing shows 42% of users try to gauge product size/scale from photos alone, and shoppers explicitly value seeing products on models/in context to judge fit and feel.",
+  "source_url": "https://baymard.com/blog/current-state-ecommerce-product-page-ux",
+  "source_title": "Product Page UX Best Practices 2026 \u2013 Baymard Institute",
+  "quote": "\"42% of users try to ascertain the size of a product from the product page images.\" ... \"I kind of like the ones with models, because I think it gives me kind of an idea of how tight are the jeans, where does it land on the leg?\"",
+  "confidence": "high",
+  "so_what": "Base Note's PDPs should show the 5ml atomizer next to a hand or a full-size bottle for scale reference, plus a lifestyle/application shot. Worth a QA pass alongside the existing fragrance-application-guide.html asset.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "engagement-patterns",
+  "claim": "Le Labo's homepage combines narrative brand-heritage copy with a dedicated low-commitment 'Discovery' sampling program and hover states on product tiles that reveal pricing/size/cart actions inline.",
+  "source_url": "https://www.lelabofragrances.com/",
+  "source_title": "Le Labo homepage",
+  "quote": "Discovery Program: Dedicated section offering introductory sample sizes (5x1.5ml sets) for exploration... Product tiles feature image stacking and hover states showing product details. The interface reveals pricing, size options, and cart actions on interaction.",
+  "confidence": "medium",
+  "so_what": "Le Labo \u2014 a direct aspirational-brand comp for Base Note's positioning \u2014 merchandises its small-format sampling as its own section, not just a PDP option. Base Note could give its 5ml rotation model a dedicated 'How Discovery Works' landing block rather than only explaining it on PDPs/FAQ.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "engagement-patterns",
+  "claim": "Aesop's site avoids traditional flashy CTAs, instead opening with quiet video/motion of product formulation and organizing navigation around real-world use cases (travel, home, hand) rather than product taxonomy, using asymmetrical magazine-style layouts and subtle scroll-triggered fades.",
+  "source_url": "https://www.brandvm.com/post/aesop-marketing-strategy",
+  "source_title": "Inside Aesop's Unique Marketing Strategy | Brand Vision",
+  "quote": "Aesop welcomes visitors with a video of lab-coated professionals formulating products with no flashy banners or CTA buttons\u2014just silent, elegant motion... Rather than structuring its store by type of product alone, it frames the journey around real-world use like travel, home, and hand, reflecting how customers think and shop.",
+  "confidence": "medium",
+  "so_what": "Base Note could reframe blog/collection navigation around occasions ('date night,' 'office,' 'gift') rather than only by brand/notes \u2014 cheap via Shopify collections/tags and mirrors a proven premium-brand exploration pattern.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "engagement-patterns",
+  "claim": "NN/g's paid ecommerce product-page report (108 guidelines) explicitly covers 'navigating among products,' 'suggesting related products,' and 'helping people make comparisons' as core UX pillars, confirming comparison/related-product surfacing is a recognized best-practice category even though the specific guideline text is paywalled.",
+  "source_url": "https://www.nngroup.com/reports/ecommerce-ux-product-pages-including-reviews/",
+  "source_title": "Ecommerce UX Product Pages | Nielsen Norman Group Report - NN/G",
+  "quote": "Navigating among products... Suggesting related products... Helping people make comparisons... 108 design recommendations based on user research.",
+  "confidence": "medium",
+  "so_what": "Add a lightweight 'Compare notes' or 'Similar to this' rail on each PDP (e.g., 'If you like Creed Aventus, try...') \u2014 NN/g flags this as a top-level product-page UX pillar, and it's low-lift for a 22-SKU catalog small enough to hand-curate.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "engagement-patterns",
+  "claim": "The classic fragrance wheel (Woody/Floral/Amber/Fresh, with subfamilies) is the standard mental model fragrance shoppers use to relate scents to one another, and complementary notes lying opposite each other on the wheel is the basis for 'if you like X, try Y' cross-recommendation logic.",
+  "source_url": "https://www.fragrancex.com/blog/fragrance-wheel/",
+  "source_title": "The Fragrance Wheel Explained: All 4 Scent Families (With Chart)",
+  "quote": "The Fragrance Wheel uses four major scent categories: floral, oriental, woody, and fresh... complementary notes (which lie opposite each other on the fragrance wheel) create complexity and intrigue when combined.",
+  "confidence": "medium",
+  "so_what": "Base Note could build a simple interactive notes wheel or filter-by-family UI on the collection page (22 SKUs small enough to hand-tag by family) \u2014 doubles as discovery/exploration tool and implicit fragrance education, a differentiator vs. Scentbird's plainer grid.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "engagement-patterns",
+  "claim": "Real-time inline form validation (e.g., during signup/quiz flows) is reported by NN/g-adjacent sources to reduce error-correction time and raise completion rates, though this specific figure comes from a secondary blog summarizing NN/g rather than a primary NN/g citation.",
+  "source_url": "https://www.hulkapps.com/blogs/ecommerce-hub/elevating-your-digital-experience-the-power-of-ux-microinteractions-in-boosting-conversion-rates",
+  "source_title": "Elevating Your Digital Experience: The Power of UX Microinteractions in Boosting Conversion Rates",
+  "quote": "Nielsen Norman Group reports that real-time inline validation reduces form errors significantly, and case studies show that when forms give immediate feedback (like green ticks or error hints), correction time drops by up to 22% and completion rates rise.",
+  "confidence": "low",
+  "so_what": "Apply inline validation to any quiz/email-capture step Base Note builds. Low confidence because this is a secondary source paraphrasing NN/g rather than the primary NN/g report \u2014 verify the 22% figure before citing it externally.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "engagement-patterns",
+  "claim": "GoodUI's meta-analysis of 10 A/B tests across 148.8M+ visitors on progress-bar patterns in checkout/signup flows shows measurable statistical power at a 2% minimum-detectable-effect threshold, though exact win/loss percentages are paywalled.",
+  "source_url": "https://goodui.org/patterns/99/",
+  "source_title": "Pattern #99: Progress Bar | GoodUI",
+  "quote": "Based on 10 A/B tests with 148.8M+ visitors... The pattern achieved approximately 84.7% of target statistical power across the test suite, indicating moderate-to-strong evidence reliability at a 2% minimum detectable effect threshold.",
+  "confidence": "low",
+  "so_what": "A visible progress indicator on a fragrance-finder quiz (e.g., 'Question 2 of 4') is directionally well-tested for completion, but the magnitude of lift for Base Note specifically is unverified since exact numbers require GoodUI Premium; treat as cheap-to-implement, low-risk, not a headline stat.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "gentle-monster-design",
+  "claim": "Gentle Monster's e-commerce site uses full-width autoplaying video banners on nearly every hero and category section instead of static images, with fallback markup confirming video-first hero treatment site-wide.",
+  "source_url": "https://www.gentlemonster.com",
+  "source_title": "Gentle Monster (US site, fetched)",
+  "quote": "Video elements dominate: Multiple \"Video thumbnail\" elements with fallback messages (\"Your browser does not support HTML video playback\") suggest autoplaying hero videos on collection banners.",
+  "confidence": "medium",
+  "so_what": "Base Note's PDP and homepage are static-image only; even one autoplaying 6-10s loop of a fragrance being sprayed/poured on the homepage hero and top 2 PDPs would close the single biggest motion gap versus every reference site.",
+  "verdict": "overstated",
+  "corrected": "Gentle Monster's homepage uses full-width autoplaying video banners in hero/campaign sections, with fallback markup (unsupported-browser text + poster images) confirming video-first hero treatment."
+ },
+ {
+  "lane": "gentle-monster-design",
+  "claim": "Gentle Monster's product cards keep interaction minimal \u2014 image, one-line descriptor, and a single 'ADD TO WISHLIST' affordance \u2014 enabling fast visual scanning across large grids.",
+  "source_url": "https://www.gentlemonster.com",
+  "source_title": "Gentle Monster (US site, fetched)",
+  "quote": "Cards display product images, model descriptions, and titles as clickable links. Each includes an \"ADD TO WISHLIST\" affordance. The layout maintains consistent visual spacing... enabling rapid visual scanning.",
+  "confidence": "medium",
+  "so_what": "Base Note's 22-fragrance grid should drop any secondary text/badges beyond name + house + one 'Add to Rotation' CTA \u2014 matches the Scentbird-style queue model already in place and keeps the grid scannable at 22 items.",
+  "verdict": "overstated",
+  "corrected": "Gentle Monster's product cards keep interaction minimal \u2014 image, a short multi-line descriptor (name, material/color, style), and a single 'ADD TO WISHLIST' affordance \u2014 enabling fast visual scanning across large grids."
+ },
+ {
+  "lane": "gentle-monster-design",
+  "claim": "Aesop's site design was built by distilling packaging design language into a digital system, using Suisse Int'l and Zapf Humanist/Optima typefaces, a muted monochromatic palette (black/gray on muted yellow), and 'elegant motion design' for calm transitions meant to mirror the in-store experience.",
+  "source_url": "https://work.co/clients/aesop/",
+  "source_title": "Aesop Case Study \u2014 Work & Co",
+  "quote": "To create Aesop's e-commerce site, the company distilled the essence down to its core elements, created a digital design system to match the overall brand look and feel... Elegant motion design creates calm transitions that mirror a relaxing in-store experience.",
+  "confidence": "medium",
+  "so_what": "Base Note should pick ONE restrained accent color (against black/off-white) tied to the vial/packaging, not a rainbow of house logos, and add subtle page-transition easing so page changes feel considered rather than instant/jarring.",
+  "verdict": "unverifiable"
+ },
+ {
+  "lane": "gentle-monster-design",
+  "claim": "Byredo's navigation is a multi-level mega-menu (Perfume, Home Fragrance, Hand & Body Care, Makeup, Byproduct) with 'New' badges surfacing featured items, plus persistent cart/account/wishlist icons in the header.",
+  "source_url": "https://www.byredo.com",
+  "source_title": "Byredo (fetched)",
+  "quote": "Multi-level mega-menu structure with primary categories: Perfume, Home Fragrance, Hand & Body Care, Makeup, and Byproduct\u2122... \"New\" badges appear next to featured offerings like \"Future Memories\" and \"Car Diffuser\"",
+  "confidence": "medium",
+  "so_what": "Base Note's 22-fragrance nav is currently flat; a mega-menu that branches by scent family (woody/floral/citrus) or by house (Creed/Tom Ford/PdM/Xerjoff/Bond No.9) \u2014 matching taxonomy-facet work already live per project memory \u2014 would make discovery feel curated rather than a long dropdown list.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "gentle-monster-design",
+  "claim": "Le Labo's entire identity runs on an apothecary/laboratory naming convention \u2014 scent names paired with numbers ('SANTAL 33', 'SHIU 25') styled like pharmaceutical cataloging \u2014 reinforced by personalization (custom label creation) offered upfront in the shopping journey.",
+  "source_url": "https://www.lelabofragrances.com",
+  "source_title": "Le Labo (fetched)",
+  "quote": "Product names combine French nomenclature with numerical identifiers (\"SANTAL 33,\" \"SHIU 25\"), creating a distinctive labeling system reminiscent of pharmaceutical or laboratory cataloging\u2014reinforcing the \"Le Labo\" (The Lab) brand identity... A personalization feature allows custom label creation, adding interactivity beyond standard e-commerce flows.",
+  "confidence": "medium",
+  "so_what": "This is the single most portable pattern for Base Note: a house-numbering system for the 22-vial catalog (e.g. 'CREED AVENTUS \u2014 No. 01') plus a lab-label aesthetic on the atomizer/PDP hero shot would visually justify the flat-price/build-your-rotation positioning without new copywriting.",
+  "verdict": "overstated",
+  "corrected": "Le Labo's naming convention pairs scent descriptors with numbers ('SANTAL 33', 'SHIU 25'), reinforced by an optional custom-label personalization step offered at checkout before order finalization."
+ },
+ {
+  "lane": "gentle-monster-design",
+  "claim": "Loewe's PDP and homepage use horizontal carousel product arrangements instead of rigid grids, styled/photographer-credited editorial imagery at 3:4 aspect ratios, and minimal text so imagery dominates \u2014 described as prioritizing 'visual storytelling over rigid product grids.'",
+  "source_url": "https://www.loewe.com",
+  "source_title": "LOEWE (fetched)",
+  "quote": "Products display in horizontal carousel arrangements, creating a fluid, gallery-like experience that prioritizes visual storytelling over rigid product grids... Photography exemplifies high-fashion editorial work\u2014styled portraits... showcase products within lifestyle contexts.",
+  "confidence": "medium",
+  "so_what": "Base Note's homepage 'Trending fragrances' section should become a horizontal scroll-carousel of styled vial shots rather than a static grid \u2014 cheap to build, immediately reads as more premium.",
+  "verdict": "overstated",
+  "corrected": "Loewe's homepage uses horizontal carousel product arrangements rather than rigid grids, campaign imagery at 3:4 aspect ratios credited to named photographers (attribution appears off-page), and minimal text so imagery dominates. PDP layout and the phrase 'visual storytelling over rigid product grids' were not verifiable from the source."
+ },
+ {
+  "lane": "gentle-monster-design",
+  "claim": "SSENSE's homepage leads with editorial content rather than products, uses a distinctive custom system-font-adjacent headline typeface (an intentionally imperfect near-Arial with a tilted 's', blocky 'r', upside-down '8'), and collapses global nav to four links: Menswear, Womenswear, Everything Else, Search.",
+  "source_url": "https://www.ssense.com/en-us/editorial/culture/dont-call-it-a-rebrand-a-conversation-with-director-of-design-eric-hu",
+  "source_title": "A Conversation With Director of Design Eric Hu \u2014 SSENSE",
+  "quote": "The headline typeface looks like a system font such as Arial, but with distinctive details\u2014an upside-down \"8\", a blocky \"r\", and a tilted \"s\".",
+  "confidence": "medium",
+  "so_what": "Base Note's blog/hub content (3 live, 14 drafts) is currently disconnected from the shop nav; an SSENSE-style editorial-first landing (blog post + shop link, not shop-only) would put the 14 draft posts to work and make the homepage feel like a magazine, not a checkout page.",
+  "verdict": "unverifiable"
+ },
+ {
+  "lane": "gentle-monster-design",
+  "claim": "Jacquemus's site scored 7.48/10 on Awwwards specifically for a restrained two-color palette (gray #9C9C9C and white), 'Big Background Images,' full-width video scroll, and GSAP-driven transitions layered over an otherwise minimal/flat design.",
+  "source_url": "https://www.awwwards.com/sites/jacquemus",
+  "source_title": "JACQUEMUS \u2014 Awwwards site review",
+  "quote": "The website employs a restrained two-color scheme: gray (#9C9C9C) and white (#ffffff)... Animation techniques include GSAP and jQuery implementations for interactive effects... \"Full Width Video Scroll\"",
+  "confidence": "medium",
+  "so_what": "GSAP is already in Base Note's available skill stack (gsap-core/gsap-scrolltrigger); a single full-width video-scroll section on the homepage (hero fragrance pour, scroll-pinned) is a concrete, buildable upgrade using tooling already at hand.",
+  "verdict": "overstated",
+  "corrected": "Jacquemus's site scored 7.46/10 (not 7.48) on Awwwards, with listed attributes including a two-color palette (gray #9C9C9C and white), 'Big Background Images,' full-width video, and GSAP-driven transitions over a minimal/flat design."
+ },
+ {
+  "lane": "gentle-monster-design",
+  "claim": "Aim\u00e9 Leon Dore structures its shop around a drop-based 'Deliveries' model (seasonal D1-D5) layered with a Lookbook/News section that pairs garments with lifestyle editorial rather than isolated product shots, plus visible brand-extension partnerships (Caf\u00e9 Leon Dore, ALD/New Balance) to build scarcity and cultural relevance.",
+  "source_url": "https://www.aimeleondore.com",
+  "source_title": "Aim\u00e9 Leon Dore (fetched)",
+  "quote": "The main navigation divides offerings into \"Shop by Category\" (clothing types) and seasonal \"Deliveries\" (SS26 D1-D5), suggesting a curated, drop-based release model... pairing garments with editorial content\u2014establishes cultural relevance beyond mere merchandise.",
+  "confidence": "medium",
+  "so_what": "Base Note's flat monthly-subscription model could borrow the 'drop' framing for scent rotations (e.g. a monthly 'This Month's Rotation' curated set with a countdown), giving Reddit/TikTok content something concrete to post about instead of generic product photos.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "gentle-monster-design",
+  "claim": "Diptyque uses a cascading multi-level dropdown mega-menu (Parfums / Bougies & Maison / Bain & Corps) and product cards with a single 'D\u00e9couvrir' (Discover) CTA rather than a hard Add-to-Cart, softening the commercial ask on browse pages.",
+  "source_url": "https://www.diptyqueparis.com",
+  "source_title": "Diptyque Paris (fetched)",
+  "quote": "Product cards include thumbnail imagery, product name, brief description, and \"D\u00e9couvrir\" (Discover) action buttons linking to detail pages.",
+  "confidence": "medium",
+  "so_what": "For Base Note's 'My Rotation' queue model, a soft 'Add to Rotation' / 'Discover' verb on browse-grid cards (vs. a hard 'Subscribe now') reduces friction on a flat-price catalog where the real commitment happens at the cart/PDP, not the grid.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "gentle-monster-design",
+  "claim": "Byredo optimizes hero and lifestyle imagery in AVIF format with adaptive sizing, explicitly for performance, while still running full-bleed lifestyle photography (e.g. 'pink flowers' still-life alongside product) in the hero.",
+  "source_url": "https://www.byredo.com",
+  "source_title": "Byredo (fetched)",
+  "quote": "Images are optimized with \"AVIF format\" and adaptive sizing for performance. The aesthetic emphasizes luxury and aspirational lifestyle positioning.",
+  "confidence": "low",
+  "so_what": "Base Note should audit its own hero image format/weight (AVIF/WebP + responsive srcset) before adding video \u2014 heavier motion assets on top of unoptimized images will tank mobile load time and hurt the exact organic-first channels (TikTok referral, Reddit link clicks) it depends on.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "gentle-monster-design",
+  "claim": "Aesop's color system uses a strict primary/secondary text hierarchy (black for primary text, gray for secondary) against a muted monochromatic background, rather than brand-color accents scattered through the UI.",
+  "source_url": "https://work.co/clients/aesop/",
+  "source_title": "Aesop Case Study \u2014 Work & Co",
+  "quote": "Aesop's monochromatic color palette is harmonious with muted yellows used for the background, and gray and black work together to create a visual hierarchy for typography (black for primary text and gray for secondary).",
+  "confidence": "low",
+  "so_what": "Base Note currently mixes house-brand colors/logos into the PDP and grid; standardizing to a strict black/gray/one-accent text hierarchy (independent of which luxury house is shown) would make the 22-fragrance catalog feel like one curated collection instead of 22 mismatched brand pages.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "gentle-monster-design",
+  "claim": "Le Labo, Byredo, and Diptyque all organize navigation by product-format/use-case (Eau de Parfum, Home Fragrance, Bougies & Maison, Bain & Corps) rather than by brand or price, keeping the shopper in a discovery mindset.",
+  "source_url": "https://www.lelabofragrances.com",
+  "source_title": "Le Labo (fetched)",
+  "quote": "The site employs a hierarchical mega-menu structure with product categories organized by collection type (City Exclusive, Classic) and format (Eau de Parfum, Body Lotion, Candles). Navigation feels curated rather than exhaustive, reflecting the brand's niche positioning.",
+  "confidence": "medium",
+  "so_what": "Base Note's nav should add a 'By occasion' or 'By scent family' facet alongside 'By house' \u2014 the current flat 22-item list forces shoppers to already know the brand names, which cuts against the 'discover new luxury scents' value prop.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "gentle-monster-design",
+  "claim": "SSENSE's global navigation is deliberately reduced to four top-level links (Menswear, Womenswear, Everything Else, Search), trading category completeness for scan speed.",
+  "source_url": "https://ixd.prattsi.org/2023/09/design-critique-ssense/",
+  "source_title": "Design Critique: SSENSE \u2014 IXD@Pratt",
+  "quote": "The website features a clean, minimalist design with few navigation options and a straightforward checkout process.",
+  "confidence": "low",
+  "so_what": "Base Note doesn't need a 4-link nav (catalog is small), but the principle \u2014 fewer top-level choices, search as a first-class nav item, not buried in an icon \u2014 is directly applicable to a 22-SKU catalog where search-by-house-name is likely the #1 intent.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "gentle-monster-design",
+  "claim": "Jacquemus and Byredo both foreground 'New' or featured-collection labeling as a first-class UI element on cards/menus, not just a filter option.",
+  "source_url": "https://www.byredo.com",
+  "source_title": "Byredo (fetched)",
+  "quote": "\"New\" badges appear next to featured offerings like \"Future Memories\" and \"Car Diffuser,\" suggesting visual prominence.",
+  "confidence": "low",
+  "so_what": "Base Note adds ~0 new fragrances per week currently but could badge 'Newly added to rotation catalog' or 'Trending in Rotations' pulled from real subscriber queue data \u2014 cheap, honest signal (never invented) that also reuses the queue/localStorage data model already built.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "goal-counter-scarcity",
+  "claim": "The goal-gradient effect: real customers (caf\u00e9 loyalty cards, online rating platforms) act more frequently as they get visibly closer to a reward threshold \u2014 the core mechanism behind 'X more subscribers to hit our goal' messaging.",
+  "source_url": "https://journals.sagepub.com/doi/abs/10.1509/jmkr.43.1.39",
+  "source_title": "The Goal-Gradient Hypothesis Resurrected: Purchase Acceleration, Illusionary Goal Progress, and Customer Retention (Kivetz, Urminsky, Zheng 2006)",
+  "quote": "participants in a real caf\u00e9 reward program purchase coffee more frequently the closer they are to earning a free coffee, and Internet users who rate songs in return for reward certificates visit the rating website more often, rate more songs per visit, and persist longer in the rating effort as they approach the reward goal",
+  "confidence": "high",
+  "so_what": "Frame the public counter as progress toward the Nov 30 survival goal ('43 to go to save the shop' style), not a static subscriber count \u2014 the visible gap-to-goal is the persuasive element, not the raw number itself.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "goal-counter-scarcity",
+  "claim": "The endowed-progress effect: giving people a head start on a goal (e.g., pre-stamped loyalty card) increases completion speed versus starting a countdown from zero.",
+  "source_url": "https://journals.sagepub.com/doi/abs/10.1509/jmkr.43.1.39",
+  "source_title": "The Goal-Gradient Hypothesis Resurrected (Kivetz, Urminsky, Zheng 2006)",
+  "quote": "a 12-stamp coffee card with a head start of two stamps was found to be completed faster than an empty 10-stamp card",
+  "confidence": "high",
+  "so_what": "Show the 17 current subscribers as a running head start toward 60 ('17/60 \u2014 you'd be #18') rather than resetting the counter to 0; a pre-filled bar recruits faster than an empty one.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "goal-counter-scarcity",
+  "claim": "Crowdfunding backers on Kickstarter accelerate pledging as a campaign nears its funding goal, driven by a desire to help the campaign succeed rather than reduced perceived risk post-goal.",
+  "source_url": "https://anderson-review.ucla.edu/kickstarter",
+  "source_title": "Why Kickstarter Funders Quickly Kick in the Last 5 Percent (UCLA Anderson Review, on Dai & Zhang research)",
+  "quote": "The average time to get a project from 100 percent funded to 105 percent funded took twice the number of hours needed for a project to move from 95 percent to 100 percent.",
+  "confidence": "high",
+  "so_what": "A visible '43 subscribers to go' framing taps the same prosocial urgency Kickstarter backers show pre-goal; this only works with a real, verifiable numerator/denominator \u2014 do not round or estimate the count.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "goal-counter-scarcity",
+  "claim": "Displaying low/unflattering counts of a desired behavior functions as negative social proof and can normalize the undesired behavior instead of driving the desired one.",
+  "source_url": "https://blog.hubspot.com/marketing/negative-social-proof",
+  "source_title": "Social Proof Backfire: The Marketing Mistake Costing You Conversions (HubSpot)",
+  "quote": "Wikipedia repeatedly publicizes how 'fewer than 2% give'. This message is doomed to backfire.",
+  "confidence": "high",
+  "so_what": "Do NOT show '17 subscribers' as a bare, static headline stat with no context \u2014 a small raw number reads as 'almost nobody has joined.' Pair any raw count with trajectory/goal framing; never display it alone.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "goal-counter-scarcity",
+  "claim": "A field experiment found that a sign describing theft as common ('many past visitors have removed the wood') nearly tripled the actual theft rate compared to no sign at all, versus a plain no-social-proof prohibition sign that cut theft.",
+  "source_url": "https://www.psychologytoday.com/us/blog/the-shaping-us/201909/the-petrified-wood-principle",
+  "source_title": "The Petrified Wood Principle (Psychology Today, on Cialdini/Martin/Goldstein 2003 Petrified Forest study)",
+  "quote": "When there was no sign 2.92% of the pieces were stolen. The non-social proof message asking people not to steal resulted in a 1.67% theft rate. But the negative social proof message resulted in 7.92% of the pieces being stolen!",
+  "confidence": "high",
+  "so_what": "Directly analogous risk: a counter/copy that inadvertently signals 'almost nobody subscribes to Base Note yet' can suppress conversion the same way the petrified-wood sign increased theft \u2014 never publish framing whose plain reading is 'few people do this.'",
+  "verdict": "overstated",
+  "corrected": "The social-proof sign ('many past visitors have removed the wood') produced roughly a four-fold increase in theft (8%) compared to the plain prohibition sign ('please don't remove wood chips,' <2% theft) \u2014 not compared to 'no sign at all,' and the multiplier is ~4x, not 'nearly tripled.'"
+ },
+ {
+  "lane": "goal-counter-scarcity",
+  "claim": "Research on scarcity cues found scarcity increases perceived time pressure but can have a negative net effect on purchase intention for some consumer segments \u2014 scarcity persuasion tactics can backfire.",
+  "source_url": "https://winsomemarketing.com/winsome-marketing/scarcity-marketing-psychology-does-not-enough-work",
+  "source_title": "Scarcity Marketing Psychology: Does 'Not Enough' Work? (Winsome Marketing)",
+  "quote": "Research found a positive effect of scarcity on time pressure, but a negative effect on purchase intention, suggesting that using persuasion principles for certain consumer groups can backfire.",
+  "confidence": "medium",
+  "so_what": "Test scarcity framing ('only 10 founding spots left') cautiously and monitor net conversion, not just click/urgency metrics \u2014 it can suppress purchase intent even while raising perceived urgency. Secondary source; corroborate with a primary study before citing as hard evidence.",
+  "verdict": "overstated",
+  "corrected": "The cited article discusses scarcity/urgency tactics backfiring via psychological reactance and consumer distrust (e.g., a course platform where 42% of non-converters cited 'feeling manipulated,' and a claim that misapplied scarcity tactics can hurt brand trust by up to 45%), but it does not frame this around 'perceived time pressure' as the mechanism, and it reads as a marketing blog piece citing statistics rather than a formal 'research' study on scarcity cues."
+ },
+ {
+  "lane": "goal-counter-scarcity",
+  "claim": "Bootstrapped SaaS companies (Buffer, Baremetrics) built trust and brand differentiation by making their real revenue/growth dashboards fully public in real time, rather than showing a single vanity stat.",
+  "source_url": "https://buffer.com/resources/revenue-dashboard/",
+  "source_title": "Introducing the Public Buffer Revenue Dashboard",
+  "quote": "Baremetrics made their entire revenue dashboard public in February 2014, and Buffer followed a few months later... radical transparency builds trust with customers, keeps companies accountable, and gives early-stage founders real benchmarks to learn from",
+  "confidence": "high",
+  "so_what": "The credible 'build in public' pattern for a small, honest subscriber base is a living, trend-visible dashboard/tracker (growth over time toward a stated goal), not a single static badge \u2014 reframes '17 subscribers' as 'watch us grow to 60' rather than a number that just sits there looking small.",
+  "verdict": "overstated",
+  "corrected": "Buffer built trust via a public, real-time revenue dashboard as part of its transparency values (confirmed by the fetched page), but that page does not mention Baremetrics at all \u2014 it names ChartMogul as Buffer's revenue-tracking data source, not Baremetrics."
+ },
+ {
+  "lane": "goal-counter-scarcity",
+  "claim": "Founding-member/early-adopter pricing campaigns in SaaS typically lock in a discounted or permanent rate for early joiners rather than offering a true one-time lifetime deal, preserving recurring revenue while still incentivizing early signup.",
+  "source_url": "https://www.datadab.com/blog/lifetime-memberships-for-saas/",
+  "source_title": "Lifetime Memberships: The Ultimate Growth Hack for Early-Stage SaaS Companies",
+  "quote": "Some founders use a 'founding member' framing instead of a pure lifetime deal, offering 3-5 years of locked pricing or a heavy permanent discount on the subscription, rather than true lifetime access at a one-time price.",
+  "confidence": "medium",
+  "so_what": "A 'lock in $20/month as a Founding Member \u2014 price rises once we hit 60 subscribers' framing ties the goal counter to a real, honest incentive (protect current price) rather than a fabricated deadline.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "goal-counter-scarcity",
+  "claim": "The FTC's 2022 dark-patterns report explicitly names fabricated scarcity and urgency cues \u2014 fake low-stock warnings, fake countdown timers, and fake demand claims \u2014 as deceptive practices it is actively targeting.",
+  "source_url": "https://www.ftc.gov/system/files/ftc_gov/pdf/P214800+Dark+Patterns+Report+9.14.2022+-+FINAL.pdf",
+  "source_title": "Bringing Dark Patterns to Light (FTC Staff Report, Sept 2022)",
+  "quote": "False scarcity examples include saying 'Only 1 left in stock \u2013 order soon' when inventory is actually low, and false high demand messages like '20 other shoppers have this item in their cart.'",
+  "confidence": "medium",
+  "so_what": "Any scarcity/counter language on Base Note must be literally true and independently verifiable (real subscriber count, real spots-remaining math) \u2014 fabricated urgency is an active FTC Section-5 enforcement target, with 42 state AGs also running task forces on the same tactics.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "goal-counter-scarcity",
+  "claim": "Wikipedia's own fundraising messaging citing a low participation rate ('fewer than 2% give') is cited by marketers as a textbook case of negative social proof suppressing the very behavior it describes.",
+  "source_url": "https://blog.hubspot.com/marketing/negative-social-proof",
+  "source_title": "Social Proof Backfire: The Marketing Mistake Costing You Conversions (HubSpot)",
+  "quote": "The more they hear about something, the more they assume it's widespread.",
+  "confidence": "medium",
+  "so_what": "General audit principle: never state a low conversion/participation rate as a call to action; state the target and the gap to it instead.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "goal-counter-scarcity",
+  "claim": "A UK bank ad campaign meant to encourage saving instead normalized low savings rates by publicizing the average (low) amount people had saved, and behavior worsened.",
+  "source_url": "https://blog.hubspot.com/marketing/negative-social-proof",
+  "source_title": "Social Proof Backfire: The Marketing Mistake Costing You Conversions (HubSpot)",
+  "quote": "Rather than persuading British people to save more, this advertisement encouraged them to save less.",
+  "confidence": "medium",
+  "so_what": "Never publish an average/typical-customer stat that is unflatteringly low (e.g., 'average member has 2 fragrances in rotation') without aspirational framing \u2014 it can anchor visitors to underperform even that baseline.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "goal-counter-scarcity",
+  "claim": "A behavior-change campaign fixed a social-proof backfire by reframing around the desired majority norm (most patients arrive on time) instead of citing the negative rate (missed-appointment rate).",
+  "source_url": "https://blog.hubspot.com/marketing/negative-social-proof",
+  "source_title": "Social Proof Backfire: The Marketing Mistake Costing You Conversions (HubSpot)",
+  "quote": "New signs emphasized that 'most patients arrive on time'.",
+  "confidence": "medium",
+  "so_what": "If Base Note wants social proof at low absolute volume, frame it around a positive majority behavior among existing subscribers (e.g., '9 in 10 members renew every month') rather than the raw headcount \u2014 a rate/ratio can be honest and positive even when N is small.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "goal-counter-scarcity",
+  "claim": "Crowdfunding money and backer flow is disproportionately front- and back-loaded around a campaign's lifecycle, not steady \u2014 meaning a raw running subscriber count without a target date reads as noise, not momentum.",
+  "source_url": "https://anderson-review.ucla.edu/kickstarter",
+  "source_title": "Why Kickstarter Funders Quickly Kick in the Last 5 Percent (UCLA Anderson Review)",
+  "quote": "The largest amount of money was pledged in the beginning and end of a project, with 14.69% of money pledged and 15.68% of backers obtained in the first time period.",
+  "confidence": "medium",
+  "so_what": "Pair the goal counter with an explicit end date (Nov 30) rather than an open-ended running tally \u2014 deadline-bounded goals are what generate the front/back-loaded urgency effect documented on Kickstarter; an undated counter has no such gradient to exploit.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "referral-mechanics",
+  "claim": "Dropbox's referral program used a simple double-sided reward (both sides get storage), was fulfilled automatically with no claim form, and produced a permanent 60% bump in user volume plus 35% of daily signups.",
+  "source_url": "https://referralrock.com/blog/dropbox-referral-program/",
+  "source_title": "How the Dropbox Referral Program Led to 3900% Growth",
+  "quote": "Both sides get 500MB of bonus storage... No manual approval, no claim form... 35% of daily signups came from referrals... A permanent 60% bump in user volume",
+  "confidence": "high",
+  "so_what": "Base Note's referral mechanic should mirror this: automatic, no-friction reward for both sides (e.g. both get a free/discounted month), not a manual-approval process Jeff has to run by hand for 17 subscribers.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "referral-mechanics",
+  "claim": "Dropbox itself notes the incentive worked because it was native to the product (more of what people already wanted) and immediately delivered \u2014 and because a third of users were already referring organically before the program existed, meaning the program amplified existing word-of-mouth rather than creating it from nothing.",
+  "source_url": "https://referralrock.com/blog/dropbox-referral-program/",
+  "source_title": "How the Dropbox Referral Program Led to 3900% Growth",
+  "quote": "A third of all their users were already coming in through word of mouth before the program launched... The incentive was native to the product (more of what you already wanted), immediately delivered, and clearly valuable.",
+  "confidence": "high",
+  "so_what": "Before building a formal program, check whether Base Note already has organic referral behavior (ask the 17 subscribers) \u2014 a program amplifies existing pull, it doesn't manufacture it.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "referral-mechanics",
+  "claim": "Harry's pre-launch referral campaign used a tiered milestone structure (5/10/25/50 referrals) with escalating physical-product rewards, and the accessible bottom tier (just 5 referrals) drove broad participation; 77% of 100,000 collected emails came from referrals.",
+  "source_url": "https://referralrock.com/blog/harrys-referral-program/",
+  "source_title": "How the Harry's Referral Program Racked Up 100k Emails",
+  "quote": "Tier 1 (5 referrals): Free shave cream... Tier 4 (50 referrals): An entire free year of shaving blades... 77% of the 100,000 emails collected came from referrals... The first tier was just 5 referrals \u2014 easy enough that participation felt worthwhile from the start.",
+  "confidence": "high",
+  "so_what": "A low, easily-hit first tier (e.g. 1 successful referral = 1 free month) matters more for participation than a big top prize; Base Note should optimize the entry tier, not the ceiling.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "referral-mechanics",
+  "claim": "Morning Brew runs an evergreen milestone referral ladder (1, 5, 10, 15, 25, 50, 100, 1000 referrals) surfaced at the end of every newsletter with 'you're only X referrals away from Y' messaging, escalating from small perks (stickers) to identity items (shirt, mug, sweatshirt).",
+  "source_url": "https://referralrock.com/blog/morning-brew-referral-program/",
+  "source_title": "How the Morning Brew Referral Program Created Wild Growth",
+  "quote": "Milestone emails are triggered after a first referral and then at 5, 10, 15, 25, 50, 100 and 1,000 referrals... 25 referrals earns a shirt, 50 a mug, 100 a sweatshirt... 'You're only X referrals away from receiving Y!'",
+  "confidence": "high",
+  "so_what": "Base Note has no email platform (Klaviyo blocked) but the pattern still applies to a static account-page widget: show progress-to-next-reward copy near the referral link even without automated emails.",
+  "verdict": "overstated",
+  "corrected": "Morning Brew runs a milestone referral ladder at 1 (stickers), 3 (notebook/tote), 7 (mystery box), 10+ (branded apparel: shirt/joggers/crewneck), and 1,000 referrals (home office setup), surfaced somewhere in every newsletter (not fixed at the end)."
+ },
+ {
+  "lane": "referral-mechanics",
+  "claim": "Scentbird runs a give-a-month referral program where referrer and referred friend both must be actively subscribed for the credit to trigger, referral links are shared via email providers/social/direct link, and the reward is a free month of subscription credited automatically.",
+  "source_url": "https://www.scentbird.com/blog/scentbird-referral-feature/",
+  "source_title": "Scentbird Referral Program \u2013 How it works?",
+  "quote": "Both parties must be actively subscribed in order to be eligible for our referral credits... you will receive a referral link which you can share on social media and with all of your friends.",
+  "confidence": "medium",
+  "so_what": "Direct competitor precedent for a $20/mo-adjacent product: reward = one free month (100% of one billing cycle) for referrer once the referred friend actually subscribes, not just signs up \u2014 Base Note should require the referred friend to complete a paid order before crediting the referrer, guarding against fraud.",
+  "verdict": "unverifiable"
+ },
+ {
+  "lane": "referral-mechanics",
+  "claim": "Cash/commission-style referral rewards significantly outperform coupon-only rewards: cash/commission programs are about 2.2x as likely to reach meaningful referral revenue, and commission rewards produce roughly 2.7x the coupon-only baseline; the typical first referred sale from a program arrives after 14 days, with 68% of programs reaching it within the first month.",
+  "source_url": "https://www.referralcandy.com/blog/referral-program-benchmarks-whats-a-good-conversion-rate-in-2025/",
+  "source_title": "Referral Program Benchmarks: What's a Good Conversion Rate in 2026? \u2014 ReferralCandy",
+  "quote": "Cash/commission programs were about 2.2 times as likely to reach a meaningful level of referral revenue... Commission rewards showed roughly 2.7 times the coupon-only baseline... The typical measurable first referred sale arrived after 14 days... 68% reached it within the first month.",
+  "confidence": "high",
+  "so_what": "A free-month-of-subscription reward (the Scentbird model) functions like a commission/credit reward rather than a flat coupon, which this data says converts better \u2014 reinforces choosing 'give a free month' over a generic %-off code.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "referral-mechanics",
+  "claim": "Standard 'give $X get $X' two-sided referral incentive structures are simple, easy to model, and convert above the 3-5% median when paired with a decent landing page; asymmetric structures (bigger reward to the referrer than the referred friend) are recommended specifically to motivate the person doing the sharing, and reward size should be pegged to subscriber lifetime value, not one billing cycle.",
+  "source_url": "https://calusamarketing.com/feeds/blog/referral-incentives",
+  "source_title": "How to Choose the Right Referral Incentives: 20+ Examples",
+  "quote": "In asymmetrical two-sided incentives, it is better to give the Advocate a bigger reward so that they will refer their Friends... Rewards should match the lifetime value of a subscriber, not just the revenue from the first box or billing cycle.",
+  "confidence": "medium",
+  "so_what": "At $20/mo, a symmetric 'both get 1 free month' (~$20 value each) is already a large percentage-of-LTV incentive for a nascent brand; consider skewing slightly toward the referrer (e.g. referrer gets a full free month, friend gets a smaller %-off first month) to control cash cost while still motivating sharing.",
+  "verdict": "unverifiable"
+ },
+ {
+  "lane": "referral-mechanics",
+  "claim": "Subscription-box competitor Nuuly uses a tiered give-get structure that scales with successive referrals: 'Give $10, Get $10 off one month when the first friend subscribes, $20 off with the next friend, and an additional $30 with the third friend' \u2014 a Give $10, Get up to $60 headline.",
+  "source_url": "https://calusamarketing.com/feeds/blog/referral-incentives",
+  "source_title": "How to Choose the Right Referral Incentives: 20+ Examples",
+  "quote": "Subscription clothing rental brand Nuuly drives additional shares by using tiered rewards with a 'Give $10, Get up to $60' CTA that gives advocates $10 off one month when the first friend subscribes, $20 off with the next friend, and an additional $30 with the third friend.",
+  "confidence": "medium",
+  "so_what": "Direct subscription-model precedent for escalating rewards per successive referral, which Base Note could replicate cheaply via manually-issued Shopify discount codes without needing a referral app or Klaviyo.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "referral-mechanics",
+  "claim": "Shopify Flow (free on all plans, no-code) can trigger a workflow on a 'Discount code created' event or on order completion to notify/reward a referrer, and third-party tools like the Bulk Discount Code Tool add a 'Generate discount code' action to Flow to create unique codes on demand; codes can be delivered via Flow-native email apps (Flowrelay) since Klaviyo is blocked for Base Note.",
+  "source_url": "https://help.shopify.com/en/manual/shopify-flow/reference/triggers/discount-code-created",
+  "source_title": "Shopify Help Center | Discount code created",
+  "quote": "The Discount code created trigger starts a workflow when a discount code is created by you or by a third-party app in your store.",
+  "confidence": "medium",
+  "so_what": "Base Note can build a lightweight, Klaviyo-free referral automation using native Shopify Flow (free) + manually generated per-customer discount codes (?discount=CODE URLs) rather than paying for a dedicated referral app, since volume is only 17 subscribers today.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "referral-mechanics",
+  "claim": "Shopify Collabs lets merchants set up unique per-creator discount codes and affiliate links to track referral-driven sales and commissions, but as of the fetched page it is not accepting new creator signups \u2014 existing partnerships still work.",
+  "source_url": "https://help.shopify.com/en/manual/promoting-marketing/collabs",
+  "source_title": "Shopify Help Center | Shopify Collabs",
+  "quote": "You can create and track unique discount codes and referral links to easily measure affiliate performance and monitor product sales... Collabs isn't accepting new creator signups at this time.",
+  "confidence": "medium",
+  "so_what": "Shopify Collabs (native, free) is the right long-term home for influencer-style referral codes once it reopens signups, but Base Note should not build a plan dependent on onboarding new creators through Collabs today \u2014 use manual /discount/CODE links instead for now.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "referral-mechanics",
+  "claim": "WhatsApp click-to-chat links follow the format https://wa.me/<number>?text=<urlencoded message>, requiring no app integration \u2014 any merchant can hand-build a pre-filled share message pointing to a referral link.",
+  "source_url": "https://chatfuel.com/blog/create-whatsapp-link",
+  "source_title": "How to create a WhatsApp link (wa.me): with a phone number or message | Chatfuel Blog",
+  "quote": "You can add a pre-filled message using this format: https://wa.me/whatsappphonenumber?text=urlencodedtext, where URL encoding replaces spaces and special characters in a message with codes that work in URLs.",
+  "confidence": "high",
+  "so_what": "A 'Share on WhatsApp' button on the Base Note account page can be a single static wa.me link (no phone number needed for a generic share-to-any-chat intent \u2014 use api.whatsapp.com/send?text= for that variant) \u2014 zero-cost, zero-app-dependency implementation.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "referral-mechanics",
+  "claim": "ReferralCandy's benchmark data shows chat apps and email combined account for 69.2% of tracked share-button clicks, and direct one-to-one sharing (not public social posts) drove the outcome for 93.7% of merchants with tracked activity.",
+  "source_url": "https://www.referralcandy.com/blog/referral-program-benchmarks-whats-a-good-conversion-rate-in-2025/",
+  "source_title": "Referral Program Benchmarks: What's a Good Conversion Rate in 2026? \u2014 ReferralCandy",
+  "quote": "chat apps and email accounted for 69.2% of tracked share-button activity... Direct sharing beat public social for 93.7% of merchants with tracked activity.",
+  "confidence": "high",
+  "so_what": "Prioritize a WhatsApp/SMS/DM share button over a generic 'share to Twitter/Facebook' button \u2014 direct 1:1 chat sharing is where the actual conversions come from, which fits Base Note's low-subscriber, high-intimacy referral base.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "pmf-icp-subscription",
+  "claim": "Scentbird's 2024 revenue reached $43.9M, and the company had 600,000+ monthly subscribers by early 2025, growing toward 1 million+ subscribers as of an April 2025 partnership announcement.",
+  "source_url": "https://getlatka.com/companies/scentbird.com",
+  "source_title": "How Scentbird hit $43.9M revenue with a 165 person team in 2024 | Latka",
+  "quote": "In 2024, Scentbird's revenue reached $43.9M... Scentbird has 1 million+ subscribers as of its partnership announcement in April 2025... Scentbird served over 600,000 monthly subscribers by early 2025.",
+  "confidence": "medium",
+  "so_what": "Do not benchmark Base Note against Scentbird's absolute numbers or try to out-market them; use them only as a proof-of-category signal and focus differentiation on the flat-price anti-surcharge wedge, which Scentbird's scale does not address.",
+  "verdict": "overstated",
+  "corrected": "Scentbird's 2024 revenue reached an estimated $43.9M (per Latka). No subscriber count data is available from this source."
+ },
+ {
+  "lane": "pmf-icp-subscription",
+  "claim": "E-commerce/subscription-box churn benchmarks: average subscription box monthly churn is 10-15%, with 7-10% considered strong and under 3-7% best-in-class; premium/luxury boxes specifically can achieve 3-5% monthly churn.",
+  "source_url": "https://www.swell.is/content/subscription-box-statistics",
+  "source_title": "32 Subscription Box Statistics That Drive Recurring Revenue in 2026 | Swell",
+  "quote": "E-commerce subscription boxes experience 10-15% monthly churn rates, significantly higher than SaaS benchmarks. Top performers maintain rates below 3%.",
+  "confidence": "medium",
+  "so_what": "Set Base Note's internal churn target explicitly: since it sits in the premium/luxury tier, chase 3-5% monthly churn, not the 10-15% category average \u2014 losing 2 of 17 subs per month is existentially different from Scentbird losing 2 of 600,000.",
+  "verdict": "overstated",
+  "corrected": "Average subscription box monthly churn is 10-15%; top performers achieve below 3%; best-in-class replenishment models stay below 4%. No premium/luxury-specific churn figure is given by this source."
+ },
+ {
+  "lane": "pmf-icp-subscription",
+  "claim": "Nearly half of all subscription-box cancellations happen within the first 90 days of signup, making early-tenure onboarding the single highest-leverage retention lever.",
+  "source_url": "https://www.swell.is/content/subscription-box-statistics",
+  "source_title": "32 Subscription Box Statistics That Drive Recurring Revenue in 2026 | Swell",
+  "quote": "Nearly half of subscriber cancellations happen within the first 90 days, indicating onboarding experience is critical to retention.",
+  "confidence": "medium",
+  "so_what": "Treat every subscriber's day-1 through day-90 experience (first box match, first renewal notice, first 'my rotation' use) as make-or-break and instrument it manually \u2014 a single lost early subscriber is ~6% of the current base.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "pmf-icp-subscription",
+  "claim": "General e-commerce subscription churn benchmark by Recurly puts subscription box / DTC churn at a 4.25% median annual rate at the account level, but voluntary churn is elevated in this category specifically because of 'lower price points and impulse-driven signup patterns.'",
+  "source_url": "https://recurly.com/research/churn-rate-benchmarks/",
+  "source_title": "Churn rate benchmarks: SaaS, media, retail & more industries | Recurly",
+  "quote": "Subscription boxes and direct-to-consumer... 4.25% median annual churn rate... lower price points and impulse purchasing contributing to elevated voluntary churn in this category.",
+  "confidence": "low",
+  "so_what": "This conflicts with Swell's 10-15% monthly figure (likely different denominators \u2014 flag the discrepancy rather than picking one number to cite); both sources agree impulse-driven, low-commitment signup is a real risk at Base Note's $20/mo price point, arguing for a stronger first-purchase intent filter (the discovery-set bridge product) rather than frictionless instant-subscribe.",
+  "verdict": "confirmed"
+ },
+ {
+  "lane": "pmf-icp-subscription",
+  "claim": "Millennials and Gen Z account for nearly 70% of niche perfume purchases, and a 2025 Euromonitor International survey found 67% of luxury consumers under 40 preferred niche/artisanal fragrance brands over designer labels, citing exclusivity, storytelling, and ingredient transparency.",
+  "source_url": "https://freeyourself.com/blogs/news/niche-perfume-market-stats",
+  "source_title": "Niche Perfume Market Stats for 2025 Insights | Free Yourself",
+  "quote": "Millennials and Gen Z account for nearly 70% of niche perfume purchases and are less loyal to big legacy names and more interested in discovery, individuality, and community buzz. A 2025 survey by Euromonitor International found that 67% of luxury consumers under the age of 40 preferred niche or artisanal fragrance brands over designer labels, citing exclusivity, storytelling, and ingredient transparency as primary motivators.",
+  "confidence": "medium",
+  "so_what": "Confirms Base Note's ICP should be framed as under-40 discovery-motivated buyers rather than older luxury-loyalist buyers; content should lean harder into storytelling/exclusivity/ingredient-transparency angles rather than pure price-savings messaging, since price is a secondary motivator for this cohort per this source.",
+  "verdict": "overstated",
+  "corrected": "Millennials and Gen Z drive 68% of niche perfume sales (per this source). The claimed 2025 Euromonitor International survey and its 67% figure are not supported by this source and should be treated as unverified/fabricated unless sourced elsewhere."
+ },
+ {
+  "lane": "pmf-icp-subscription",
+  "claim": "Luckyscent sells 35+ discovery/sample sets from $18 (BDK Parfums Absolu Trio Discovery Set) up to $275 (Zoologist Specimen Anthology Box Set), with common mid-tier examples like a Mancera 5-Piece Fragrance Discovery Kit at $40 and a Lorenzo Pazzaglia 10-Piece Discovery Kit at $65.",
+  "source_url": "https://www.luckyscent.com/collections/discovery-sets",
+  "source_title": "Discovery Sets | Luckyscent",
+  "quote": "BDK Parfums Absolu Trio Discovery Set at $18... Mancera 5-Piece Fragrance Discovery Kit at $40... Zoologist Specimen Anthology Box Set at $275",
+  "confidence": "medium",
+  "so_what": "Establishes a concrete competitive price ladder for a one-time 'trio' discovery set as a low-commitment bridge product ahead of a $20/mo subscription ask: a $15-25 3-vial trial box priced below Base Note's own monthly fee would sit at the entry point of this observed market range and could convert curious Reddit/TikTok traffic who aren't ready to subscribe cold.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "pmf-icp-subscription",
+  "claim": "The Sean Ellis 40% PMF survey measures stated preference (what users say they'd feel), which behavioral economists and practitioners have documented can diverge sharply from revealed preference (what users actually do) \u2014 Sean Ellis himself called the 40% threshold 'a bit arbitrary.'",
+  "source_url": "https://justinjackson.ca/product-market-fit-survey",
+  "source_title": "Is the Product-Market Fit survey accurate? \u2014 Justin Jackson",
+  "quote": "this threshold is a bit arbitrary, but I defined it after comparing results across nearly 100 startups... humans are generally bad at forecasting their future behavior.",
+  "confidence": "high",
+  "so_what": "Do not run a Sean Ellis survey on Base Note's 17 subscribers and treat the result as decisive either way \u2014 the sample is too small for the 40% threshold to be statistically meaningful, and the survey format itself is documented to overstate attachment versus what renewal/cancellation data will actually show.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "pmf-icp-subscription",
+  "claim": "A documented case: Buffer sent the Sean Ellis PMF survey to an ultra-engaged user segment and got 78% 'very disappointed,' but the broader user base did not retain at anywhere near that rate afterward \u2014 illustrating survey-selection bias inflating stated PMF scores.",
+  "source_url": "https://www.zonkafeedback.com/blog/product-market-fit-survey",
+  "source_title": "Product Market Fit Survey Guide: The 40% Rule Explained | Zonka Feedback",
+  "quote": "In Buffer's example, sending the survey to an ultra-engaged group yielded 78% saying very disappointed, but the broader user base did not retain as well after the initial excitement.",
+  "confidence": "medium",
+  "so_what": "Directly relevant given Base Note's 17 subscribers are almost certainly early-adopter/high-engagement types (friends, Reddit power-users, team's own network) \u2014 a PMF survey run on this group would likely return an inflated score that says nothing about whether a cold Reddit/TikTok visitor would convert and stay; segment responses by acquisition source if surveyed at all.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "pmf-icp-subscription",
+  "claim": "For validating product-market fit via qualitative research, 20-50 potential-customer interviews is the commonly recommended range, but pattern saturation is often reached much sooner \u2014 once three different people independently name the same friction point, additional interviews mostly confirm rather than reveal.",
+  "source_url": "https://www.koji.so/docs/how-many-user-interviews",
+  "source_title": "How Many User Interviews Do You Need? The Sample Size Guide for Qualitative Research",
+  "quote": "Once three different people complain about the same thing, you don't need 50 more opinions as the pattern is already obvious\u2014this is exactly how qualitative research behaves, since the same frustrations show up fast once people interact with a product.",
+  "confidence": "medium",
+  "so_what": "With only 17 active subscribers plus any churned/never-converted visitors, Base Note already has enough raw people to run a full qualitative interview pass; this is the highest-leverage immediate PMF action available, cheaper and faster than waiting for statistically valid quantitative data that a 17-subscriber base structurally cannot produce.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "pmf-icp-subscription",
+  "claim": "Qualitative interviews answer the 'why' and quantitative PMF surveys answer the 'how many' \u2014 both are needed for a complete picture, and neither substitutes for the other, per PMF research guidance.",
+  "source_url": "https://mercury.com/blog/measuring-product-market-fit",
+  "source_title": "How to measure product-market fit (PMF) | Metrics & data sources | Mercury",
+  "quote": "Qualitative methods (interviews) give the \"why,\" while the PMF survey gives the \"how many,\" and for deep understanding both are needed.",
+  "confidence": "medium",
+  "so_what": "Run interviews now (cheap, fast, works at n=17), and defer the quantitative Sean Ellis-style survey until the subscriber base is large enough for the 40% threshold to carry statistical weight \u2014 running it prematurely risks a misleadingly rosy or bleak number driving a bad strategic decision.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "pmf-icp-subscription",
+  "claim": "A large share of beauty/subscription-box churn (68% cited specifically) is involuntary \u2014 caused by expired cards, insufficient funds, or declined transactions \u2014 rather than a deliberate cancel decision.",
+  "source_url": "https://www.swell.is/content/subscription-box-statistics",
+  "source_title": "32 Subscription Box Statistics That Drive Recurring Revenue in 2026 | Swell",
+  "quote": "The majority of subscription churn is involuntary, caused by expired cards, insufficient funds, or declined transactions... 68% of churn stems from payment failures rather than deliberate customer choice.",
+  "confidence": "low",
+  "so_what": "Before reading any subscriber loss at Base Note as a PMF signal ('they didn't like the product'), first rule out payment-failure churn via Appstle dunning logs \u2014 at n=17, misattributing one payment-failure churn to product dissatisfaction would meaningfully distort a very small sample's read on PMF.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "seo-distribution",
+  "claim": "FAQ rich results (the classic accordion snippet in Google Search) were retired store-wide on May 7, 2026, with reporting/testing support dropped June 2026 and API support ending August 2026 \u2014 Google gave no public explanation.",
+  "source_url": "https://www.searchenginejournal.com/google-drops-faq-rich-results-from-search/574429/",
+  "source_title": "Google Drops FAQ Rich Results From Search",
+  "quote": "FAQ rich results are no longer appearing in Google Search. We will be dropping the FAQ search appearance, rich result report, and support in the Rich results test in June 2026... Google didn't publish a blog post or explain the reasons behind the removal.",
+  "confidence": "high",
+  "so_what": "Stop building FAQPage schema for the sake of SERP rich-result real estate on Base Note's 14 blog drafts \u2014 it will not produce a visual snippet. Keep FAQ-style Q&A content for readability and AI Overview extraction, but don't spend engineering time wiring FAQPage JSON-LD as an SEO tactic; existing markup is harmless but no longer functional for rich results.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "seo-distribution",
+  "claim": "HowTo rich results were deprecated on desktop back in 2023, well before this 2026 push \u2014 so step-by-step 'how to layer fragrances' content should not rely on HowTo schema for a SERP payoff either.",
+  "source_url": "https://inblog.ai/blog/google-faq-schema-rich-result-deprecation",
+  "source_title": "Google FAQ Rich Results: What Changed in 2026",
+  "quote": "HowTo rich results were fully deprecated on desktop in September 2023.",
+  "confidence": "medium",
+  "so_what": "For any planned 'how to apply/layer 5ml fragrance atomizers' post, write it as a clean numbered-list article for readability and AI-citation, not around HowTo schema \u2014 the visual payoff doesn't exist anymore.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "seo-distribution",
+  "claim": "Google's Helpful Content system is now fully merged into the core ranking algorithm as a continuous real-time signal, and sites adding structured author pages with verifiable credentials and consistent bylines saw measurable ranking gains within weeks.",
+  "source_url": "https://www.o8.agency/blog/marketing-strategy/google-helpful-content-update-improve-your-seo",
+  "source_title": "Google's 2026 Helpful Content Update Guide \u2013 People-First SEO Tips",
+  "quote": "Google folded the Helpful Content system directly into its core ranking algorithm, and it stopped being a periodic check and became a continuous, real-time signal... Sites that added structured author pages with verifiable credentials, industry affiliations, and byline consistency across content saw measurable ranking improvements within weeks of the update.",
+  "confidence": "medium",
+  "so_what": "Build a real author page for Jeff (Founder) and Alex (Cofounder) with bylines on every post \u2014 bio, fragrance experience/credentials, consistent author schema. Cheap, zero-budget lever not yet shipped per project memory (team-attribution rules already say Jeff/Alex are public-facing).",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "seo-distribution",
+  "claim": "E-E-A-T in 2026 explicitly rewards first-hand 'Experience' \u2014 content demonstrating genuine firsthand experience with specific, verifiable details outranks comprehensive-but-impersonal pages.",
+  "source_url": "https://www.digitalapplied.com/blog/e-e-a-t-march-2026-google-rewards-experience-content-guide",
+  "source_title": "E-E-A-T in March 2026: Google Experience Content Guide",
+  "quote": "Content that demonstrates genuine first-hand experience through specific details, original outcomes, and verifiable author credentials outranks comprehensive but impersonal information pages.",
+  "confidence": "medium",
+  "so_what": "Every new post should include first-person testing notes (Jeff/Alex actually wearing Creed Aventus, Tom Ford Oud Wood etc. for X hours, what it smelled like at hour 3 vs hour 8) plus original photos of the actual 5ml vials, not stock imagery \u2014 differentiates from Scentbird-style generic listicles and doubles as AI Overview citation bait.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "seo-distribution",
+  "claim": "AI Overviews now appear on over 60% of informational queries and 68% of Google searches end without a click, but pages cited by AI Overviews see 35% higher CTR than uncited pages on the same SERP, and 99.5% of AI Overview citations come from pages already in the top 10 organic results.",
+  "source_url": "https://www.omnibound.ai/blog/ai-seo-statistics",
+  "source_title": "AI SEO Statistics (2026): 57+ Data Points on Zero-Click Search, Rankings, and Organic Traffic Decline",
+  "quote": "Google's AI Overviews now appear in over 60% of informational queries. 68% of Google searches now end without a click... A 2025 industry analysis found that 99.5% of AI Overview sources come from the top 10 organic results.",
+  "confidence": "medium",
+  "so_what": "Strategy must optimize for 'get cited' not just 'rank #1,' but classic top-10 ranking is still the prerequisite \u2014 don't abandon on-page SEO fundamentals for citation-chasing alone.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "seo-distribution",
+  "claim": "The extractable-answer format AI Overviews select for is a 40-60 word complete, standalone answer placed first in a section, under H2/H3 headers that mirror actual user query phrasing.",
+  "source_url": "https://www.namesilo.com/blog/en/seo/zero-click-seo-in-2026-winning-ai-overviews-and-serp-answers-without-the-click",
+  "source_title": "Zero-Click SEO in 2026: Winning AI Overviews and SERP Answers Without the Click",
+  "quote": "A 40-60 word complete answer placed first on your page, extractable as a standalone response for AI Overview citation is essential. Structure content with clear, direct answers in the first 40-60 words of each section, use H2/H3 headings that mirror user queries.",
+  "confidence": "medium",
+  "so_what": "Rewrite each new post's H2 sections to open with a tight 40-60 word direct answer (e.g. 'How long does Creed Aventus last?' answered immediately, then expanded). Should become a template rule in the content brief for the 14 remaining drafts.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "seo-distribution",
+  "claim": "A validated topic-cluster architecture \u2014 one pillar page bidirectionally linked to roughly 8 focused cluster articles \u2014 correlates most strongly with AI citation: sites with 5+ interconnected pages on a topic account for 86% of AI citations, and bidirectional internal linking increases AI citation probability 2.7x.",
+  "source_url": "https://www.digitalapplied.com/blog/seo-content-clusters-2026-topic-authority-guide",
+  "source_title": "SEO Content Clusters 2026: Topic Authority Guide",
+  "quote": "According to the Yext AI Citation Study (2025), 86% of AI citations originate from sites with five or more interconnected pages on the topic, with the average cluster architecture comprising one pillar page and eight cluster articles. Bidirectional internal linking alone increases AI citation probability by 2.7x.",
+  "confidence": "medium",
+  "so_what": "Group the 14 drafts into 2-3 pillar clusters (e.g. 'How to Build a Fragrance Rotation' pillar + cluster posts on layering, seasonal switching, application technique, longevity by family; and a 'Luxury Fragrance Cost Comparison' pillar vs Scentbird/full-bottle pricing) with every cluster post linking back to its pillar and sideways to siblings \u2014 zero cost, and reinforces the anti-surcharge Scentbird-wedge positioning already locked in project memory.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "seo-distribution",
+  "claim": "Pinterest search interest in fragrance-specific niche content is spiking for 2026: 'niche perfume collection' +500%, 'perfume layering combinations' +125%, 'scent layering' +75%, and Pinterest itself is forecasting a 'Scent Stacking' trend of layering multiple fragrances instead of one signature scent.",
+  "source_url": "https://www.gcimagazine.com/consumers-markets/news/22957242/scent-stacking-to-glitchy-glam-pinterest-predicts-cosmetic-and-fragrance-trends-for-2026",
+  "source_title": "Scent Stacking to Glitchy Glam: Pinterest Predicts Cosmetic and Fragrance Trends for 2026",
+  "quote": "Pinterest forecasted a fragrance trend called 'Scent Stacking,' noting that consumers are 'ditching one-and-done scents' and layering oils and perfumes... 'niche perfume collection' saw the largest numeric increase at +500%, followed by 'perfume layering combinations' at +125% and 'scent layering' at +75%.",
+  "confidence": "medium",
+  "so_what": "Build a pillar/cluster around 'fragrance layering with a rotation subscription' \u2014 ties Base Note's core mechanic (owning multiple 5ml vials at once vs one $200 bottle) directly to a currently-trending, named search behavior. Pin each post's hero image with the title overlaid; Pinterest pins have a long content lifespan so this compounds unlike a one-off Reddit post.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "seo-distribution",
+  "claim": "Reddit no longer enforces a fixed self-promotion ratio; it replaced the formal rule with a behavioral standard \u2014 'be a genuine participant, not just a promoter' \u2014 judged by moderators on overall account behavior, and duplicate/cross-posted promotional content is a common shadowban trigger.",
+  "source_url": "https://redship.io/blog/reddit-self-promotion-rules",
+  "source_title": "The complete guide to Reddit self-promotion rules in 2026",
+  "quote": "Reddit retired the rule because it was too rigid. Reddit replaced the formal rule with a simpler principle: be a genuine participant, not just a promoter, with moderators now judging accounts based on overall behavior, not a fixed percentage... Common causes of shadowbans include violating the 9:1 rule, posting duplicate content, vote manipulation, or excessive self-promotion.",
+  "confidence": "medium",
+  "so_what": "For r/Colognes and r/fragranceclones: never cross-post the identical blog link to both subreddits same-day; build genuine account history (answering fragrance questions, disclosing affiliation, linking only when directly relevant) rather than treating it as a link-drop channel. One shadowbanned account kills the whole Reddit channel silently \u2014 worth a dedicated per-person account, not a shared brand account.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "seo-distribution",
+  "claim": "A 2026 12-month case study found SEO content traffic keeps compounding for months post-publication with zero new edits \u2014 one site's daily visits grew 29% (92\u2192119) over 4 months with no changes, because content takes 3-6 months to reach its traffic ceiling.",
+  "source_url": "https://inblog.ai/blog/publishing-frequency-data",
+  "source_title": "How Often Should You Publish Blog Posts? Here's What Our 12-Month Data Says",
+  "quote": "Daily visits grew from 92 to 119 \u2014 a 29% increase with no new content over a four-month period, demonstrating that SEO content doesn't peak on publish day \u2014 it often takes 3-6 months to reach its traffic ceiling.",
+  "confidence": "medium",
+  "so_what": "The 15+ posts won't show meaningful organic traffic by the Nov 30 2026 60-subscriber deadline if published late \u2014 front-load publishing NOW (August) so the 3-6 month compounding window lands before the deadline; treat Reddit/Pinterest/TikTok as the near-term traffic bridge while SEO ramps in the background.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "seo-distribution",
+  "claim": "Publishing frequency correlates with traffic only when quality is held constant; one high-information-gain article per week reliably outperforms seven generic posts, and most businesses see strongest results at 2-4 high-quality posts/week rather than raw volume.",
+  "source_url": "https://www.digitalapplied.com/blog/blogging-statistics-2026-data-points",
+  "source_title": "Blogging Statistics 2026: 150+ Content Data Points",
+  "quote": "Publishing frequency correlates with traffic only when quality is held constant, with a business publishing one high-information-gain article per week outperforming businesses publishing seven generic posts.",
+  "confidence": "medium",
+  "so_what": "Don't dump all 14 drafts live in one week. Sequence 1-2 posts/week, using the extra time per post to add original testing photos, first-person wear notes, and cluster-linking per the findings above \u2014 a slower, deeper cadence is the evidence-backed choice for a zero-budget two-person content team.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "seo-distribution",
+  "claim": "Alt text is Google's own documented highest-impact image SEO signal, and AI Overviews / AI search tools pull directly from the same alt-text infrastructure when composing image-inclusive answers.",
+  "source_url": "https://seoscore.tools/blog/image-seo/",
+  "source_title": "Image SEO 2026: 12 Alt-Text Patterns That Actually Rank",
+  "quote": "Images with rich, accurate alt text are more likely to be referenced in AI-generated answers \u2014 directly affecting organic visibility for image-heavy content categories like e-commerce, travel, food, and news... Alt text is the single highest-impact image SEO signal \u2014 write 50-125 characters following the formula: [image type] + [primary subject] + [action or state] + [contextual keyword].",
+  "confidence": "medium",
+  "so_what": "Every original vial/atomizer photo used in the new posts needs specific alt text following the formula, e.g. 'photo of Creed Aventus 5ml travel atomizer next to original bottle for size comparison' rather than 'fragrance vial' \u2014 cheap, zero-budget, and doubles as AI Overview image-citation bait for a visual category like fragrance.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "seo-distribution",
+  "claim": "Effective 2026 short-form repurposing is not 1:1 re-posting \u2014 it's re-editing one core video's hook/pacing per platform, and creators who repurpose strategically post 5-7 short videos/week from only 2-3 original long-form pieces.",
+  "source_url": "https://scalelab.com/en/repurposing-content-for-shorts-reels-tiktok-best-practices-in-2026",
+  "source_title": "Turn long videos into high-impact Shorts, Reels & TikToks: Repurposing in 2026",
+  "quote": "The most efficient way to repurpose short-form video in 2026 is to create one core video, then adapt the hook, pacing, and format for each platform... Creators who repurpose strategically post 5-7 videos per week across platforms while only producing 2-3 original pieces.",
+  "confidence": "medium",
+  "so_what": "Shoot each post's first-person 'testing' footage once, then cut into 5-7 native-feeling TikTok/Shorts clips with different hooks \u2014 reuses the same content investment across blog, Pinterest, and TikTok, maximizing the zero-budget team's output per hour.",
+  "verdict": "unchecked"
+ },
+ {
+  "lane": "seo-distribution",
+  "claim": "Google Search Console's Request Indexing tool typically surfaces new/updated pages in Google's index within 3-5 days on average (range: hours to 10 days), and is capped at roughly 10-12 manual URL submissions per property per day.",
+  "source_url": "https://alevdigital.com/blog/google-search-console-request-indexing/",
+  "source_title": "Google Search Console Request Indexing: Limits, Time, Steps & Fixes (2026)",
+  "quote": "For most sites, the turnaround is between a few hours and 10 days, with the average sitting around 3 to 5 days... Google Search Console caps individual URL submissions at approximately 10 to 12 URLs per day per property through the URL Inspection Tool.",
+  "confidence": "medium",
+  "so_what": "Add 'request-index in GSC immediately on publish' to the post-publish checklist for all 15+ posts \u2014 free, shaves days off discovery. Don't batch-publish more than ~10 URLs in one day since that's the practical daily manual-submission cap.",
+  "verdict": "unchecked"
+ }
+]
