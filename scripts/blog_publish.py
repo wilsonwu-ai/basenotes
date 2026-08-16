@@ -85,6 +85,21 @@ def wrap_tables(body):
     """Mobile: the theme's article template has no scroll container for wide tables, so wrap each <table> in one."""
     return re.sub(r"(<table\b.*?</table>)", r'<div class="bn-table-scroll" style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:1.25em 0;">\1</div>', body, flags=re.S | re.I)
 
+VID_TMPL = ('<figure class="article__figure article__figure--video" style="margin:1.75em 0;">'
+            '<video autoplay muted loop playsinline preload="metadata" poster="{poster}" aria-label="{alt}" '
+            'style="width:100%;height:auto;border-radius:12px;display:block;background:#EEE9DE;">'
+            '<source src="{url}" type="video/mp4"></video>{cap}</figure>')
+
+def insert_videos(body, videos):
+    """Replace <!-- video:ID --> placeholders. videos: {id: {url, poster, alt, caption?}}. Missing → removed."""
+    videos = videos or {}
+    def rep(m):
+        v = videos.get(m.group(1).strip())
+        if not v or not v.get("url"): return ""
+        cap = f'<figcaption style="font-size:.85rem;color:#777;margin-top:.5em;">{html.escape(v["caption"])}</figcaption>' if v.get("caption") else ""
+        return VID_TMPL.format(url=v["url"], poster=v.get("poster", ""), alt=html.escape(v.get("alt") or ""), cap=cap)
+    return re.sub(r"<!--\s*video:([a-z0-9_-]+)\s*-->", rep, body, flags=re.I)
+
 def insert_figures(body, inline):
     """Replace <!-- img:ID --> placeholders. inline: {id: {url, alt, caption?, w?, h?}}. Unknown ids are removed (never leaked to HTML)."""
     inline = inline or {}
@@ -100,7 +115,7 @@ def insert_figures(body, inline):
 def upsert(row, dry=False):
     """row: {handle, file, title?, summary?, tags?, author?, image_url?, image_alt?, publish_at?|publish_now?|draft?}"""
     body_raw = (ROOT / row["file"]).read_text(encoding="utf-8")
-    body = to_entities(wrap_tables(insert_figures(strip_h1(body_raw), row.get("inline"))))
+    body = to_entities(wrap_tables(insert_videos(insert_figures(strip_h1(body_raw), row.get("inline")), row.get("videos"))))
     if "<!--META" in body: body = body.split("<!--META")[0]
     title = row.get("title") or derive_title(body_raw) or row["handle"].replace("-", " ").title()
     summary = row.get("summary") or derive_summary(body_raw) or ""

@@ -192,7 +192,7 @@ def main():
     for j in jobs:
         if a.skip_existing and pathlib.Path(j["out"]).exists(): print(f"skip {j['out']}"); continue
         try:
-            if j.get("video"): gen_video(j["prompt"], j["out"], j.get("image_url"), j.get("model"), j.get("duration", 5), j.get("aspect", "16:9"), j.get("resolution", "720p"))
+            if j.get("video"): gen_video(j["prompt"], j["out"], j.get("image_url"), j.get("model"), j.get("duration", 5), j.get("aspect", "16:9"), (j.get("resolution") if j.get("resolution") in ("480p", "720p", "1080p") else "720p"))
             else: gen_image(j["prompt"], j["out"], j.get("aspect", "16:9"), j.get("model"), j.get("resolution", a.resolution), j.get("extra"), a.max_kb)
         except (SystemExit, Exception) as e:
             fails += 1; print(f"FAIL {j.get('out')}: {e}", file=sys.stderr)

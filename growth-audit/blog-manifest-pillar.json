@@ -60,6 +60,14 @@
    }
   },
   "publish_now": true,
-  "post_no": 17
+  "post_no": 17,
+  "videos": {
+   "hero-clip": {
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/why-you-smell-the-way-you-do/hero-clip.mp4",
+    "poster": "https://basenote-media.wilson-af8.workers.dev/img/why-you-smell-the-way-you-do/hero.jpg",
+    "alt": "A couple laughing close together by a sunlit window",
+    "caption": "The point of all of it."
+   }
+  }
  }
 ]
