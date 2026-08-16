@@ -7,3 +7,9 @@ directory = "./public"
 binding = "ASSETS"
 html_handling = "none"
 not_found_handling = "none"
+
+[vars]
+SHOPIFY_SHOP = "ath7ay-1y.myshopify.com"
+MEMBER_GOAL = "60"
+MEMBER_TAG = "appstle_subscription_active_customer"
+MEMBER_DEADLINE = "2026-11-30"

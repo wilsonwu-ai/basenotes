@@ -1,0 +1,7 @@
+{
+  "model": "openai/gpt-image-1",
+  "prompt": "Luxury editorial photograph for a fragrance magazine. Warm natural window light, shallow depth of field, muted warm palette (ivory, travertine, brass, deep green), tactile textures, cinematic composition, photorealistic, no text, no logos, no watermarks, no branded bottles. photoreal editorial still life, two small unlabelled glass atomizers standing side by side on a travertine ledge, one catching cool green reflected light and one catching bright silver-white light, crumpled linen behind, a brass tray edge at frame left, a sprig of green herb resting flat, warm natural window light with soft directional shadows, shallow depth of field, deep green wall in soft focus background, no text, no logos, no branded bottles",
+  "aspect": "16:9",
+  "size": "1536x1024",
+  "bytes": 150822
+}

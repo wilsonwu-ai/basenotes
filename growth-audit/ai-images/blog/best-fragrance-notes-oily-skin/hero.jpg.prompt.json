@@ -1,0 +1,7 @@
+{
+  "model": "openai/gpt-image-1",
+  "prompt": "Luxury editorial photograph for a fragrance magazine. Warm natural window light, shallow depth of field, muted warm palette (ivory, travertine, brass, deep green), tactile textures, cinematic composition, photorealistic, no text, no logos, no watermarks, no branded bottles. photoreal editorial still life, overhead three-quarter view: a perfumer's note board on a travertine slab, dried vetiver root, a halved grapefruit, pale iris orris root, sprigs of rosemary and thyme, and one small unlabelled clear glass atomizer with a brass collar, linen cloth folded at the edge, a sprig of deep green foliage, Base Note house style: warm natural light raking from the left, soft shadows, travertine/linen/brass/deep green palette, shallow depth of field, no text, no logos, no branded bottles",
+  "aspect": "16:9",
+  "size": "1536x1024",
+  "bytes": 262793
+}

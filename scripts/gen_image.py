@@ -71,8 +71,46 @@ def shrink(out, max_kb):
     except FileNotFoundError:
         pass
 
+def openai_key():
+    if os.environ.get("OPENAI_API_KEY"): return os.environ["OPENAI_API_KEY"]
+    envf = ROOT / ".env"
+    if envf.exists():
+        for line in envf.read_text().splitlines():
+            if line.startswith("OPENAI_API_KEY="): return line.split("=", 1)[1].strip().strip('"')
+    return None
+
+def gen_image_openai(prompt, out, aspect="16:9", max_kb=300, model="gpt-image-1"):
+    """Fallback: OpenAI Images API (returns b64). Sizes: 1536x1024 (landscape), 1024x1536 (portrait), 1024x1024."""
+    import base64
+    key = openai_key()
+    if not key: raise RuntimeError("no OPENAI_API_KEY")
+    size = {"16:9": "1536x1024", "3:2": "1536x1024", "4:3": "1536x1024", "21:9": "1536x1024", "9:16": "1024x1536", "2:3": "1024x1536", "3:4": "1024x1536", "1:1": "1024x1024"}.get(aspect, "1536x1024")
+    body = json.dumps({"model": model, "prompt": prompt, "n": 1, "size": size, "quality": "high", "output_format": "jpeg"}).encode()
+    d = None
+    for attempt in range(6):
+        r = urllib.request.Request("https://api.openai.com/v1/images/generations", data=body, method="POST", headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(r, timeout=300) as resp: d = json.loads(resp.read().decode())
+            break
+        except urllib.error.HTTPError as e:
+            if e.code in (429, 500, 502, 503) and attempt < 5:
+                wait = 20 * (attempt + 1)
+                print(f"WARN openai {e.code}; retry in {wait}s", file=sys.stderr); time.sleep(wait); continue
+            try: detail = e.read().decode()[:300]
+            except Exception: detail = ""
+            raise RuntimeError(f"openai {e.code}: {detail}")
+    if d is None: raise RuntimeError("openai: no response after retries")
+    b64 = d["data"][0].get("b64_json")
+    out = pathlib.Path(out); out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_bytes(base64.b64decode(b64)); shrink(out, max_kb)
+    side = {"model": "openai/" + model, "prompt": prompt, "aspect": aspect, "size": size, "bytes": out.stat().st_size}
+    out.with_suffix(out.suffix + ".prompt.json").write_text(json.dumps(side, indent=2))
+    print(f"OK openai/{model} -> {out} ({out.stat().st_size//1024} KB)")
+    return side
+
 def gen_image(prompt, out, aspect="16:9", model=None, resolution="2K", extra=None, max_kb=300):
     out = pathlib.Path(out)
+    if model == "openai": return gen_image_openai(prompt, out, aspect, max_kb)
     models = [model] if model else [IMG_DEFAULT] + IMG_FALLBACKS
     last = None
     for m in models:
@@ -99,7 +137,12 @@ def gen_image(prompt, out, aspect="16:9", model=None, resolution="2K", extra=Non
             last = f"{m}: {e} {body}"
             print(f"WARN {last}", file=sys.stderr)
             continue
-    raise SystemExit(f"all image models failed. last: {last}")
+    # fal exhausted/locked → OpenAI fallback
+    try:
+        print(f"WARN fal unavailable ({str(last)[:80]}); falling back to OpenAI", file=sys.stderr)
+        return gen_image_openai(prompt, out, aspect, max_kb)
+    except Exception as e:
+        raise SystemExit(f"all image models failed. fal last: {last}; openai: {e}")
 
 def gen_video(prompt, out, image_url=None, model=None, duration=5, aspect="16:9", resolution="720p", max_wait=1200):
     out = pathlib.Path(out)
@@ -145,7 +188,7 @@ def main():
         try:
             if j.get("video"): gen_video(j["prompt"], j["out"], j.get("image_url"), j.get("model"), j.get("duration", 5), j.get("aspect", "16:9"), j.get("resolution", "720p"))
             else: gen_image(j["prompt"], j["out"], j.get("aspect", "16:9"), j.get("model"), j.get("resolution", a.resolution), j.get("extra"), a.max_kb)
-        except SystemExit as e:
+        except (SystemExit, Exception) as e:
             fails += 1; print(f"FAIL {j.get('out')}: {e}", file=sys.stderr)
     if fails: sys.exit(1)
 

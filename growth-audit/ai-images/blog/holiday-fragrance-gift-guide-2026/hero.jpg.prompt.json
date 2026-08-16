@@ -1,0 +1,10 @@
+{
+  "model": "fal-ai/flux-pro/v1.1-ultra",
+  "prompt": "Luxury editorial photograph for a fragrance magazine. Warm natural window light, shallow depth of field, muted warm palette (ivory, travertine, brass, deep green), tactile textures, cinematic composition, photorealistic, no text, no logos, no watermarks. A festive but understated scene: a small ribboned gift box, a 5 ml atomizer, cinnamon sticks, an orange slice and candlelight on a dark green tablecloth.",
+  "aspect": "16:9",
+  "resolution": "2K",
+  "request_id": "01a008be-3a48-7ef2-a2e7-7ee2d1c10816",
+  "source_url": "https://v3b.fal.media/files/b/0aa6857f/SPfJea1oXE2_vnrVDAZbc_a9d261b9535c436eafba1b4fa9c22a2e.jpg",
+  "bytes": 280812,
+  "extra": null
+}

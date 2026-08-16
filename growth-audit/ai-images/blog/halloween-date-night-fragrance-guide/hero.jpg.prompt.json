@@ -1,0 +1,7 @@
+{
+  "model": "openai/gpt-image-1",
+  "prompt": "Luxury editorial photograph for a fragrance magazine. Warm natural window light, shallow depth of field, muted warm palette (ivory, travertine, brass, deep green), tactile textures, cinematic composition, photorealistic, no text, no logos, no watermarks, no branded bottles. photoreal editorial still life, Base Note house style: a cluster of small unlabeled glass atomizers on a travertine slab, three lit taper candles just out of focus behind, a thin ribbon of smoke crossing the frame, deep green linen draped at the edge, brass tray catching candlelight, warm natural light falling from one side, shallow depth of field, moody autumn evening mood, no text, no logos, no branded bottles",
+  "aspect": "16:9",
+  "size": "1536x1024",
+  "bytes": 136917
+}

@@ -1,0 +1,364 @@
+/* ============================================================================
+   bn-tokens.css — Base Note facelift, design-token layer
+   Direction A "Editorial Grotesque" is the default.
+   ----------------------------------------------------------------------------
+   HOW THIS SHIPS
+   Phase A loads this file AFTER the inline critical CSS in layout/theme.liquid
+   and BEFORE base.css. The legacy alias block at the bottom of :root re-points
+   the theme's existing variables (--color-primary, --font-heading, …) at the
+   new palette, so every component that already reads a variable restyles with
+   zero markup change. Nothing here renames a selector.
+
+   FONTS (add to theme.liquid, async, same pattern as the current Cormorant link)
+     Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800
+     Instrument+Serif:ital@0;1
+     Instrument+Sans:ital,wdth,wght@0,75..100,400..700;1,75..100,400..700
+
+   CONTRAST RULES THAT ARE NOT NEGOTIABLE
+     --bn-brass on --bn-bone is 2.3:1. It is a hairline, a rule, a stamp ring —
+     never text. For metal-coloured text on a light ground use --bn-brass-ink.
+     Family accents are tints, dots and rules. They are never text on bone.
+   ========================================================================== */
+
+:root{
+
+  /* ── Core palette — Direction A ─────────────────────────────────────── */
+  --bn-ink:            #0F1211;   /* near-black ground */
+  --bn-ink-2:          #171B19;   /* raised ink surface */
+  --bn-bone:           #F3EFE7;   /* paper ground */
+  --bn-bone-2:         #E9E3D8;   /* recessed paper / hairline fills */
+  --bn-forest:         #1F3A34;   /* heritage green, descended from #2D4641 */
+  --bn-forest-deep:    #16302B;
+  --bn-brass:          #B99A5B;   /* metal — hairlines, stamps, ON INK ONLY */
+  --bn-brass-ink:      #6B5426;   /* metal as TEXT on bone (5.9:1) */
+
+  /* Text roles */
+  --bn-text-on-ink:      #F3EFE7;
+  --bn-text-on-ink-dim:  #A9A39A;   /* 7.4:1 on --bn-ink */
+  --bn-text-on-bone:     #0F1211;
+  --bn-text-on-bone-dim: #565B57;   /* 6.1:1 on --bn-bone */
+
+  /* Lines */
+  --bn-line-on-ink:  rgba(243,239,231,.14);
+  --bn-line-on-bone: rgba(15,18,17,.13);
+  --bn-hairline:     var(--bn-brass);
+
+  /* Status */
+  --bn-ok:    #4C7A5B;
+  --bn-warn:  #B0763A;
+  --bn-error: #A2372A;
+
+  /* ── Scent-family accents ───────────────────────────────────────────
+     Keys match growth-audit/catalogue.json `families`.
+     Use as: background tint, dot, underline rule, chip border.
+     Tint recipe: color-mix(in oklab, var(--bn-family-x) 15%, var(--bn-bone))
+     ------------------------------------------------------------------ */
+  --bn-family-fresh:     #7FB6C9;
+  --bn-family-woody:     #7A6A4F;
+  --bn-family-amber:     #C2652D;
+  --bn-family-floral:    #D48A9E;
+  --bn-family-gourmand:  #8A5A3C;
+  --bn-family-green:     #6D8B5B;
+  --bn-family-spicy:     #B0402F;
+  --bn-family-clean:     #C9C3B8;
+  /* Remaining catalogue families, derived from the eight above */
+  --bn-family-aromatic:  #5E8F7E;
+  --bn-family-fruity:    #C4795A;
+  --bn-family-leather:   #6B4A38;
+  --bn-family-oriental:  #8C5330;
+  --bn-family-powdery:   #C2B2AE;
+  --bn-family-smoky:     #55504A;
+  --bn-family-sweet:     #C08A63;
+  --bn-family-vanilla:   #C9A66B;
+  --bn-family-default:   var(--bn-family-clean);
+
+  /* ── Typography ─────────────────────────────────────────────────────── */
+  --bn-font-display: 'Bricolage Grotesque', 'Helvetica Neue', Georgia, serif;
+  --bn-font-accent:  'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --bn-font-body:    'Instrument Sans', ui-sans-serif, 'Helvetica Neue', sans-serif;
+  --bn-font-mono:    ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --bn-display-vf: 'wdth' 86, 'opsz' 96;   /* apply on display headings */
+  --bn-weight-display: 250;
+  --bn-weight-body: 400;
+  --bn-weight-strong: 600;
+
+  --bn-track-display: -0.045em;
+  --bn-track-title:   -0.025em;
+  --bn-track-body:     0em;
+  --bn-track-label:    0.20em;   /* uppercase micro-labels */
+  --bn-track-nav:      0.16em;
+
+  --bn-leading-display: 0.90;
+  --bn-leading-title:   1.06;
+  --bn-leading-body:    1.62;
+
+  /* ── Fluid type scale — 390px → 1440px viewport ─────────────────────── */
+  --bn-text-2xs:   0.625rem;                                    /* 10px, labels */
+  --bn-text-xs:    clamp(0.6875rem, 0.66rem + 0.12vw, 0.75rem); /* 11–12 */
+  --bn-text-sm:    clamp(0.8125rem, 0.79rem + 0.12vw, 0.875rem);/* 13–14 */
+  --bn-text-base:  clamp(0.9375rem, 0.90rem + 0.16vw, 1.0625rem);
+  --bn-text-md:    clamp(1.0625rem, 1.00rem + 0.28vw, 1.25rem);
+  --bn-text-lg:    clamp(1.25rem,  1.13rem + 0.51vw, 1.625rem);
+  --bn-text-xl:    clamp(1.5rem,   1.26rem + 1.02vw, 2.25rem);
+  --bn-text-2xl:   clamp(1.875rem, 1.42rem + 1.90vw, 3.25rem);
+  --bn-text-3xl:   clamp(2.25rem,  1.35rem + 3.81vw, 5rem);
+  --bn-text-4xl:   clamp(2.5rem,   0.97rem + 6.48vw, 7rem);     /* hero only */
+
+  /* Mobile guard for the tight grotesque setting.
+     Below 600px the display face loosens or it crushes. */
+  --bn-track-display-mobile: -0.030em;
+
+  /* ── Spacing — 4px base, editorial rhythm ───────────────────────────── */
+  --bn-space-3xs: 0.25rem;
+  --bn-space-2xs: 0.5rem;
+  --bn-space-xs:  0.75rem;
+  --bn-space-sm:  1rem;
+  --bn-space-md:  1.5rem;
+  --bn-space-lg:  2rem;
+  --bn-space-xl:  3rem;
+  --bn-space-2xl: clamp(3rem, 6vw, 5rem);
+  --bn-space-3xl: clamp(4rem, 9vw, 8rem);
+  --bn-gutter:    clamp(1rem, 3vw, 2.75rem);
+  --bn-measure:   64ch;
+  --bn-container:  1520px;
+
+  /* ── Radius — Direction A is square by intent ───────────────────────── */
+  --bn-radius-none: 0px;
+  --bn-radius-sm:   0px;
+  --bn-radius-md:   0px;
+  --bn-radius-lg:   0px;
+  --bn-radius-pill: 999px;   /* filter chips + rotation CTA only */
+
+  /* ── Elevation ──────────────────────────────────────────────────────── */
+  --bn-shadow-card:  0 20px 46px rgba(15,18,17,.16);
+  --bn-shadow-lift:  0 10px 22px rgba(15,18,17,.22);
+  --bn-shadow-panel: 0 -8px 30px rgba(15,18,17,.28);
+
+  /* ── Texture ────────────────────────────────────────────────────────── */
+  --bn-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  --bn-grain-opacity: 0.05;
+
+  /* ── Motion ─────────────────────────────────────────────────────────── */
+  --bn-ease:        cubic-bezier(.22,1,.36,1);   /* the house curve */
+  --bn-ease-in-out: cubic-bezier(.65,0,.35,1);
+  --bn-ease-linear: linear;
+
+  --bn-dur-instant: 120ms;
+  --bn-dur-fast:    250ms;
+  --bn-dur-base:    450ms;
+  --bn-dur-slow:    620ms;
+  --bn-dur-panel:   500ms;
+  --bn-dur-marquee: 26s;
+
+  --bn-reveal-distance: 22px;
+  --bn-reveal-stagger:  70ms;
+  --bn-reveal-stagger-cap: 6;
+  --bn-magnetic-max: 6px;
+  --bn-magnetic-lerp: 0.18;
+  --bn-cursor-fade: 160ms;
+
+  /* Read by bn-motion.js — flipped to 0 by the reduced-motion guard below. */
+  --bn-motion-enabled: 1;
+
+  /* ── Layering ───────────────────────────────────────────────────────── */
+  --bn-z-base: 1;
+  --bn-z-card-panel: 3;
+  --bn-z-sticky: 100;
+  --bn-z-header: 1000;
+  --bn-z-drawer: 1200;
+  --bn-z-cursor: 2000;
+
+  /* ══════════════════════════════════════════════════════════════════════
+     LEGACY ALIASES
+     The existing theme reads these. Re-pointing them is what makes the
+     facelift land across sections we are not editing in Phase A.
+     Keep this block last so it always wins the cascade within :root.
+     ══════════════════════════════════════════════════════════════════ */
+  --color-primary:            var(--bn-forest);
+  --color-primary-dark:       var(--bn-forest-deep);
+  --color-secondary:          var(--bn-brass);
+  --color-accent:             var(--bn-brass);
+  --color-background:         var(--bn-bone);
+  --color-background-secondary: var(--bn-bone-2);
+  --color-text:               var(--bn-text-on-bone);
+  --color-text-light:         var(--bn-text-on-bone-dim);
+  --color-text-muted:         var(--bn-text-on-bone-dim);
+  --color-border:             var(--bn-line-on-bone);
+  --color-success:            var(--bn-ok);
+  --color-error:              var(--bn-error);
+
+  --font-heading: var(--bn-font-display);
+  --font-body:    var(--bn-font-body);
+
+  --spacing-xs:  var(--bn-space-3xs);
+  --spacing-sm:  var(--bn-space-2xs);
+  --spacing-md:  var(--bn-space-sm);
+  --spacing-lg:  var(--bn-space-md);
+  --spacing-xl:  var(--bn-space-lg);
+  --spacing-2xl: var(--bn-space-xl);
+
+  --radius-sm:   var(--bn-radius-sm);
+  --radius-md:   var(--bn-radius-md);
+  --radius-lg:   var(--bn-radius-lg);
+  --radius-full: var(--bn-radius-pill);
+
+  --header-height: 110px;
+}
+
+/* ============================================================================
+   OPT-IN SURFACE HELPERS
+   Add a class, get a correct text/line pairing. Prevents the brass-on-bone
+   contrast failure by making the legal pairing the easy one.
+   ========================================================================== */
+.bn-on-ink{
+  background: var(--bn-ink);
+  color: var(--bn-text-on-ink);
+  --bn-text-muted: var(--bn-text-on-ink-dim);
+  --bn-line: var(--bn-line-on-ink);
+  --bn-metal-text: var(--bn-brass);          /* 7.1:1 on ink — legal */
+}
+.bn-on-bone{
+  background: var(--bn-bone);
+  color: var(--bn-text-on-bone);
+  --bn-text-muted: var(--bn-text-on-bone-dim);
+  --bn-line: var(--bn-line-on-bone);
+  --bn-metal-text: var(--bn-brass-ink);      /* 5.9:1 on bone — legal */
+}
+.bn-on-forest{
+  background: var(--bn-forest);
+  color: var(--bn-text-on-ink);
+  --bn-text-muted: rgba(243,239,231,.72);
+  --bn-line: var(--bn-line-on-ink);
+  --bn-metal-text: var(--bn-brass);
+}
+
+/* Family tint — set --bn-family on the element, get a correct ground. */
+[data-family]{ --bn-family: var(--bn-family-default); }
+[data-family="fresh"]    { --bn-family: var(--bn-family-fresh); }
+[data-family="woody"]    { --bn-family: var(--bn-family-woody); }
+[data-family="amber"]    { --bn-family: var(--bn-family-amber); }
+[data-family="floral"]   { --bn-family: var(--bn-family-floral); }
+[data-family="gourmand"] { --bn-family: var(--bn-family-gourmand); }
+[data-family="green"]    { --bn-family: var(--bn-family-green); }
+[data-family="spicy"]    { --bn-family: var(--bn-family-spicy); }
+[data-family="clean"]    { --bn-family: var(--bn-family-clean); }
+[data-family="aromatic"] { --bn-family: var(--bn-family-aromatic); }
+[data-family="fruity"]   { --bn-family: var(--bn-family-fruity); }
+[data-family="leather"]  { --bn-family: var(--bn-family-leather); }
+[data-family="oriental"] { --bn-family: var(--bn-family-oriental); }
+[data-family="powdery"]  { --bn-family: var(--bn-family-powdery); }
+[data-family="smoky"]    { --bn-family: var(--bn-family-smoky); }
+[data-family="sweet"]    { --bn-family: var(--bn-family-sweet); }
+[data-family="vanilla"]  { --bn-family: var(--bn-family-vanilla); }
+
+.bn-family-tint{
+  background: var(--bn-bone);                                        /* fallback */
+  background: color-mix(in oklab, var(--bn-family) 15%, var(--bn-bone));
+}
+.bn-family-tint--strong{
+  background: var(--bn-bone-2);
+  background: color-mix(in oklab, var(--bn-family) 26%, var(--bn-bone));
+}
+.bn-family-rule{ border-bottom: 1px solid var(--bn-family); }
+.bn-family-dot{
+  width:.5rem;height:.5rem;border-radius:50%;
+  background:var(--bn-family);display:inline-block;flex:none;
+}
+
+/* ============================================================================
+   REVEAL PRIMITIVE — paired with bn-motion.js
+   Elements start hidden ONLY when JS is present and motion is allowed, so a
+   JS failure can never leave content invisible.
+   ========================================================================== */
+[data-reveal]{ opacity:1; transform:none; }
+.bn-js [data-reveal]{
+  opacity:0;
+  transform: translate3d(0, var(--bn-reveal-distance), 0);
+  transition: opacity var(--bn-dur-slow) var(--bn-ease),
+              transform var(--bn-dur-slow) var(--bn-ease);
+  transition-delay: var(--bn-reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.bn-js [data-reveal].is-revealed{
+  opacity:1;
+  transform:none;
+  will-change:auto;
+}
+
+/* ============================================================================
+   MOBILE TYPE GUARD
+   The tight display tracking crushes below 600px. Loosen it, floor the size.
+   ========================================================================== */
+@media (max-width: 600px){
+  :root{
+    --bn-track-display: var(--bn-track-display-mobile);
+    --bn-text-4xl: clamp(1.875rem, 1.20rem + 8.5vw, 2.75rem);
+    --bn-text-3xl: clamp(1.75rem,  1.30rem + 5.6vw, 2.5rem);
+  }
+}
+
+/* ============================================================================
+   REDUCED MOTION — hard guard.
+   Also flips --bn-motion-enabled to 0, which bn-motion.js reads at boot and
+   on change, so JS-driven effects (magnetic, cursor label) never initialise.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce){
+  :root{
+    --bn-motion-enabled: 0;
+    --bn-dur-instant: 1ms;
+    --bn-dur-fast: 1ms;
+    --bn-dur-base: 1ms;
+    --bn-dur-slow: 1ms;
+    --bn-dur-panel: 1ms;
+    --bn-reveal-distance: 0px;
+    --bn-reveal-stagger: 0ms;
+    --bn-magnetic-max: 0px;
+  }
+  .bn-js [data-reveal]{ opacity:1; transform:none; transition:none; }
+  *, *::before, *::after{
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================================
+   DIRECTION B — Modern Classic.
+   If Jeff picks B, replace the palette + type + motion values above with this
+   block. Component CSS does not change; only the variable layer does.
+   Fonts: Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1
+          Manrope:wght@200..800
+   ========================================================================== */
+/*
+:root{
+  --bn-ink:#191411; --bn-ink-2:#221B16;
+  --bn-bone:#F7F1E4; --bn-bone-2:#EDE4D2;
+  --bn-forest:#33463B; --bn-forest-deep:#26362D;
+  --bn-brass:#C48D3F; --bn-brass-ink:#7A5417;
+  --bn-text-on-ink:#F7F1E4; --bn-text-on-ink-dim:#B3AA9B;
+  --bn-text-on-bone:#191411; --bn-text-on-bone-dim:#5E574E;
+
+  --bn-family-fresh:#6E9FA6; --bn-family-woody:#8A7550; --bn-family-amber:#C0682A;
+  --bn-family-floral:#C9838F; --bn-family-gourmand:#8F5F3A; --bn-family-green:#778B57;
+  --bn-family-spicy:#A63E2B; --bn-family-clean:#C7BCA6;
+
+  --bn-font-display:'Fraunces', Georgia, serif;
+  --bn-font-accent: 'Fraunces', Georgia, serif;
+  --bn-font-body:   'Manrope', ui-sans-serif, sans-serif;
+  --bn-display-vf:'opsz' 144,'SOFT' 42,'WONK' 1;
+  --bn-weight-display:300;
+  --bn-track-display:-0.022em;
+  --bn-track-display-mobile:-0.014em;
+  --bn-track-label:0.24em;
+
+  --bn-radius-sm:2px; --bn-radius-md:3px; --bn-radius-lg:3px;
+
+  --bn-ease:cubic-bezier(.33,1,.68,1);
+  --bn-dur-slow:700ms; --bn-dur-panel:560ms; --bn-dur-marquee:34s;
+  --bn-reveal-distance:16px; --bn-reveal-stagger:90ms;
+  --bn-magnetic-max:4px; --bn-magnetic-lerp:0.14; --bn-cursor-fade:200ms;
+}
+@media (max-width:600px){ :root{ --bn-display-vf:'opsz' 48,'SOFT' 42,'WONK' 0; } }
+*/

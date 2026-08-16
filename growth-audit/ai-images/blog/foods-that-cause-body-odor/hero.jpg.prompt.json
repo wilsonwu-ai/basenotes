@@ -1,0 +1,7 @@
+{
+  "model": "openai/gpt-image-1",
+  "prompt": "Luxury editorial photograph for a fragrance magazine. Warm natural window light, shallow depth of field, muted warm palette (ivory, travertine, brass, deep green), tactile textures, cinematic composition, photorealistic, no text, no logos, no watermarks, no branded bottles. photoreal editorial still life, overhead three-quarter angle: whole and cracked garlic bulbs, halved red onions, broccoli florets and a scatter of cumin seeds arranged on a deep green slate slab, travertine edge visible, linen cloth folded at one side, small brass bowl, warm directional natural light with soft long shadows, shallow depth of field, muted earthy palette, no text, no logos, no branded bottles",
+  "aspect": "16:9",
+  "size": "1536x1024",
+  "bytes": 211828
+}

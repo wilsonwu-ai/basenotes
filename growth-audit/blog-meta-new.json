@@ -1,0 +1,507 @@
+[
+ {
+  "n": 18,
+  "handle": "why-perfume-smells-different-on-me",
+  "file": "growth-audit/blog-post-18-why-perfume-smells-different-on-me.html",
+  "date": "2026-08-24",
+  "verdict": "ship",
+  "must_fix": 0,
+  "fixed": false,
+  "words": 2406,
+  "meta": {
+   "title": "Why Does Perfume Smell Different on Me Than on My Friend?",
+   "summary": "Skin pH, sebum, body heat and bacteria change how a fragrance smells on you. What the research actually proves, and how to shop around it.",
+   "tags": [
+    "skin chemistry",
+    "why perfume smells different",
+    "fragrance science",
+    "body chemistry",
+    "how to choose fragrance",
+    "fragrance subscription"
+   ],
+   "images": [
+    {
+     "id": "hero",
+     "aspect": "16:9",
+     "alt": "Two forearms held side by side on a travertine surface, each with a single spray of the same fragrance drying on the skin",
+     "prompt": "photoreal editorial close-up of two bare forearms resting side by side on a travertine slab, a faint sheen of freshly sprayed fragrance on each wrist, one arm warmer-toned and one cooler-toned, soft linen draped at the edge of frame, small brass tray just out of focus, warm natural window light, shallow depth of field, muted deep green backdrop, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-01",
+     "aspect": "16:9",
+     "alt": "Flat-lay diagram materials showing pH strips, an oil droplet and a thermometer arranged on linen to represent the three skin variables",
+     "prompt": "photoreal overhead editorial flat-lay on natural linen: a row of pale pH indicator strips, a single glossy droplet of oil on travertine, and a slim brass-cased thermometer, arranged in three clean groups with generous negative space, warm natural light, soft shadows, deep green cloth at one edge, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-02",
+     "aspect": "16:9",
+     "alt": "Three unlabelled 5 ml atomizers spaced across a travertine surface to represent a three-week wear test",
+     "prompt": "photoreal editorial still life of three identical unlabelled clear 5 ml glass atomizers with brushed brass collars, evenly spaced left to right across a travertine surface, a folded linen cloth behind them, warm directional morning light casting three parallel shadows, deep green wall in soft focus, no text, no logos, no branded bottles"
+    }
+   ]
+  }
+ },
+ {
+  "n": 19,
+  "handle": "fall-2026-fragrance-trends",
+  "file": "growth-audit/blog-post-19-fall-2026-fragrance-trends.html",
+  "date": "2026-09-02",
+  "verdict": "ship",
+  "must_fix": 0,
+  "fixed": false,
+  "words": 2005,
+  "meta": {
+   "title": "Fall 2026 Fragrance Trends: What Everyone's Actually Wearing",
+   "summary": "A data-backed read on fall 2026 fragrance trends: the gourmand and pistachio wave, sweetened oud and leather, and five fall picks worth trying at 5 ml.",
+   "tags": [
+    "fall-2026-fragrance-trends",
+    "fragrance-trends",
+    "gourmand-fragrance",
+    "pistachio-fragrance",
+    "oud",
+    "fall-fragrance",
+    "fragrance-rotation"
+   ],
+   "images": [
+    {
+     "id": "hero",
+     "aspect": "16:9",
+     "alt": "Autumn flat-lay of small 5 ml fragrance atomizers arranged on a travertine surface with dried leaves and linen",
+     "prompt": "photoreal editorial still life, overhead flat-lay of five small unbranded 5 ml glass atomizers with brass collars arranged on a travertine slab, scattered dried oak and maple leaves, crumpled deep green linen, a few pistachios and a cinnamon stick placed loosely, warm low-angle autumn daylight raking across from the left, soft natural shadows, shallow depth of field, muted warm palette of travertine beige, deep green, brass and amber, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-01",
+     "aspect": "16:9",
+     "alt": "Still life showing the three layers of a 2026 fall gourmand: nuts, vanilla pods and dried tobacco leaf arranged in a row",
+     "prompt": "photoreal editorial still life, three shallow brass dishes in a row on a travertine surface, first holding shelled pistachios and almonds, second holding split vanilla pods and a piece of praline, third holding dried tobacco leaf and dark wood shavings, warm natural side light from a window, soft directional shadows, deep green linen runner beneath, quiet and precise composition, muted warm palette, no text, no labels, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-02",
+     "aspect": "16:9",
+     "alt": "Five unbranded 5 ml atomizers standing in a row on linen beside oud wood chips and dried florals",
+     "prompt": "photoreal editorial product still life, five small unbranded 5 ml glass atomizers with brass caps standing in an even row on rumpled oatmeal linen, dark oud wood chips and a sprig of dried lavender resting beside them, a travertine block behind for depth, warm late-afternoon natural light from the right creating long soft shadows, shallow depth of field, deep green and brass accents, no text, no labels, no logos, no branded bottles"
+    }
+   ]
+  }
+ },
+ {
+  "n": 20,
+  "handle": "why-sweat-smells-bacteria-abcc11",
+  "file": "growth-audit/blog-post-20-why-sweat-smells-bacteria-abcc11.html",
+  "date": "2026-09-07",
+  "verdict": "revise",
+  "must_fix": 2,
+  "fixed": true,
+  "words": 2316,
+  "meta": {
+   "title": "Sweat Doesn't Actually Smell: Meet the Bacteria (and the Gene)",
+   "summary": "Fresh sweat is odourless. Body odour is bacterial metabolism \u2014 named species, named enzymes, and one gene that also sets your earwax type.",
+   "tags": [
+    "body-odor-science",
+    "why-does-sweat-smell",
+    "abcc11",
+    "skin-microbiome",
+    "apocrine-glands",
+    "fragrance-and-body-chemistry"
+   ],
+   "images": [
+    {
+     "id": "hero",
+     "aspect": "16:9",
+     "alt": "Macro illustration of human skin surface with microscopic bacterial colonies rendered as soft translucent forms in warm light",
+     "prompt": "photoreal editorial macro of a human forearm skin surface at extreme close range, shallow depth of field, faint translucent bloom suggesting microbial life on the surface, warm natural window light, travertine and linen tones with a deep green shadow field and a brushed brass reflector edge, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-01",
+     "aspect": "4:3",
+     "alt": "Cross-section diagram contrasting an eccrine sweat gland and an apocrine sweat gland within layers of skin",
+     "prompt": "photoreal editorial still life of a hand-drafted anatomical cutaway diagram on heavy cream paper, showing two side-by-side sweat gland cross-sections in fine ink line work, unlabelled, resting on a travertine surface beside a brass rule and folded linen, warm natural raking light, deep green background, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-02",
+     "aspect": "16:9",
+     "alt": "Two folded fabric swatches side by side, a matte natural cotton weave and a smooth technical synthetic knit, photographed in raking light",
+     "prompt": "photoreal editorial overhead of two folded fabric swatches side by side on a travertine surface, one a matte natural cotton weave in warm linen tone, one a smooth technical synthetic knit in deep green, a slim brass rule laid between them for scale, warm natural raking light picking out the weave texture, soft shadows, no text, no logos, no branded bottles"
+    }
+   ]
+  }
+ },
+ {
+  "n": 21,
+  "handle": "sample-before-you-buy-full-bottle",
+  "file": "growth-audit/blog-post-21-sample-before-you-buy-full-bottle.html",
+  "date": "2026-09-14",
+  "verdict": "ship",
+  "must_fix": 0,
+  "fixed": false,
+  "words": 2323,
+  "meta": {
+   "title": "Should You Sample Before You Buy a Full Bottle?",
+   "summary": "The honest math on sampling versus buying a full bottle: why blind buys fail, what a real trial looks like, and cost per wear worked out.",
+   "tags": [
+    "sample-first",
+    "fragrance samples",
+    "blind buy",
+    "cost per wear",
+    "fragrance subscription",
+    "how to buy fragrance"
+   ],
+   "images": [
+    {
+     "id": "hero",
+     "aspect": "16:9",
+     "alt": "A small 5 ml fragrance atomizer standing beside a large full-size perfume bottle on a travertine surface in warm daylight",
+     "prompt": "photoreal editorial still life, a small unbranded 5 ml glass atomizer standing beside a large unbranded 100 ml perfume bottle on a travertine slab, folded linen in frame, thin brass tray, deep green backdrop, warm natural window light, soft shadows, shallow depth of field, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-01",
+     "aspect": "16:9",
+     "alt": "A single spray of fragrance on a bare wrist beside an untouched paper blotter strip, shown in warm daylight",
+     "prompt": "photoreal editorial close-up, a bare human wrist freshly sprayed with fragrance resting on linen, a plain white paper blotter strip lying unused beside it, travertine surface, brass detail, deep green shadow, warm natural light, intimate macro framing, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-02",
+     "aspect": "16:9",
+     "alt": "Five small unbranded atomizers arranged in a row on linen beside a handwritten notebook and pencil",
+     "prompt": "photoreal editorial overhead flat-lay, five small unbranded glass atomizers arranged in a neat row on natural linen, an open blank notebook and pencil beside them, travertine surface, brass tray edge, deep green cloth, warm directional daylight, calm and orderly composition, no text, no logos, no branded bottles"
+    }
+   ]
+  }
+ },
+ {
+  "n": 22,
+  "handle": "best-fragrance-notes-oily-skin",
+  "file": "growth-audit/blog-post-22-best-fragrance-notes-oily-skin.html",
+  "date": "2026-09-18",
+  "verdict": "ship",
+  "must_fix": 0,
+  "fixed": false,
+  "words": 2433,
+  "meta": {
+   "title": "Best Fragrance Notes for Oily Skin (and Which to Avoid)",
+   "summary": "Oily skin amplifies sweet notes and flattens nothing. Which fragrance notes hold their shape, which turn syrupy, and five picks from the rotation.",
+   "tags": [
+    "skin chemistry",
+    "fragrance notes",
+    "oily skin",
+    "how to wear fragrance",
+    "fragrance guide",
+    "base note rotation"
+   ],
+   "images": [
+    {
+     "id": "hero",
+     "aspect": "16:9",
+     "alt": "A note board arranged on travertine: vetiver root, a cut grapefruit, iris root and green herbs beside a small glass atomizer",
+     "prompt": "photoreal editorial still life, overhead three-quarter view: a perfumer's note board on a travertine slab, dried vetiver root, a halved grapefruit, pale iris orris root, sprigs of rosemary and thyme, and one small unlabelled clear glass atomizer with a brass collar, linen cloth folded at the edge, a sprig of deep green foliage, Base Note house style: warm natural light raking from the left, soft shadows, travertine/linen/brass/deep green palette, shallow depth of field, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-01",
+     "aspect": "16:9",
+     "alt": "Two-column comparison: dry structural materials on the left, sweet resinous materials on the right, split by a brass divider",
+     "prompt": "photoreal editorial flat lay split into two columns by a thin brass divider bar on a travertine surface, left column holds dry structural materials: cedar shavings, vetiver root, whole black peppercorns, lemon peel, green tea leaves, pale iris root; right column holds sweet dense materials: vanilla pods, tonka beans, amber resin chunks, a spoon of caramel, dried candied fruit, cinnamon bark, Base Note house style: warm natural window light, linen backdrop at the top edge, brass accents, deep green leaf accent, soft realistic shadows, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-02",
+     "aspect": "16:9",
+     "alt": "Five identical unlabelled 5 ml atomizers in a row on linen, each beside its key raw material",
+     "prompt": "photoreal editorial product row, eye-level: five identical small unlabelled 5 ml glass atomizers with brass collars standing in a line on a folded linen runner over travertine, each vial paired with one raw material at its base \u2014 green tea leaves, fresh mint and basil, vetiver root, iris root with violet leaves, a grapefruit wedge, Base Note house style: warm natural light from the side, quiet neutral palette of travertine, linen, brass and deep green, shallow depth of field, no text, no logos, no branded bottles"
+    }
+   ]
+  }
+ },
+ {
+  "n": 23,
+  "handle": "green-irish-tweed-vs-silver-mountain-water",
+  "file": "growth-audit/blog-post-23-green-irish-tweed-vs-silver-mountain-water.html",
+  "date": "2026-09-23",
+  "verdict": "ship",
+  "must_fix": 0,
+  "fixed": false,
+  "words": 2251,
+  "meta": {
+   "title": "Green Irish Tweed vs. Silver Mountain Water: Which Creed?",
+   "summary": "A real side-by-side of Creed's two green flagships: note pyramids from Creed's own site, season and occasion matrix, skin-type fit, and a clear verdict.",
+   "tags": [
+    "comparison-creed",
+    "creed",
+    "green-irish-tweed",
+    "silver-mountain-water",
+    "fragrance-comparison",
+    "fougere"
+   ],
+   "images": [
+    {
+     "id": "hero",
+     "aspect": "16:9",
+     "alt": "Two unlabelled 5 ml fragrance atomizers standing side by side on a travertine ledge in warm natural light",
+     "prompt": "photoreal editorial still life, two small unlabelled glass atomizers standing side by side on a travertine ledge, one catching cool green reflected light and one catching bright silver-white light, crumpled linen behind, a brass tray edge at frame left, a sprig of green herb resting flat, warm natural window light with soft directional shadows, shallow depth of field, deep green wall in soft focus background, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-01",
+     "aspect": "4:3",
+     "alt": "Two vertical arrangements of raw perfumery materials representing the note pyramids of the two fragrances",
+     "prompt": "photoreal overhead editorial flat lay on travertine, two vertical columns of raw perfumery materials separated by a thin brass rule: left column shows peppermint leaves, lemon verbena sprigs, a halved lemon, geranium and violet petals, sandalwood chips and oakmoss; right column shows bergamot, blackcurrants, an orange slice, loose green tea leaves and pale sandalwood shavings, warm natural light, linen edge at frame bottom, deep green shadow gradient, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-02",
+     "aspect": "4:3",
+     "alt": "A grid of small scene vignettes representing different wearing occasions, from office desk to hot weather to formal daytime",
+     "prompt": "photoreal editorial six-panel grid of small still-life vignettes on travertine and linen, each panel a different occasion cue: a folded suit cuff and brass cufflink, a sweat-beaded glass of iced water, a wool scarf on a cold morning windowsill, a formal boutonniere, a candle and dark green tablecloth for evening, a rolled towel and travel pouch, consistent warm natural light across all six, muted travertine and deep green palette with brass accents, no text, no logos, no branded bottles"
+    }
+   ]
+  }
+ },
+ {
+  "n": 24,
+  "handle": "baccarat-rouge-540-love-it-or-hate-it",
+  "file": "growth-audit/blog-post-24-baccarat-rouge-540-love-it-or-hate-it.html",
+  "date": "2026-09-30",
+  "verdict": "revise",
+  "must_fix": 1,
+  "fixed": true,
+  "words": 2184,
+  "meta": {
+   "title": "Baccarat Rouge 540: Why People Either Love It or Can't Stand It",
+   "summary": "An honest read on the most argued-about fragrance of the decade: what it smells like, the real case for and against, and how to decide for yourself.",
+   "tags": [
+    "house-mfk",
+    "baccarat-rouge-540",
+    "fragrance-review",
+    "niche-fragrance",
+    "sample-before-you-buy",
+    "skin-chemistry"
+   ],
+   "images": [
+    {
+     "id": "hero",
+     "aspect": "16:9",
+     "alt": "A small clear fragrance atomizer standing on a deep red surface in warm directional light, casting a long shadow",
+     "prompt": "photoreal editorial still life, a plain unlabelled clear glass atomizer standing on a deep crimson lacquered surface, warm low-angle natural light raking across from the left, long soft shadow, travertine wall behind, brass tray edge just in frame, shallow depth of field, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-01",
+     "aspect": "16:9",
+     "alt": "Saffron threads, a cedar offcut and a piece of warm amber resin arranged on a linen cloth",
+     "prompt": "photoreal overhead editorial flat-lay, deep red saffron threads, a pale cedar wood offcut and a translucent amber resin chunk arranged with generous negative space on natural undyed linen, warm diffused daylight, travertine surface beneath, subtle brass ruler at the edge, muted deep green accent, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-02",
+     "aspect": "16:9",
+     "alt": "Six small unlabelled 5 ml atomizers lined up in a row on a travertine ledge",
+     "prompt": "photoreal editorial product row, six identical small unlabelled 5 ml glass atomizers with brushed brass collars lined up evenly on a travertine ledge, warm natural window light from the right, soft repeated shadows, deep green painted wall behind, linen runner beneath, shallow depth of field, no text, no logos, no branded bottles"
+    }
+   ]
+  }
+ },
+ {
+  "n": 25,
+  "handle": "foods-that-cause-body-odor",
+  "file": "growth-audit/blog-post-25-foods-that-cause-body-odor.html",
+  "date": "2026-10-02",
+  "verdict": "ship",
+  "must_fix": 0,
+  "fixed": false,
+  "words": 2413,
+  "meta": {
+   "title": "Foods That Make You Smell: Garlic, Onions, and the Sulfur Problem",
+   "summary": "What garlic, onions, cruciferous veg, red meat, spices and alcohol actually do to body odour, with the timings, the research, and one big surprise.",
+   "tags": [
+    "body odour science",
+    "foods that make you smell",
+    "garlic body odor",
+    "sulfur compounds",
+    "body odor timeline",
+    "fragrance and diet"
+   ],
+   "images": [
+    {
+     "id": "hero",
+     "aspect": "16:9",
+     "alt": "Whole garlic bulbs, halved red onions and broccoli florets arranged on a dark stone surface in warm side light",
+     "prompt": "photoreal editorial still life, overhead three-quarter angle: whole and cracked garlic bulbs, halved red onions, broccoli florets and a scatter of cumin seeds arranged on a deep green slate slab, travertine edge visible, linen cloth folded at one side, small brass bowl, warm directional natural light with soft long shadows, shallow depth of field, muted earthy palette, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-01",
+     "aspect": "16:9",
+     "alt": "Diagram-style flat lay showing the path from food to bloodstream to skin",
+     "prompt": "photoreal editorial flat lay on warm travertine: a single garlic clove, a thin cross-section of onion, and a small brass hourglass placed in a left-to-right sequence on folded natural linen, deep green background panel, warm natural window light raking across the surface, fine dust motes, shallow depth of field, calm minimal composition suggesting elapsed time, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-02",
+     "aspect": "16:9",
+     "alt": "Folded cotton shirt beside a small unbranded glass atomizer on linen in warm light",
+     "prompt": "photoreal editorial still life: a crisply folded white cotton shirt beside a small plain clear glass atomizer with a brushed brass collar, resting on oatmeal linen over a travertine surface, deep green wall behind, warm late-afternoon natural light, soft shadows, quiet grooming-ritual mood, shallow depth of field, no text, no logos, no branded bottles"
+    }
+   ]
+  }
+ },
+ {
+  "n": 26,
+  "handle": "32-luxury-fragrances-ranked",
+  "file": "growth-audit/blog-post-26-32-luxury-fragrances-ranked.html",
+  "date": "2026-10-05",
+  "verdict": "revise",
+  "must_fix": 1,
+  "fixed": true,
+  "words": 2488,
+  "meta": {
+   "title": "32 Luxury Fragrances Ranked: Which Should You Try First?",
+   "summary": "All 32 fragrances in the Base Note rotation, ranked by which you should try first, with a stated method and four brand-published prices.",
+   "tags": [
+    "ranked lists",
+    "luxury fragrance",
+    "best luxury fragrances ranked",
+    "fragrance rotation",
+    "niche fragrance",
+    "fragrance subscription"
+   ],
+   "images": [
+    {
+     "id": "hero",
+     "aspect": "16:9",
+     "alt": "A grid of thirty-two identical 5 ml fragrance atomizers arranged in rows on a travertine surface",
+     "prompt": "photoreal editorial overhead flat-lay of thirty-two identical small clear 5 ml glass atomizers with brushed brass collars, arranged in a precise grid on a warm travertine slab, a folded linen cloth at one edge, a deep green ceramic dish in the corner, soft warm natural window light with long gentle shadows, shallow depth of field falling off at the edges, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-01",
+     "aspect": "16:9",
+     "alt": "Five 5 ml atomizers standing in a row in front of a stack of the rest, suggesting a ranked top five",
+     "prompt": "photoreal editorial still life, five small clear 5 ml glass atomizers with brass collars standing in a tight row in the foreground on warm travertine, a loose cluster of more atomizers softly out of focus behind them, linen runner beneath, deep green painted wall in the background, warm directional natural light from the left, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-02",
+     "aspect": "4:3",
+     "alt": "Three 5 ml atomizers spaced apart on linen beside a small brass tray, suggesting a three-month rotation",
+     "prompt": "photoreal editorial still life, three small clear 5 ml glass atomizers with brass collars spaced evenly apart on a rumpled natural linen cloth, a shallow brass tray and a sprig of dried herb beside them, travertine surface below, warm late-afternoon natural light, soft shadows, muted deep green backdrop, no text, no logos, no branded bottles"
+    }
+   ]
+  }
+ },
+ {
+  "n": 27,
+  "handle": "halloween-date-night-fragrance-guide",
+  "file": "growth-audit/blog-post-27-halloween-date-night-fragrance-guide.html",
+  "date": "2026-10-14",
+  "verdict": "revise",
+  "must_fix": 1,
+  "fixed": true,
+  "words": 2322,
+  "meta": {
+   "title": "Spooky-Good: A Halloween Date-Night Fragrance Guide",
+   "summary": "Smoke, leather, gourmand or dark floral: what to wear on Halloween night, five picks matched to five moods, and how many sprays in a crowded room.",
+   "tags": [
+    "halloween fragrance",
+    "date night cologne",
+    "fall fragrance",
+    "smoky fragrance",
+    "gourmand fragrance",
+    "fragrance subscription"
+   ],
+   "images": [
+    {
+     "id": "hero",
+     "aspect": "16:9",
+     "alt": "Several small fragrance atomizers arranged on a travertine surface beside lit candles, thin smoke drifting through warm low light",
+     "prompt": "photoreal editorial still life, Base Note house style: a cluster of small unlabeled glass atomizers on a travertine slab, three lit taper candles just out of focus behind, a thin ribbon of smoke crossing the frame, deep green linen draped at the edge, brass tray catching candlelight, warm natural light falling from one side, shallow depth of field, moody autumn evening mood, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-01",
+     "aspect": "3:2",
+     "alt": "Note ingredients laid out in three groups on linen: charred wood and leather scraps, cinnamon and tobacco leaf, dried dark roses and iris root",
+     "prompt": "photoreal editorial flat lay, Base Note house style: three distinct clusters of raw perfumery materials on natural linen over travertine, left cluster of charred wood chips and a folded scrap of dark leather, centre cluster of cinnamon bark tobacco leaf and vanilla pods, right cluster of dried deep-red roses and pale iris root, small brass dish separating each group, warm directional natural light, soft shadows, autumnal palette of deep green brass and warm brown, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-02",
+     "aspect": "3:2",
+     "alt": "Five small atomizers standing in a row on a brass tray, each lit differently from warm to shadowed",
+     "prompt": "photoreal editorial product row, Base Note house style: five identical small unlabeled glass atomizers standing evenly spaced on an aged brass tray set on travertine, lighting graduating left to right from warm candlelit glow to deep shadow, deep green linen backdrop, faint smoke haze in the air, shallow depth of field on the middle vial, warm natural light, no text, no logos, no branded bottles"
+    }
+   ]
+  }
+ },
+ {
+  "n": 28,
+  "handle": "tom-ford-ombre-leather-review",
+  "file": "growth-audit/blog-post-28-tom-ford-ombre-leather-review.html",
+  "date": "2026-10-19",
+  "verdict": "revise",
+  "must_fix": 2,
+  "fixed": true,
+  "words": 2546,
+  "meta": {
+   "title": "Tom Ford Ombre Leather: The Leather Nothing Else Smells Like",
+   "summary": "An honest Tom Ford Ombre Leather review: what it smells like, why longevity reports vary so wildly, how it compares to Tuscan Leather, and who should buy.",
+   "tags": [
+    "house-tom-ford",
+    "tom-ford-ombre-leather",
+    "leather-fragrance",
+    "fragrance-review",
+    "fall-winter-fragrance",
+    "tuscan-leather"
+   ],
+   "images": [
+    {
+     "id": "hero",
+     "aspect": "16:9",
+     "alt": "A small unbranded 5 ml glass atomizer resting on a folded dark brown leather jacket in warm afternoon light",
+     "prompt": "photoreal editorial still life, a small unbranded clear glass 5 ml atomizer with a brushed brass collar resting on the folded shoulder of a dark brown leather jacket, travertine surface beneath, linen edge in frame, warm natural afternoon light raking across the leather grain, shallow depth of field, deep green shadow tones, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-01",
+     "aspect": "4:3",
+     "alt": "A leather jacket hung over a wooden chair by a window with cold autumn light, a small atomizer on the sill",
+     "prompt": "photoreal editorial interior, a worn dark leather jacket draped over a pale wooden chair beside a window, thin cold autumn light through the glass, a small unbranded glass atomizer standing on the travertine sill, linen curtain, brass window latch, deep green wall in soft shadow, quiet muted palette, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-02",
+     "aspect": "16:9",
+     "alt": "Two identical unbranded glass atomizers side by side on a travertine slab, one lit brighter than the other",
+     "prompt": "photoreal editorial product comparison, two identical small unbranded clear glass atomizers standing side by side on a travertine slab, one catching brighter warm light and one falling into deeper shadow, a scrap of black suede and a scrap of tan leather laid flat between them, brass tray edge, linen backdrop, soft natural window light, no text, no logos, no branded bottles"
+    }
+   ]
+  }
+ },
+ {
+  "n": 29,
+  "handle": "black-friday-2026-fragrance-deals",
+  "file": "growth-audit/blog-post-29-black-friday-2026-fragrance-deals.html",
+  "date": "2026-11-09",
+  "verdict": "ship",
+  "must_fix": 0,
+  "fixed": false,
+  "words": 2265,
+  "meta": {
+   "title": "Black Friday 2026 Fragrance Deals: Worth Chasing?",
+   "summary": "Black Friday 2026 is Nov 27. We run the real arithmetic on discounted bottles vs. a $20/month rotation, plus the batch-code checks that protect you.",
+   "tags": [
+    "black friday fragrance deals",
+    "fragrance deals 2026",
+    "perfume cost per wear",
+    "batch code checker",
+    "grey market perfume",
+    "fragrance subscription value"
+   ],
+   "images": [
+    {
+     "id": "hero",
+     "aspect": "16:9",
+     "alt": "A crossed-out paper discount tag beside a small amber atomizer on a travertine surface",
+     "prompt": "photoreal editorial still life, warm natural late-afternoon light raking across a travertine slab, a small unbranded amber glass atomizer standing beside a plain kraft paper price tag on brass twine, a folded linen cloth in deep green at the edge, soft shadows, shallow depth of field, muted warm palette, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-01",
+     "aspect": "16:9",
+     "alt": "Close-up of a hand tilting a plain glass bottle to read the batch code etched on its base",
+     "prompt": "photoreal editorial macro, a hand tilting a plain unlabelled glass fragrance bottle to reveal faint etched characters on its underside, warm natural window light, travertine surface with a brass loupe resting nearby, deep green linen in soft focus behind, shallow depth of field, calm documentary feel, no text, no logos, no branded bottles"
+    },
+    {
+     "id": "fig-02",
+     "aspect": "16:9",
+     "alt": "Twelve small atomizers arranged in a grid beside one large bottle, comparing a year of variety to a single purchase",
+     "prompt": "photoreal editorial overhead flat lay on travertine, twelve identical small unbranded glass atomizers arranged in a neat three-by-four grid on the left, one larger plain glass bottle alone on the right, warm natural light, brass tray edge and deep green linen runner, even soft shadows, muted warm palette, no text, no logos, no branded bottles"
+    }
+   ]
+  }
+ }
+]

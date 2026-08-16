@@ -1,0 +1,10 @@
+{
+  "model": "fal-ai/flux-pro/v1.1-ultra",
+  "prompt": "Luxury editorial photograph for a fragrance magazine. Warm natural window light, shallow depth of field, muted warm palette (ivory, travertine, brass, deep green), tactile textures, cinematic composition, photorealistic, no text, no logos, no watermarks. Several unlabeled bottles of different shapes lined up on a shelf casting long shadows, one premium flacon slightly forward under a spotlight \u2014 originals versus imitations.",
+  "aspect": "16:9",
+  "resolution": "2K",
+  "request_id": "01a008c1-f821-7890-98cf-b3d1d266162a",
+  "source_url": "https://v3b.fal.media/files/b/0aa68595/Ei-IoAXTMiwIT1pq2CswF_04b2696d6af34da0baf9896b92e27929.jpg",
+  "bytes": 234623,
+  "extra": null
+}

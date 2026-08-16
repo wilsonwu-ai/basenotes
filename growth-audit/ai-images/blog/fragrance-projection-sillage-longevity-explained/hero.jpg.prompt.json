@@ -1,0 +1,10 @@
+{
+  "model": "fal-ai/nano-banana-pro",
+  "prompt": "Luxury editorial photograph for a fragrance magazine. Warm natural window light, shallow depth of field, muted warm palette (ivory, travertine, brass, deep green), tactile textures, cinematic composition, photorealistic, no text, no logos, no watermarks. A dramatic macro of a perfume spray cloud lit from behind, drifting away from a wrist across a dark room, particles catching a beam of light \u2014 sillage made visible.",
+  "aspect": "16:9",
+  "resolution": "2K",
+  "request_id": "01a008bd-10de-7961-9ef5-55877a262aba",
+  "source_url": "https://v3b.fal.media/files/b/0aa68574/dNFUqKgHuVfz5qCA1-U5Y_WksumGVX.jpg",
+  "bytes": 254100,
+  "extra": null
+}

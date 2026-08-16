@@ -1,0 +1,7 @@
+{
+  "model": "openai/gpt-image-1",
+  "prompt": "Luxury editorial photograph for a fragrance magazine. Warm natural window light, shallow depth of field, muted warm palette (ivory, travertine, brass, deep green), tactile textures, cinematic composition, photorealistic, no text, no logos, no watermarks, no branded bottles. photoreal editorial flat lay, Base Note house style: three distinct clusters of raw perfumery materials on natural linen over travertine, left cluster of charred wood chips and a folded scrap of dark leather, centre cluster of cinnamon bark tobacco leaf and vanilla pods, right cluster of dried deep-red roses and pale iris root, small brass dish separating each group, warm directional natural light, soft shadows, autumnal palette of deep green brass and warm brown, no text, no logos, no branded bottles",
+  "aspect": "3:2",
+  "size": "1536x1024",
+  "bytes": 234905
+}

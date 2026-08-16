@@ -1,0 +1,42 @@
+[
+ {
+  "handle": "why-you-smell-the-way-you-do",
+  "file": "growth-audit/blog-post-17-why-you-smell-the-way-you-do.html",
+  "title": "Why You Smell the Way You Do (and How to Pick Fragrance Notes That Balance It)",
+  "summary": "Sweat is odourless. Bacteria, genes, diet and fabric make your scent. Find your smell profile and the fragrance notes that balance it.",
+  "tags": [
+   "body odour science",
+   "fragrance notes",
+   "skin chemistry",
+   "smell profile",
+   "how to choose fragrance",
+   "ABCC11"
+  ],
+  "author": "Jeff Theefs",
+  "image_url": "https://basenote-media.wilson-af8.workers.dev/img/how-to-find-your-signature-scent/hero.jpg",
+  "image_alt": "A person testing fragrance on the inside of the wrist beside a tray of small sample vials",
+  "inline": {
+   "fig-05": {
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/fragrance-projection-sillage-longevity-explained/hero.jpg",
+    "alt": "A wrist releasing a fine mist of fragrance in warm window light",
+    "w": 1536,
+    "h": 864
+   },
+   "fig-06": {
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/fragrance-families-explained-woody-oriental-fresh-fougere/hero.jpg",
+    "alt": "A wheel of raw fragrance materials arranged by scent family on dark linen",
+    "w": 1536,
+    "h": 864
+   },
+   "fig-07": {
+    "url": "https://basenote-media.wilson-af8.workers.dev/img/fragrance-notes-explained-top-heart-base-perfume-pyramid/hero.jpg",
+    "alt": "A pyramid of citrus, flowers, woods and resins representing top, heart and base notes",
+    "w": 1536,
+    "h": 864
+   }
+  },
+  "publish_now": true,
+  "post_no": 17,
+  "_note": "TEMP: reusing existing CDN heroes until bespoke pillar images are generated (fal/OpenAI credits exhausted 2026-08-16)"
+ }
+]

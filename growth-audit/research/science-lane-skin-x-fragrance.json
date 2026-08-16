@@ -1,0 +1,238 @@
+{
+  "lane": "skin-x-fragrance",
+  "summary": "Skin chemistry genuinely changes how a fragrance smells, and the mechanisms are traceable. Skin surface pH sits acidic (roughly 4.1-5.8, averaging ~4.7-5.5) and governs hydrolysis rates of ester/aldehyde fragrance materials, so the same molecule releases at a different rate on different people. Sebum acts as a lipid reservoir that binds and slow-releases fragrance oils (oilier skin = longer wear), and a 2025 peer-reviewed evaporation study (10 volunteers, instrumented skin measurements) confirms skin hydration, transepidermal water loss, and surface roughness measurably change fragrance evaporation profiles versus an inert surface. Skin temperature raises vapor pressure exponentially (Clausius-Clapeyron), so warmer skin/pulse points diffuse scent faster and compress the top/heart/base timeline. The strongest evidence is psychological/genetic: Lenochova et al. (2012, PLoS ONE) show perfume interacts with an individual's own body odor to create a unique blend, and people's own chosen perfume is rated more attractive on their own skin than an identical-quality perfume assigned at random - refuting simple 'masking.' Milinski & Wedekind (2001) found perfume preference correlates with MHC immune genotype for self-selection specifically. Allen et al. (2016) and Sorokowska et al. (2016) show fragrance changes what mate-quality/personality cues raters can extract from body odor. Skin bacteria (e.g., Staphylococcus hominis) enzymatically convert odorless precursors into odorous compounds, which is why the fragrance industry (Givaudan, Firmenich) now designs microbiome-aware and bacteria-activated fragrances. Hormones move the needle too: menstrual cycle phase and oral contraceptive use measurably shift a woman's ability to discriminate body odors (19-23% swings). Nose-blindness to one's own perfume is real and even measurable in lab tests within about 15-30 minutes. Concentration (parfum > EDP > EDT) is a real, industry-standard determinant of longevity. Diet's effect is real but thinly sourced in what we could independently verify. Blood type as a determinant has no evidence base in the literature searched; it is folk claim, not chemistry.",
+  "gaps": [
+    "No peer-reviewed study found and independently verified that isolates 'skin pH altering perceived fragrance character (e.g., florals vs woods)' with controlled sensory testing - most of that specific claim traces to perfumery-industry blog content, not a controlled study.",
+    "Sebum's fixative effect is well-established qualitatively (lipid solubility/reservoir logic) but I could not locate/verify a peer-reviewed study directly quantifying 'oily skin = X% longer wear' - the concrete quantified claims in circulation (e.g., '2.3x faster evaporation below 10% moisture') read like unsourced marketing copy and were deliberately excluded.",
+    "Could not independently fetch the full text of Hadjiefstathiou et al. 2025 (Int J Cosmet Sci, paywalled/WAF-blocked) - the quote used is corroborated by two independent search-engine-surfaced excerpts of the same sentence plus its formal journal citation (Int J Cosmet Sci. 2025;47:981-995), but was not confirmed by direct full-text fetch.",
+    "Diet's effect on body odor/fragrance perception: found only a secondary blog citation of 'a 2006 study' with no author/journal named - could not independently trace or verify this primary source (likely Havlicek & Lenochova-adjacent literature, but unconfirmed).",
+    "Could not verify any specific medication/phantom-odor prevalence study (attempted Bainbridge et al. JAMA Otolaryngol Head Neck Surg 2018 NHANES study) - PubMed cookie-walled every direct fetch attempt and a search-engine-derived citation list could not be independently confirmed, so this claim was dropped entirely rather than risk an invented number.",
+    "The Calkin & Jellinek vapor-pressure thresholds for top/middle/base notes (e.g., '>0.1 Torr at 25C' for top notes) came only from a WebSearch synthesis, not a directly fetched primary text - used only the safer, independently-verified Wikipedia framing (evaporation timing, no numeric vapor-pressure thresholds) instead.",
+    "Sorokowska et al. and related body-odor-personality literature focus on donor personality judgments, not perfume-choice psychology per se - relevant but adjacent to the Lenochova/Milinski-Wedekind core evidence.",
+    "No study found isolating the isolated microbiome-activation mechanism, i.e., 'which specific perfume ingredients get hydrolyzed by which specific skin bacteria enzymes' - only general body-odor bacterial biochemistry (S. hominis + sweat precursors) and industry (non-peer-reviewed) claims about pro-fragrance technology (Firmenich Haloscent Pure You)."
+  ],
+  "findings": [
+    {
+      "claim": "Healthy human skin surface pH is acidic, averaging around 4.7-5.5 with a broader measured range of about 4.1-5.8 across individuals; this 'acid mantle' is maintained by sweat, sebum, and microbial metabolites.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9135183/",
+      "source_title": "Overcoming pH defenses on the skin to establish infections (PLOS Pathogens, review)",
+      "source_type": "review-article",
+      "quote": "Recent investigations measuring skin surface pH in healthy volunteers report an average pH between 4.1 and 5.8.",
+      "year": "2022",
+      "confidence": "high",
+      "eli5": "Your skin is naturally a little bit acidic, like weak vinegar, and that acidity level is different from person to person."
+    },
+    {
+      "claim": "Skin pH varies by sex (tends to run below 5 in men, above 5 in women) and by modifiable factors including cleansers, sweat, sebum, and diet - all of which shift the chemical environment fragrance molecules sit in.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5605222/",
+      "source_title": "Skin Surface pH in Acne Vulgaris: Insights from an Observational Study and Review of the Literature",
+      "source_type": "review-article",
+      "quote": "pH value below 5 in men and above 5 in women... Modifiable factors [include] cleansers, topicals, sweat, sebum, and diet.",
+      "year": "2017",
+      "confidence": "high",
+      "eli5": "Men's and women's skin tends to sit at slightly different acidity levels, and things like soap, sweat, and what you eat can nudge that acidity up or down."
+    },
+    {
+      "claim": "Because fragrance pH governs the rate of ester/aldehyde hydrolysis on skin, a perfume genuinely undergoes chemical transformation on contact with skin rather than sitting inert - a full pH-unit difference between two people's skin changes how fast bonds in fragrance molecules break down.",
+      "source_url": "https://premierepeau.com/blogs/news/what-the-ph-of-your-skin-does-to-a-perfumers-formula",
+      "source_title": "What the pH of Your Skin Does to a Perfumer's Formula",
+      "source_type": "industry",
+      "quote": "This matters because pH governs the rate of hydrolysis, the cleavage of chemical bonds by water.",
+      "year": "2025",
+      "confidence": "medium",
+      "eli5": "Perfume doesn't just sit on top of your skin - your skin's acidity actually helps break the scent molecules apart, and more acidic skin does this faster."
+    },
+    {
+      "claim": "Sebum (skin's natural oil) acts as the primary lipid-soluble binding/reservoir medium for fragrance molecules, so oilier skin builds a thicker lipid film that captures and slow-releases scent.",
+      "source_url": "https://premierepeau.com/blogs/news/body-chemistry-perfume",
+      "source_title": "Body Chemistry & Perfume: Why It Smells Different on You",
+      "source_type": "industry",
+      "quote": "Sebum, the waxy, lipid-rich substance produced by sebaceous glands, is the primary binding agent for fragrance molecules on skin.",
+      "year": "2025",
+      "confidence": "medium",
+      "eli5": "The natural oil on your skin acts like a sponge that soaks up perfume and lets it out slowly, so oilier skin can hold scent longer."
+    },
+    {
+      "claim": "A 2025 peer-reviewed instrumented study measured fragrance evaporation directly on 10 volunteers' skin (vs. an inert surface) and found two distinct behavior patterns: more-volatile fragrance compounds evaporate faster with higher skin surface roughness, while less-volatile, more lipophilic compounds are driven by skin hydration and transepidermal water loss (TEWL).",
+      "source_url": "https://onlinelibrary.wiley.com/doi/10.1111/ics.13085",
+      "source_title": "Exploring the impact of fragrance molecular and skin properties on the evaporation profile of fragrances (Hadjiefstathiou et al., Int J Cosmet Sci 2025;47:981-995)",
+      "source_type": "peer-reviewed",
+      "quote": "Two patterns of behaviour have been identified among fragrance compounds: the more volatile compounds whose evaporation increases with surface skin roughness and the less volatile and more lipophilic compounds influenced by skin hydration and TEWL.",
+      "year": "2025",
+      "confidence": "medium",
+      "eli5": "Scientists actually measured how fast perfume evaporates off real people's skin, and found that skin texture matters for 'light' scent notes while skin moisture matters for 'heavy' notes."
+    },
+    {
+      "claim": "Vapor pressure of a liquid rises non-linearly (exponentially) as temperature increases - the physical basis (Clausius-Clapeyron relation) for why warmer skin makes fragrance molecules evaporate and diffuse into the air faster.",
+      "source_url": "https://chem.libretexts.org/Bookshelves/Physical_and_Theoretical_Chemistry_Textbook_Maps/Supplemental_Modules_(Physical_and_Theoretical_Chemistry)/Physical_Properties_of_Matter/States_of_Matter/Phase_Transitions/Clausius-Clapeyron_Equation",
+      "source_title": "Clausius-Clapeyron Equation (Chemistry LibreTexts)",
+      "source_type": "textbook",
+      "quote": "The vapor pressure curves of most liquids have similar shapes with the vapor pressure steadily increasing as the temperature increases.",
+      "year": "2023",
+      "confidence": "high",
+      "eli5": "Warm things evaporate faster than cool things, and the hotter something gets, the faster this speeds up - which is why perfume 'blooms' more on warm skin or pulse points."
+    },
+    {
+      "claim": "Perfume notes are conventionally classified by how quickly they evaporate: top notes are small, light molecules that evaporate fast and form the first impression, while base notes are typically not perceived until roughly 30 minutes after application.",
+      "source_url": "https://en.wikipedia.org/wiki/Perfume",
+      "source_title": "Perfume (Wikipedia, citing perfumery literature)",
+      "source_type": "other",
+      "quote": "Compounds of this class of scents are typically rich and 'deep' and are usually not perceived until 30 minutes after application.",
+      "year": "2026",
+      "confidence": "medium",
+      "eli5": "A perfume changes over time because its ingredients evaporate at different speeds - light 'top note' smells hit you first, heavy 'base note' smells show up later."
+    },
+    {
+      "claim": "Fragrance concentration categories carry real, industry-consistent oil percentages: eau de toilette ~5-15%, eau de parfum ~15-20%, and parfum/extrait ~20-30% (up to IFRA's informal ~20% reference point for extrait), which is why higher concentrations generally last longer on skin.",
+      "source_url": "https://www.ulta.com/discover/beauty-education/eau-de-toilette-vs-parfum",
+      "source_title": "Eau de Toilette vs Parfum: Fragrance Concentration (Ulta Beauty)",
+      "source_type": "reputable-press",
+      "quote": "Eau de Parfum (EDP): fragrance oil concentration of around 15-20%... Parfum (Extrait de Parfum): highest fragrance oil concentration, usually 20-30%.",
+      "year": "2025",
+      "confidence": "high",
+      "eli5": "EDT, EDP, and pure perfume (parfum) are basically the same scent at different strengths - more concentrated versions use more fragrance oil and last longer."
+    },
+    {
+      "claim": "In controlled experiments, the interaction between an individual's own body odor and a perfume was highly significant for every rated variable (pleasantness, attractiveness, intensity) - and this interaction effect was consistently stronger than the perfume's general effect alone, refuting the idea that perfume simply 'masks' body odor.",
+      "source_url": "https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0033810",
+      "source_title": "Lenochova, Vohnoutova, Roberts & Havlicek (2012) - Psychology of Fragrance Use: Perception of Individual Odor and Perfume Blends Reveals a Mechanism for Idiosyncratic Effects on Fragrance Choice (PLoS ONE)",
+      "source_type": "peer-reviewed",
+      "quote": "The interaction between individual donors and perfume treatment was highly significant for all rated variables.",
+      "year": "2012",
+      "confidence": "high",
+      "eli5": "The same perfume blends differently with each person's natural body smell, and that blend - not just the perfume alone - is what people are actually reacting to."
+    },
+    {
+      "claim": "In the same study, when men wore their own self-selected perfume on one armpit and a randomly assigned perfume of equal general pleasantness on the other, female raters found the own-perfume blend significantly more attractive (p=0.02) and pleasant (p=0.01) - direct evidence that people are choosing perfumes that interact well specifically with their own body odor.",
+      "source_url": "https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0033810",
+      "source_title": "Lenochova, Vohnoutova, Roberts & Havlicek (2012) - PLoS ONE",
+      "source_type": "peer-reviewed",
+      "quote": "The odor blends with the participants' own perfume were rated significantly more attractive (Z = 2.37; N = 21; p = 0.02) and pleasant (Z = 2.48; N = 21; p = 0.01) than blends with the assigned perfume.",
+      "year": "2012",
+      "confidence": "high",
+      "eli5": "When men wore their favorite perfume vs. a random one of similar quality, people liked the smell of their favorite better - because it actually goes with that person's own scent, not because the perfume itself was objectively nicer."
+    },
+    {
+      "claim": "Individual perfume-ingredient preference correlates with a person's MHC (major histocompatibility complex, immune-related) genotype specifically for scents rated 'for self' - but this correlation essentially disappears for scents rated 'for a partner,' suggesting people select perfume to amplify their own body-odor signal rather than to attract others.",
+      "source_url": "https://academic.oup.com/beheco/article-abstract/12/2/140/239863",
+      "source_title": "Milinski & Wedekind (2001) - Evidence for MHC-correlated perfume preferences in humans (Behavioral Ecology 12(2):140-149)",
+      "source_type": "peer-reviewed",
+      "quote": "An overall analysis showed a significant correlation between the MHC and the scorings of the scents 'for self' in both tests... Hardly any significant correlation between MHC genotype and ratings of the scents 'for partner' were found.",
+      "year": "2001",
+      "confidence": "high",
+      "eli5": "The specific immune-system genes you carry are linked, in a small but measurable way, to which perfume ingredients you personally like to wear on yourself - but not to what you'd pick for someone else."
+    },
+    {
+      "claim": "Wearing artificial fragrance disrupts people's ability to accurately read biologically-relevant cues from body odor: female raters' assessment of male facial vs. body-odor masculinity normally correlate, but that correlation vanished when the body odor was blended with fragrance - an effect specific to female raters judging male odor.",
+      "source_url": "https://www.stir.ac.uk/research/hub/publication/574255",
+      "source_title": "Allen, Cobey, Havlicek & Roberts (2016) - The impact of artificial fragrances on the assessment of mate quality cues in body odor (Evolution and Human Behavior 37(6):481-489)",
+      "source_type": "peer-reviewed",
+      "quote": "The correlation between female ratings of male facial and odor masculinity was not evident when assessing a body odor and fragrance blend.",
+      "year": "2016",
+      "confidence": "high",
+      "eli5": "Perfume doesn't just add a smell on top - it can actually scramble the natural signals in someone's body odor that other people would otherwise pick up on."
+    },
+    {
+      "claim": "Using fragranced cosmetics changes what personality traits raters can accurately infer from body odor: when odor donors used their normal cosmetics/fragrance, the otherwise-reliable link between odor-based ratings of neuroticism and the donor's actual self-reported neuroticism disappeared - while dominance judgments stayed accurate in both conditions.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4834355/",
+      "source_title": "Sorokowska, Sorokowski & Havlicek (2016) - Body Odor Based Personality Judgments: The Effect of Fragranced Cosmetics (Frontiers in Psychology)",
+      "source_type": "peer-reviewed",
+      "quote": "When odor donors could use cosmetics, odor-based perceptions of their neuroticism no longer correlated with self-reports.",
+      "year": "2016",
+      "confidence": "high",
+      "eli5": "Perfume can hide some honest signals in your natural smell (like how anxious/neurotic you tend to be) while leaving others (like dominance) still readable."
+    },
+    {
+      "claim": "Skin-resident bacteria (Staphylococcus hominis) actively transport and metabolize odorless sweat-borne precursor molecules, catabolizing them into the volatile, odorous compound 3M3SH - the underlying microbial machinery for individual body odor, and by extension the biochemical backdrop any fragrance lands on.",
+      "source_url": "https://asm.org/articles/2021/december/microbial-origins-of-body-odor",
+      "source_title": "Microbial Origins of Body Odor (American Society for Microbiology)",
+      "source_type": "reputable-press",
+      "quote": "S. hominis encodes a proton-coupled oligopeptide transporter that imports the thioalcohol-conjugated precursor S-Cys-Gly-3M3SH into the cell, and subsequent catabolism results in the foul-smelling 3M3SH.",
+      "year": "2021",
+      "confidence": "high",
+      "eli5": "Body odor isn't really 'sweat smell' - it's bacteria on your skin eating odorless sweat molecules and turning them into smelly ones, and that same bacterial ecosystem is part of why the same perfume interacts differently with each person."
+    },
+    {
+      "claim": "The fragrance industry has begun explicitly engineering around skin-microbiome variation - Givaudan's Z-biome technology tests raw perfumery ingredients against common skin bacteria populations, and a competitor (Firmenich/DSM-Firmenich) has launched pro-fragrance molecules that stay dormant until activated by a wearer's own bacterial enzymes (intensifying with warmth/sweat, quieting as skin cools).",
+      "source_url": "https://www.givaudan.com/media/trade-media/2021/givaudan-launches-z-biome",
+      "source_title": "Givaudan launches Z-biome, the first microbiome-centered fragrance technologies",
+      "source_type": "industry",
+      "quote": "extensive testing of raw perfumery ingredients for their impact on the skin's most common bacteria population.",
+      "year": "2021",
+      "confidence": "medium",
+      "eli5": "Perfume companies now design fragrances with a person's skin bacteria in mind, and some new fragrance molecules are built to only 'switch on' once your own skin bacteria interact with them."
+    },
+    {
+      "claim": "Hormonal state measurably shifts a woman's ability to detect and discriminate odors: naturally cycling women in the periovulatory phase (estrogen peak) are more sensitive to social/musk-type odors than women using oral contraceptives; more specifically, naturally cycling women show a 19% decline in body-odor discrimination from follicular to luteal phase, and oral-contraceptive users show a 23% reduction in body-odor discrimination during their withdrawal (placebo) week - in a 36-woman, weekly-tested study.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7476921/",
+      "source_title": "Women Have Reduced Ability to Discriminate Body Odors During the Withdrawal Period of Oral Contraception",
+      "source_type": "peer-reviewed",
+      "quote": "At the transition from follicular to luteal phases, there was a decline of 19% (p = 0.003)... we observed a 23% reduction (p = 0.01) in discrimination accuracy of body odors [withdrawal period].",
+      "year": "2020",
+      "confidence": "high",
+      "eli5": "Where you are in your menstrual cycle, or whether you're on the pill, actually changes how well your nose can tell people's natural scents apart - by a fifth to almost a quarter, week to week."
+    },
+    {
+      "claim": "Wearing personal fragrance measurably degrades the wearer's own subsequent olfactory performance: in a controlled panel study, both a 'just-right' level (3 sprays) and an excessive level (10 sprays) of personal perfume significantly reduced odor detection threshold and discrimination scores relative to no fragrance, though identification ability was unaffected - a real, lab-measured basis for 'nose-blindness' to one's own scent.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8834429/",
+      "source_title": "Should Panelists Refrain from Wearing a Personal Fragrance Prior to Sensory Evaluation? The Effect of Using Perfume on Olfactory Performance",
+      "source_type": "peer-reviewed",
+      "quote": "Even low to moderate levels of personal fragrance can significantly reduce individuals' olfactory capabilities, possibly subsequently altering the perception of test samples during sensory evaluation.",
+      "year": "2022",
+      "confidence": "high",
+      "eli5": "Wearing your own perfume actually dulls your nose's ability to smell things precisely, even at a normal amount - which is part of why you personally stop noticing your own scent."
+    },
+    {
+      "claim": "Diet is reported to alter the attractiveness of a person's body odor (a factor separate from, but interacting with, whatever fragrance is layered on top), though the specific primary study behind this widely-repeated claim could not be independently traced/verified in this research pass.",
+      "source_url": "https://premierepeau.com/blogs/news/body-chemistry-perfume",
+      "source_title": "Body Chemistry & Perfume: Why It Smells Different on You",
+      "source_type": "reputable-press",
+      "quote": "A 2006 study found that diet significantly altered the attractiveness of body odour. The effect is subtle but real.",
+      "year": "2025",
+      "confidence": "low",
+      "eli5": "What you eat can nudge how your natural body scent smells to other people, which then changes how any perfume you wear reads on top of it - though we couldn't independently pin down the original study behind this claim."
+    },
+    {
+      "claim": "Debunk: blood type is not a scientifically supported determinant of how perfume smells on a given person. The real, evidence-backed variables that make identical perfume smell different across individuals are measurable physiological factors - skin pH (which governs hydrolysis rate), sebum production, microbial composition, hormonal state, and temperature - not demographic traits like blood type.",
+      "source_url": "https://premierepeau.com/blogs/news/what-the-ph-of-your-skin-does-to-a-perfumers-formula",
+      "source_title": "What the pH of Your Skin Does to a Perfumer's Formula",
+      "source_type": "reputable-press",
+      "quote": "Every application of perfume is a unique chemical event.",
+      "year": "2025",
+      "confidence": "medium",
+      "eli5": "Your blood type has nothing to do with why perfume smells different on you - it's your skin's actual chemistry (acidity, oil, bacteria, hormones, warmth) doing the work, not a folk-myth factor like blood type."
+    }
+  ],
+  "verified": [
+    {
+      "claim": "Interaction between individual body odor donor and perfume treatment was highly significant for all rated variables (Lenochova et al. 2012); own-chosen perfume rated significantly more attractive (p=0.02) and pleasant (p=0.01) than randomly-assigned perfume on the same body odor.",
+      "verdict": "confirmed",
+      "note": "Re-fetched PLOS ONE full text directly; exact statistics (Z=2.37, N=21, p=0.02 for attractiveness; Z=2.48, p=0.01 for pleasantness) reproduced verbatim on second fetch, matching the first extraction."
+    },
+    {
+      "claim": "MHC genotype correlates significantly with perfume preference rated 'for self' but not 'for partner' (Milinski & Wedekind 2001).",
+      "verdict": "confirmed",
+      "note": "Re-fetched the OUP Behavioral Ecology abstract page; both the 'for self' significant-correlation sentence and the 'for partner' non-correlation sentence reproduced verbatim on second fetch."
+    },
+    {
+      "claim": "Skin surface pH in healthy volunteers averages 4.1-5.8.",
+      "verdict": "confirmed",
+      "note": "Re-fetched PMC9135183 (PLOS Pathogens review) directly; exact sentence with internal citation marker [4] reproduced verbatim, confirming it is a real cited statement in the review, not a summarizer paraphrase."
+    },
+    {
+      "claim": "Naturally cycling women show a 19% decline (p=0.003) in body-odor discrimination follicular-to-luteal; oral contraceptive users show a 23% reduction (p=0.01) during the withdrawal period; N=36 (18 OC, 18 non-OC).",
+      "verdict": "confirmed",
+      "note": "Re-fetched PMC7476921 directly and specifically asked it to isolate and quote the numeric sentences separately; both percentages, both p-values, and the exact 18/18 sample split reproduced identically to the first extraction - strong signal these are real, not hallucinated, numbers."
+    },
+    {
+      "claim": "Correlation between female raters' assessment of male facial vs. body-odor masculinity was not evident when the body odor was blended with fragrance (Allen et al. 2016).",
+      "verdict": "confirmed",
+      "note": "Re-fetched the University of Stirling repository abstract page; the exact sentence reproduced verbatim, and the full abstract (fetched in the same pass) is internally consistent with this specific claim."
+    },
+    {
+      "claim": "When odor donors could use cosmetics/fragrance, odor-based perceptions of their neuroticism no longer correlated with self-reports (Sorokowska et al. 2016); N=113 donors (58F/55M), 68 female raters.",
+      "verdict": "confirmed",
+      "note": "Re-fetched PMC4834355 directly; exact sentence and both sample-size figures (113 donors, 68 raters) reproduced verbatim on second fetch, matching the first extraction."
+    }
+  ]
+}

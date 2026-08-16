@@ -1,0 +1,7 @@
+{
+  "model": "openai/gpt-image-1",
+  "prompt": "Luxury editorial photograph for a fragrance magazine. Warm natural window light, shallow depth of field, muted warm palette (ivory, travertine, brass, deep green), tactile textures, cinematic composition, photorealistic, no text, no logos, no watermarks, no branded bottles. photoreal editorial macro of a human forearm skin surface at extreme close range, shallow depth of field, faint translucent bloom suggesting microbial life on the surface, warm natural window light, travertine and linen tones with a deep green shadow field and a brushed brass reflector edge, no text, no logos, no branded bottles",
+  "aspect": "16:9",
+  "size": "1536x1024",
+  "bytes": 146725
+}

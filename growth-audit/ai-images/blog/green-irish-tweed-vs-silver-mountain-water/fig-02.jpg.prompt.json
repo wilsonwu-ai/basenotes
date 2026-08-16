@@ -1,0 +1,7 @@
+{
+  "model": "openai/gpt-image-1",
+  "prompt": "Luxury editorial photograph for a fragrance magazine. Warm natural window light, shallow depth of field, muted warm palette (ivory, travertine, brass, deep green), tactile textures, cinematic composition, photorealistic, no text, no logos, no watermarks, no branded bottles. photoreal editorial six-panel grid of small still-life vignettes on travertine and linen, each panel a different occasion cue: a folded suit cuff and brass cufflink, a sweat-beaded glass of iced water, a wool scarf on a cold morning windowsill, a formal boutonniere, a candle and dark green tablecloth for evening, a rolled towel and travel pouch, consistent warm natural light across all six, muted travertine and deep green palette with brass accents, no text, no logos, no branded bottles",
+  "aspect": "4:3",
+  "size": "1536x1024",
+  "bytes": 190253
+}

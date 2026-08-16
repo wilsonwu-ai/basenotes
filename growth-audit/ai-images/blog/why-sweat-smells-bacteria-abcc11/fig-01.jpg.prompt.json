@@ -1,0 +1,7 @@
+{
+  "model": "openai/gpt-image-1",
+  "prompt": "Luxury editorial photograph for a fragrance magazine. Warm natural window light, shallow depth of field, muted warm palette (ivory, travertine, brass, deep green), tactile textures, cinematic composition, photorealistic, no text, no logos, no watermarks, no branded bottles. photoreal editorial still life of a hand-drafted anatomical cutaway diagram on heavy cream paper, showing two side-by-side sweat gland cross-sections in fine ink line work, unlabelled, resting on a travertine surface beside a brass rule and folded linen, warm natural raking light, deep green background, no text, no logos, no branded bottles",
+  "aspect": "4:3",
+  "size": "1536x1024",
+  "bytes": 231972
+}

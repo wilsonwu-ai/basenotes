@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Base Note — Facelift Directions</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Direction A -->
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wdth,wght@0,75..100,400..700;1,75..100,400..700&display=swap" rel="stylesheet">
+<!-- Direction B -->
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1;1,9..144,100..900,0..100,0..1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+<!-- Sheet chrome -->
+<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@300..700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================================
+   BASE NOTE — FACELIFT DESIGN SHEET
+   Two directions, mounted as plates on a dark board.
+   The sheet chrome is deliberately neutral (ink board + mono annotation)
+   so neither direction borrows atmosphere from the document around it.
+   ========================================================================= */
+
+/* --- Sheet chrome tokens ------------------------------------------------ */
+:root{
+  --board:#0B0D0C;
+  --board-2:#12100E;
+  --board-line:#2A2724;
+  --board-text:#E8E4DC;
+  --board-dim:#938E85;
+  --board-mono:'Azeret Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--board);
+  color:var(--board-text);
+  font-family:'Instrument Sans', ui-sans-serif, Georgia, serif;
+  line-height:1.55;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background-image:var(--grain);opacity:.045;mix-blend-mode:overlay;
+}
+img,svg{display:block;max-width:100%}
+
+.wrap{max-width:1520px;margin:0 auto;padding:0 clamp(16px,3vw,44px)}
+
+/* --- Micro label -------------------------------------------------------- */
+.mono{font-family:var(--board-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:500}
+.mono--dim{color:var(--board-dim)}
+
+/* ============================ MASTHEAD ================================== */
+.masthead{padding:clamp(40px,7vw,96px) 0 34px;border-bottom:1px solid var(--board-line)}
+.masthead__kicker{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:baseline;margin-bottom:clamp(26px,4vw,54px)}
+.masthead__mark{
+  font-family:'Bricolage Grotesque', Georgia, serif;
+  font-weight:700;font-size:15px;letter-spacing:.34em;text-transform:uppercase;
+}
+.masthead h1{
+  font-family:'Bricolage Grotesque', Georgia, serif;
+  font-weight:200;
+  font-size:clamp(38px,8.2vw,124px);
+  line-height:.92;
+  letter-spacing:-.035em;
+  font-variation-settings:'wdth' 88,'opsz' 96;
+}
+.masthead h1 em{
+  font-family:'Instrument Serif', Georgia, serif;
+  font-style:italic;font-weight:400;letter-spacing:-.01em;
+  color:#B99A5B;
+}
+.masthead__meta{
+  margin-top:clamp(24px,3.5vw,44px);
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:1px;background:var(--board-line);border:1px solid var(--board-line);
+}
+.masthead__meta div{background:var(--board);padding:14px 16px}
+.masthead__meta dt{color:var(--board-dim);margin-bottom:6px}
+.masthead__meta dd{font-size:13.5px;line-height:1.4}
+
+/* --- Brief digest ------------------------------------------------------- */
+.brief{padding:34px 0 8px;border-bottom:1px solid var(--board-line)}
+.brief__head{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:baseline;margin-bottom:18px}
+.brief__head h2{font-size:15px;font-weight:600;letter-spacing:.02em}
+.chips{display:flex;flex-wrap:wrap;gap:7px;padding-bottom:26px}
+.chip{
+  font-family:var(--board-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  border:1px solid var(--board-line);color:var(--board-dim);
+  padding:6px 10px;border-radius:2px;white-space:nowrap;max-width:100%;
+}
+@media(max-width:680px){.chip{white-space:normal;line-height:1.5}}
+.chip b{color:var(--board-text);font-weight:500}
+
+/* ============================ PLATES GRID =============================== */
+.plates{
+  display:grid;grid-template-columns:1fr;gap:clamp(48px,6vw,72px);
+  padding:clamp(40px,5vw,72px) 0;
+}
+@media(min-width:1120px){
+  .plates{grid-template-columns:1fr 1fr;gap:44px;align-items:start}
+}
+
+/* ============================================================================
+   MOCK SYSTEM
+   Components are written ONCE against direction-neutral variables.
+   Each .dir block re-declares the variables. True apples-to-apples.
+   ========================================================================= */
+
+.dir{min-width:0}
+
+/* ---- DIRECTION A — Editorial Grotesque --------------------------------- */
+.dir--a{
+  --d-ink:#0F1211;
+  --d-bone:#F3EFE7;
+  --d-deep:#1F3A34;
+  --d-metal:#B99A5B;
+  --d-metal-on-bone:#6B5426;  /* darkened brass, legal for text on bone */
+  --d-bone-dim:#A9A39A;
+  --d-ink-dim:#565B57;
+  --d-display:'Bricolage Grotesque', Georgia, serif;
+  --d-accent:'Instrument Serif', Georgia, serif;
+  --d-body:'Instrument Sans', ui-sans-serif, sans-serif;
+  --d-track-display:-.045em;
+  --d-track-label:.2em;
+  --d-radius:0px;
+  --d-radius-pill:999px;
+  --d-display-vf:'wdth' 86,'opsz' 96;
+  --d-weight-display:250;
+
+  --f-fresh:#7FB6C9; --f-woody:#7A6A4F; --f-amber:#C2652D; --f-floral:#D48A9E;
+  --f-gourmand:#8A5A3C; --f-green:#6D8B5B; --f-spicy:#B0402F; --f-clean:#C9C3B8;
+}
+/* ---- DIRECTION B — Modern Classic (warmer) ----------------------------- */
+.dir--b{
+  --d-ink:#191411;
+  --d-bone:#F7F1E4;
+  --d-deep:#33463B;
+  --d-metal:#C48D3F;
+  --d-metal-on-bone:#7A5417;
+  --d-bone-dim:#B3AA9B;
+  --d-ink-dim:#5E574E;
+  --d-display:'Fraunces', Georgia, serif;
+  --d-accent:'Fraunces', Georgia, serif;
+  --d-body:'Manrope', ui-sans-serif, sans-serif;
+  --d-track-display:-.022em;
+  --d-track-label:.24em;
+  --d-radius:3px;
+  --d-radius-pill:999px;
+  --d-display-vf:'opsz' 144,'SOFT' 42,'WONK' 1;
+  --d-weight-display:300;
+
+  --f-fresh:#6E9FA6; --f-woody:#8A7550; --f-amber:#C0682A; --f-floral:#C9838F;
+  --f-gourmand:#8F5F3A; --f-green:#778B57; --f-spicy:#A63E2B; --f-clean:#C7BCA6;
+}
+
+/* --- Plate header ------------------------------------------------------- */
+.plate__head{border-top:1px solid var(--board-line);padding-top:16px;margin-bottom:20px}
+.plate__row{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.plate__id{
+  font-family:var(--board-mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--d-metal);font-weight:600;
+}
+.plate__name{
+  font-family:var(--d-display);
+  font-size:clamp(26px,3.1vw,42px);line-height:1.02;letter-spacing:var(--d-track-display);
+  font-weight:var(--d-weight-display);font-variation-settings:var(--d-display-vf);
+  margin:10px 0 12px;color:var(--board-text);
+}
+.plate__gloss{color:var(--board-dim);font-size:13px;max-width:52ch;line-height:1.5}
+
+/* --- Specimen block scaffolding ----------------------------------------- */
+.spec{margin-top:26px}
+.spec__label{
+  font-family:var(--board-mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--board-dim);display:flex;align-items:center;gap:10px;margin-bottom:10px;
+}
+.spec__label::after{content:'';flex:1;height:1px;background:var(--board-line)}
+.pane{background:var(--d-bone);color:var(--d-ink);font-family:var(--d-body);position:relative;overflow:hidden}
+.pane--ink{background:var(--d-ink);color:var(--d-bone)}
+.pane::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:var(--grain);opacity:.05;mix-blend-mode:multiply;
+}
+.pane--ink::after{mix-blend-mode:overlay;opacity:.07}
+
+/* --- Palette ------------------------------------------------------------ */
+.pal{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--board-line);border:1px solid var(--board-line)}
+.pal__sw{padding:38px 10px 9px;position:relative}
+.pal__sw span{
+  font-family:var(--board-mono);font-size:9px;letter-spacing:.08em;
+  display:block;text-transform:uppercase;
+}
+.pal__sw span+span{opacity:.62;letter-spacing:.04em}
+.fam{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.fam__i{display:flex;align-items:center;gap:6px;border:1px solid var(--board-line);padding:5px 9px 5px 7px}
+.fam__d{width:9px;height:9px;border-radius:50%;flex:none}
+.fam__i em{
+  font-family:var(--board-mono);font-style:normal;font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--board-dim);
+}
+
+/* --- Type specimen ------------------------------------------------------ */
+.type{padding:22px}
+.type__big{
+  font-family:var(--d-display);font-weight:var(--d-weight-display);
+  font-variation-settings:var(--d-display-vf);
+  font-size:clamp(34px,6.4vw,60px);line-height:.94;letter-spacing:var(--d-track-display);
+}
+.type__it{
+  font-family:var(--d-accent);font-style:italic;font-weight:400;
+  font-size:clamp(28px,5vw,46px);line-height:1.05;letter-spacing:-.015em;margin-top:6px;
+  color:var(--d-deep);
+}
+.dir--b .type__it{font-variation-settings:'opsz' 144,'SOFT' 60,'WONK' 1}
+.type__body{margin-top:16px;font-size:14.5px;line-height:1.62;color:var(--d-ink-dim);max-width:46ch}
+.type__meta{
+  margin-top:14px;padding-top:12px;border-top:1px solid rgba(0,0,0,.14);
+  display:flex;flex-wrap:wrap;gap:6px 20px;
+  font-family:var(--d-body);font-size:10px;letter-spacing:var(--d-track-label);
+  text-transform:uppercase;color:var(--d-metal-on-bone);font-weight:600;
+}
+
+/* ============================== HERO MOCK =============================== */
+.mock{container-type:inline-size;position:relative}
+.hero{padding:30px 24px 0;position:relative;isolation:isolate}
+.hero__top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 14px;
+  padding-bottom:22px;border-bottom:1px solid rgba(255,255,255,.13)}
+.hero__nav{flex-wrap:wrap}
+.hero__logo{
+  font-family:var(--d-display);font-weight:600;font-size:13px;letter-spacing:.3em;text-transform:uppercase;
+  font-variation-settings:'wdth' 100;
+}
+.hero__nav{display:flex;gap:14px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--d-bone-dim)}
+.hero__nav b{color:var(--d-bone);font-weight:500;border-bottom:1px solid var(--d-metal);padding-bottom:2px}
+
+.hero__body{padding:clamp(26px,7cqi,64px) 0 clamp(22px,4cqi,34px);position:relative}
+.hero__eyebrow{
+  font-family:var(--d-body);font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--d-metal);margin-bottom:clamp(14px,2.6cqi,24px);display:flex;align-items:center;gap:10px;
+}
+.hero__eyebrow::before{content:'';width:26px;height:1px;background:var(--d-metal)}
+.hero__h{
+  font-family:var(--d-display);font-weight:var(--d-weight-display);
+  font-variation-settings:var(--d-display-vf);
+  font-size:clamp(30px,11.6cqi,104px);line-height:.9;letter-spacing:var(--d-track-display);
+  max-width:14ch;
+}
+.hero__h em{
+  font-family:var(--d-accent);font-style:italic;font-weight:400;
+  letter-spacing:-.012em;color:var(--d-metal);display:block;
+}
+.dir--b .hero__h em{font-variation-settings:'opsz' 144,'SOFT' 70,'WONK' 1}
+.hero__sub{
+  margin-top:clamp(14px,2.6cqi,26px);font-size:clamp(12px,1.75cqi,15px);line-height:1.6;
+  color:var(--d-bone-dim);max-width:38ch;
+}
+
+/* Price stamp */
+.stamp{
+  position:absolute;top:clamp(10px,3cqi,34px);right:0;
+  width:clamp(78px,17cqi,142px);aspect-ratio:1;border-radius:50%;
+  border:1px solid var(--d-metal);color:var(--d-metal);
+  display:grid;place-content:center;text-align:center;rotate:-9deg;
+  box-shadow:inset 0 0 0 4px rgba(185,154,91,.14);
+}
+.stamp b{
+  display:block;font-family:var(--d-display);font-weight:500;
+  font-size:clamp(17px,4.2cqi,34px);line-height:1;letter-spacing:-.04em;
+  font-variation-settings:'wdth' 100;
+}
+.dir--b .stamp b{font-variation-settings:'opsz' 60,'SOFT' 30}
+.stamp span{
+  display:block;font-family:var(--d-body);font-size:clamp(6px,1.3cqi,9px);
+  letter-spacing:.22em;text-transform:uppercase;margin-top:5px;
+}
+.stamp i{
+  display:block;font-style:normal;font-family:var(--d-body);
+  font-size:clamp(5.5px,1.05cqi,7.5px);letter-spacing:.16em;text-transform:uppercase;
+  color:var(--d-bone-dim);margin-top:6px;padding-top:5px;border-top:1px solid rgba(185,154,91,.4);
+}
+
+/* CTA pair */
+.cta{display:flex;flex-wrap:wrap;gap:9px;margin-top:clamp(18px,3.2cqi,32px)}
+
+/* Progress bar (verified copy, growth-memo §1) */
+.goal{margin-top:clamp(16px,2.8cqi,26px);max-width:430px}
+.goal__bar{height:2px;background:rgba(255,255,255,.16);position:relative;overflow:hidden}
+.goal__bar i{position:absolute;inset:0 auto 0 0;width:28.3%;background:var(--d-metal)}
+.goal__txt{
+  margin-top:9px;font-size:clamp(8.5px,1.35cqi,10.5px);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--d-bone-dim);
+}
+.goal__txt b{color:var(--d-bone);font-weight:600}
+
+/* Marquee */
+.marq{
+  margin-top:clamp(20px,3.4cqi,34px);border-top:1px solid rgba(255,255,255,.13);
+  padding:13px 0;overflow:hidden;position:relative;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
+          mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
+}
+.marq__t{display:flex;width:max-content;animation:marq 26s linear infinite}
+.marq__t>span{
+  display:flex;gap:clamp(16px,3cqi,34px);padding-right:clamp(16px,3cqi,34px);
+  font-family:var(--d-display);font-weight:400;font-variation-settings:'wdth' 100;
+  font-size:clamp(10px,1.9cqi,16px);letter-spacing:.2em;text-transform:uppercase;
+  color:var(--d-bone-dim);white-space:nowrap;
+}
+.dir--b .marq__t>span{font-variation-settings:'opsz' 20,'SOFT' 20}
+.marq__t>span i{font-style:normal;color:var(--d-metal)}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* Cursor label demo */
+.cursorlab{
+  position:absolute;right:clamp(10px,3cqi,26px);bottom:clamp(68px,12cqi,104px);
+  background:var(--d-metal);color:var(--d-ink);
+  font-family:var(--d-body);font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  padding:8px 13px;border-radius:var(--d-radius-pill);pointer-events:none;
+  display:flex;align-items:center;gap:7px;
+}
+.cursorlab::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--d-ink)}
+/* Annotation lives OUTSIDE the pill — on the board, not on brass.
+   Keeps the caption legible and stops it being clipped at 390px. */
+.caption{
+  font-family:var(--board-mono);font-size:9px;letter-spacing:.08em;color:var(--board-dim);
+  margin-top:9px;line-height:1.7;
+}
+
+/* ============================== BUTTONS ================================= */
+.btn{
+  font-family:var(--d-body);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  padding:14px 22px;border:1px solid transparent;border-radius:var(--d-radius);
+  cursor:pointer;display:inline-flex;align-items:center;gap:9px;text-decoration:none;
+  transition:background .25s cubic-bezier(.22,1,.36,1),color .25s,border-color .25s,transform .25s;
+}
+.btn--solid{background:var(--d-bone);color:var(--d-ink);border-color:var(--d-bone)}
+.btn--solid:hover{background:var(--d-metal);border-color:var(--d-metal)}
+.btn--ghost{background:transparent;color:var(--d-bone);border-color:rgba(255,255,255,.34)}
+.btn--ghost:hover{border-color:var(--d-metal);color:var(--d-metal)}
+.btn--inkfill{background:var(--d-ink);color:var(--d-bone);border-color:var(--d-ink)}
+.btn--inkfill:hover{background:var(--d-deep);border-color:var(--d-deep)}
+.btn--outline{background:transparent;color:var(--d-ink);border-color:rgba(15,18,17,.34)}
+.btn--outline:hover{border-color:var(--d-ink);background:rgba(15,18,17,.05)}
+.btn--rot{
+  background:transparent;color:var(--d-ink);border-color:var(--d-ink);
+  border-radius:var(--d-radius-pill);padding:11px 18px;font-size:10px;
+}
+.btn--rot:hover{background:var(--d-ink);color:var(--d-bone)}
+.btn--link{
+  background:none;border:0;border-bottom:1px solid var(--d-metal-on-bone);
+  color:var(--d-metal-on-bone);padding:4px 0;border-radius:0;
+}
+.btn[disabled]{opacity:.42;cursor:not-allowed;pointer-events:none}
+.btn__ar{transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.btn:hover .btn__ar{transform:translateX(4px)}
+
+.btnset{padding:20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btnset--ink{background:var(--d-ink)}
+.btnnote{
+  width:100%;font-family:var(--board-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--d-ink-dim);margin-top:4px;
+}
+.btnset--ink .btnnote{color:var(--d-bone-dim)}
+
+/* =========================== PRODUCT CARD =============================== */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:620px){.cards{grid-template-columns:1fr}}
+.pc{
+  position:relative;background:var(--d-bone);
+  color:var(--d-ink);            /* required — otherwise .pc__title inherits the dark-board text */
+  border:1px solid rgba(15,18,17,.12);
+  border-radius:var(--d-radius);overflow:hidden;font-family:var(--d-body);
+  transition:transform .45s cubic-bezier(.22,1,.36,1),box-shadow .45s;
+  --fam:var(--f-woody);
+}
+.pc:hover{transform:translateY(-5px);box-shadow:0 20px 46px rgba(15,18,17,.16)}
+.pc__media{
+  aspect-ratio:3/4;position:relative;overflow:hidden;
+  background:var(--d-bone);
+  background:color-mix(in oklab, var(--fam) 15%, var(--d-bone));
+}
+.pc__no{
+  position:absolute;top:9px;left:11px;z-index:2;
+  font-family:var(--board-mono);font-size:9px;letter-spacing:.16em;color:var(--d-ink);opacity:.5;
+}
+.pc__ghost{
+  position:absolute;right:-4%;bottom:-9%;font-family:var(--d-display);
+  font-weight:var(--d-weight-display);font-variation-settings:var(--d-display-vf);
+  font-size:44cqi;line-height:.7;letter-spacing:-.06em;
+  color:var(--fam);opacity:.22;pointer-events:none;
+}
+.pc__vial{
+  position:absolute;inset:0;display:grid;place-items:center;
+  transition:transform .7s cubic-bezier(.22,1,.36,1);
+}
+.pc:hover .pc__vial,.pc.is-hover .pc__vial{transform:scale(1.045) translateY(-2%)}
+.pc__vial svg{width:38%;height:auto;filter:drop-shadow(0 10px 22px rgba(15,18,17,.22))}
+.pc__horizon{position:absolute;left:0;right:0;bottom:31%;height:1px;background:rgba(15,18,17,.16)}
+
+/* hover notes panel */
+.pc__notes{
+  position:absolute;left:0;right:0;bottom:0;
+  background:var(--d-ink);color:var(--d-bone);
+  padding:15px 14px 16px;
+  transform:translateY(101%);transition:transform .5s cubic-bezier(.22,1,.36,1);
+  z-index:3;
+}
+.pc:hover .pc__notes,.pc.is-hover .pc__notes{transform:translateY(0)}
+.pc__nrow{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:10.5px;line-height:1.42}
+.pc__nrow dt{
+  font-family:var(--board-mono);font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--d-metal);padding-top:1px;
+}
+.pc__nrow dd{color:var(--d-bone-dim)}
+.pc__nadd{margin-top:12px}
+
+.pc__body{padding:14px 14px 16px}
+.pc__house{
+  font-family:var(--board-mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--d-ink-dim);
+}
+.pc__title{
+  font-family:var(--d-display);font-weight:500;font-variation-settings:'wdth' 92,'opsz' 24;
+  font-size:clamp(15px,3.4cqi,21px);line-height:1.06;letter-spacing:-.025em;margin:7px 0 10px;
+}
+.dir--b .pc__title{font-variation-settings:'opsz' 36,'SOFT' 30,'WONK' 1;font-weight:500}
+.pc__famrow{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.pc__foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;
+  border-top:1px solid rgba(15,18,17,.13);padding-top:11px}
+.pc__price{font-family:var(--board-mono);font-size:10px;letter-spacing:.08em;color:var(--d-ink-dim)}
+.pc__wish{
+  position:absolute;top:8px;right:9px;z-index:4;width:30px;height:30px;border-radius:50%;
+  border:1px solid rgba(15,18,17,.2);background:var(--d-bone);color:var(--d-ink);
+  display:grid;place-items:center;cursor:pointer;
+  opacity:0;transform:translateY(-4px);transition:opacity .3s,transform .3s;
+}
+.pc:hover .pc__wish,.pc.is-hover .pc__wish{opacity:1;transform:translateY(0)}
+/* When the state badge is present the No. label steps down to clear it. */
+.pc:has(.pc__state) .pc__no{top:26px}
+.pc__state{
+  position:absolute;top:0;left:0;z-index:6;background:var(--board-line);color:var(--board-text);
+  font-family:var(--board-mono);font-size:8px;letter-spacing:.14em;text-transform:uppercase;padding:4px 8px;
+}
+
+/* smell-profile chips */
+.sp{display:flex;flex-wrap:wrap;gap:6px;padding:18px;align-items:center}
+.sp__c{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--d-body);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--d-ink);border:1px solid rgba(15,18,17,.16);border-radius:var(--d-radius-pill);
+  padding:7px 13px 7px 10px;
+  background:color-mix(in oklab, var(--fam) 13%, var(--d-bone));
+  transition:background .3s,border-color .3s,transform .3s cubic-bezier(.22,1,.36,1);
+  cursor:pointer;--fam:var(--f-clean);
+}
+.sp__c:hover{transform:translateY(-2px);border-color:var(--fam);
+  background:color-mix(in oklab, var(--fam) 26%, var(--d-bone))}
+.sp__c::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--fam);flex:none}
+.sp__c.is-on{background:var(--d-ink);color:var(--d-bone);border-color:var(--d-ink)}
+
+/* ====================== SECTION HEADER + BODY =========================== */
+.sh{padding:24px 22px 26px}
+.sh__no{
+  font-family:var(--board-mono);font-size:10px;letter-spacing:.2em;color:var(--d-metal-on-bone);
+  display:flex;align-items:center;gap:12px;margin-bottom:14px;
+}
+.sh__no::after{content:'';flex:1;height:1px;background:rgba(15,18,17,.18)}
+.sh__h{
+  font-family:var(--d-display);font-weight:var(--d-weight-display);
+  font-variation-settings:var(--d-display-vf);
+  font-size:clamp(26px,6.2cqi,50px);line-height:.96;letter-spacing:var(--d-track-display);
+}
+.sh__h em{font-family:var(--d-accent);font-style:italic;font-weight:400;color:var(--d-deep);letter-spacing:-.01em}
+.dir--b .sh__h em{font-variation-settings:'opsz' 144,'SOFT' 70,'WONK' 1}
+.sh__cols{margin-top:18px;columns:2;column-gap:24px;font-size:13.5px;line-height:1.68;color:var(--d-ink-dim)}
+.sh__cols p+p{margin-top:11px}
+.sh__cols b{color:var(--d-ink);font-weight:600}
+@container (max-width:430px){.sh__cols{columns:1}}
+
+/* ============================ MOTION SPEC =============================== */
+.ms{border:1px solid var(--board-line)}
+.ms__r{display:grid;grid-template-columns:minmax(96px,1.1fr) minmax(96px,1.15fr) 2fr;gap:0;
+  border-bottom:1px solid var(--board-line)}
+.ms__r:last-child{border-bottom:0}
+.ms__r>div{padding:11px 12px;min-width:0}
+.ms__r>div+div{border-left:1px solid var(--board-line)}
+.ms__k{font-family:var(--board-mono);font-size:9.5px;letter-spacing:.1em;color:var(--d-metal);text-transform:uppercase}
+.ms__v{font-family:var(--board-mono);font-size:9.5px;color:var(--board-dim);word-break:break-word}
+.ms__d{font-size:12px;color:var(--board-text);line-height:1.45}
+.ms__r--h>div{background:var(--board-2)}
+.ms__r--h .ms__k,.ms__r--h .ms__v,.ms__r--h .ms__d{
+  font-family:var(--board-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--board-dim)}
+
+/* ============================ MOBILE FRAME ============================== */
+.mobwrap{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.mob{
+  width:390px;max-width:100%;flex:none;
+  border:1px solid var(--board-line);
+}
+.mob__note{
+  flex:1;min-width:150px;font-family:var(--board-mono);font-size:9.5px;line-height:1.75;
+  letter-spacing:.06em;color:var(--board-dim);text-transform:uppercase;
+}
+.mob__note b{color:var(--board-text);display:block;margin-bottom:8px;letter-spacing:.16em}
+.mob__note span{display:block;padding-left:14px;position:relative}
+.mob__note span::before{content:'';position:absolute;left:0;top:8px;width:7px;height:1px;background:var(--d-metal)}
+.mob .hero{padding:18px 16px 0}
+.mob .hero__body{padding:26px 0 20px}
+.mob .cards{grid-template-columns:1fr}
+
+/* ============================ VERDICT =================================== */
+.verdict{border-top:1px solid var(--board-line);padding:clamp(40px,6vw,80px) 0 clamp(50px,8vw,100px)}
+.verdict__h{
+  font-family:'Bricolage Grotesque',Georgia,serif;font-weight:200;
+  font-variation-settings:'wdth' 88,'opsz' 96;
+  font-size:clamp(30px,5.4vw,72px);line-height:.94;letter-spacing:-.04em;margin:14px 0 30px;
+}
+.verdict__h em{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400;color:#B99A5B}
+.cmp{width:100%;border-collapse:collapse;font-size:13px}
+.cmp th,.cmp td{border:1px solid var(--board-line);padding:12px 14px;text-align:left;vertical-align:top}
+.cmp thead th{
+  font-family:var(--board-mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--board-dim);font-weight:500;background:var(--board-2);
+}
+.cmp tbody th{
+  font-family:var(--board-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--board-dim);font-weight:500;width:150px;
+}
+.cmp td{color:var(--board-text);line-height:1.5}
+.cmp .win{color:#B99A5B}
+.tblscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+.rec{margin-top:34px;display:grid;gap:20px;grid-template-columns:1fr}
+@media(min-width:900px){.rec{grid-template-columns:1.25fr 1fr}}
+.rec__box{border:1px solid var(--board-line);padding:22px}
+.rec__box--pick{border-color:#B99A5B;background:linear-gradient(180deg,rgba(185,154,91,.07),transparent 60%)}
+.rec__tag{
+  font-family:var(--board-mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:#B99A5B;margin-bottom:12px;display:block;
+}
+.rec__box h3{
+  font-family:'Bricolage Grotesque',Georgia,serif;font-weight:300;font-variation-settings:'wdth' 90;
+  font-size:26px;letter-spacing:-.03em;line-height:1.05;margin-bottom:14px;
+}
+.rec__box ol,.rec__box ul{padding-left:18px;font-size:13.5px;line-height:1.6;color:var(--board-text)}
+.rec__box li+li{margin-top:9px}
+.rec__box li b{color:#B99A5B;font-weight:600}
+.rec__box p{font-size:13.5px;line-height:1.6;color:var(--board-dim)}
+
+.guard{margin-top:30px;border:1px solid #6E2C22;padding:20px;background:rgba(176,64,47,.06)}
+.guard h3{font-family:var(--board-mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#E2795F;margin-bottom:12px}
+.guard code{
+  font-family:var(--board-mono);font-size:11px;color:var(--board-text);
+  background:var(--board-2);border:1px solid var(--board-line);padding:3px 7px;display:inline-block;margin:3px 4px 3px 0;
+}
+.guard p{font-size:12.5px;color:var(--board-dim);margin-top:12px;line-height:1.55}
+
+.foot{border-top:1px solid var(--board-line);padding:24px 0 60px;
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* ---- Reduced motion ---------------------------------------------------- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;scroll-behavior:auto !important}
+  .marq__t{animation:none;transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================ MASTHEAD ============================== -->
+<header class="masthead">
+  <div class="wrap">
+    <div class="masthead__kicker">
+      <span class="masthead__mark">Base Note</span>
+      <span class="mono mono--dim">Art direction · Facelift · Rev 01</span>
+      <span class="mono mono--dim">Confidential · Wilson + Jeff + Alex</span>
+    </div>
+    <h1>Two directions<br>for a store that should<br><em>feel like a gallery.</em></h1>
+
+    <dl class="masthead__meta">
+      <div><dt class="mono mono--dim">Date</dt><dd>15 August 2026</dd></div>
+      <div><dt class="mono mono--dim">Source brief</dt><dd>growth-memo.md §4 — 12 bullets, verified comps</dd></div>
+      <div><dt class="mono mono--dim">Reference set</dt><dd>Gentle Monster · Jacquemus · Loewe · Le Labo · Byredo · Diptyque</dd></div>
+      <div><dt class="mono mono--dim">Scope</dt><dd>Presentation layer only. Subscription funnel untouched.</dd></div>
+      <div><dt class="mono mono--dim">Decision needed</dt><dd>Pick A or B. Tokens ship the same day.</dd></div>
+    </dl>
+  </div>
+</header>
+
+<!-- ============================ BRIEF DIGEST ========================== -->
+<section class="brief">
+  <div class="wrap">
+    <div class="brief__head">
+      <h2 class="mono">The brief, compressed</h2>
+      <span class="mono mono--dim">Every plate below is answerable to these</span>
+    </div>
+    <div class="chips">
+      <span class="chip"><b>01</b> &nbsp;6–10s hero loop, poster fallback</span>
+      <span class="chip"><b>02</b> &nbsp;Trending → horizontal carousel</span>
+      <span class="chip"><b>03</b> &nbsp;Two-colour + one accent</span>
+      <span class="chip"><b>04</b> &nbsp;No house branding in the grid</span>
+      <span class="chip"><b>05</b> &nbsp;Black primary, grey secondary. Nothing else</span>
+      <span class="chip"><b>06</b> &nbsp;Number the catalogue — No. 01</span>
+      <span class="chip"><b>07</b> &nbsp;Card = name, house, one CTA</span>
+      <span class="chip"><b>08</b> &nbsp;CTA verb is “Add to Rotation”</span>
+      <span class="chip"><b>09</b> &nbsp;Nav gains a family facet + visible search</span>
+      <span class="chip"><b>10</b> &nbsp;3:4 crop everywhere</span>
+      <span class="chip"><b>11</b> &nbsp;AVIF/WebP + srcset before video</span>
+      <span class="chip"><b>12</b> &nbsp;Scroll fades + eased transitions only</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PLATES ================================ -->
+<main class="wrap">
+<div class="plates">
+
+<!-- ==================================================================== -->
+<!-- DIRECTION A                                                          -->
+<!-- ==================================================================== -->
+<section class="dir dir--a">
+
+  <div class="plate__head">
+    <div class="plate__row">
+      <span class="plate__id">Direction A</span>
+      <span class="mono mono--dim">Recommended</span>
+    </div>
+    <h2 class="plate__name">Editorial Grotesque</h2>
+    <p class="plate__gloss">A gallery wall, not a shop. Wide-set grotesque display cut against a single italic serif line, ink and bone only, brass reduced to a hairline. The scent family is the one colour permitted on the page — so colour always <em>means</em> something.</p>
+  </div>
+
+  <!-- PALETTE -->
+  <div class="spec">
+    <div class="spec__label">01 &nbsp;Palette</div>
+    <div class="pal">
+      <div class="pal__sw" style="background:#0F1211;color:#F3EFE7"><span>Ink</span><span>#0F1211</span></div>
+      <div class="pal__sw" style="background:#F3EFE7;color:#0F1211"><span>Bone</span><span>#F3EFE7</span></div>
+      <div class="pal__sw" style="background:#1F3A34;color:#F3EFE7"><span>Forest</span><span>#1F3A34</span></div>
+      <div class="pal__sw" style="background:#B99A5B;color:#0F1211"><span>Brass</span><span>#B99A5B</span></div>
+    </div>
+    <div class="fam">
+      <span class="fam__i"><i class="fam__d" style="background:#7FB6C9"></i><em>Fresh</em></span>
+      <span class="fam__i"><i class="fam__d" style="background:#7A6A4F"></i><em>Woody</em></span>
+      <span class="fam__i"><i class="fam__d" style="background:#C2652D"></i><em>Amber</em></span>
+      <span class="fam__i"><i class="fam__d" style="background:#D48A9E"></i><em>Floral</em></span>
+      <span class="fam__i"><i class="fam__d" style="background:#8A5A3C"></i><em>Gourmand</em></span>
+      <span class="fam__i"><i class="fam__d" style="background:#6D8B5B"></i><em>Green</em></span>
+      <span class="fam__i"><i class="fam__d" style="background:#B0402F"></i><em>Spicy</em></span>
+      <span class="fam__i"><i class="fam__d" style="background:#C9C3B8"></i><em>Clean</em></span>
+    </div>
+    <p class="mono mono--dim" style="margin-top:10px;line-height:1.8;text-transform:none;letter-spacing:.04em">Brass is a hairline and a stamp — never body text on bone (2.3:1). Text-on-bone uses #6B5426.</p>
+  </div>
+
+  <!-- TYPE -->
+  <div class="spec">
+    <div class="spec__label">02 &nbsp;Typography</div>
+    <div class="pane type">
+      <div class="type__big">Bricolage<br>Grotesque</div>
+      <div class="type__it">Instrument Serif italic</div>
+      <p class="type__body">Instrument Sans carries every running word — product copy, notes, ROSCA disclosure, the fine print under the CTA. It is quiet on purpose so the display face can be loud.</p>
+      <div class="type__meta">
+        <span>Display 200–300 · wdth 86</span>
+        <span>Accent 400 italic</span>
+        <span>Body 400/600</span>
+        <span>Tracking −0.045em</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="spec">
+    <div class="spec__label">03 &nbsp;Hero</div>
+    <div class="pane pane--ink mock">
+      <div class="hero">
+        <div class="hero__top">
+          <span class="hero__logo">Base Note</span>
+          <nav class="hero__nav"><b>Catalogue</b><span>Families</span><span>Search</span><span>Account</span></nav>
+        </div>
+        <div class="hero__body">
+          <div class="stamp"><b>$20</b><span>/ month</span><i>flat</i></div>
+          <div class="hero__eyebrow">One flat price</div>
+          <h1 class="hero__h">Every luxury<br>house.<em>One rotation.</em></h1>
+          <p class="hero__sub">Thirty-two houses. Five millilitres at a time. No surcharge on the expensive ones — that is the whole idea.</p>
+          <div class="cta">
+            <a class="btn btn--solid" href="#">Start your rotation <span class="btn__ar">→</span></a>
+            <a class="btn btn--ghost" href="#">Browse the catalogue</a>
+          </div>
+          <div class="goal">
+            <div class="goal__bar"><i></i></div>
+            <p class="goal__txt"><b>17 of 60</b> founding members · you’d be #18 · price locks until Nov 30</p>
+          </div>
+        </div>
+        <div class="cursorlab">Drag →</div>
+        <div class="marq">
+          <div class="marq__t">
+            <span>Creed <i>·</i> Tom Ford <i>·</i> Xerjoff <i>·</i> Parfums de Marly <i>·</i> Bond No. 9 <i>·</i> Initio <i>·</i> Dior <i>·</i> Bvlgari <i>·</i> Valentino <i>·</i> Prada <i>·</i> Versace <i>·</i> Rabanne <i>·</i></span>
+            <span aria-hidden="true">Creed <i>·</i> Tom Ford <i>·</i> Xerjoff <i>·</i> Parfums de Marly <i>·</i> Bond No. 9 <i>·</i> Initio <i>·</i> Dior <i>·</i> Bvlgari <i>·</i> Valentino <i>·</i> Prada <i>·</i> Versace <i>·</i> Rabanne <i>·</i></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="caption">Brass pill = custom cursor label, shown on carousels only. Suppressed on touch and under reduced-motion.</p>
+  </div>
+
+  <!-- CARDS -->
+  <div class="spec">
+    <div class="spec__label">04 &nbsp;Product card — rest &amp; hover</div>
+    <div class="mock">
+      <div class="cards">
+        <!-- rest -->
+        <article class="pc" style="--fam:var(--f-smoky,#7A6A4F)">
+          <span class="pc__state">Rest</span>
+          <div class="pc__media">
+            <span class="pc__no">No. 01</span>
+            <span class="pc__ghost" aria-hidden="true">01</span>
+            <span class="pc__horizon"></span>
+            <div class="pc__vial">
+              <svg viewBox="0 0 60 120" fill="none" aria-hidden="true">
+                <rect x="22" y="4" width="16" height="15" rx="1" fill="#B99A5B"/>
+                <rect x="26" y="18" width="8" height="9" fill="#8A7548"/>
+                <path d="M10 30h40a4 4 0 0 1 4 4v78a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V34a4 4 0 0 1 4-4Z" fill="#0F1211" opacity=".9"/>
+                <path d="M10 30h40a4 4 0 0 1 4 4v34H6V34a4 4 0 0 1 4-4Z" fill="#0F1211"/>
+                <rect x="13" y="74" width="34" height="30" rx="1" fill="#F3EFE7" opacity=".92"/>
+                <rect x="17" y="82" width="20" height="2" fill="#0F1211" opacity=".55"/>
+                <rect x="17" y="88" width="13" height="2" fill="#0F1211" opacity=".3"/>
+                <rect x="17" y="94" width="17" height="2" fill="#0F1211" opacity=".3"/>
+              </svg>
+            </div>
+            <button class="pc__wish" aria-label="Save"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-8-5.2-8-10.4A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8 3.6C20 15.8 12 21 12 21Z"/></svg></button>
+            <div class="pc__notes">
+              <dl class="pc__nrow">
+                <dt>Top</dt><dd>Blackcurrant · Bergamot · Apple · Pineapple</dd>
+                <dt>Heart</dt><dd>Birch · Patchouli · Jasmine</dd>
+                <dt>Base</dt><dd>Musk · Oakmoss · Ambergris · Vanilla</dd>
+              </dl>
+              <div class="pc__nadd"><button class="btn btn--solid" style="width:100%;justify-content:center">Add to Rotation</button></div>
+            </div>
+          </div>
+          <div class="pc__body">
+            <div class="pc__house">Creed</div>
+            <h3 class="pc__title">Aventus</h3>
+            <div class="pc__famrow">
+              <span class="sp__c" style="--fam:var(--f-fresh);padding:5px 10px 5px 8px;font-size:9px">Fresh</span>
+              <span class="sp__c" style="--fam:var(--f-woody);padding:5px 10px 5px 8px;font-size:9px">Woody</span>
+              <span class="sp__c" style="--fam:var(--f-spicy);padding:5px 10px 5px 8px;font-size:9px">Smoky</span>
+            </div>
+            <div class="pc__foot">
+              <span class="pc__price">Included · $20/mo</span>
+              <button class="btn btn--rot">Add to Rotation</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- hover pinned -->
+        <article class="pc is-hover" style="--fam:var(--f-fresh)">
+          <span class="pc__state">Hover</span>
+          <div class="pc__media">
+            <span class="pc__no">No. 02</span>
+            <span class="pc__ghost" aria-hidden="true">02</span>
+            <span class="pc__horizon"></span>
+            <div class="pc__vial">
+              <svg viewBox="0 0 60 120" fill="none" aria-hidden="true">
+                <rect x="22" y="4" width="16" height="15" rx="1" fill="#B99A5B"/>
+                <rect x="26" y="18" width="8" height="9" fill="#8A7548"/>
+                <path d="M10 30h40a4 4 0 0 1 4 4v78a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V34a4 4 0 0 1 4-4Z" fill="#1F3A34" opacity=".9"/>
+                <rect x="13" y="74" width="34" height="30" rx="1" fill="#F3EFE7" opacity=".92"/>
+                <rect x="17" y="82" width="20" height="2" fill="#0F1211" opacity=".55"/>
+                <rect x="17" y="88" width="13" height="2" fill="#0F1211" opacity=".3"/>
+              </svg>
+            </div>
+            <button class="pc__wish" aria-label="Save"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-8-5.2-8-10.4A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8 3.6C20 15.8 12 21 12 21Z"/></svg></button>
+            <div class="pc__notes">
+              <dl class="pc__nrow">
+                <dt>Top</dt><dd>Sea Notes · Green Mandarin · Bergamot</dd>
+                <dt>Heart</dt><dd>Rosemary · Lavender · Cypress</dd>
+                <dt>Base</dt><dd>Mineral · Musk · Patchouli · Amber</dd>
+              </dl>
+              <div class="pc__nadd"><button class="btn btn--solid" style="width:100%;justify-content:center">Add to Rotation</button></div>
+            </div>
+          </div>
+          <div class="pc__body">
+            <div class="pc__house">Giorgio Armani</div>
+            <h3 class="pc__title">Acqua di Giò Profondo</h3>
+            <div class="pc__famrow">
+              <span class="sp__c" style="--fam:var(--f-fresh);padding:5px 10px 5px 8px;font-size:9px">Fresh</span>
+              <span class="sp__c" style="--fam:var(--f-clean);padding:5px 10px 5px 8px;font-size:9px">Clean</span>
+            </div>
+            <div class="pc__foot">
+              <span class="pc__price">Included · $20/mo</span>
+              <button class="btn btn--rot">Add to Rotation</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+    <p class="mono mono--dim" style="margin-top:10px;text-transform:none;letter-spacing:.04em;line-height:1.8">Media tint = 15% family colour in oklab. Ghost numeral is the family colour at 22%. One CTA, per brief §4.7.</p>
+  </div>
+
+  <!-- SMELL PROFILE -->
+  <div class="spec">
+    <div class="spec__label">05 &nbsp;Smell-profile filter row</div>
+    <div class="pane sp">
+      <span class="sp__c is-on">All 32</span>
+      <span class="sp__c" style="--fam:var(--f-fresh)">Fresh</span>
+      <span class="sp__c" style="--fam:var(--f-woody)">Woody</span>
+      <span class="sp__c" style="--fam:var(--f-amber)">Amber</span>
+      <span class="sp__c" style="--fam:var(--f-floral)">Floral</span>
+      <span class="sp__c" style="--fam:var(--f-gourmand)">Gourmand</span>
+      <span class="sp__c" style="--fam:var(--f-green)">Green</span>
+      <span class="sp__c" style="--fam:var(--f-spicy)">Spicy</span>
+      <span class="sp__c" style="--fam:var(--f-clean)">Clean</span>
+    </div>
+  </div>
+
+  <!-- SECTION HEADER -->
+  <div class="spec">
+    <div class="spec__label">06 &nbsp;Section header + body</div>
+    <div class="pane mock sh">
+      <div class="sh__no">03 — The Rotation</div>
+      <h2 class="sh__h">Wear it, keep it,<br><em>or send it back.</em></h2>
+      <div class="sh__cols">
+        <p>Every month you choose one 5 ml atomizer from the full catalogue. Not a tier. Not a “premium” shelf priced above the rest. <b>One flat price, every house.</b></p>
+        <p>What you don’t choose stays in your rotation queue, ordered how you like it, waiting for the month it suits. Skip a month and the queue holds. Cancel and it’s cancelled — same day, no phone call.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="spec">
+    <div class="spec__label">07 &nbsp;Buttons</div>
+    <div class="pane pane--ink btnset btnset--ink">
+      <button class="btn btn--solid">Start your rotation <span class="btn__ar">→</span></button>
+      <button class="btn btn--ghost">Browse catalogue</button>
+      <button class="btn btn--ghost" disabled>In your queue</button>
+      <span class="btnnote">On ink — hero, footer, drawer</span>
+    </div>
+    <div class="pane btnset" style="margin-top:1px">
+      <button class="btn btn--inkfill">Add to Rotation <span class="btn__ar">→</span></button>
+      <button class="btn btn--outline">Fact sheet</button>
+      <button class="btn btn--rot">Add to Rotation</button>
+      <button class="btn btn--link">Read the notes</button>
+      <span class="btnnote">On bone — grid, PDP body, account</span>
+    </div>
+  </div>
+
+  <!-- MOTION -->
+  <div class="spec">
+    <div class="spec__label">08 &nbsp;Motion spec</div>
+    <div class="ms">
+      <div class="ms__r ms__r--h"><div class="ms__k">Token</div><div class="ms__v">Value</div><div class="ms__d">Behaviour</div></div>
+      <div class="ms__r"><div class="ms__k">--bn-ease</div><div class="ms__v">cubic-bezier(.22,1,.36,1)</div><div class="ms__d">The house curve. Everything eases out of it.</div></div>
+      <div class="ms__r"><div class="ms__k">reveal</div><div class="ms__v">opacity 0→1, y 22px→0, 620ms</div><div class="ms__d">IntersectionObserver at 12% · <code>data-reveal</code> · fires once, then unobserves.</div></div>
+      <div class="ms__r"><div class="ms__k">stagger</div><div class="ms__v">70ms × index, cap 6</div><div class="ms__d">Grid children cascade; the 7th onward lands together.</div></div>
+      <div class="ms__r"><div class="ms__k">card hover</div><div class="ms__v">y −5px 450ms · notes 500ms</div><div class="ms__d">Notes panel slides up from the media base. Image scales 1.045.</div></div>
+      <div class="ms__r"><div class="ms__k">marquee</div><div class="ms__v">26s linear, 2× track</div><div class="ms__d">Duplicated track, translateX −50%. Pauses on hover and off-screen.</div></div>
+      <div class="ms__r"><div class="ms__k">magnetic</div><div class="ms__v">max 6px, 0.18 lerp</div><div class="ms__d">Pointer-fine only. Hero + section CTAs. Never the add-to-cart button.</div></div>
+      <div class="ms__r"><div class="ms__k">cursor label</div><div class="ms__v">pill, 160ms fade</div><div class="ms__d">“Drag →” on carousels, “View” on cards. Suppressed on touch.</div></div>
+      <div class="ms__r"><div class="ms__k">reduced</div><div class="ms__v">prefers-reduced-motion</div><div class="ms__d">All of the above become instant. Reveals resolve to visible immediately.</div></div>
+    </div>
+  </div>
+
+  <!-- MOBILE -->
+  <div class="spec">
+    <div class="spec__label">09 &nbsp;Mobile — 390px</div>
+    <div class="mobwrap">
+      <div class="mob">
+        <div class="pane pane--ink mock">
+          <div class="hero">
+            <div class="hero__top">
+              <span class="hero__logo">Base Note</span>
+              <nav class="hero__nav"><b>Menu</b><span>Search</span></nav>
+            </div>
+            <div class="hero__body">
+              <div class="stamp"><b>$20</b><span>/ mo</span></div>
+              <div class="hero__eyebrow">One flat price</div>
+              <h1 class="hero__h">Every luxury house.<em>One rotation.</em></h1>
+              <div class="cta"><a class="btn btn--solid" href="#">Start rotation <span class="btn__ar">→</span></a></div>
+              <div class="goal">
+                <div class="goal__bar"><i></i></div>
+                <p class="goal__txt"><b>17 of 60</b> founding members</p>
+              </div>
+            </div>
+            <div class="marq"><div class="marq__t">
+              <span>Creed <i>·</i> Tom Ford <i>·</i> Xerjoff <i>·</i> Marly <i>·</i> Initio <i>·</i></span>
+              <span aria-hidden="true">Creed <i>·</i> Tom Ford <i>·</i> Xerjoff <i>·</i> Marly <i>·</i> Initio <i>·</i></span>
+            </div></div>
+          </div>
+        </div>
+        <div class="mock" style="border-top:1px solid rgba(255,255,255,.12)">
+          <div class="cards">
+            <article class="pc" style="--fam:var(--f-amber)">
+              <div class="pc__media">
+                <span class="pc__no">No. 24</span><span class="pc__ghost" aria-hidden="true">24</span><span class="pc__horizon"></span>
+                <div class="pc__vial"><svg viewBox="0 0 60 120" fill="none" aria-hidden="true">
+                  <rect x="22" y="4" width="16" height="15" rx="1" fill="#B99A5B"/>
+                  <rect x="26" y="18" width="8" height="9" fill="#8A7548"/>
+                  <path d="M10 30h40a4 4 0 0 1 4 4v78a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V34a4 4 0 0 1 4-4Z" fill="#0F1211" opacity=".9"/>
+                  <rect x="13" y="74" width="34" height="30" rx="1" fill="#F3EFE7" opacity=".92"/>
+                  <rect x="17" y="82" width="20" height="2" fill="#0F1211" opacity=".55"/>
+                </svg></div>
+              </div>
+              <div class="pc__body">
+                <div class="pc__house">Tom Ford</div>
+                <h3 class="pc__title">Oud Wood</h3>
+                <div class="pc__famrow">
+                  <span class="sp__c" style="--fam:var(--f-woody);padding:5px 10px 5px 8px;font-size:9px">Woody</span>
+                  <span class="sp__c" style="--fam:var(--f-amber);padding:5px 10px 5px 8px;font-size:9px">Leather</span>
+                </div>
+                <div class="pc__foot">
+                  <span class="pc__price">Included</span>
+                  <button class="btn btn--rot">Add to Rotation</button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+      <div class="mob__note">
+        <b>Mobile rules</b>
+        <span>Headline drops to 1 col, 40px, italic line still breaks alone</span>
+        <span>Stamp shrinks to 78px, loses the “flat” footer line</span>
+        <span>Cards go 1-up; notes panel becomes a tap-to-expand, not hover</span>
+        <span>Marquee halves its house list to protect LCP</span>
+        <span>Magnetic + cursor label are suppressed on coarse pointers</span>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ==================================================================== -->
+<!-- DIRECTION B                                                          -->
+<!-- ==================================================================== -->
+<section class="dir dir--b">
+
+  <div class="plate__head">
+    <div class="plate__row">
+      <span class="plate__id">Direction B</span>
+      <span class="mono mono--dim">Alternate</span>
+    </div>
+    <h2 class="plate__name">Modern Classic</h2>
+    <p class="plate__gloss">The apothecary read. Fraunces at high optical size with the SOFT axis open gives warmth a grotesque can’t, and Manrope keeps the running text contemporary. Warmer ground, honey metal, a terracotta-leaning family set. Lower risk, smaller departure.</p>
+  </div>
+
+  <!-- PALETTE -->
+  <div class="spec">
+    <div class="spec__label">01 &nbsp;Palette</div>
+    <div class="pal">
+      <div class="pal__sw" style="background:#191411;color:#F7F1E4"><span>Bistre</span><span>#191411</span></div>
+      <div class="pal__sw" style="background:#F7F1E4;color:#191411"><span>Parchment</span><span>#F7F1E4</span></div>
+      <div class="pal__sw" style="background:#33463B;color:#F7F1E4"><span>Olive Pine</span><span>#33463B</span></div>
+      <div class="pal__sw" style="background:#C48D3F;color:#191411"><span>Honey</span><span>#C48D3F</span></div>
+    </div>
+    <div class="fam">
+      <span class="fam__i"><i class="fam__d" style="background:#6E9FA6"></i><em>Fresh</em></span>
+      <span class="fam__i"><i class="fam__d" style="background:#8A7550"></i><em>Woody</em></span>
+      <span class="fam__i"><i class="fam__d" style="background:#C0682A"></i><em>Amber</em></span>
+      <span class="fam__i"><i class="fam__d" style="background:#C9838F"></i><em>Floral</em></span>
+      <span class="fam__i"><i class="fam__d" style="background:#8F5F3A"></i><em>Gourmand</em></span>
+      <span class="fam__i"><i class="fam__d" style="background:#778B57"></i><em>Green</em></span>
+      <span class="fam__i"><i class="fam__d" style="background:#A63E2B"></i><em>Spicy</em></span>
+      <span class="fam__i"><i class="fam__d" style="background:#C7BCA6"></i><em>Clean</em></span>
+    </div>
+    <p class="mono mono--dim" style="margin-top:10px;line-height:1.8;text-transform:none;letter-spacing:.04em">Same discipline: honey is decorative on parchment; text-on-parchment metal is #7A5417.</p>
+  </div>
+
+  <!-- TYPE -->
+  <div class="spec">
+    <div class="spec__label">02 &nbsp;Typography</div>
+    <div class="pane type">
+      <div class="type__big">Fraunces<br>Display</div>
+      <div class="type__it">opsz 144 · SOFT 60 · WONK 1</div>
+      <p class="type__body">Manrope carries every running word. Its wide apertures hold up at 13px on a phone, which matters more here than on the grotesque route because Fraunces already spends the page’s character budget.</p>
+      <div class="type__meta">
+        <span>Display 300 · opsz 144</span>
+        <span>SOFT 42–70</span>
+        <span>Body Manrope 400/600</span>
+        <span>Tracking −0.022em</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="spec">
+    <div class="spec__label">03 &nbsp;Hero</div>
+    <div class="pane pane--ink mock">
+      <div class="hero">
+        <div class="hero__top">
+          <span class="hero__logo">Base Note</span>
+          <nav class="hero__nav"><b>Catalogue</b><span>Families</span><span>Search</span><span>Account</span></nav>
+        </div>
+        <div class="hero__body">
+          <div class="stamp"><b>$20</b><span>/ month</span><i>flat</i></div>
+          <div class="hero__eyebrow">One flat price</div>
+          <h1 class="hero__h">Build your<em>signature rotation.</em></h1>
+          <p class="hero__sub">Thirty-two houses. Five millilitres at a time. No surcharge on the expensive ones — that is the whole idea.</p>
+          <div class="cta">
+            <a class="btn btn--solid" href="#">Start your rotation <span class="btn__ar">→</span></a>
+            <a class="btn btn--ghost" href="#">Browse the catalogue</a>
+          </div>
+          <div class="goal">
+            <div class="goal__bar"><i></i></div>
+            <p class="goal__txt"><b>17 of 60</b> founding members · you’d be #18 · price locks until Nov 30</p>
+          </div>
+        </div>
+        <div class="cursorlab">Drag →</div>
+        <div class="marq">
+          <div class="marq__t">
+            <span>Creed <i>·</i> Tom Ford <i>·</i> Xerjoff <i>·</i> Parfums de Marly <i>·</i> Bond No. 9 <i>·</i> Initio <i>·</i> Dior <i>·</i> Bvlgari <i>·</i> Valentino <i>·</i> Prada <i>·</i> Versace <i>·</i> Rabanne <i>·</i></span>
+            <span aria-hidden="true">Creed <i>·</i> Tom Ford <i>·</i> Xerjoff <i>·</i> Parfums de Marly <i>·</i> Bond No. 9 <i>·</i> Initio <i>·</i> Dior <i>·</i> Bvlgari <i>·</i> Valentino <i>·</i> Prada <i>·</i> Versace <i>·</i> Rabanne <i>·</i></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="caption">Brass pill = custom cursor label, shown on carousels only. Suppressed on touch and under reduced-motion.</p>
+  </div>
+
+  <!-- CARDS -->
+  <div class="spec">
+    <div class="spec__label">04 &nbsp;Product card — rest &amp; hover</div>
+    <div class="mock">
+      <div class="cards">
+        <article class="pc" style="--fam:var(--f-woody)">
+          <span class="pc__state">Rest</span>
+          <div class="pc__media">
+            <span class="pc__no">No. 24</span><span class="pc__ghost" aria-hidden="true">24</span><span class="pc__horizon"></span>
+            <div class="pc__vial">
+              <svg viewBox="0 0 60 120" fill="none" aria-hidden="true">
+                <rect x="22" y="4" width="16" height="15" rx="1" fill="#C48D3F"/>
+                <rect x="26" y="18" width="8" height="9" fill="#96692C"/>
+                <path d="M10 30h40a4 4 0 0 1 4 4v78a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V34a4 4 0 0 1 4-4Z" fill="#191411" opacity=".9"/>
+                <rect x="13" y="74" width="34" height="30" rx="2" fill="#F7F1E4" opacity=".93"/>
+                <rect x="17" y="82" width="20" height="2" fill="#191411" opacity=".55"/>
+                <rect x="17" y="88" width="13" height="2" fill="#191411" opacity=".3"/>
+                <rect x="17" y="94" width="17" height="2" fill="#191411" opacity=".3"/>
+              </svg>
+            </div>
+            <button class="pc__wish" aria-label="Save"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-8-5.2-8-10.4A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8 3.6C20 15.8 12 21 12 21Z"/></svg></button>
+            <div class="pc__notes">
+              <dl class="pc__nrow">
+                <dt>Top</dt><dd>Agarwood · Rosewood · Sandalwood</dd>
+                <dt>Heart</dt><dd>Cardamom · Sichuan Pepper · Vetiver</dd>
+                <dt>Base</dt><dd>Amber · Tonka Bean · Vanilla</dd>
+              </dl>
+              <div class="pc__nadd"><button class="btn btn--solid" style="width:100%;justify-content:center">Add to Rotation</button></div>
+            </div>
+          </div>
+          <div class="pc__body">
+            <div class="pc__house">Tom Ford</div>
+            <h3 class="pc__title">Oud Wood</h3>
+            <div class="pc__famrow">
+              <span class="sp__c" style="--fam:var(--f-woody);padding:5px 10px 5px 8px;font-size:9px">Woody</span>
+              <span class="sp__c" style="--fam:var(--f-amber);padding:5px 10px 5px 8px;font-size:9px">Leather</span>
+              <span class="sp__c" style="--fam:var(--f-gourmand);padding:5px 10px 5px 8px;font-size:9px">Oriental</span>
+            </div>
+            <div class="pc__foot">
+              <span class="pc__price">Included · $20/mo</span>
+              <button class="btn btn--rot">Add to Rotation</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="pc is-hover" style="--fam:var(--f-gourmand)">
+          <span class="pc__state">Hover</span>
+          <div class="pc__media">
+            <span class="pc__no">No. 20</span><span class="pc__ghost" aria-hidden="true">20</span><span class="pc__horizon"></span>
+            <div class="pc__vial">
+              <svg viewBox="0 0 60 120" fill="none" aria-hidden="true">
+                <rect x="22" y="4" width="16" height="15" rx="1" fill="#C48D3F"/>
+                <rect x="26" y="18" width="8" height="9" fill="#96692C"/>
+                <path d="M10 30h40a4 4 0 0 1 4 4v78a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V34a4 4 0 0 1 4-4Z" fill="#33463B" opacity=".92"/>
+                <rect x="13" y="74" width="34" height="30" rx="2" fill="#F7F1E4" opacity=".93"/>
+                <rect x="17" y="82" width="20" height="2" fill="#191411" opacity=".55"/>
+                <rect x="17" y="88" width="13" height="2" fill="#191411" opacity=".3"/>
+              </svg>
+            </div>
+            <button class="pc__wish" aria-label="Save"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-8-5.2-8-10.4A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8 3.6C20 15.8 12 21 12 21Z"/></svg></button>
+            <div class="pc__notes">
+              <dl class="pc__nrow">
+                <dt>Top</dt><dd>Bitter Almond · Bergamot · Heliotrope</dd>
+                <dt>Heart</dt><dd>Jasmine · Orange Blossom · Lavender</dd>
+                <dt>Base</dt><dd>Vanilla · Sandalwood · Cedar</dd>
+              </dl>
+              <div class="pc__nadd"><button class="btn btn--solid" style="width:100%;justify-content:center">Add to Rotation</button></div>
+            </div>
+          </div>
+          <div class="pc__body">
+            <div class="pc__house">Parfums de Marly</div>
+            <h3 class="pc__title">Pegasus</h3>
+            <div class="pc__famrow">
+              <span class="sp__c" style="--fam:var(--f-gourmand);padding:5px 10px 5px 8px;font-size:9px">Gourmand</span>
+              <span class="sp__c" style="--fam:var(--f-floral);padding:5px 10px 5px 8px;font-size:9px">Floral</span>
+            </div>
+            <div class="pc__foot">
+              <span class="pc__price">Included · $20/mo</span>
+              <button class="btn btn--rot">Add to Rotation</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+    <p class="mono mono--dim" style="margin-top:10px;text-transform:none;letter-spacing:.04em;line-height:1.8">Same component, same tokens. Only the variable layer changed — that is the point of the token file.</p>
+  </div>
+
+  <!-- SMELL PROFILE -->
+  <div class="spec">
+    <div class="spec__label">05 &nbsp;Smell-profile filter row</div>
+    <div class="pane sp">
+      <span class="sp__c is-on">All 32</span>
+      <span class="sp__c" style="--fam:var(--f-fresh)">Fresh</span>
+      <span class="sp__c" style="--fam:var(--f-woody)">Woody</span>
+      <span class="sp__c" style="--fam:var(--f-amber)">Amber</span>
+      <span class="sp__c" style="--fam:var(--f-floral)">Floral</span>
+      <span class="sp__c" style="--fam:var(--f-gourmand)">Gourmand</span>
+      <span class="sp__c" style="--fam:var(--f-green)">Green</span>
+      <span class="sp__c" style="--fam:var(--f-spicy)">Spicy</span>
+      <span class="sp__c" style="--fam:var(--f-clean)">Clean</span>
+    </div>
+  </div>
+
+  <!-- SECTION HEADER -->
+  <div class="spec">
+    <div class="spec__label">06 &nbsp;Section header + body</div>
+    <div class="pane mock sh">
+      <div class="sh__no">03 — The Rotation</div>
+      <h2 class="sh__h">Wear it, keep it,<br><em>or send it back.</em></h2>
+      <div class="sh__cols">
+        <p>Every month you choose one 5 ml atomizer from the full catalogue. Not a tier. Not a “premium” shelf priced above the rest. <b>One flat price, every house.</b></p>
+        <p>What you don’t choose stays in your rotation queue, ordered how you like it, waiting for the month it suits. Skip a month and the queue holds. Cancel and it’s cancelled — same day, no phone call.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="spec">
+    <div class="spec__label">07 &nbsp;Buttons</div>
+    <div class="pane pane--ink btnset btnset--ink">
+      <button class="btn btn--solid">Start your rotation <span class="btn__ar">→</span></button>
+      <button class="btn btn--ghost">Browse catalogue</button>
+      <button class="btn btn--ghost" disabled>In your queue</button>
+      <span class="btnnote">On bistre — hero, footer, drawer</span>
+    </div>
+    <div class="pane btnset" style="margin-top:1px">
+      <button class="btn btn--inkfill">Add to Rotation <span class="btn__ar">→</span></button>
+      <button class="btn btn--outline">Fact sheet</button>
+      <button class="btn btn--rot">Add to Rotation</button>
+      <button class="btn btn--link">Read the notes</button>
+      <span class="btnnote">On parchment — grid, PDP body, account</span>
+    </div>
+  </div>
+
+  <!-- MOTION -->
+  <div class="spec">
+    <div class="spec__label">08 &nbsp;Motion spec</div>
+    <div class="ms">
+      <div class="ms__r ms__r--h"><div class="ms__k">Token</div><div class="ms__v">Value</div><div class="ms__d">Behaviour</div></div>
+      <div class="ms__r"><div class="ms__k">--bn-ease</div><div class="ms__v">cubic-bezier(.33,1,.68,1)</div><div class="ms__d">Softer landing to match the SOFT axis. Slightly less snap than A.</div></div>
+      <div class="ms__r"><div class="ms__k">reveal</div><div class="ms__v">opacity 0→1, y 16px→0, 700ms</div><div class="ms__d">Longer, gentler. Same <code>data-reveal</code> hook and 12% threshold.</div></div>
+      <div class="ms__r"><div class="ms__k">stagger</div><div class="ms__v">90ms × index, cap 6</div><div class="ms__d">Slower cascade reads as considered rather than kinetic.</div></div>
+      <div class="ms__r"><div class="ms__k">card hover</div><div class="ms__v">y −4px 500ms · notes 560ms</div><div class="ms__d">Same panel mechanic, softer curve, 3px corner radius throughout.</div></div>
+      <div class="ms__r"><div class="ms__k">marquee</div><div class="ms__v">34s linear, 2× track</div><div class="ms__d">Slower drift suits the serif. Pauses on hover and off-screen.</div></div>
+      <div class="ms__r"><div class="ms__k">magnetic</div><div class="ms__v">max 4px, 0.14 lerp</div><div class="ms__d">Dialled back — a serif page fights a springy button.</div></div>
+      <div class="ms__r"><div class="ms__k">cursor label</div><div class="ms__v">pill, 200ms fade</div><div class="ms__d">Same rules. Suppressed on touch.</div></div>
+      <div class="ms__r"><div class="ms__k">reduced</div><div class="ms__v">prefers-reduced-motion</div><div class="ms__d">Identical guard. Non-negotiable in both directions.</div></div>
+    </div>
+  </div>
+
+  <!-- MOBILE -->
+  <div class="spec">
+    <div class="spec__label">09 &nbsp;Mobile — 390px</div>
+    <div class="mobwrap">
+      <div class="mob">
+        <div class="pane pane--ink mock">
+          <div class="hero">
+            <div class="hero__top">
+              <span class="hero__logo">Base Note</span>
+              <nav class="hero__nav"><b>Menu</b><span>Search</span></nav>
+            </div>
+            <div class="hero__body">
+              <div class="stamp"><b>$20</b><span>/ mo</span></div>
+              <div class="hero__eyebrow">One flat price</div>
+              <h1 class="hero__h">Build your<em>signature rotation.</em></h1>
+              <div class="cta"><a class="btn btn--solid" href="#">Start rotation <span class="btn__ar">→</span></a></div>
+              <div class="goal">
+                <div class="goal__bar"><i></i></div>
+                <p class="goal__txt"><b>17 of 60</b> founding members</p>
+              </div>
+            </div>
+            <div class="marq"><div class="marq__t">
+              <span>Creed <i>·</i> Tom Ford <i>·</i> Xerjoff <i>·</i> Marly <i>·</i> Initio <i>·</i></span>
+              <span aria-hidden="true">Creed <i>·</i> Tom Ford <i>·</i> Xerjoff <i>·</i> Marly <i>·</i> Initio <i>·</i></span>
+            </div></div>
+          </div>
+        </div>
+        <div class="mock" style="border-top:1px solid rgba(255,255,255,.12)">
+          <div class="cards">
+            <article class="pc" style="--fam:var(--f-spicy)">
+              <div class="pc__media">
+                <span class="pc__no">No. 27</span><span class="pc__ghost" aria-hidden="true">27</span><span class="pc__horizon"></span>
+                <div class="pc__vial"><svg viewBox="0 0 60 120" fill="none" aria-hidden="true">
+                  <rect x="22" y="4" width="16" height="15" rx="1" fill="#C48D3F"/>
+                  <rect x="26" y="18" width="8" height="9" fill="#96692C"/>
+                  <path d="M10 30h40a4 4 0 0 1 4 4v78a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V34a4 4 0 0 1 4-4Z" fill="#191411" opacity=".9"/>
+                  <rect x="13" y="74" width="34" height="30" rx="2" fill="#F7F1E4" opacity=".93"/>
+                  <rect x="17" y="82" width="20" height="2" fill="#191411" opacity=".55"/>
+                </svg></div>
+              </div>
+              <div class="pc__body">
+                <div class="pc__house">Viktor &amp; Rolf</div>
+                <h3 class="pc__title">Spicebomb Extreme</h3>
+                <div class="pc__famrow">
+                  <span class="sp__c" style="--fam:var(--f-spicy);padding:5px 10px 5px 8px;font-size:9px">Spicy</span>
+                  <span class="sp__c" style="--fam:var(--f-amber);padding:5px 10px 5px 8px;font-size:9px">Amber</span>
+                </div>
+                <div class="pc__foot">
+                  <span class="pc__price">Included</span>
+                  <button class="btn btn--rot">Add to Rotation</button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+      <div class="mob__note">
+        <b>Mobile rules</b>
+        <span>Fraunces drops to opsz 48 below 600px — the high-opsz cut breaks up at small sizes</span>
+        <span>SOFT holds at 42; WONK off on mobile headlines</span>
+        <span>Cards 1-up, notes panel tap-to-expand</span>
+        <span>Marquee halves its list to protect LCP</span>
+        <span>Magnetic + cursor label suppressed on coarse pointers</span>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+</div><!-- /.plates -->
+</main>
+
+<!-- ============================ VERDICT =============================== -->
+<section class="verdict">
+  <div class="wrap">
+    <span class="mono mono--dim">Side by side</span>
+    <h2 class="verdict__h">The call, and <em>why.</em></h2>
+
+    <div class="tblscroll">
+      <table class="cmp">
+        <thead>
+          <tr><th>Criterion</th><th>A — Editorial Grotesque</th><th>B — Modern Classic</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>Distance from today</th><td class="win">Large. Cormorant + Lato → grotesque + one italic serif. Reads as a relaunch.</td><td>Moderate. Fraunces sits in the same serif neighbourhood as Cormorant Garamond. Reads as a tidy-up.</td></tr>
+          <tr><th>Brief §4.3 two-colour</th><td class="win">Native. Ink and bone carry the whole page; family accent is the only colour.</td><td>Works, but parchment + honey + olive is already three warm values before the accent lands.</td></tr>
+          <tr><th>Brief §4.6 numbering</th><td class="win">Grotesque numerals at wdth 86 give the No. 01 system real presence.</td><td>Fraunces numerals are lovely but decorative; the system reads softer.</td></tr>
+          <tr><th>Comp adjacency</th><td class="win">Gentle Monster, Jacquemus, SSENSE. The reference set the memo actually verified.</td><td>Aesop, Le Labo, Diptyque. Also credible, but the crowded lane in fragrance.</td></tr>
+          <tr><th>Mobile robustness</th><td>Good. Tight tracking needs a min-size floor at 30px or it crushes.</td><td class="win">Better. SOFT axis + Manrope apertures hold up at 13px without tuning.</td></tr>
+          <tr><th>Warmth / approachability</th><td>Cooler. Risks reading austere to a first-time fragrance buyer.</td><td class="win">Warmer. Lower bounce risk with an older or less design-literate visitor.</td></tr>
+          <tr><th>Font payload</th><td class="win">3 families, 2 variable. ~92 KB woff2 subset.</td><td>2 families, 2 variable — but Fraunces’ 4-axis file is heavy. ~110 KB.</td></tr>
+          <tr><th>Build cost</th><td colspan="2">Identical. Same components, same token names, one variable layer swapped. Choosing is a one-file decision, not a rebuild.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="rec">
+      <div class="rec__box rec__box--pick">
+        <span class="rec__tag">Recommendation</span>
+        <h3>Ship Direction A — Editorial Grotesque.</h3>
+        <ol>
+          <li><b>It is the only one that is actually a facelift.</b> B is a refinement of the current serif look. If the goal is that a returning visitor notices, A is the answer and B is not.</li>
+          <li><b>It executes the brief’s hardest constraint for free.</b> §4.3 wants two colours plus one accent, §4.4 wants no house colour in the grid, §4.5 wants black-primary / grey-secondary. Ink-and-bone gives all three by construction; the family accent is then the only colour on the page, so colour carries information instead of decoration.</li>
+          <li><b>The numbered catalogue needs a grotesque.</b> §4.6 is a zero-copy system upgrade — CREED AVENTUS, No. 01. Bricolage’s numerals at width 86 make that a design element. A serif makes it a footnote.</li>
+          <li><b>It matches the comps the memo verified,</b> not the ones it flagged as directional. Jacquemus scored 7.46 on Awwwards with a two-colour system and eased motion. That is A.</li>
+        </ol>
+        <p style="margin-top:16px">Take one thing from B: its mobile type rules. Floor A’s display at 30px and open the tracking to −0.03em below 600px, or the tight setting crushes on a 390 screen.</p>
+      </div>
+      <div class="rec__box">
+        <span class="rec__tag">Pick B instead if</span>
+        <ul>
+          <li>Jeff wants the store to read <em>apothecary</em> rather than <em>gallery</em> — that is a legitimate brand call, not a design error.</li>
+          <li>The buyer skews older than the Reddit/TikTok funnel assumes, where warmth beats austerity.</li>
+          <li>You want a smaller visual break while the founding-member cohort is still forming and 17 people already know the current site.</li>
+        </ul>
+        <p style="margin-top:14px">Either way the token file is the deliverable. <code style="font-family:var(--board-mono);font-size:11px;color:#B99A5B">bn-tokens.css</code> ships Direction A as default; B is the same file with one block replaced.</p>
+      </div>
+    </div>
+
+    <div class="guard">
+      <h3>Do not touch — funnel integrity</h3>
+      <div>
+        <code>{% form 'product' %}</code>
+        <code>#sellingPlanSelector</code>
+        <code>input[name=selling_plan]</code>
+        <code>#addToCartButton</code>
+        <code>[data-quick-add]</code>
+        <code>[data-cart-*]</code>
+        <code>#cartDrawer</code>
+        <code>window.bnCustomerId</code>
+        <code>queue-scheduler.js</code>
+        <code>bn-appstle-swap.js</code>
+        <code>templates/account · quiz · fragrance-selector · cart</code>
+      </div>
+      <p>The July 16–17 incident stripped selling plans at cart store-wide. Nothing in this facelift may re-open that surface. Phase A is CSS tokens and presentational markup only: no selector renames on funnel nodes, no JS bound to add-to-cart, no magnetic behaviour on <code style="border:0;background:none;padding:0">#addToCartButton</code>. Restyle those elements by variable, never by rewriting them.</p>
+    </div>
+
+    <div class="foot">
+      <span class="mono mono--dim">Base Note · Facelift directions · Rev 01 · 15 Aug 2026</span>
+      <span class="mono mono--dim">Files: design-sheet.html · bn-tokens.css · bn-motion.js · README.md</span>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

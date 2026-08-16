@@ -1,0 +1,7 @@
+{
+  "model": "openai/gpt-image-1",
+  "prompt": "Luxury editorial photograph for a fragrance magazine. Warm natural window light, shallow depth of field, muted warm palette (ivory, travertine, brass, deep green), tactile textures, cinematic composition, photorealistic, no text, no logos, no watermarks, no branded bottles. photoreal editorial interior, a worn dark leather jacket draped over a pale wooden chair beside a window, thin cold autumn light through the glass, a small unbranded glass atomizer standing on the travertine sill, linen curtain, brass window latch, deep green wall in soft shadow, quiet muted palette, no text, no logos, no branded bottles",
+  "aspect": "4:3",
+  "size": "1536x1024",
+  "bytes": 149871
+}

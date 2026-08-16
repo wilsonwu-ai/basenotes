@@ -1,0 +1,7 @@
+{
+  "model": "openai/gpt-image-1",
+  "prompt": "Luxury editorial photograph for a fragrance magazine. Warm natural window light, shallow depth of field, muted warm palette (ivory, travertine, brass, deep green), tactile textures, cinematic composition, photorealistic, no text, no logos, no watermarks, no branded bottles. photoreal editorial overhead of two folded fabric swatches side by side on a travertine surface, one a matte natural cotton weave in warm linen tone, one a smooth technical synthetic knit in deep green, a slim brass rule laid between them for scale, warm natural raking light picking out the weave texture, soft shadows, no text, no logos, no branded bottles",
+  "aspect": "16:9",
+  "size": "1536x1024",
+  "bytes": 214646
+}

@@ -1,0 +1,7 @@
+{
+  "model": "openai/gpt-image-1",
+  "prompt": "Luxury editorial photograph for a fragrance magazine. Warm natural window light, shallow depth of field, muted warm palette (ivory, travertine, brass, deep green), tactile textures, cinematic composition, photorealistic, no text, no logos, no watermarks, no branded bottles. photoreal editorial still life: a crisply folded white cotton shirt beside a small plain clear glass atomizer with a brushed brass collar, resting on oatmeal linen over a travertine surface, deep green wall behind, warm late-afternoon natural light, soft shadows, quiet grooming-ritual mood, shallow depth of field, no text, no logos, no branded bottles",
+  "aspect": "16:9",
+  "size": "1536x1024",
+  "bytes": 141911
+}

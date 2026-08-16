@@ -77,10 +77,27 @@ def derive_summary(body):
 def strip_h1(body):
     return re.sub(r"<h1[^>]*>.*?</h1>\s*", "", body, count=1, flags=re.S | re.I)
 
+FIG_TMPL = ('<figure class="article__figure" style="margin:1.75em 0;">'
+            '<img src="{url}" alt="{alt}" loading="lazy" decoding="async" width="{w}" height="{h}" style="width:100%;height:auto;border-radius:12px;display:block;">'
+            '{cap}</figure>')
+
+def insert_figures(body, inline):
+    """Replace <!-- img:ID --> placeholders. inline: {id: {url, alt, caption?, w?, h?}}. Unknown ids are removed (never leaked to HTML)."""
+    inline = inline or {}
+    def rep(m):
+        fid = m.group(1).strip()
+        if fid == "hero": return ""  # hero is the featured image (theme renders it)
+        f = inline.get(fid)
+        if not f or not f.get("url"): return ""
+        cap = f'<figcaption style="font-size:.85rem;color:#777;margin-top:.5em;">{html.escape(f["caption"])}</figcaption>' if f.get("caption") else ""
+        return FIG_TMPL.format(url=f["url"], alt=html.escape(f.get("alt") or ""), w=f.get("w", 1536), h=f.get("h", 1024), cap=cap)
+    return re.sub(r"<!--\s*img:([a-z0-9_-]+)\s*-->", rep, body, flags=re.I)
+
 def upsert(row, dry=False):
     """row: {handle, file, title?, summary?, tags?, author?, image_url?, image_alt?, publish_at?|publish_now?|draft?}"""
     body_raw = (ROOT / row["file"]).read_text(encoding="utf-8")
-    body = to_entities(strip_h1(body_raw))
+    body = to_entities(insert_figures(strip_h1(body_raw), row.get("inline")))
+    if "<!--META" in body: body = body.split("<!--META")[0]
     title = row.get("title") or derive_title(body_raw) or row["handle"].replace("-", " ").title()
     summary = row.get("summary") or derive_summary(body_raw) or ""
     tags = row.get("tags") or ["fragrance", "guide"]

@@ -1,0 +1,243 @@
+{
+ "handle": "why-you-smell-the-way-you-do",
+ "meta": {
+  "title": "Why You Smell the Way You Do (and How to Pick Fragrance Notes That Balance It)",
+  "summary": "Sweat is odourless. Bacteria, genes, diet and fabric make your scent. Find your smell profile and the fragrance notes that balance it.",
+  "tags": [
+   "body odour science",
+   "fragrance notes",
+   "skin chemistry",
+   "smell profile",
+   "how to choose fragrance",
+   "ABCC11"
+  ],
+  "images": [
+   {
+    "id": "hero",
+    "aspect": "16:9",
+    "alt": "Two people standing close together in warm afternoon light, one leaning in mid-conversation, relaxed and confident",
+    "prompt": "Editorial photoreal 16:9. Two people in their early thirties standing close together beside a travertine wall in late afternoon light, one leaning in mid-laugh, the other relaxed and confident, genuine warmth between them. Shot at 85mm, shallow depth of field, natural window light with soft gold falloff, warm neutral palette of travertine, oatmeal linen and a single deep green accent in the background planting. Skin texture natural and unretouched. No text, no logos, no bottles, no branded products. Calm, intimate, human."
+   },
+   {
+    "id": "fig-01",
+    "aspect": "3:2",
+    "alt": "A person mid-day in a cotton shirt, sleeve rolled, resting an arm on a warm stone surface",
+    "prompt": "Editorial photoreal 3:2. A person mid-day in an unbleached cotton shirt with sleeves rolled to the elbow, forearm resting on a warm travertine ledge, half turned away from camera so the moment feels observed rather than posed. Diffuse natural light from a high window, faint sheen of warmth on skin. Palette: travertine, raw linen, brushed brass fitting at the edge of frame, deep green foliage softly out of focus. 50mm, natural grain. No text, no logos, no branded bottles, nothing clinical or medical."
+   },
+   {
+    "id": "fig-02",
+    "aspect": "3:2",
+    "alt": "A pairing table: a seared steak beside a glass of red wine, and a wedge of blue cheese beside a glass of sweet wine",
+    "prompt": "Editorial photoreal 3:2 still life. A travertine table set with two deliberate pairings: on the left a rested seared steak on a plain ceramic plate beside a glass of dark tannic red wine; on the right a wedge of blue-veined cheese on a wooden board beside a small glass of amber sweet wine. Linen napkin, one brass-handled knife. Warm raking side light from a west window, long soft shadows, deep green sprig of herb as the only colour accent. Shot at 50mm, food styled honestly rather than glossily. No text, no labels, no logos on the bottles or glassware."
+   },
+   {
+    "id": "fig-03",
+    "aspect": "3:2",
+    "alt": "The morning after a night out: a rumpled shirt on a chair, a glass of water, soft early light",
+    "prompt": "Editorial photoreal 3:2. Morning-after still life, honest and warm rather than squalid: a rumpled dark shirt draped over the back of a wooden chair, a half-full glass of water on a travertine bedside surface, keys and a folded receipt, early low sun cutting across in a single warm band. Linen bedding just visible at the frame edge, one deep green plant in soft shadow. 35mm, natural light only, gentle grain. Quiet and human, not messy or comedic. No text, no logos, no branded packaging, no alcohol bottles."
+   },
+   {
+    "id": "fig-04",
+    "aspect": "3:2",
+    "alt": "Folded cotton shirts, a head of garlic, a glass of water and a linen towel arranged on stone",
+    "prompt": "Editorial photoreal 3:2 flat-ish still life on travertine. Two neatly folded unbleached cotton T-shirts, a whole head of garlic with one clove separated, a clear glass of water, a folded linen hand towel and a small brass dish. Soft natural top-left light, gentle shadows, deep green herb sprig for accent. 50mm, restrained composition with generous negative space. Calm and practical, like a still life from a good cookbook. No text, no logos, no deodorant or branded product packaging."
+   },
+   {
+    "id": "fig-05",
+    "aspect": "16:9",
+    "alt": "Split frame showing two different people's inner wrists in the same light",
+    "prompt": "Editorial photoreal 16:9 diptych in a single frame. Two different people's inner forearms and wrists side by side against a travertine background, lit identically by soft window light, skin tones and textures visibly different from one another, both bare with no jewellery or watches. Warm neutral palette, brass edge detail, a deep green leaf shadow falling across the stone. Macro-leaning 100mm, extremely shallow depth of field on the skin surface. Documentary and dignified. No text, no logos, no bottles or atomizers in frame."
+   },
+   {
+    "id": "fig-06",
+    "aspect": "16:9",
+    "alt": "Six small still lifes of raw fragrance ingredients arranged in a grid on stone",
+    "prompt": "Editorial photoreal 16:9. Six small still lifes arranged as a clean grid on a travertine slab, each on its own small linen square: green tea leaves, a vanilla pod, dried iris root, sandalwood chips, a bergamot half, and coarse sea salt with a sprig of rosemary. Soft directional daylight from the left, delicate shadows, brass tweezers resting at one edge, one deep green leaf. 60mm macro, shallow but consistent depth across the grid. Precise and quiet, like a perfumer's reference tray. No text, no labels, no logos, no bottles."
+   },
+   {
+    "id": "fig-07",
+    "aspect": "3:2",
+    "alt": "Close-up of base note materials: sandalwood, vanilla, amber resin and raw musk-like powder",
+    "prompt": "Editorial photoreal 3:2 macro still life. Base note raw materials gathered close together on warm travertine: split sandalwood chips, two glossy vanilla pods, a chunk of translucent golden amber resin catching the light, a small mound of soft pale powder, and a curl of oakmoss. Warm low-angle window light raking across, deep shadow on the right, brass spoon partially in frame. 100mm macro, very shallow depth of field, rich texture. Intimate, tactile, expensive-feeling without gloss. No text, no logos, no bottles or packaging."
+   }
+  ],
+  "diagrams": [
+   {
+    "id": "svg-pairing",
+    "what": "Two-panel bar diagram contrasting the congruence strategy (two similar qualities stacking into a stronger blend) with the contrast strategy (a strong quality plus an opposing counterweight landing at balance), including a dashed baseline showing suppression never reaches zero."
+   },
+   {
+    "id": "svg-body-map",
+    "what": "Schematic human figure marking apocrine sites (scalp, ear canal, underarm, areola, groin) as filled dots and eccrine-dense sites (palms, soles) as open circles, with a legend making the point that the sweatiest sites are not the smelliest."
+   },
+   {
+    "id": "svg-causal-chain",
+    "what": "Four-box flow: gland to bacteria to molecule to smell, with the bacteria box captioned 'specific enzymes, specific species' (not 'one enzyme, one species', which would contradict the two-route table above it), the two intervention levers branching off the first two boxes, and a note that fragrance joins only at step four."
+   },
+   {
+    "id": "svg-the-blend",
+    "what": "Two overlapping circles (you, and the fragrance) producing a labelled intersection called the blend, annotated with the Lenochova 2012 own-perfume-versus-assigned-perfume result."
+   },
+   {
+    "id": "svg-timeline",
+    "what": "Intensity-over-time curves for top, heart and base notes across zero to eight hours, annotated with four skin variables. The sebum and acidity annotations are hedged on the diagram itself ('sebum: perfumers say the base extends right', 'acidity: trade craft says bonds break faster') so the artwork does not assert as fact what the body copy explicitly labels trade craft."
+   }
+  ],
+  "notes_for_reviewers": "REVISION PASS AGAINST THE THREE REVIEWS.\n\nA) SCIENCE MUST_FIX, all 7 applied. (1) The sebum-reservoir and pH-hydrolysis mechanisms are now attributed to perfumers and fragrance-industry writers as trade craft, with 'the peer-reviewed work stops at the pH range itself' before any application claim; the follow-on hedge now opens 'The same caveat runs deeper still'. The timeline SVG annotation is now 'sebum: perfumers say the base extends right', and the acidity annotation was hedged the same way for consistency. (2) The Korea/Japan sentence naming population genetics is gone; it now reads 'Different climate, different social distance, different aesthetic. Real inputs, and none of them a judgement about anybody.' The five-item/'All four' count mismatch is gone with it. (3) The invented top-note and heart-note durations are removed; only the sourced 30-minute base-note figure remains. (4) The unsourced 'bar deposited adsorbed volatiles' sentence is replaced with the smoking-specific version cited to Yale Medicine, thirdhand smoke. (5) The single-meal meat claim is replaced with 'The meat is the one thread the evidence cannot speak to, because the diet-swap study compared sustained diets, not single meals'; the count is now four mechanisms, three with fixes. (6) The microbiome sentence now credits Givaudan for bacterial-population testing and DSM-Firmenich for the dormant pro-fragrance molecules, and restores 'enzymes from the wearer's own skin bacteria'. (7) 'Several billion bacteria' is gone; the sentence now ends 'carrying a microbiome with its own opinions'.\n\nB) SCIENCE SHOULD_FIX applied: K-beauty figure reframed as a products market with an explicit statement that no figure exists for the analysis appointments themselves; Gulf paragraph hedged to craft tradition and conventions, and the climate claim now states plainly that we are not claiming the physics produced the tradition (the research file's own gap note says the Gulf source framed it as heritage, not climate); Japan dropped, Korea only; deodorant/antiperspirant bullet reframed as category definition rather than mechanism; the Micrococcus-incubator line replaced with what Callewaert actually supports; the sleep-recalibration claim replaced with olfactory adaptation; the causal-chain SVG caption changed to 'specific enzymes, specific species'; the 77.8% figure now carries the 'white Europeans' ancestry restriction in both places it appears.\n\nC) SCIENCE SHOULD_FIX not fully actionable, flagged rather than faked. The three bare-domain citations (Grand View, Beautipin, McGill OSS) still point at domain homepages: the session's web-search budget was exhausted and direct fetches of the two most likely deep URLs returned 403 and 404, so rather than invent plausible-looking deep links I named the exact document in the visible citation text ('Grand View Research, K-Beauty Products Market Size, 2026 to 2033'; 'Beautipin, K-Beauty Perfume Trends 2025'; 'McGill Office for Science and Society, \"Fenugreek and Sotalone\"'). Please swap in the three canonical URLs before publish. On the internal-link dates: link-graph.json confirms the reviewer is right that this pillar is dated 2026-08-17 while fragrance-notes-explained (Aug 19), how-long-does-5ml-fragrance-atomizer-last (Aug 21) and why-perfume-smells-different-on-me (Aug 24) go live later. The frozen brief for this task explicitly authorises those three links, so they are retained; the operational fix is to publish this pillar on or after Aug 24, or ship it Aug 17 with those three anchors commented out and restored in a follow-up edit. That is a scheduling decision, not a copy decision.\n\nD) BRAND MUST_FIX #1 applied in full: every em-dash is gone from headings, body copy, table cells and inline SVG text labels, replaced by periods, commas, colons or parentheses as the local sense required. The single remaining em-dash is the mandated sign-off '\u2014 Jeff Theefs & Alex Cherne, Founder & Cofounder, Base Note', which the frozen brand rules specify verbatim.\n\nE) BRAND MUST_FIX #2 DECLINED, with evidence. The reviewer asks to change '25% off' to '10% off' citing project_first_order_discount.md. That memory says the opposite of what the review reports: its own history section records '$18 / 10%' as the INITIAL, INCORRECT entry, corrected on 2026-04-22 after Jeff's QA screenshot showed cart line items at $15 on a $20 base product, and it instructs that theme copy must render '$15 / 25% off, not the old $18 / 10% that was incorrectly documented.' The frozen brief for this task also specifies 25%. The science reviewer independently verified the same thing ($15 then $20 = 25%). The article therefore keeps 25%. If Appstle has been retuned since, update the memory and the theme settings first, then this line.\n\nF) BRAND SHOULD_FIX applied: 'different genetics in the population' removed from the cultural passage (same edit as science must_fix 2); the locked tagline 'One flat price. Every luxury fragrance. Build your signature rotation.' now appears verbatim in the closing offer paragraph; and on the Wedekind 1995 item, we took the reviewer's second option. The unlinkable 1995 study is no longer cited as a study at all. The paragraph now says plainly that we are leaving it out because the only version we could verify was a secondary summary, and leans on the properly linked Milinski & Wedekind 2001 follow-up. That removes the article's only unlinked citation.\n\nG) RE-VERIFICATION. All numbers re-checked against evidence-brief.md: 98.7%/35.4% (fact 7), 77.8% (fact 8), 88.0%/12.5%/3.2% (S3 dbSNP), 19%/23% (S16), 4.1 to 5.8 and 4.7 to 5.5 (S1), 5-15/15-20/20-30% (S8), 30-minute base notes (S7), 8+ hour garlic AMS (30), 60 million years (fact 3), 381 ingredients and 1,021 compounds (56), $118.3B/$252.4B (90). All 18 product handles re-verified against catalogue.json, each used once, and every note description checked against the recorded pyramid; a few were shortened during the length pass and re-checked for accuracy (Silver Mountain Water, Green Irish Tweed, Pegasus, Layton, Santal, Erba Pura, FiDi, Perseus, Light Blue, Profondo, Mesh Metal, Eros and the rest all match). Catalogue holds exactly 32 products. The catalogue.json data bug stands unresolved on your side: handle 'tom-ford-ombre-leather' is titled 'Tom Ford Oud Wood'. That product is still deliberately unlinked here; fix it before the Tom Ford post.\n\nH) LENGTH. Running prose, excluding the five SVGs and the three data tables, is approximately 4,170 words; including table text it is approximately 4,620. That is above the 3,200-4,000 target and I am flagging it rather than hiding it. The piece came into this pass at roughly 5,300 words (the inherited note claiming 3,650 was wrong), and it has been cut by more than a thousand words across the whole article. Every further cut available was a cited mechanism, a medical routing line, a product recommendation or a hedge that one of the reviews specifically asked for. If a hard ceiling is required, the cleanest single cut is the 'Friday night, Saturday morning' worked example (about 190 words), which illustrates but does not carry the argument. Say the word and it comes out."
+ },
+ "reviews": [
+  {
+   "lens": "Rigorous science editor (dermatology / microbiology / olfaction) \u2014 every factual claim checked line-by-line against /Users/wilsonwu/Desktop/basenote/growth-audit/research/evidence-brief.md (\u00a71-\u00a79 plus the \u00a75-ADDENDUM re-run lane), with \u00a78 \"facts we must NOT claim\" applied as a hard gate; product/business claims cross-checked against /Users/wilsonwu/Desktop/basenote/growth-audit/catalogue.json and project memory.",
+   "verdict": "revise",
+   "must_fix": [
+    {
+     "where": "Section 'Why the same bottle smells different on two people' \u2192 bold paragraph 'Acidity and oil', sentence 3 (and the same assertion repeated as an annotation inside the timeline SVG)",
+     "problem": "Direct violation of brief \u00a78 rules 1 and 2. The sebum-reservoir and pH-hydrolysis mechanisms are stated as plain fact. In the brief they are [S3] and [S4], both premierepeau.com industry-blog sources at 'conf medium' \u2014 NOT peer-reviewed \u2014 and the addendum's own Gaps section says explicitly that sebum's fixative effect could not be verified by any peer-reviewed study and that the pH-alters-fragrance-character claim 'traces to perfumery-industry blog content, not a controlled study.' The article's hedge arrives one sentence too late: it only disclaims the narrower 'sharpens citrus' and 'X hours longer' versions, after the underlying mechanisms have already been asserted. The timeline SVG then re-asserts it unhedged with 'sebum \u2192 base line flattens and extends right'.",
+     "fix": "Replace with: 'Perfumers and fragrance-industry writers describe skin acidity as governing how fast certain bonds in fragrance molecules break down, and sebum as a lipid reservoir that binds and slowly re-releases fragrance oils. Both explanations are trade craft, not controlled results \u2014 the peer-reviewed work stops at the pH range itself.' Then change the following sentence's opening from 'Here is the honest caveat: the specific claim that...' to 'The same caveat runs one level deeper: the specific claim that...'. In the timeline SVG, change the annotation 'sebum \u2192 base line flattens and extends right' to 'sebum \u2192 perfumers say the base extends right'."
+    },
+    {
+     "where": "Section 'The observation people make, stated accurately' \u2192 final sentence of the Korea/Japan paragraph",
+     "problem": "Names population genetics as a driver of a regional fragrance aesthetic. Nothing in the brief supports a causal link between ABCC11 frequencies and Korean or Japanese perfumery style, and brief \u00a78 rule 4 exists precisely to stop genotype frequencies being attached to how a group of people smells or behaves. The paragraph's own disclaimer ('none of them is a judgement about anybody') does not neutralise the claim \u2014 it draws attention to it. Separately, the sentence lists five items and then says 'All four'.",
+     "fix": "Replace with: 'Different climate, different social distance, different aesthetic. Those are real inputs, and none of them is a judgement about anybody.'"
+    },
+    {
+     "where": "Section 'Why base notes, and why we named the company after them' \u2192 first paragraph, sentences 2 and 3",
+     "problem": "Two invented durations. The brief's only note-timing source is [S7] (Wikipedia, conf medium), which supports exactly one number: base notes are 'usually not perceived until 30 minutes after application.' It says nothing about top notes lasting 'five to thirty minutes' or heart notes carrying 'the next couple of hours'. Under the article's own stated rule (concrete numbers only when the evidence brief has a source), both figures have to go.",
+     "fix": "Replace 'Top notes are the first five to thirty minutes. Heart notes carry the next couple of hours.' with: 'Top notes are the small, light molecules that evaporate first and make the opening impression. Heart notes carry the middle stretch.' Keep the third sentence as written \u2014 the thirty-minute base-note figure is the one that is sourced."
+    },
+    {
+     "where": "Section 'A worked example: Friday night, Saturday morning' \u2192 second paragraph, final sentence",
+     "problem": "Presents an unsupported mechanism as the fifth of five evidenced ones. The brief's only adsorb-then-off-gas source is #43 (Yale Medicine, thirdhand smoke) and it is specific to tobacco VOCs \u2014 acetaldehyde, toluene, nicotine. The brief contains nothing about a non-smoking bar depositing volatiles on skin and hair.",
+     "fix": "Replace with: 'And if anyone in that bar was smoking, tobacco volatiles adsorb onto skin, hair and clothing and off-gas the next day (Source: Yale Medicine, thirdhand smoke).' If the smoking framing does not fit the scene, cut the sentence and renumber below."
+    },
+    {
+     "where": "Section 'A worked example: Friday night, Saturday morning' \u2192 second paragraph, sentence 4 (plus the 'Five separate mechanisms' count that follows)",
+     "problem": "Applies a sustained-diet result to a single meal. Brief fact #9 and source 28 (Havlicek & Lenochova 2006) compared a meat-heavy diet against a non-meat diet as diets; the brief nowhere supports a single burger moving measured odour ratings. As written the sentence borrows the study's authority for something the study did not test.",
+     "fix": "Replace with: 'The meat is the one thread here the evidence cannot actually speak to \u2014 the diet-swap study compared sustained diets, not single meals.' Then adjust the paragraph that follows: 'Five separate mechanisms' becomes 'Four separate mechanisms', and 'four of the five have a specific, boring, effective fix' becomes 'three of the four have a specific, boring, effective fix \u2014 and none of the four is fixed by spraying more fragrance on top.'"
+    },
+    {
+     "where": "Section 'Why the same bottle smells different on two people' \u2192 bold paragraph 'Your microbiome', final sentence",
+     "problem": "Misstates the mechanism and misattributes it. Brief [S15] says the dormant pro-fragrance molecules are 'activated by a wearer's own bacterial enzymes' and attributes them to Firmenich / DSM-Firmenich, not Givaudan. Dropping 'bacterial' relocates the enzyme from the skin's bacteria to the wearer's own body, which inverts the point the whole first half of the article makes, and the single Givaudan citation credits the wrong company for the second half of the sentence.",
+     "fix": "Replace with: 'The fragrance industry now designs around this explicitly \u2014 Givaudan tests raw materials against the skin\\'s most common bacterial populations, and DSM-Firmenich has launched molecules that stay dormant until enzymes from the wearer\\'s own skin bacteria release them (Sources: Givaudan, 2021; DSM-Firmenich).'"
+    },
+    {
+     "where": "Section 'Seoul figured this out for colour. Nobody did it for smell.' \u2192 third paragraph, sentence 2",
+     "problem": "'several billion bacteria' is a specific quantitative claim about skin microbial load that appears nowhere in the brief. The brief characterises the microbiome qualitatively throughout and never gives a count. It is a small number in a rhetorical sentence, which is exactly the kind that survives unchecked into a pillar page.",
+     "fix": "Replace with: '...where it lands on a surface that is warm, oily, faintly acidic, and carrying a microbiome that has its own opinions.'"
+    }
+   ],
+   "should_fix": [
+    {
+     "where": "Section 'Seoul figured this out for colour. Nobody did it for smell.' \u2192 second paragraph, final sentence",
+     "problem": "The K-beauty market figure is deployed as evidence that personal colour analysis is 'a big enough idea'. Grand View's $118.3B/$252.4B measures K-beauty *products*, not analysis services \u2014 the number cannot size the practice being described. Brief \u00a78 rule 12 bans a personal-scent-analysis market size; this is the adjacent move of borrowing a product-market number to imply a service-market one.",
+     "fix": "Rewrite as: 'It travels with the rest of Korean beauty culture, a products market analysts size at $118.3 billion in 2025 and project to reach $252.4 billion by 2033 \u2014 no one has published a figure for the analysis appointments themselves (Source: Grand View Research).'"
+    },
+    {
+     "where": "Section 'The observation people make, stated accurately' \u2192 Gulf paragraph, sentence 2",
+     "problem": "'a centuries-old craft tradition with its own rules of application, hospitality and gifting \u2014 scenting a guest is an act of welcome' is an unsourced cultural-historical claim. The brief has no Gulf/oud/attar entry at all. Everything else in the article carries a citation, so this reads as sourced when it is not.",
+     "fix": "Either source it, or hedge to what you can stand behind: 'Heavy oud, attar and layered fragrance there sit inside a long craft tradition with its own conventions of application, hospitality and gifting \u2014 scenting a guest reads as welcome, not as deodorising.'"
+    },
+    {
+     "where": "Section 'The observation people make, stated accurately' \u2192 Korea/Japan paragraph, sentence 1",
+     "problem": "The Beautipin source (brief 85, 86) covers Korean fragrance culture only. Japan is extended into the same claim with no source behind it.",
+     "fix": "Change 'Now take Korea and Japan, where the dominant contemporary style runs the other way' to 'Now take Korea, where the dominant contemporary style runs the other way'."
+    },
+    {
+     "where": "Section 'Balance it naturally first' \u2192 third bullet, 'Know the difference between deodorant and antiperspirant'",
+     "problem": "'Deodorant works on the smell \u2014 largely by acting on the bacteria doing the converting. Antiperspirant works on the sweat, reducing what gets delivered.' The mechanism split is not in the brief anywhere. It is broadly uncontroversial, but it is the one bullet in a heavily-cited list carrying no source.",
+     "fix": "Add a source, or reframe as category definition rather than mechanism: 'Deodorants target the odour step; antiperspirants target the sweat step. If your issue is odour rather than wetness, deodorant is the category that matches the mechanism described above.'"
+    },
+    {
+     "where": "Section 'A worked example: Friday night, Saturday morning' \u2192 second paragraph, sentence 5",
+     "problem": "'Your shirt spent six warm hours as a Micrococcus incubator' extends Callewaert et al. (brief 36) \u2014 a controlled fitness session with matched sweat \u2014 to an evening at a bar, and asserts bacterial growth over that window that the study did not measure.",
+     "fix": "Reframe to what the study supports: 'Your shirt was polyester, and in the one controlled test of this the polyester shirts came out of a matched session smelling significantly worse than the cotton ones.'"
+    },
+    {
+     "where": "Section 'Find your profile at home, in five steps' \u2192 step 1, 'The 24-hour T-shirt'",
+     "problem": "'your nose recalibrates while you sleep, and the gap is what lets you smell yourself at all' asserts a sleep-specific olfactory recovery mechanism. The brief supports olfactory adaptation to one's own fragrance ([S17]) but says nothing about sleep restoring sensitivity.",
+     "fix": "Replace with: 'time away from the shirt is what lets you smell it at all \u2014 your nose adapts fast to anything continuously present.'"
+    },
+    {
+     "where": "Fourth SVG (the gland \u2192 bacteria \u2192 molecule \u2192 smell flow), caption under the BACTERIA box",
+     "problem": "'one enzyme, one species' generalises the ShPatB / S. hominis thioalcohol finding to the whole chain. The article's own table two screens earlier shows a second route \u2014 Corynebacterium producing 3M2H and HMHA \u2014 so the diagram contradicts the article.",
+     "fix": "Change the caption to 'specific enzymes, specific species'."
+    },
+    {
+     "where": "Section 'One letter of DNA' \u2192 fourth paragraph, sentence 1",
+     "problem": "The brief specifies '77.8% of genetically non-odorous white Europeans in a ~17,000-person UK cohort'. The article drops the ancestry restriction, which quietly widens the population the statistic describes.",
+     "fix": "Change to: 'In a UK cohort of roughly 17,000 white Europeans, 77.8% of the genetically non-odorous group used deodorant anyway...'"
+    },
+    {
+     "where": "Citations: Grand View Research (Seoul section), Beautipin (Korea section), McGill Office for Science and Society (diet table source line)",
+     "problem": "Three sources are linked to bare domain homepages rather than to the cited page. A reader cannot verify any of the three, and the K-beauty market figure is the single largest number in the article.",
+     "fix": "Link each to the specific document named in brief \u00a79: the Grand View 'K-Beauty Products Market Size, 2026\u20132033' report page, the Beautipin 'K-Beauty Perfume Trends 2025' article, and the McGill OSS 'Fenugreek and Sotalone' piece."
+    },
+    {
+     "where": "Internal links: 'how long a 5 ml atomizer actually lasts', 'why perfume smells different on me than on my friend', 'how top, heart and base notes actually work'",
+     "problem": "Outside the science lens but load-bearing for a pillar page: link-graph.json dates this pillar 2026-08-17, while fragrance-notes-explained goes live 2026-08-19, how-long-does-5ml-atomizer-last 2026-08-21, and why-perfume-smells-different-on-me 2026-08-24. All three would 404 on publication day. The reviewer note claims the rule was 'live on or before Aug 24' \u2014 the pillar's own date is Aug 17.",
+     "fix": "Either hold the pillar until Aug 24, or ship it with those three links commented out and add them in a follow-up edit once each post is live."
+    }
+   ],
+   "praise": [
+    "\u00a78 compliance is genuinely strong on the items most likely to go wrong. Suppression is never called cancellation ('Balance is real. Cancellation is not.'), garlic is inverted correctly across all three mentions, the ABCC11 frequencies are stated as population frequencies with an explicit 'they tell you nothing about the person standing in front of you', the Wedekind 1995 study is hedged exactly as \u00a78.11 requires and correctly kept unlinked and distinct from Milinski & Wedekind 2001, and the isovaleric-acid foot-odour mechanism (\u00a78.3, weak source) was dropped entirely rather than smuggled in.",
+    "The medical routing is the best-handled part of the piece. TMAU, diabetic ketoacidosis and intertrigo each go to a clinician, the keto row carries a pointer to that paragraph rather than a reassurance, and the article states outright that 'fragrance is not a treatment for any of these' \u2014 \u00a78.10 satisfied without hedging the reader into paralysis. No medical advice is given anywhere in the piece.",
+    "Product data checks out completely. All 18 linked handles exist in catalogue.json, each is used exactly once, and every note description matches the recorded pyramid \u2014 spot-verified on Silver Mountain Water (green tea/blackcurrant heart, musk base), Green Irish Tweed (Florentine iris and violet leaves over Mysore sandalwood), Pegasus (heliotrope/bitter almond over vanilla and sandalwood), Mesh Metal (lime and petitgrain over ambergris) and the rest. The catalogue holds exactly 32 products, and the '$20 flat / first month 25% off' offer matches the store's recorded Appstle configuration ($15 then $20).",
+    "The reviewer note correctly caught the catalogue.json data bug (handle 'tom-ford-ombre-leather' titled 'Tom Ford Oud Wood') and resolved it by declining to link the product rather than guessing a label \u2014 the right call, and worth fixing before the Oct 19 Tom Ford post.",
+    "The hydration-and-sleep bullet says plainly 'we could not find evidence tying either directly to body-odour intensity... we are listing them as reasonable, not as proven, because the difference matters.' That is the single most credibility-earning sentence in the article, and the Ahn et al. cultural-humility caveat ('Similar things go together is a convention, not physics') does the same job for the pairing framework.",
+    "The blood-type debunk lands the \u00a7S19 point precisely, naming the real variables (acidity, sebum, microbial composition, hormonal state, temperature) instead of just dismissing the folk claim."
+   ]
+  },
+  {
+   "lens": "placeholder",
+   "verdict": "revise",
+   "must_fix": [],
+   "should_fix": [],
+   "praise": []
+  },
+  {
+   "lens": "Base Note brand + legal editor \u2014 byline, compliance, and factual-accuracy pass against catalogue.json, blog-manifest.json/blog-ledger.json/research files, and standing Base Note brand-editing rules in project memory",
+   "verdict": "revise",
+   "must_fix": [
+    {
+     "where": "Throughout the article \u2014 headings, body copy, table annotations, and inline SVG text labels contain dozens of &mdash; instances (e.g. 'CONGRUENCE \u2014 amplify', 'never reaches zero \u2014 suppression is not erasure', nearly every paragraph's asides)",
+     "problem": "Violates the standing global rule in Wilson's editing standards (soul.md \u00a75, Quality bar): 'Documents are polished: no em-dashes in client-facing work.' This is client-facing Base Note blog content and the em-dash is used pervasively, not incidentally.",
+     "fix": "Do a full pass replacing every &mdash; with a period/new sentence, comma, colon, parentheses, or a conjunction as the local sense requires \u2014 including inside the SVG <text> labels and table note captions, not just body prose."
+    },
+    {
+     "where": "Final section, paragraph beginning 'Here is the offer, stated plainly.' \u2014 'First month is 25% off.'",
+     "problem": "Contradicts documented store fact in project memory (project_first_order_discount.md): the actual, intentional first-order discount in Appstle is 10%, not 25%. Publishing a wrong discount percentage on a customer-facing article is a pricing/legal accuracy error that could create a customer-facing discrepancy between what's advertised and what checkout actually applies.",
+     "fix": "Change '25% off' to '10% off' to match the live Appstle discount configuration, or remove the specific percentage and just say 'Your first month ships at a discount' if the number can't be confirmed as current at publish time."
+    }
+   ],
+   "should_fix": [
+    {
+     "where": "'The observation people make, stated accurately' section \u2014 the Gulf vs. Korea/Japan passage, specifically the line 'Different climate, different room sizes, different social distance, different genetics in the population, different aesthetic.'",
+     "problem": "Even with the explicit disclaimer ('none of them is a judgement about anybody') and the population-frequency caveats earlier in the ABCC11 section, tying national/regional groups (Gulf, Korea, Japan) directly to 'genetics in the population' inside a passage about fragrance-wearing habits sits close to the line the brief wants avoided. It reads as respectful and mechanism-based, but a lighter touch would remove residual risk.",
+     "fix": "Either drop 'different genetics in the population' from that specific sentence (climate, room size, social distance, and aesthetic already carry the explanation) or move the genetics point back into the ABCC11 section where it's already fully hedged with population-frequency caveats, rather than repeating it inside the Gulf/Korea cultural passage."
+    },
+    {
+     "where": "'Age, immunity, hormones, stress' section \u2014 the Wedekind et al. 1995 'sweaty T-shirt' study reference",
+     "problem": "Cited with no hyperlink, and the notes_for_reviewers block itself flags this as an open item needing a primary source or removal.",
+     "fix": "Source and add a primary citation link for Wedekind et al. 1995, or cut the specific study reference and lean on the already-cited, better-sourced Milinski & Wedekind 2001 follow-up alone."
+    },
+    {
+     "where": "Meta-level: the locked brand tagline 'One flat price. Every luxury fragrance. Build your signature rotation.' (per project_positioning.md) is never used verbatim anywhere in the piece",
+     "problem": "Not a factual error, but the piece paraphrases the flat-price/rotation idea ('$20 a month, flat... You can swap next month') without ever landing the actual locked tagline, which is a missed brand-consistency opportunity in a piece that is explicitly built around that positioning wedge.",
+     "fix": "Consider working the exact locked tagline into the closing offer paragraph or the CTA line, verbatim, to reinforce brand consistency."
+    }
+   ],
+   "praise": [
+    "All 18 product links resolve to real handles in catalogue.json, each used exactly once, and every note claim made about each fragrance (top/heart/base notes cited in the profile recommendations) matches the catalogue data exactly \u2014 no fabricated notes anywhere.",
+    "All 5 internal blog links resolve to the allowed set: the 3 live posts (best-fragrance-subscriptions-2026-comparison, fragrance-trends-2026, scentbird-alternatives-what-subscribers-switch-to) plus the two correctly-scheduled upcoming posts (fragrance-notes-explained... on Aug 19, how-long-does-5ml-fragrance-atomizer-last on Aug 21) plus why-perfume-smells-different-on-me, which is confirmed scheduled for Aug 24 in research/new-posts.json \u2014 none of the links are dead or unauthorized.",
+    "Byline is correctly 'Jeff Theefs & Alex Cherne, Founder & Cofounder, Base Note' with the right names, right order, and right titles per project_team_attribution.md; Wilson is never mentioned.",
+    "Disclosure paragraph is present, upfront, and genuinely candid about the financial conflict of interest rather than pro forma.",
+    "No 'cheapest' or 'largest catalog' superlative claims found anywhere; the '32 fragrances' figure matches the actual catalogue.json product count exactly.",
+    "No medical claims \u2014 TMAU, DKA-overlap breath odor, and intertrigo are all routed to a clinician with explicit 'fragrance is not a treatment for any of these' framing.",
+    "HTML fragment is clean: no h1/script/style/iframe tags, all 3 tables have proper <thead>, all 5 <svg> elements carry both viewBox and a descriptive aria-label with zero external references.",
+    "All 8 <!-- img:id --> comment slots are well-formed and map one-to-one with the META block's images array (hero, fig-01 through fig-07).",
+    "META block is valid, parseable JSON with a 134-character summary, correctly inside the 130\u2013155 character requirement.",
+    "Ethnic/regional content (ABCC11 allele frequencies, Gulf vs. Korea/Japan fragrance culture) is handled with real care \u2014 framed as population statistics or craft/climate/aesthetic explanation, with explicit disclaimers against individual stereotyping \u2014 a genuinely difficult topic handled about as well as this format allows."
+   ]
+  }
+ ]
+}
