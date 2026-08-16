@@ -1,0 +1,19 @@
+{%- comment -%}
+  Captures ?ref=<id> from any landing URL, keeps it 90 days in localStorage, and writes it onto the cart as
+  attributes.referred_by / referred_at so it appears on the order ("Additional details") for Jeff to credit
+  the referrer. Idempotent; silent on failure. Rendered once from layout/theme.liquid.
+{%- endcomment -%}
+<script>
+(function(){try{
+  var K='bn_ref', q=new URLSearchParams(location.search), r=q.get('ref');
+  if (r && /^[a-z0-9-]{3,40}$/i.test(r)) localStorage.setItem(K, JSON.stringify({ref:r.toLowerCase(), at:Date.now(), path:location.pathname}));
+  var s=null; try{ s=JSON.parse(localStorage.getItem(K)||'null'); }catch(e){}
+  if(!s||!s.ref||Date.now()-s.at>90*864e5) return;
+  if(!window.fetch) return;
+  fetch('/cart.js',{credentials:'same-origin'}).then(function(x){return x.json();}).then(function(c){
+    if(c && c.attributes && c.attributes.referred_by===s.ref) return;
+    return fetch('/cart/update.js',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({attributes:{referred_by:s.ref, referred_at:new Date(s.at).toISOString()}})});
+  }).catch(function(){});
+}catch(e){}})();
+</script>

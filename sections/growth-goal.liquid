@@ -1,0 +1,136 @@
+{%- comment -%}
+  Growth goal / Founding 60 band (Aug 2026).
+  Shows live active-member count vs goal (fetched from the basenote-media Worker; falls back to the
+  numbers in settings), a real deadline, and a refer-a-friend share block. Copy tokens available in
+  headline/body: {active} {goal} {remaining} {next} {deadline}. Server-renders the fallback so there is no
+  layout shift; JS only swaps numbers in.
+{%- endcomment -%}
+{%- liquid
+  assign goal = section.settings.goal | default: 60
+  assign active = section.settings.fallback_active | default: 17
+  assign remaining = goal | minus: active
+  if remaining < 0
+    assign remaining = 0
+  endif
+  assign next = active | plus: 1
+  assign deadline_label = section.settings.deadline_label | default: 'Nov 30'
+  assign pct = active | times: 100 | divided_by: goal
+  assign headline = section.settings.headline | replace: '{active}', active | replace: '{goal}', goal | replace: '{remaining}', remaining | replace: '{next}', next | replace: '{deadline}', deadline_label
+  assign body = section.settings.body | replace: '{active}', active | replace: '{goal}', goal | replace: '{remaining}', remaining | replace: '{next}', next | replace: '{deadline}', deadline_label
+-%}
+<section class="growth-goal" id="growth-goal-{{ section.id }}" aria-labelledby="gg-title-{{ section.id }}"
+  data-growth-goal data-endpoint="{{ section.settings.endpoint | escape }}" data-goal="{{ goal }}" data-active="{{ active }}"
+  data-deadline="{{ section.settings.deadline_date | escape }}" data-deadline-label="{{ deadline_label | escape }}"
+  data-hide-after="{{ section.settings.hide_after_deadline }}"
+  data-headline="{{ section.settings.headline | escape }}" data-body="{{ section.settings.body | escape }}">
+  <div class="growth-goal__inner">
+    <div class="growth-goal__copy">
+      {%- if section.settings.eyebrow != blank -%}<p class="growth-goal__eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      <h2 class="growth-goal__title" id="gg-title-{{ section.id }}" data-gg-title aria-live="polite">{{ headline }}</h2>
+      {%- if section.settings.body != blank -%}<p class="growth-goal__body" data-gg-body>{{ body }}</p>{%- endif -%}
+      {%- if section.settings.show_bar -%}
+      <div class="growth-goal__bar" role="progressbar" aria-label="Founding members" aria-valuemin="0" aria-valuemax="{{ goal }}" aria-valuenow="{{ active }}" data-gg-bar>
+        <span class="growth-goal__fill" data-gg-fill style="width: {{ pct }}%"></span>
+      </div>
+      <p class="growth-goal__meta"><span data-gg-count>{{ active }}</span> of {{ goal }} · <span data-gg-days>{{ section.settings.deadline_label }}</span></p>
+      {%- endif -%}
+      {%- if section.settings.honesty != blank -%}<p class="growth-goal__honesty">{{ section.settings.honesty }}</p>{%- endif -%}
+    </div>
+    <div class="growth-goal__actions">
+      {%- if section.settings.cta_label != blank -%}
+        <a class="growth-goal__cta" href="{{ section.settings.cta_link | default: '/pages/find-your-scent' }}">{{ section.settings.cta_label }}</a>
+      {%- endif -%}
+      {%- render 'referral-share', heading: section.settings.referral_heading, blurb: section.settings.referral_blurb, share_text: section.settings.share_text, code: section.settings.referral_code, compact: true -%}
+    </div>
+  </div>
+</section>
+
+<style>
+  .growth-goal{background:var(--color-primary,#2D4641);color:#F7F3EA;padding:2.25rem 1.25rem}
+  .growth-goal__inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr;gap:2rem;align-items:center}
+  .growth-goal__eyebrow{font-family:var(--font-body,'Lato',sans-serif);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--color-secondary,#C9A962);margin:0 0 .5rem}
+  .growth-goal__title{font-family:var(--font-heading,'Cormorant Garamond',serif);font-weight:600;font-size:clamp(1.6rem,3.2vw,2.4rem);line-height:1.15;margin:0 0 .6rem;color:#fff}
+  .growth-goal__body{font-family:var(--font-body,'Lato',sans-serif);font-size:1rem;line-height:1.55;margin:0 0 1rem;color:rgba(255,255,255,.85);max-width:56ch}
+  .growth-goal__bar{position:relative;height:10px;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden;max-width:520px}
+  .growth-goal__fill{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--color-secondary,#C9A962),#E7D3A0);border-radius:999px;transition:width .9s cubic-bezier(.2,.7,.2,1)}
+  .growth-goal__meta{font-family:var(--font-body,'Lato',sans-serif);font-size:.85rem;letter-spacing:.04em;margin:.5rem 0 0;color:rgba(255,255,255,.75)}
+  .growth-goal__honesty{font-family:var(--font-heading,'Cormorant Garamond',serif);font-style:italic;font-size:1.05rem;color:rgba(255,255,255,.8);margin:1rem 0 0;max-width:56ch}
+  .growth-goal__actions{display:flex;flex-direction:column;gap:1rem;align-items:flex-start}
+  .growth-goal__cta{display:inline-block;background:var(--color-secondary,#C9A962);color:#1f2a27;text-decoration:none;font-family:var(--font-body,'Lato',sans-serif);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.8rem;padding:.9rem 1.5rem;border-radius:999px;transition:transform .2s,box-shadow .2s}
+  .growth-goal__cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  @media (max-width: 860px){.growth-goal__inner{grid-template-columns:1fr;gap:1.25rem}.growth-goal{padding:1.75rem 1rem}}
+  @media (prefers-reduced-motion: reduce){.growth-goal__fill{transition:none}}
+</style>
+
+<script>
+(function () {
+  var el = document.querySelector('[data-growth-goal]');
+  if (!el) return;
+  var goal = parseInt(el.getAttribute('data-goal'), 10) || 60;
+  var tmplH = el.getAttribute('data-headline') || '';
+  var tmplB = el.getAttribute('data-body') || '';
+  var deadlineLabel = el.getAttribute('data-deadline-label') || '';
+  function fill(t, a) {
+    var r = Math.max(goal - a, 0);
+    return t.replace(/\{active\}/g, a).replace(/\{goal\}/g, goal).replace(/\{remaining\}/g, r).replace(/\{next\}/g, a + 1).replace(/\{deadline\}/g, deadlineLabel);
+  }
+  function paint(a) {
+    if (typeof a !== 'number' || isNaN(a)) return;
+    var t = el.querySelector('[data-gg-title]'); if (t && tmplH) t.textContent = fill(tmplH, a);
+    var b = el.querySelector('[data-gg-body]'); if (b && tmplB) b.textContent = fill(tmplB, a);
+    var c = el.querySelector('[data-gg-count]'); if (c) c.textContent = a;
+    var bar = el.querySelector('[data-gg-bar]'); if (bar) bar.setAttribute('aria-valuenow', a);
+    var f = el.querySelector('[data-gg-fill]'); if (f) f.style.width = Math.min(100, Math.round(a / goal * 100)) + '%';
+  }
+  // days-left from the real deadline
+  var dl = el.getAttribute('data-deadline');
+  if (dl) {
+    var end = new Date(dl + 'T23:59:59-05:00');
+    if (!isNaN(end)) {
+      var days = Math.ceil((end - Date.now()) / 864e5);
+      var d = el.querySelector('[data-gg-days]');
+      if (days > 0 && d) d.textContent = days + (days === 1 ? ' day' : ' days') + ' left';
+      if (days <= 0 && el.getAttribute('data-hide-after') === 'true') { el.hidden = true; return; }
+    }
+  }
+  try { var cached = sessionStorage.getItem('bn_member_count'); if (cached) { var j = JSON.parse(cached); if (Date.now() - j.t < 600000) paint(j.active); } } catch (e) {}
+  var url = el.getAttribute('data-endpoint');
+  if (!url || !window.fetch) return;
+  fetch(url, { mode: 'cors', credentials: 'omit' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+    if (!j || typeof j.active !== 'number') return;
+    try { sessionStorage.setItem('bn_member_count', JSON.stringify({ active: j.active, t: Date.now() })); } catch (e) {}
+    paint(j.active);
+  }).catch(function () {});
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Growth goal / Founding 60",
+  "tag": "section",
+  "class": "growth-goal-section",
+  "settings": [
+    { "type": "header", "content": "Numbers" },
+    { "type": "text", "id": "endpoint", "label": "Live count endpoint (JSON: {active, goal})", "default": "https://basenote-media.wilson-af8.workers.dev/member-count", "info": "Leave as is. Falls back to the numbers below if unreachable." },
+    { "type": "range", "id": "goal", "label": "Member goal", "min": 20, "max": 500, "step": 5, "default": 60 },
+    { "type": "range", "id": "fallback_active", "label": "Fallback active members (shown until the live count loads)", "min": 0, "max": 500, "step": 1, "default": 17 },
+    { "type": "text", "id": "deadline_date", "label": "Deadline (YYYY-MM-DD)", "default": "2026-11-30" },
+    { "type": "text", "id": "deadline_label", "label": "Deadline label", "default": "Nov 30" },
+    { "type": "checkbox", "id": "show_bar", "label": "Show progress bar", "default": true },
+    { "type": "checkbox", "id": "hide_after_deadline", "label": "Hide section after the deadline", "default": true },
+    { "type": "header", "content": "Copy — tokens: {active} {goal} {remaining} {next} {deadline}" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Founding Members · 2026" },
+    { "type": "text", "id": "headline", "label": "Headline", "default": "{active} of {goal} founding members. You'd be #{next}." },
+    { "type": "textarea", "id": "body", "label": "Body", "default": "We're building Base Note to {goal} members by {deadline}. Founding members keep the flat $20/month for as long as they stay — no surcharges on any house, ever." },
+    { "type": "textarea", "id": "honesty", "label": "Honesty line (italic)", "default": "Sixty members is the number that makes one flat price work. We'll post where we are, honestly — including the weeks it doesn't move." },
+    { "type": "text", "id": "cta_label", "label": "Primary button", "default": "Claim a founding spot" },
+    { "type": "url", "id": "cta_link", "label": "Primary button link" },
+    { "type": "header", "content": "Refer a friend" },
+    { "type": "text", "id": "referral_heading", "label": "Referral heading", "default": "Know someone who'd love this?" },
+    { "type": "textarea", "id": "referral_blurb", "label": "Referral blurb", "default": "Send them your link. When they start a subscription, your next month is on us." },
+    { "type": "textarea", "id": "share_text", "label": "Share message", "default": "I'm using Base Note — one flat $20/month for real luxury fragrances (Creed, Tom Ford, Parfums de Marly) in 5 ml atomizers. First month 25% off:" },
+    { "type": "text", "id": "referral_code", "label": "Discount code for the friend (optional, e.g. FRIEND10 — must exist in Shopify)", "default": "" }
+  ],
+  "presets": [ { "name": "Growth goal / Founding 60" } ]
+}
+{% endschema %}
