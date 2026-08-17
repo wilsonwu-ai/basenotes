@@ -2,6 +2,21 @@
 <html class="no-js" lang="{{ request.locale.iso_code }}">
 <head>
   <meta charset="utf-8">
+
+  {%- comment -%}
+    PRISTINE FETCH — captured before any app script can wrap window.fetch.
+
+    Appstle's cart wrapper rewrites /cart/add.js payloads and STRIPS the
+    `selling_plan` key (store-wide incident, Jul 16-17 2026). A stripped plan
+    does not fail loudly: it silently lands a one-time, full-price line that
+    looks like a subscription until the customer is charged. Any code that adds
+    a line WITH a selling plan must therefore go through window.__bnFetch, not
+    window.fetch, and must still verify the result against /cart.js afterwards.
+    Consumer: sections/product-giveaway.liquid (Subscribe & Save module).
+    Keep this FIRST in <head>; a later capture is no longer pristine.
+  {%- endcomment -%}
+  <script>window.__bnFetch = window.fetch.bind(window);</script>
+
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0">
   <meta name="theme-color" content="{{ settings.color_primary | default: '#1a1a1a' }}">

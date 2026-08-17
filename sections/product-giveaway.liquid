@@ -3,19 +3,53 @@
   ----------------
   Standalone product template section for the free 5ml claim page.
 
-  LAYOUT — ONE FREE BOTTLE, ONE COLUMN (Jeff, Aug 2026: "really simple").
-  A single centred column, same at every width. No two-up grid, no "or" divider,
-  no competing card:
-    1. the subscription STRIP — one quiet line and one small link, above the
-       card. It exists because the visitor should see the monthly option BEFORE
-       claiming, but it is deliberately not a card: the free bottle is the hero
-       and nothing may compete with it for the eye.
-    2. the free-bottle CARD — hero photo, headline, the word Free, ONE conditions
-       list, ship line, one button. That is the whole page above the FAQ.
-  A previous revision made these two peer cards side by side. It was rejected as
-  too busy. If you are tempted to reinstate it, that is the history.
-  Both still live inside #bnGiveChoice, which is the element the
+  LAYOUT — ONE COLUMN, BUILT TO JEFF'S WIREFRAME (docs/giveaway-qa/jeff-wireframe.jpg).
+  A single centred card, same at every width, in this exact order:
+    1. hero photo (`hero_image`, falling back to the product image)
+    2. dark PILL eyebrow — "One-time free product giveaway"
+    3. HEADLINE, two lines, built from live values: the shipping charge and the
+       product title. "Pay $4.99 for shipping, / get <product> for free."
+    4. the FTC conditions list  <- see the adjacency note below
+    5. the SUBSCRIBE & SAVE module — the paid option, offered before the claim
+    6. the CLAIM button
+    7. fineprint, which SWITCHES when a subscription has been chosen
+  Two earlier revisions (two peer cards side by side; then a quiet text strip)
+  were both rejected. If you are tempted to reinstate either, that is the history.
+  Everything still lives inside #bnGiveChoice, which is the element the
   IntersectionObserver watches, so the sticky bar cannot cover the claim button.
+
+  WHY THE CONDITIONS SIT ABOVE THE SUBSCRIBE MODULE AND NOT BELOW IT.
+  The wireframe puts the module directly under the headline. The conditions were
+  placed between them instead, deliberately: the module is a DIFFERENT offer at a
+  DIFFERENT price, and interposing it between the word "free" and the conditions
+  attached to that word is exactly the separation 16 CFR 251.1(c)(1) is about.
+  Conditions first, then the second offer. Do not reorder these two.
+
+  THE THREE CLICKS. Choose (a scent) -> Claim (the free bottle) -> Checkout.
+  The subscription is added to the cart the moment a scent is chosen, NOT at
+  claim time, so the claim button keeps its single job and its existing guards.
+
+  FREE SHIPPING ON THE SUBSCRIPTION IS A PROMISE THIS THEME CANNOT KEEP ON ITS OWN.
+  The module says "+ free shipping" and the fineprint says the shipping charge is
+  waived. Nothing in Liquid makes that true — it depends on an AUTOMATIC discount
+  configured in Shopify admin (Discounts > Create > Amount off delivery >
+  Automatic, minimum subtotal $10, all countries the store ships to). If that
+  discount does not exist, the customer is charged shipping and the page has lied.
+  `sub_free_shipping` (checkbox, default true) is the switch: turn it OFF and
+  every free-shipping word disappears from the module and the fineprint, and the
+  fineprint states the shipping charge instead. Turn it off if the discount is
+  ever paused, expired, or scoped away from this product.
+
+  MIXED CART (free $0 bottle + a subscription line). Verified against the cart
+  surfaces on this branch, no changes were needed:
+    - templates/cart.liquid keeps `has_subscription` TRUE whenever any line
+      carries a selling plan, so the ROSCA disclosure and its consent checkbox
+      both render, and checkout stays gated on the checkbox.
+    - Both cart.liquid and snippets/cart-drawer.liquid already refuse to assert
+      "Shipping FREE" when a giveaway line is present and print "Calculated at
+      checkout" instead. The free-shipping discount is applied by Shopify at
+      checkout, not asserted by the theme.
+    - Neither surface gives the giveaway line a working quantity stepper.
 
   WHY THIS EXISTS (do not "simplify" this back onto main-product):
   `sections/main-product.liquid` contains the Bug D guard — any product with
@@ -25,9 +59,19 @@
   the guard rather than weakening it. It deliberately contains NO Appstle widget,
   NO swap modal, NO "Queue for a Future Month" button and NO selling_plan input.
 
-  WHY NO SELLING PLAN IS ATTACHED: Appstle derives the recurring charge from the
-  product price, so a $0 product would recur at $0. The subscription strip is a
-  LINK OUT to a normal fragrance PDP, not an inline subscribe button.
+  WHY NO SELLING PLAN IS ATTACHED TO *THIS* PRODUCT: Appstle derives the
+  recurring charge from the product price, so a $0 product would recur at $0.
+  The Subscribe & Save module never puts a plan on the giveaway SKU — it adds a
+  SEPARATE line for a real fragrance, at that fragrance's own price and plan.
+
+  WHY THE MODULE USES window.__bnFetch AND THEN RE-READS /cart.js:
+  Appstle's wrapper around window.fetch STRIPS `selling_plan` from add payloads
+  (store-wide incident, Jul 16-17 2026), which converts a subscription into a
+  silent one-time full-price line. layout/theme.liquid captures a pristine fetch
+  as window.__bnFetch before any app script loads. Capturing it is not enough on
+  its own: /cart/add.js can return a line WITHOUT selling_plan_allocation even
+  when the plan did apply, so the module re-reads /cart.js and, if the plan is
+  genuinely missing, REMOVES the line rather than leaving a full-price surprise.
 
   COMPLIANCE NOTES (do not move these strings below the fold or into the FAQ):
   - 16 CFR 251.1(c)(1): every condition on a "Free" offer must be disclosed
@@ -71,8 +115,17 @@
   assign show_cap = section.settings.show_cap
   assign cap = section.settings.cap | default: 40
   assign ship_amount = section.settings.ship_amount | default: '$4.99'
-  assign claim_label = section.settings.claim_label | default: 'Claim my free 5ml'
-  assign claim_label_short = section.settings.claim_label_short | default: 'Claim my free 5ml'
+  assign claim_label = section.settings.claim_label | default: 'Claim my free bottle'
+  assign claim_label_short = section.settings.claim_label_short | default: 'Claim my free bottle'
+
+  comment
+    Guards the word "free" in the headline against a SKU that is not actually
+    $0. Never assume the price: `| money` renders "$0.00" either way.
+  endcomment
+  assign price_is_zero = false
+  if current_variant.price == 0
+    assign price_is_zero = true
+  endif
   comment
     Off by default: the page opens on the photo. It has no schema default (a
     blank schema default is rejected by the Shopify server), so it renders only
@@ -93,6 +146,93 @@
   if section.settings.option_b_product != blank
     assign option_b_url = section.settings.option_b_product.url
   endif
+
+  assign sub_free_shipping = section.settings.sub_free_shipping
+  assign picker_title = section.settings.picker_title | default: 'Choose your second scent'
+  assign picker_explore_label = section.settings.picker_explore_label | default: 'Explore this scent'
+
+  comment
+    HEADLINE. Two lines, each interpolated from live values so the shipping
+    charge and the product name can never drift from the rest of the page:
+      {ship}       -> the Shipping charge setting
+      {product}    -> product.title
+      {sub_first}  -> first month price      {sub_price} -> price after that
+    The injected values are escaped; the merchant's own sentence around them is
+    printed as typed, the same as every other text setting in this section.
+  endcomment
+  assign t_ship = ship_amount | escape
+  assign t_product = product.title | escape
+  assign t_sub_first = sub_first_price | escape
+  assign t_sub_price = sub_price | escape
+
+  assign headline_line1 = section.settings.headline_line1 | default: 'Pay {ship} for shipping,'
+  assign headline_line1 = headline_line1 | replace: '{ship}', t_ship | replace: '{product}', t_product | replace: '{sub_first_price}', t_sub_first | replace: '{sub_first}', t_sub_first | replace: '{sub_price}', t_sub_price
+
+  assign headline_line2 = section.settings.headline_line2 | default: 'get {product} for free'
+  assign headline_line2 = headline_line2 | replace: '{ship}', t_ship | replace: '{product}', t_product | replace: '{sub_first_price}', t_sub_first | replace: '{sub_first}', t_sub_first | replace: '{sub_price}', t_sub_price
+
+  assign fineprint = section.settings.fineprint | default: 'Pay only shipping today. No subscription, no auto-renewal.'
+  assign fineprint = fineprint | replace: '{ship}', t_ship | replace: '{product}', t_product | replace: '{sub_first_price}', t_sub_first | replace: '{sub_first}', t_sub_first | replace: '{sub_price}', t_sub_price
+
+  comment
+    The subscribed fineprint carries NO schema default on purpose (same pattern
+    as faq_a1 below): a schema default would freeze the wording and, worse,
+    would keep promising waived shipping after `sub_free_shipping` is switched
+    off. Generated, it follows the switch automatically.
+  endcomment
+  assign fineprint_sub = section.settings.fineprint_sub
+  if fineprint_sub == blank
+    if sub_free_shipping
+      assign fineprint_sub = 'Today: ' | append: ship_amount | append: ' shipping is waived; your card is charged ' | append: sub_first_price | append: ' today, then ' | append: sub_price | append: ' until you cancel.'
+    else
+      assign fineprint_sub = 'Today: ' | append: ship_amount | append: ' shipping, plus ' | append: sub_first_price | append: ' for your first month; then ' | append: sub_price | append: ' until you cancel.'
+    endif
+  else
+    assign fineprint_sub = fineprint_sub | replace: '{ship}', t_ship | replace: '{product}', t_product | replace: '{sub_first_price}', t_sub_first | replace: '{sub_first}', t_sub_first | replace: '{sub_price}', t_sub_price
+  endif
+
+  comment
+    PICKER SOURCE. `fragrances` is the handle the rest of the theme already uses
+    (templates/product.json wires a related-products section to it). It is read
+    through a setting first so the campaign can be pointed somewhere else without
+    a code change, and it falls back to `all` rather than rendering an empty
+    modal — an empty picker behind a "Choose" button is a dead end, not a
+    graceful degradation. Products with no selling plan, and this giveaway SKU
+    itself, are skipped at render time.
+  endcomment
+  assign pick_collection = section.settings.picker_collection
+  if pick_collection == blank
+    assign pick_collection = collections['fragrances']
+  endif
+  assign pick_products = pick_collection.products
+  if pick_products.size == 0
+    assign pick_products = collections['all'].products
+  endif
+
+  comment
+    Does the picker have anything to offer? Counted BEFORE render so the module
+    can degrade to a plain link instead of opening an empty sheet.
+  endcomment
+  assign pick_count = 0
+  for p in pick_products limit: 60
+    if p.handle != product.handle and p.selling_plan_groups.size > 0
+      assign pick_count = pick_count | plus: 1
+    endif
+  endfor
+
+  comment
+    Is a subscription ALREADY in this cart? Rendered server-side so a reload
+    shows the chosen state and, critically, so the recurring-charge disclosure
+    is present on first paint whenever a recurring line genuinely exists —
+    rather than depending on JS having run. sessionStorage is a convenience on
+    top of this, never the source of truth.
+  endcomment
+  assign cart_sub_line = blank
+  for line in cart.items
+    if line.selling_plan_allocation
+      assign cart_sub_line = line
+    endif
+  endfor
 
   comment
     Hero image. Jeff's shot is the full bottle next to the Base Note 5 ml
@@ -222,40 +362,6 @@
 
       {%- comment -%}
         ============================================================
-        THE SUBSCRIPTION STRIP — seen before the claim, quiet on purpose.
-        One line and one link. Not a card, no button of its own weight,
-        no image: it must read as a signpost, not a second offer.
-
-        It is a LINK OUT to a normal fragrance PDP. No inline subscribe
-        button, no selling plan on the $0 SKU, no radio group, nothing
-        pre-selected.
-
-        WHY THERE IS NO ROSCA DISCLOSURE BOX HERE, and why that is not a
-        regression: ROSCA requires the auto-renewal terms before BILLING
-        INFORMATION IS TAKEN. This strip takes nothing — it is a link to a
-        collection. The disclosure fires where consent actually happens:
-        `sections/main-product.liquid` renders subscription-renewal-disclosure
-        on the PDP, `snippets/cart-drawer.liquid` renders it in the drawer.
-        If this strip is ever changed into anything that subscribes in place,
-        the disclosure must come back with it.
-
-        The Free framing of the card below must never bleed up into this
-        strip, and the strip's monthly price must never read as a condition
-        of the free bottle. They are separate offers at separate prices.
-        ============================================================
-      {%- endcomment -%}
-      <aside class="bn-give__strip">
-        <p class="bn-give__strip-text">
-          <strong>{{ section.settings.option_b_heading | default: 'Prefer the monthly rotation?' }}</strong>
-          {{ section.settings.option_b_body | default: 'Any fragrance, every month' }} — first month {{ sub_first_price }}, then {{ sub_price }}.
-        </p>
-        <a class="bn-give__strip-link" href="{{ option_b_url }}">
-          {{ section.settings.option_b_button | default: 'See the fragrances →' }}
-        </a>
-      </aside>
-
-      {%- comment -%}
-        ============================================================
         THE FREE BOTTLE — the hero, and the only card on the page.
         Shopify does NOT auto-hide sold-out product pages, and URL
         redirects only fire on would-be-404s. This conditional IS the
@@ -287,28 +393,38 @@
             </div>
           {%- endif -%}
 
-          <p class="bn-give__eyebrow">{{ section.settings.eyebrow | default: 'Base Note · Free 5 ml' }}</p>
+          {%- comment -%} Dark pill, per the wireframe. {%- endcomment -%}
+          <p class="bn-give__eyebrow">{{ section.settings.eyebrow | default: 'One-time free product giveaway' }}</p>
+
+          {%- comment -%}
+            The headline IS the Free claim now — there is no separate price word.
+            `| money` prints "$0.00" for a genuinely free SKU, so the claim is
+            branched on the REAL price instead: if this variant is ever priced
+            above zero, the page states that price and never says "free". The
+            old big "Free" display type carried this same guard; it moved here
+            with it. Do not collapse this back to a single unconditional line.
+          {%- endcomment -%}
           <h1 class="bn-give__title" id="bnGiveHeading">
-            {{ section.settings.headline | default: 'Your first 5ml is on us.' }}
+            {%- if price_is_zero -%}
+              <span class="bn-give__hl-line">{{ headline_line1 }}</span>
+              <span class="bn-give__hl-line">{{ headline_line2 }}</span>
+            {%- else -%}
+              <span class="bn-give__hl-line">{{ headline_line1 }}</span>
+              <span class="bn-give__hl-line">get {{ product.title }} for {{ current_variant.price | money }}</span>
+            {%- endif -%}
           </h1>
 
-          <p class="bn-give__subhead">
-            {{ section.settings.subhead | default: "One 5 ml atomizer of this month's featured fragrance, sent to your door. No subscription." }}
-          </p>
-
-          {%- comment -%} The word Free. `| money` prints "$0.00", so branch on the real price. {%- endcomment -%}
-          <p class="bn-give__price">
-            <span class="bn-give__price-word">
-              {% if current_variant.price == 0 %}Free{% else %}{{ current_variant.price | money }}{% endif %}
-            </span>
-          </p>
+          {%- if section.settings.subhead != blank -%}
+            <p class="bn-give__subhead">{{ section.settings.subhead }}</p>
+          {%- endif -%}
 
           {%- comment -%}
             FTC 251.1(c)(1) — every condition, at the outset, in the same block
-            as the word Free. Not a footnote. Not behind the FAQ. This list is
-            now the ONLY place these conditions are stated on this card: the
-            duplicate chip, box and button suffix were removed in the Aug 2026
-            dedupe pass, so a line deleted here is a condition disclosed nowhere.
+            as the Free claim, and BEFORE the Subscribe & Save module rather than
+            after it (see the adjacency note in the header comment). Not a
+            footnote. Not behind the FAQ. This list is the ONLY place these
+            conditions are stated on this card, so a line deleted here is a
+            condition disclosed nowhere.
           {%- endcomment -%}
           <ul class="bn-give__terms">
             <li>{{ ship_amount }} flat shipping, paid by you</li>
@@ -335,6 +451,82 @@
           <p class="bn-give__ship">
             Ships within 2 business days. Tracked the whole way.
           </p>
+
+          {%- comment -%}
+            ============================================================
+            SUBSCRIBE & SAVE — the paid option, offered before the claim.
+
+            Renders in one of two states:
+              empty  — the pitch and a "Choose" button that opens the picker
+              chosen — the fragrance that is now IN THE CART, plus "Change"
+
+            The chosen state is decided SERVER-SIDE from cart.items, not from
+            sessionStorage, so the recurring-charge disclosure is on the page on
+            first paint whenever a recurring line actually exists. JS moves
+            between the states live; it is not what makes the disclosure appear.
+
+            If nothing in the picker collection is subscribable, the button is
+            replaced by a plain link out. A "Choose" that opens an empty sheet
+            is a dead end.
+            ============================================================
+          {%- endcomment -%}
+          <div class="bn-give__sub" id="bnGiveSub">
+            <p class="bn-give__sub-pill">{{ section.settings.option_b_heading | default: 'Subscribe & save' }}</p>
+
+            <div class="bn-give__sub-empty" id="bnGiveSubEmpty" {% if cart_sub_line != blank %}hidden{% endif %}>
+              <span class="bn-give__sub-plus" aria-hidden="true">+</span>
+              <p class="bn-give__sub-copy">
+                {{ section.settings.option_b_body | default: 'Add a bottle' }}{% if sub_free_shipping %} + free shipping{% endif %} —
+                <strong>first month {{ sub_first_price }}, then {{ sub_price }}</strong>
+              </p>
+              {%- if pick_count > 0 -%}
+                <button
+                  type="button"
+                  class="bn-give__sub-choose"
+                  id="bnGiveChoose"
+                  aria-haspopup="dialog"
+                  aria-controls="bnGivePicker"
+                >{{ section.settings.option_b_button | default: 'Choose' }}</button>
+              {%- else -%}
+                {%- comment -%} Nothing subscribable to show: link out rather than open an empty sheet. {%- endcomment -%}
+                <a class="bn-give__sub-choose" href="{{ option_b_url }}">{{ section.settings.option_b_button | default: 'Choose' }}</a>
+              {%- endif -%}
+            </div>
+
+            <div class="bn-give__sub-chosen" id="bnGiveSubChosen" {% if cart_sub_line == blank %}hidden{% endif %}>
+              {%- if cart_sub_line != blank and cart_sub_line.image != blank -%}
+                <img
+                  class="bn-give__sub-thumb"
+                  id="bnGiveSubThumb"
+                  src="{{ cart_sub_line.image | image_url: width: 128 }}"
+                  width="64"
+                  height="64"
+                  alt=""
+                  loading="lazy"
+                >
+              {%- else -%}
+                {%- comment -%} No src attribute at all: src="" makes some browsers re-request the page. JS sets it. {%- endcomment -%}
+                <img class="bn-give__sub-thumb" id="bnGiveSubThumb" width="64" height="64" alt="" loading="lazy" hidden>
+              {%- endif -%}
+              <div class="bn-give__sub-chosen-text">
+                <p class="bn-give__sub-title" id="bnGiveSubTitle">{{ cart_sub_line.product.title }}</p>
+                <p class="bn-give__sub-terms">first month {{ sub_first_price }}, then {{ sub_price }}</p>
+              </div>
+              <button type="button" class="bn-give__sub-change" id="bnGiveChange">Change</button>
+            </div>
+
+            <p class="bn-give__sub-status" id="bnGiveSubStatus" role="status" aria-live="polite"></p>
+
+            {%- comment -%}
+              ROSCA. Once a scent is chosen, this page IS taking a subscription
+              decision, so the full auto-renewal disclosure has to be on screen —
+              not a fineprint line. Hidden until then, because until then the
+              page offers nothing recurring.
+            {%- endcomment -%}
+            <div class="bn-give__sub-disclosure" id="bnGiveSubDisclosure" {% if cart_sub_line == blank %}hidden{% endif %}>
+              {% render 'subscription-renewal-disclosure', surface: 'pdp' %}
+            </div>
+          </div>
 
           {%- if customer_claimed -%}
             {%- comment -%} Customer layer: tagged `giveaway_claimed` by Flow 1 on a previous order. {%- endcomment -%}
@@ -365,6 +557,14 @@
           {%- endif -%}
 
           <p class="bn-give__status" id="bnGiveStatus" role="status" aria-live="polite"></p>
+
+          {%- comment -%}
+            Fineprint. Swaps to the recurring-charge wording the moment a
+            subscription is in the cart, because "no subscription, no
+            auto-renewal" stops being true at that point. Server-rendered from
+            the cart, then kept in step by JS.
+          {%- endcomment -%}
+          <p class="bn-give__fineprint" id="bnGiveFineprint">{% if cart_sub_line != blank %}{{ fineprint_sub }}{% else %}{{ fineprint }}{% endif %}</p>
 
         </section>
 
@@ -493,6 +693,105 @@
 
   </div>
 </div>
+
+{%- comment -%}
+  ============================================================
+  SECOND-SCENT PICKER
+  ============================================================
+  Built here on purpose. `snippets/fragrance-selector.liquid` is the ACCOUNT
+  swap modal: it changes the fragrance on an EXISTING Appstle contract through
+  the customer portal. This one creates a NEW cart line with a selling plan for
+  a visitor who may not even have an account. Same visual idea, completely
+  different semantics and completely different failure modes. Do not merge them.
+
+  Rendered only when there is something subscribable to show; the module falls
+  back to a plain link otherwise, so this element and the button that opens it
+  appear and disappear together.
+
+  Rows skip: this giveaway SKU (you cannot subscribe to the free bottle) and any
+  product with no selling plan (a row that cannot produce a subscription is a
+  row that produces a full-price surprise).
+{%- endcomment -%}
+{%- if pick_count > 0 -%}
+  <div class="bn-give-picker" id="bnGivePicker" hidden>
+    <div class="bn-give-picker__backdrop" data-bn-picker-close></div>
+
+    <div
+      class="bn-give-picker__panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="bnGivePickerTitle"
+    >
+      <div class="bn-give-picker__head">
+        <h2 class="bn-give-picker__title" id="bnGivePickerTitle">{{ picker_title }}</h2>
+        <button
+          type="button"
+          class="bn-give-picker__close"
+          id="bnGivePickerClose"
+          data-bn-picker-close
+          aria-label="Close"
+        >&times;</button>
+      </div>
+
+      <ul class="bn-give-picker__list">
+        {%- for p in pick_products limit: 60 -%}
+          {%- if p.handle == product.handle -%}{%- continue -%}{%- endif -%}
+          {%- if p.selling_plan_groups.size == 0 -%}{%- continue -%}{%- endif -%}
+          {%- liquid
+            assign pv = p.selected_or_first_available_variant
+            assign pplan = p.selling_plan_groups[0].selling_plans[0]
+          -%}
+          <li class="bn-give-picker__row">
+            {%- if p.featured_image != blank -%}
+              <img
+                class="bn-give-picker__thumb"
+                src="{{ p.featured_image | image_url: width: 128 }}"
+                srcset="{{ p.featured_image | image_url: width: 128 }} 128w, {{ p.featured_image | image_url: width: 256 }} 256w"
+                sizes="64px"
+                width="64"
+                height="64"
+                alt=""
+                loading="lazy"
+              >
+            {%- else -%}
+              <span class="bn-give-picker__thumb bn-give-picker__thumb--empty" aria-hidden="true"></span>
+            {%- endif -%}
+
+            <div class="bn-give-picker__text">
+              {%- if p.vendor != blank -%}
+                <p class="bn-give-picker__vendor">{{ p.vendor }}</p>
+              {%- endif -%}
+              <p class="bn-give-picker__name">{{ p.title }}</p>
+              <p class="bn-give-picker__price">first month {{ sub_first_price }} &middot; then {{ sub_price }}</p>
+              <a
+                class="bn-give-picker__explore"
+                href="{{ p.url }}"
+                target="_blank"
+                rel="noopener"
+              >{{ picker_explore_label }} &rarr;</a>
+            </div>
+
+            {%- comment -%}
+              The plan id is read here, server-side, from the product's own
+              selling plan group. It is never inferred in JS and never reused
+              from another product.
+            {%- endcomment -%}
+            <button
+              type="button"
+              class="bn-give-picker__choose"
+              data-bn-pick
+              data-variant-id="{{ pv.id }}"
+              data-selling-plan="{{ pplan.id }}"
+              data-title="{{ p.title | escape }}"
+              data-image="{{ p.featured_image | image_url: width: 128 }}"
+              data-handle="{{ p.handle }}"
+            >Choose</button>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  </div>
+{%- endif -%}
 
 {%- comment -%}
   Sticky mobile CTA. Rendered only when there is something to claim, and hidden
@@ -667,23 +966,41 @@
     object-fit: cover;
   }
 
+  /* Dark pill, per the wireframe. */
   .bn-give__eyebrow {
-    margin: 0 0 4px;
-    font-size: 11px;
+    display: inline-block;
+    max-width: 100%;
+    margin: 0 0 14px;
+    padding: 9px 18px;
+    background: var(--color-primary);
+    color: #fff;
+    font-size: 12px;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    line-height: 1.35;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--color-text-muted);
+    border-radius: var(--radius-full, 9999px);
   }
 
   .bn-give__title {
     font-family: var(--font-heading);
-    font-size: 27px;
+    font-size: 30px;
     font-weight: 700;
-    line-height: 1.12;
+    line-height: 1.1;
     letter-spacing: -0.01em;
     color: var(--color-primary);
     margin: 0;
+    text-wrap: balance;
+  }
+
+  /* Two lines: the charge, then what it buys. The second is lighter so the
+     price lands first, which is the order the wireframe reads in. */
+  .bn-give__hl-line { display: block; }
+
+  .bn-give__hl-line + .bn-give__hl-line {
+    margin-top: 2px;
+    font-weight: 400;
+    color: var(--color-text);
   }
 
   .bn-give__subhead {
@@ -806,6 +1123,145 @@
     width: auto;
     min-width: 128px;
     flex: 0 0 auto;
+  }
+
+  /* ---------- Subscribe & save module ---------- */
+  .bn-give__sub {
+    margin: 16px 0 0;
+    padding: 14px;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md, 8px);
+  }
+
+  .bn-give__sub-pill {
+    display: inline-block;
+    margin: 0 0 10px;
+    padding: 5px 12px;
+    background: var(--color-secondary);
+    color: var(--color-primary);
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    border-radius: var(--radius-full, 9999px);
+  }
+
+  .bn-give__sub-empty,
+  .bn-give__sub-chosen {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .bn-give__sub-empty[hidden],
+  .bn-give__sub-chosen[hidden],
+  .bn-give__sub-disclosure[hidden] { display: none; }
+
+  .bn-give__sub-plus {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--color-border-dark, #D5D3D0);
+    border-radius: 50%;
+    font-size: 17px;
+    line-height: 1;
+    color: var(--color-primary);
+  }
+
+  .bn-give__sub-copy {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--color-text);
+  }
+
+  .bn-give__sub-copy strong { font-weight: 700; }
+
+  /* Text button: the claim below is the page's only filled CTA. */
+  .bn-give__sub-choose,
+  .bn-give__sub-change {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 4px;
+    background: none;
+    border: 0;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+
+  .bn-give__sub-choose:hover,
+  .bn-give__sub-choose:focus-visible,
+  .bn-give__sub-change:hover,
+  .bn-give__sub-change:focus-visible { color: var(--color-secondary); }
+
+  .bn-give__sub-thumb {
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    background: var(--color-background-secondary);
+    border-radius: var(--radius-sm, 4px);
+  }
+
+  .bn-give__sub-thumb[hidden] { display: none; }
+
+  .bn-give__sub-chosen-text { flex: 1 1 auto; min-width: 0; }
+
+  .bn-give__sub-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--color-primary);
+  }
+
+  .bn-give__sub-terms {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--color-text-light);
+  }
+
+  .bn-give__sub-status {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--color-text-light);
+  }
+
+  .bn-give__sub-status:not(:empty) { margin-top: 8px; }
+
+  .bn-give__sub-status.is-error {
+    color: var(--color-error, #c62828);
+    font-weight: 700;
+  }
+
+  .bn-give__sub-disclosure .sub-disclosure { margin: 12px 0 0; }
+
+  /* ---------- fineprint under the claim ---------- */
+  .bn-give__fineprint {
+    margin: 10px 0 0;
+    font-size: 12.5px;
+    line-height: 1.5;
+    text-align: center;
+    text-wrap: balance;
+    color: var(--color-text-muted);
   }
 
   /* Both claimed states: cart-level (bottle already in cart) and customer-level
@@ -957,6 +1413,176 @@
 
   .bn-give__faq-answer p:last-child { margin-bottom: 0; }
 
+  /* ---------- second-scent picker ----------
+     Bottom sheet on phones, centred dialog from 700px up. The panel is the
+     scroller, never the page: a modal that scrolls the document behind it loses
+     the visitor's place on the page they were about to buy from. */
+  .bn-give-picker {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .bn-give-picker[hidden] { display: none; }
+
+  .bn-give-picker__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(45, 45, 45, 0.55);
+  }
+
+  .bn-give-picker__panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 560px;
+    max-height: 86vh;
+    background: #fff;
+    border-radius: 14px 14px 0 0;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.18);
+  }
+
+  .bn-give-picker__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex: 0 0 auto;
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .bn-give-picker__title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--color-primary);
+  }
+
+  .bn-give-picker__close {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin: -10px -10px -10px 0;
+    background: none;
+    border: 0;
+    font-size: 26px;
+    line-height: 1;
+    color: var(--color-text-light);
+    cursor: pointer;
+  }
+
+  .bn-give-picker__close:hover,
+  .bn-give-picker__close:focus-visible { color: var(--color-primary); }
+
+  .bn-give-picker__list {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0;
+    padding: 0 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    list-style: none;
+  }
+
+  .bn-give-picker__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .bn-give-picker__row:last-child { border-bottom: 0; }
+
+  .bn-give-picker__thumb {
+    flex: 0 0 56px;
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    background: var(--color-background-secondary);
+    border-radius: var(--radius-sm, 4px);
+  }
+
+  .bn-give-picker__thumb--empty { display: block; }
+
+  .bn-give-picker__text { flex: 1 1 auto; min-width: 0; }
+
+  .bn-give-picker__vendor {
+    margin: 0;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .bn-give-picker__name {
+    margin: 1px 0 0;
+    font-size: 14.5px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--color-primary);
+  }
+
+  .bn-give-picker__price {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--color-text-light);
+  }
+
+  .bn-give-picker__explore {
+    display: inline-block;
+    margin: 4px 0 0;
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .bn-give-picker__explore:hover,
+  .bn-give-picker__explore:focus-visible { color: var(--color-secondary); }
+
+  .bn-give-picker__choose {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 11px 16px;
+    background: var(--color-primary);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight: 700;
+    line-height: 1.2;
+    border: 0;
+    border-radius: var(--radius-sm, 4px);
+    cursor: pointer;
+  }
+
+  .bn-give-picker__choose:hover,
+  .bn-give-picker__choose:focus-visible { background: var(--color-text); }
+
+  .bn-give-picker__choose[disabled] { opacity: 0.6; cursor: progress; }
+
+  @media (min-width: 700px) {
+    .bn-give-picker { align-items: center; }
+    .bn-give-picker__panel {
+      max-height: 80vh;
+      border-radius: 14px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+    }
+  }
+
   /* ---------- sticky mobile CTA ---------- */
   .bn-give-sticky {
     position: fixed;
@@ -1020,13 +1646,16 @@
     .bn-give__card { padding: var(--spacing-xl); }
     .bn-give__card--offer { padding: var(--spacing-lg) var(--spacing-xl) var(--spacing-xl); }
 
-    .bn-give__title { font-size: 34px; }
+    .bn-give__title { font-size: 38px; }
     .bn-give__price-word { font-size: 58px; }
   }
 
   @media (max-width: 359px) {
     .bn-give__terms { grid-template-columns: 1fr; }
-    .bn-give__title { font-size: 24px; }
+    .bn-give__title { font-size: 25px; }
+    .bn-give__sub-empty { flex-wrap: wrap; }
+    .bn-give__sub-copy { flex: 1 1 100%; order: 3; }
+    .bn-give-picker__thumb { flex-basis: 48px; width: 48px; height: 48px; }
     .bn-give-sticky__terms { font-size: 12px; }
   }
 
@@ -1049,7 +1678,14 @@
     "doneLabel": {{ 'Added to your cart' | json }},
     "doneStatus": {{ 'In your cart. Checkout takes about a minute.' | json }},
     "errorStatus": {{ 'That did not go through. Please try again, or refresh the page.' | json }},
-    "cartUrl": {{ routes.cart_url | default: '/cart' | json }}
+    "cartUrl": {{ routes.cart_url | default: '/cart' | json }},
+
+    "subTerms": {{ 'first month ' | append: sub_first_price | append: ', then ' | append: sub_price | json }},
+    "subAdding": {{ 'Adding your subscription…' | json }},
+    "subAdded": {{ 'Added — ' | json }},
+    "subError": {{ "Couldn't add the subscription — try again" | json }},
+    "fineprint": {{ fineprint | json }},
+    "fineprintSub": {{ fineprint_sub | json }}
   }
 </script>
 
@@ -1239,6 +1875,334 @@
   })();
 </script>
 
+
+{%- comment -%}
+  Subscribe & Save + picker behaviour. Same rules as the script above: ES5 only,
+  no libraries, and ZERO Liquid inside the function body so it can be lifted out
+  verbatim and checked with `node --check`. Everything it needs comes from the
+  #bnGiveData island.
+{%- endcomment -%}
+<script>
+  (function () {
+    'use strict';
+
+    var sub = document.getElementById('bnGiveSub');
+    if (!sub) { return; }
+
+    var dataEl = document.getElementById('bnGiveData');
+    var DATA = {};
+    if (dataEl) {
+      try { DATA = JSON.parse(dataEl.textContent || dataEl.innerHTML || '{}'); } catch (e) { DATA = {}; }
+    }
+
+    var picker = document.getElementById('bnGivePicker');
+    var chooseBtn = document.getElementById('bnGiveChoose');
+    var changeBtn = document.getElementById('bnGiveChange');
+    var emptyBox = document.getElementById('bnGiveSubEmpty');
+    var chosenBox = document.getElementById('bnGiveSubChosen');
+    var thumb = document.getElementById('bnGiveSubThumb');
+    var titleEl = document.getElementById('bnGiveSubTitle');
+    var statusEl = document.getElementById('bnGiveSubStatus');
+    var disclosure = document.getElementById('bnGiveSubDisclosure');
+    var fineprint = document.getElementById('bnGiveFineprint');
+
+    var STORE_KEY = 'bn_give_pick';
+    var busy = false;
+    var lastFocus = null;
+
+    // Appstle's wrapper around window.fetch strips `selling_plan` from add
+    // payloads. layout/theme.liquid captures a pristine fetch before any app
+    // script loads; fall back to window.fetch only so the page still functions
+    // if that capture is ever removed.
+    function bnFetch(url, opts) {
+      var f = window.__bnFetch || window.fetch;
+      return f(url, opts);
+    }
+
+    function json(url, opts) {
+      return bnFetch(url, opts).then(function (res) {
+        return res.json().then(function (payload) {
+          if (!res.ok) { throw new Error((payload && payload.description) || 'request_failed'); }
+          return payload;
+        });
+      });
+    }
+
+    function postJSON(url, body) {
+      return json(url, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(body)
+      });
+    }
+
+    function getCart() {
+      return json('/cart.js', { credentials: 'same-origin', headers: { 'Accept': 'application/json' } });
+    }
+
+    function setStatus(text, isError) {
+      if (!statusEl) { return; }
+      statusEl.textContent = text || '';
+      statusEl.className = isError ? 'bn-give__sub-status is-error' : 'bn-give__sub-status';
+    }
+
+    function show(el) { if (el) { el.hidden = false; } }
+    function hide(el) { if (el) { el.hidden = true; } }
+
+    function renderChosen(title, image) {
+      if (titleEl) { titleEl.textContent = title || ''; }
+      if (thumb) {
+        if (image) { thumb.setAttribute('src', image); thumb.hidden = false; }
+        else { thumb.hidden = true; }
+      }
+      hide(emptyBox);
+      show(chosenBox);
+      // A recurring charge now exists, so the full disclosure and the recurring
+      // fineprint both go up. These two always move together.
+      show(disclosure);
+      if (fineprint && DATA.fineprintSub) { fineprint.textContent = DATA.fineprintSub; }
+    }
+
+    function renderEmpty() {
+      hide(chosenBox);
+      show(emptyBox);
+      hide(disclosure);
+      if (fineprint && DATA.fineprint) { fineprint.textContent = DATA.fineprint; }
+    }
+
+    function remember(pick) {
+      try { window.sessionStorage.setItem(STORE_KEY, JSON.stringify(pick)); } catch (e) {}
+    }
+
+    function forget() {
+      try { window.sessionStorage.removeItem(STORE_KEY); } catch (e) {}
+    }
+
+    /* ---------------- picker open / close ---------------- */
+
+    function focusables() {
+      if (!picker) { return []; }
+      var nodes = picker.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])');
+      var out = [];
+      var i;
+      for (i = 0; i < nodes.length; i++) {
+        if (nodes[i].offsetParent !== null && !nodes[i].disabled) { out.push(nodes[i]); }
+      }
+      return out;
+    }
+
+    function onKeydown(event) {
+      if (!picker || picker.hidden) { return; }
+      if (event.key === 'Escape' || event.keyCode === 27) {
+        event.preventDefault();
+        closePicker();
+        return;
+      }
+      if (event.key !== 'Tab' && event.keyCode !== 9) { return; }
+      // Focus trap: a modal the keyboard can walk out of is not modal.
+      var list = focusables();
+      if (!list.length) { return; }
+      var first = list[0];
+      var last = list[list.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    function openPicker() {
+      if (!picker) { return; }
+      lastFocus = document.activeElement;
+      picker.hidden = false;
+      document.documentElement.style.overflow = 'hidden';
+      document.addEventListener('keydown', onKeydown);
+      var list = focusables();
+      if (list.length) { list[0].focus(); }
+    }
+
+    function closePicker() {
+      if (!picker) { return; }
+      picker.hidden = true;
+      document.documentElement.style.overflow = '';
+      document.removeEventListener('keydown', onKeydown);
+      if (lastFocus && lastFocus.focus) { lastFocus.focus(); }
+      lastFocus = null;
+    }
+
+    /* ---------------- add / verify / roll back ---------------- */
+
+    // /cart/add.js can return a line WITHOUT selling_plan_allocation even when
+    // the plan did apply, so the cart is re-read rather than the add response
+    // being trusted. Same pattern as sections/main-product.liquid.
+    function findPlanLine(cart, variantId) {
+      var i;
+      if (!cart || !cart.items) { return null; }
+      for (i = 0; i < cart.items.length; i++) {
+        var it = cart.items[i];
+        if (String(it.variant_id) === String(variantId) && it.selling_plan_allocation) { return it; }
+      }
+      return null;
+    }
+
+    function findAnyLine(cart, variantId) {
+      var i;
+      if (!cart || !cart.items) { return null; }
+      for (i = 0; i < cart.items.length; i++) {
+        if (String(cart.items[i].variant_id) === String(variantId)) { return cart.items[i]; }
+      }
+      return null;
+    }
+
+    function removeLine(key) {
+      return postJSON('/cart/change.js', { id: key, quantity: 0 });
+    }
+
+    // ONE subscription in the cart, always. "Change" has to swap, not stack:
+    // two recurring lines is two monthly charges nobody agreed to.
+    function dropExistingSubs(cart) {
+      var keys = [];
+      var i;
+      if (cart && cart.items) {
+        for (i = 0; i < cart.items.length; i++) {
+          if (cart.items[i].selling_plan_allocation) { keys.push(cart.items[i].key); }
+        }
+      }
+      if (!keys.length) { return Promise.resolve(); }
+      var chain = Promise.resolve();
+      var k;
+      for (k = 0; k < keys.length; k++) {
+        (function (key) {
+          chain = chain.then(function () { return removeLine(key); });
+        })(keys[k]);
+      }
+      return chain;
+    }
+
+    function verify(variantId, attempt) {
+      return getCart().then(function (cart) {
+        var line = findPlanLine(cart, variantId);
+        if (line) { return line; }
+        if (attempt >= 3) { return null; }
+        return new Promise(function (resolve) {
+          window.setTimeout(function () { resolve(verify(variantId, attempt + 1)); }, 500);
+        });
+      });
+    }
+
+    function rollback(variantId) {
+      return getCart().then(function (cart) {
+        var line = findAnyLine(cart, variantId);
+        if (!line) { return null; }
+        return removeLine(line.key);
+      }).catch(function () { return null; });
+    }
+
+    function choose(btn) {
+      if (busy) { return; }
+      var variantId = btn.getAttribute('data-variant-id');
+      var planId = btn.getAttribute('data-selling-plan');
+      var title = btn.getAttribute('data-title') || '';
+      var image = btn.getAttribute('data-image') || '';
+      if (!variantId || !planId) { return; }
+
+      busy = true;
+      btn.disabled = true;
+      closePicker();
+      renderChosen(title, image);
+      setStatus(DATA.subAdding || 'Adding…', false);
+
+      getCart()
+        .then(function (cart) { return dropExistingSubs(cart); })
+        .then(function () {
+          return postJSON('/cart/add.js', {
+            items: [{ id: Number(variantId), quantity: 1, selling_plan: Number(planId) }]
+          });
+        })
+        .then(function () {
+          return new Promise(function (resolve) {
+            window.setTimeout(resolve, 300);
+          });
+        })
+        .then(function () { return verify(variantId, 1); })
+        .then(function (line) {
+          if (!line) {
+            // The plan did not stick. Never leave a one-time, full-price line
+            // sitting in the cart pretending to be a subscription.
+            return rollback(variantId).then(function () {
+              renderEmpty();
+              forget();
+              setStatus(DATA.subError || 'Could not add the subscription.', true);
+            });
+          }
+          remember({ variantId: variantId, planId: planId, title: title, image: image });
+          setStatus((DATA.subAdded || 'Added — ') + title, false);
+          if (typeof window.refreshCartCount === 'function') { window.refreshCartCount(); }
+          return null;
+        })
+        .catch(function () {
+          return rollback(variantId).then(function () {
+            renderEmpty();
+            forget();
+            setStatus(DATA.subError || 'Could not add the subscription.', true);
+          });
+        })
+        .then(function () {
+          busy = false;
+          btn.disabled = false;
+        });
+    }
+
+    /* ---------------- wiring ---------------- */
+
+    if (chooseBtn && chooseBtn.tagName === 'BUTTON') {
+      chooseBtn.addEventListener('click', function (event) {
+        event.preventDefault();
+        openPicker();
+      });
+    }
+
+    if (changeBtn) {
+      changeBtn.addEventListener('click', function (event) {
+        event.preventDefault();
+        openPicker();
+      });
+    }
+
+    if (picker) {
+      picker.addEventListener('click', function (event) {
+        var el = event.target;
+        while (el && el !== picker) {
+          if (el.hasAttribute && el.hasAttribute('data-bn-picker-close')) {
+            event.preventDefault();
+            closePicker();
+            return;
+          }
+          if (el.hasAttribute && el.hasAttribute('data-bn-pick')) {
+            event.preventDefault();
+            choose(el);
+            return;
+          }
+          el = el.parentNode;
+        }
+      });
+    }
+
+    // Restore the label after a soft navigation back to the page. The CART is
+    // the source of truth — this only re-labels a chosen state the server has
+    // already rendered, and never invents one the cart does not have.
+    if (chosenBox && !chosenBox.hidden && titleEl && !titleEl.textContent) {
+      try {
+        var saved = JSON.parse(window.sessionStorage.getItem(STORE_KEY) || 'null');
+        if (saved && saved.title) { renderChosen(saved.title, saved.image); }
+      } catch (e) {}
+    }
+  })();
+</script>
+
 {% schema %}
 {
   "name": "Product - Free 5ml claim",
@@ -1257,28 +2221,24 @@
     },
     {
       "type": "header",
-      "content": "Subscription strip (above the card)"
+      "content": "Subscribe & save module"
     },
     {
       "type": "paragraph",
-      "content": "One quiet line and one text link, above the free bottle, so the monthly option is seen before the claim. Keep it small: it is a signpost, not a second offer. It links out to a normal fragrance product page. Do not attach a selling plan to the free 5ml product: Appstle derives the recurring charge from the product price, so a $0 product would recur at $0. The renewal disclosure lives on that product page and in the cart, which is where billing details are actually taken."
+      "content": "Sits between the conditions and the claim button, so the monthly option is seen before the claim. Choosing a scent adds a real subscription line to the cart straight away, and the auto-renewal disclosure appears with it. Never attach a selling plan to the free 5ml product itself: Appstle derives the recurring charge from the product price, so a $0 product would recur at $0."
     },
     {
-      "type": "product",
-      "id": "option_b_product",
-      "label": "Fragrance to link to"
-    },
-    {
-      "type": "url",
-      "id": "option_b_url",
-      "label": "Fallback link",
-      "info": "Used only when no product is picked above."
+      "type": "checkbox",
+      "id": "sub_free_shipping",
+      "label": "Subscription includes free shipping",
+      "info": "Nothing in the theme makes this true. It depends on an automatic discount in Shopify: Discounts > Create > Amount off delivery > Automatic, minimum subtotal $10. Switch this OFF if that discount is missing, paused or expired, and every free-shipping claim disappears from the module and the fine print.",
+      "default": true
     },
     {
       "type": "text",
       "id": "option_b_heading",
-      "label": "Strip opening (bold)",
-      "default": "Prefer the monthly rotation?"
+      "label": "Module badge",
+      "default": "Subscribe & save"
     },
     {
       "type": "text",
@@ -1296,15 +2256,49 @@
     {
       "type": "text",
       "id": "option_b_body",
-      "label": "Strip middle (plain)",
-      "info": "One short clause. The prices below are appended to it automatically.",
-      "default": "Any fragrance, every month"
+      "label": "Module copy",
+      "info": "The free-shipping clause and the two prices are appended automatically.",
+      "default": "Add a bottle"
     },
     {
       "type": "text",
       "id": "option_b_button",
-      "label": "Strip link label",
-      "default": "See the fragrances →"
+      "label": "Module button label",
+      "default": "Choose"
+    },
+    {
+      "type": "header",
+      "content": "Second-scent picker"
+    },
+    {
+      "type": "collection",
+      "id": "picker_collection",
+      "label": "Fragrances to offer",
+      "info": "Defaults to the fragrances collection, then to all products. Anything without a subscription plan is skipped, and so is the free bottle itself."
+    },
+    {
+      "type": "text",
+      "id": "picker_title",
+      "label": "Picker heading",
+      "default": "Choose your second scent"
+    },
+    {
+      "type": "text",
+      "id": "picker_explore_label",
+      "label": "Per-row link label",
+      "info": "Opens that fragrance's page in a new tab, so the visitor keeps their place here.",
+      "default": "Explore this scent"
+    },
+    {
+      "type": "product",
+      "id": "option_b_product",
+      "label": "Fallback fragrance"
+    },
+    {
+      "type": "url",
+      "id": "option_b_url",
+      "label": "Fallback link",
+      "info": "Used only if no fragrance in the collection above can be subscribed to. The module then links out instead of opening an empty picker."
     },
     {
       "type": "header",
@@ -1326,21 +2320,29 @@
     {
       "type": "text",
       "id": "eyebrow",
-      "label": "Eyebrow",
-      "default": "Base Note · Free 5 ml"
+      "label": "Pill above the headline",
+      "default": "One-time free product giveaway"
     },
     {
       "type": "text",
-      "id": "headline",
-      "label": "Headline",
-      "default": "Your first 5ml is on us."
+      "id": "headline_line1",
+      "label": "Headline, first line",
+      "info": "{ship} becomes the shipping charge, {product} the product name, {sub_first} and {sub_price} the subscription prices.",
+      "default": "Pay {ship} for shipping,"
+    },
+    {
+      "type": "text",
+      "id": "headline_line2",
+      "label": "Headline, second line",
+      "info": "Same placeholders. If this variant is ever priced above $0 the word free is dropped automatically and the real price is shown instead.",
+      "default": "get {product} for free"
     },
     {
       "type": "text",
       "id": "subhead",
-      "label": "Sub-headline",
-      "info": "Say plainly what the customer receives.",
-      "default": "One 5 ml atomizer of this month's featured fragrance, sent to your door. No subscription."
+      "label": "Line under the headline",
+      "info": "Optional. Leave blank to hide it.",
+      "default": "One 5 ml atomizer of this month's featured fragrance, sent to your door."
     },
     {
       "type": "text",
@@ -1354,13 +2356,26 @@
       "id": "claim_label",
       "label": "Claim button label",
       "info": "The claim only. Do not append the shipping charge here: it is stated once, in the conditions list above the button.",
-      "default": "Claim my free 5ml"
+      "default": "Claim my free bottle"
     },
     {
       "type": "text",
       "id": "claim_label_short",
       "label": "Sticky bar button label",
-      "default": "Claim my free 5ml"
+      "default": "Claim my free bottle"
+    },
+    {
+      "type": "text",
+      "id": "fineprint",
+      "label": "Fine print under the button",
+      "info": "Shown while no subscription has been chosen. Same placeholders as the headline.",
+      "default": "Pay only shipping today. No subscription, no auto-renewal."
+    },
+    {
+      "type": "text",
+      "id": "fineprint_sub",
+      "label": "Fine print once subscribed",
+      "info": "Intentionally has no default. Left empty it is generated, and it follows the free-shipping switch above so it can never keep promising waived shipping after that switch is turned off. Anything typed here overrides that and must be kept in sync by hand."
     },
     {
       "type": "checkbox",
