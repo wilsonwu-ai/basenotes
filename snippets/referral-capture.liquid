@@ -1,19 +1,36 @@
 {%- comment -%}
-  Captures ?ref=<id> from any landing URL (sync-probe 2026-08-16), keeps it 90 days in localStorage, and writes it onto the cart as
-  attributes.referred_by / referred_at so it appears on the order ("Additional details") for Jeff to credit
-  the referrer. Idempotent; silent on failure. Rendered once from layout/theme.liquid.
+  Attribution + referral capture (rendered once from layout/theme.liquid).
+  - ?ref=<id>  → localStorage 90d → cart attributes referred_by / referred_at (referrer reward, applied manually by Jeff)
+  - First-touch source → localStorage 90d → cart attributes landing_page, referrer, utm_source, utm_medium, utm_campaign
+    (so every order says how the customer found us — Jeff, 2026-08-17). Only set on the FIRST visit; never overwritten.
+  - Also exposes window.bnAttribution for forms (contact form hidden fields).
+  Idempotent; silent on failure.
 {%- endcomment -%}
 <script>
 (function(){try{
-  var K='bn_ref', q=new URLSearchParams(location.search), r=q.get('ref');
-  if (r && /^[a-z0-9-]{3,40}$/i.test(r)) localStorage.setItem(K, JSON.stringify({ref:r.toLowerCase(), at:Date.now(), path:location.pathname}));
+  var q=new URLSearchParams(location.search), now=Date.now(), DAY=864e5;
+  // referral
+  var K='bn_ref', r=q.get('ref');
+  if (r && /^[a-z0-9-]{3,40}$/i.test(r)) localStorage.setItem(K, JSON.stringify({ref:r.toLowerCase(), at:now, path:location.pathname}));
+  // first-touch attribution
+  var A='bn_attr', a=null; try{ a=JSON.parse(localStorage.getItem(A)||'null'); }catch(e){}
+  if(!a || !a.at || now-a.at>90*DAY){
+    a={at:now, landing:(location.pathname+location.search).slice(0,200), referrer:(document.referrer||'').slice(0,200),
+       utm_source:(q.get('utm_source')||'').slice(0,60), utm_medium:(q.get('utm_medium')||'').slice(0,60), utm_campaign:(q.get('utm_campaign')||'').slice(0,80)};
+    if(a.referrer && a.referrer.indexOf(location.host)>-1) a.referrer='';
+    localStorage.setItem(A, JSON.stringify(a));
+  }
+  window.bnAttribution=a;
   var s=null; try{ s=JSON.parse(localStorage.getItem(K)||'null'); }catch(e){}
-  if(!s||!s.ref||Date.now()-s.at>90*864e5) return;
+  if(s && (!s.ref || now-s.at>90*DAY)) s=null;
   if(!window.fetch) return;
   fetch('/cart.js',{credentials:'same-origin'}).then(function(x){return x.json();}).then(function(c){
-    if(c && c.attributes && c.attributes.referred_by===s.ref) return;
-    return fetch('/cart/update.js',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({attributes:{referred_by:s.ref, referred_at:new Date(s.at).toISOString()}})});
+    var cur=(c&&c.attributes)||{}, upd={};
+    if(s && cur.referred_by!==s.ref){ upd.referred_by=s.ref; upd.referred_at=new Date(s.at).toISOString(); }
+    if(!cur.landing_page && a.landing){ upd.landing_page=a.landing; if(a.referrer) upd.referrer=a.referrer;
+      if(a.utm_source) upd.utm_source=a.utm_source; if(a.utm_medium) upd.utm_medium=a.utm_medium; if(a.utm_campaign) upd.utm_campaign=a.utm_campaign; }
+    if(!Object.keys(upd).length) return;
+    return fetch('/cart/update.js',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({attributes:upd})});
   }).catch(function(){});
 }catch(e){}})();
 </script>

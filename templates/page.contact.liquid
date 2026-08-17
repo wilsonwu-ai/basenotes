@@ -96,6 +96,9 @@
         <p style="color: var(--color-text-light); margin-bottom: var(--spacing-xl);">Fill out the form below and we'll get back to you shortly.</p>
 
         {%- form 'contact', class: 'contact-form' -%}
+          {%- comment -%} Attribution (issue #14): how did this person find us? Filled from window.bnAttribution by the script below; shows in the notification email. {%- endcomment -%}
+          <input type="hidden" name="contact[Found us via]" id="ContactFoundVia" value="">
+          <script>(function(){try{var a=window.bnAttribution||JSON.parse(localStorage.getItem('bn_attr')||'null');if(!a)return;var v='landing: '+(a.landing||'-')+' | referrer: '+(a.referrer||'direct/none')+(a.utm_source?' | utm: '+a.utm_source+'/'+(a.utm_medium||'')+'/'+(a.utm_campaign||''):'');var el=document.getElementById('ContactFoundVia');if(el)el.value=v.slice(0,250);}catch(e){}})();</script>
           {%- if form.posted_successfully? -%}
             <div style="padding: var(--spacing-lg); background: rgba(76, 175, 80, 0.1); border: 1px solid var(--color-success); margin-bottom: var(--spacing-lg); text-align: center; border-radius: var(--radius-sm);">
               <strong>Thank you for your message!</strong><br>
@@ -146,7 +149,7 @@
 
           <div class="form-group">
             <label class="form-label" for="ContactFormSubject">Subject *</label>
-            <select name="contact[subject]" id="ContactFormSubject" class="form-select" required>
+            <select name="contact[Topic]" id="ContactFormSubject" class="form-select" required>
               <option value="">Select a topic...</option>
               <option value="General Inquiry">General Inquiry</option>
               <option value="Subscription Help">Subscription Help</option>

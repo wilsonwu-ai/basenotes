@@ -434,7 +434,6 @@
             {%- endif -%}
             <li>One per customer</li>
             <li>US shipping addresses only</li>
-            <li>Tax calculated at checkout, nothing else ever</li>
           </ul>
 
           {%- comment -%}
@@ -974,7 +973,7 @@
     padding: 9px 18px;
     background: var(--color-primary);
     color: #fff;
-    font-size: 12px;
+    font-size: {{ section.settings.eyebrow_size | default: 12 }}px;
     font-weight: 700;
     line-height: 1.35;
     letter-spacing: 0.08em;
@@ -984,7 +983,7 @@
 
   .bn-give__title {
     font-family: var(--font-heading);
-    font-size: 30px;
+    font-size: {{ section.settings.headline_size_mobile | default: 30 }}px;
     font-weight: 700;
     line-height: 1.1;
     letter-spacing: -0.01em;
@@ -996,6 +995,10 @@
   /* Two lines: the charge, then what it buys. The second is lighter so the
      price lands first, which is the order the wireframe reads in. */
   .bn-give__hl-line { display: block; }
+
+  @media (min-width: 700px) {
+    .bn-give__title { font-size: {{ section.settings.headline_size_desktop | default: 36 }}px; }
+  }
 
   .bn-give__hl-line + .bn-give__hl-line {
     margin-top: 2px;
@@ -2244,7 +2247,7 @@
       "type": "text",
       "id": "sub_first_price",
       "label": "First month price",
-      "info": "The strip reads \"... — first month <first month price>, then <monthly price>.\" Keep both in step with Theme settings > Subscription, which is what the renewal disclosure on the product page reads.",
+      "info": "The strip reads \"... \u2014 first month <first month price>, then <monthly price>.\" Keep both in step with Theme settings > Subscription, which is what the renewal disclosure on the product page reads.",
       "default": "$15"
     },
     {
@@ -2336,6 +2339,33 @@
       "label": "Headline, second line",
       "info": "Same placeholders. If this variant is ever priced above $0 the word free is dropped automatically and the real price is shown instead.",
       "default": "get {product} for free"
+    },
+    {
+      "type": "range",
+      "id": "headline_size_mobile",
+      "label": "Headline size \u2014 mobile (px)",
+      "min": 22,
+      "max": 48,
+      "step": 1,
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "headline_size_desktop",
+      "label": "Headline size \u2014 desktop (px)",
+      "min": 24,
+      "max": 64,
+      "step": 1,
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size",
+      "label": "Pill / eyebrow size (px)",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "default": 12
     },
     {
       "type": "text",
