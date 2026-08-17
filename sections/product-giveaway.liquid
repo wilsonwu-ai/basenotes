@@ -161,7 +161,17 @@
     printed as typed, the same as every other text setting in this section.
   endcomment
   assign t_ship = ship_amount | escape
-  assign t_product = product.title | escape
+  comment
+    {product} = a SHORT display name, not the full admin title ("Mont Blanc Legend EDP 5ml - Free Trial, Just Pay Shipping"
+    made Jeff's headline read "5ml of Mont Blanc Legend EDP 5ml - Free Trial, Just Pay Shipping for free", 2026-08-17).
+    Editor setting first; else the title up to the first " - " with a trailing " 5ml" removed.
+  endcomment
+  assign t_product = section.settings.product_short_name | default: ''
+  if t_product == blank
+    assign t_product = product.title | split: ' - ' | first
+    assign t_product = t_product | replace: ' 5ml', '' | replace: ' 5 ml', '' | strip
+  endif
+  assign t_product = t_product | escape
   assign t_sub_first = sub_first_price | escape
   assign t_sub_price = sub_price | escape
 
@@ -2325,6 +2335,12 @@
       "id": "eyebrow",
       "label": "Pill above the headline",
       "default": "One-time free product giveaway"
+    },
+    {
+      "type": "text",
+      "id": "product_short_name",
+      "label": "Product short name for {product}",
+      "info": "Blank = product title up to the first dash, without '5ml'."
     },
     {
       "type": "text",
