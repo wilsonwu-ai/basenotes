@@ -23,9 +23,9 @@
         "option_b_url": "/collections/all",
         "hero_image_alt": "Mont Blanc Legend next to a Base Note 5 ml atomizer",
         "eyebrow": "One-time free product giveaway",
-        "headline_line1": "Pay {ship} for shipping,",
-        "headline_line2": "get {product} for free",
-        "subhead": "One 5 ml atomizer of this month's featured fragrance, sent to your door.",
+        "headline_line1": "{product}",
+        "headline_line2": "5ml bottle for free",
+        "subhead": "",
         "ship_amount": "$4.99",
         "claim_label": "Claim my free bottle",
         "claim_label_short": "Claim my free bottle",
@@ -35,7 +35,8 @@
         "cap": 40,
         "soldout_pill": "This release is finished",
         "waitlist_button": "Notify me",
-        "faq_heading": "Straight answers"
+        "faq_heading": "Straight answers",
+        "headline_line3": "Just cover shipping"
       }
     }
   },

@@ -180,6 +180,8 @@
 
   assign headline_line2 = section.settings.headline_line2 | default: 'get {product} for free'
   assign headline_line2 = headline_line2 | replace: '{ship}', t_ship | replace: '{product}', t_product | replace: '{sub_first_price}', t_sub_first | replace: '{sub_first}', t_sub_first | replace: '{sub_price}', t_sub_price
+  assign headline_line3 = section.settings.headline_line3 | default: ''
+  assign headline_line3 = headline_line3 | replace: '{ship}', t_ship | replace: '{product}', t_product | replace: '{sub_first_price}', t_sub_first | replace: '{sub_first}', t_sub_first | replace: '{sub_price}', t_sub_price
 
   assign fineprint = section.settings.fineprint | default: 'Pay only shipping today. No subscription, no auto-renewal.'
   assign fineprint = fineprint | replace: '{ship}', t_ship | replace: '{product}', t_product | replace: '{sub_first_price}', t_sub_first | replace: '{sub_first}', t_sub_first | replace: '{sub_price}', t_sub_price
@@ -418,6 +420,7 @@
             {%- if price_is_zero -%}
               <span class="bn-give__hl-line">{{ headline_line1 }}</span>
               <span class="bn-give__hl-line">{{ headline_line2 }}</span>
+              {%- if headline_line3 != blank -%}<span class="bn-give__hl-line">{{ headline_line3 }}</span>{%- endif -%}
             {%- else -%}
               <span class="bn-give__hl-line">{{ headline_line1 }}</span>
               <span class="bn-give__hl-line">get {{ product.title }} for {{ current_variant.price | money }}</span>
@@ -438,6 +441,9 @@
           {%- endcomment -%}
           <ul class="bn-give__terms">
             <li>{{ ship_amount }} flat shipping, paid by you</li>
+            {%- if section.settings.sub_free_shipping -%}
+              <li>Add a bottle below for {{ section.settings.sub_first_price | default: '$15' }} and shipping is waived</li>
+            {%- endif -%}
             {%- comment -%} Cap bullet: `show_cap` off by default, and suppressed anyway when real inventory contradicts the typed cap. {%- endcomment -%}
             {%- if cap_trusted -%}
               <li>{{ cap }} bottles total</li>
@@ -2347,14 +2353,20 @@
       "id": "headline_line1",
       "label": "Headline, first line",
       "info": "{ship} becomes the shipping charge, {product} the product name, {sub_first} and {sub_price} the subscription prices.",
-      "default": "Pay {ship} for shipping,"
+      "default": "{product}"
     },
     {
       "type": "text",
       "id": "headline_line2",
       "label": "Headline, second line",
       "info": "Same placeholders. If this variant is ever priced above $0 the word free is dropped automatically and the real price is shown instead.",
-      "default": "get {product} for free"
+      "default": "5ml bottle for free"
+    },
+    {
+      "type": "text",
+      "id": "headline_line3",
+      "label": "Headline line 3 (optional)",
+      "default": "Just cover shipping"
     },
     {
       "type": "range",
@@ -2387,8 +2399,7 @@
       "type": "text",
       "id": "subhead",
       "label": "Line under the headline",
-      "info": "Optional. Leave blank to hide it.",
-      "default": "One 5 ml atomizer of this month's featured fragrance, sent to your door."
+      "info": "Optional. Leave blank to hide it."
     },
     {
       "type": "text",
