@@ -321,8 +321,14 @@
                 </button>
               </div>
 
+              {%- comment -%}
+                Was /pages/subscription. That template was deleted with the
+                subscription landing page; the fragrance collection is now the
+                canonical place to start a subscription (each PDP carries the
+                Appstle selling plan).
+              {%- endcomment -%}
               <p class="quiz__results-cta">
-                Ready to explore? <a href="/pages/subscription">Subscribe for $20/month</a> and get your first match delivered.
+                Ready to explore? <a href="/collections/fragrances">Subscribe for {{ settings.subscription_price | default: '$20' }}/month</a> and get your first match delivered.
               </p>
             </div>
           </div>
@@ -1254,6 +1260,17 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(response => response.json())
       .then(data => {
         let products = data.products || [];
+
+        // PRD-Aug08: /collections/all includes the Unlisted free-5ml giveaway SKU, and the quiz is a
+        // SECOND add-to-cart path that does not set the _bn_offer line property every cart-side
+        // guard keys off. Recommending it here would let someone claim a free bottle through a
+        // route where the one-per-customer and quantity protections simply do not apply — and it
+        // would show the promo to people who never saw the ad. Drop any $0 product.
+        products = products.filter(function (p) {
+          var v = (p.variants || [])[0];
+          if (!v) return false;
+          return parseFloat(v.price) > 0;
+        });
 
         // Score products based on profile using plain tags + structured tags
         products = products.map(product => {

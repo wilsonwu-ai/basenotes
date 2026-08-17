@@ -6,6 +6,18 @@
 -%}
 
 {% comment %} Announcement Bar {% endcomment %}
+{%- comment -%}
+  SUPPRESSED ON THE GIVEAWAY TEMPLATE (templates/product.giveaway.json).
+  The store-wide announcement is "Free shipping on every subscription", which
+  would render roughly 40px above a hero that reads "+ $4.99 shipping". Two
+  contradictory shipping claims in one viewport is exactly the "clearly and
+  conspicuously" failure 16 CFR 251.1(c)(1) is about, and the giveaway hero
+  cannot win an argument with the chrome above it. The store-wide copy stays as
+  it is — this suppresses the bar on that one template only.
+  This is deliberately keyed on the template suffix, not on the announcement
+  text, so editing the announcement copy later cannot silently re-break it.
+{%- endcomment -%}
+{%- unless template.suffix == 'giveaway' -%}
 {%- if section.settings.announcement_enabled and section.settings.announcement_text != blank -%}
 <div class="announcement-bar">
   <div class="container">
@@ -27,6 +39,7 @@
   </div>
 </div>
 {%- endif -%}
+{%- endunless -%}
 
 <header class="header{% if transparent_header %} is-transparent{% endif %}{% if section.settings.sticky_header %} is-sticky{% endif %}" data-header>
   <div class="header__inner container">

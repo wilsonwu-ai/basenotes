@@ -1,0 +1,45 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main-giveaway": {
+      "type": "product-giveaway",
+      "settings": {
+        "sub_free_shipping": true,
+        "option_b_heading": "Subscribe & save",
+        "option_b_body": "Add a bottle",
+        "option_b_button": "Choose",
+        "sub_first_price": "$15",
+        "sub_price": "$20/month",
+        "picker_title": "Choose your second scent",
+        "picker_explore_label": "Explore this scent",
+        "option_b_url": "/collections/all",
+        "hero_image_alt": "Mont Blanc Legend next to a Base Note 5 ml atomizer",
+        "eyebrow": "One-time free product giveaway",
+        "headline_line1": "Pay {ship} for shipping,",
+        "headline_line2": "get {product} for free",
+        "subhead": "One 5 ml atomizer of this month's featured fragrance, sent to your door.",
+        "ship_amount": "$4.99",
+        "claim_label": "Claim my free bottle",
+        "claim_label_short": "Claim my free bottle",
+        "fineprint": "Pay only shipping today. No subscription, no auto-renewal.",
+        "show_sticky": true,
+        "show_cap": false,
+        "cap": 40,
+        "soldout_pill": "This release is finished",
+        "waitlist_button": "Notify me",
+        "faq_heading": "Straight answers"
+      }
+    }
+  },
+  "order": [
+    "main-giveaway"
+  ]
+}

@@ -2,10 +2,21 @@
 <html class="no-js" lang="{{ request.locale.iso_code }}">
 <head>
   <meta charset="utf-8">
-  {%- comment -%} Pristine fetch, captured before any app script (Appstle wraps window.fetch and strips
-  selling_plan from /cart/add.js bodies when its own widget is not rendered — Jul 2026 incident, recurred Aug 16).
-  Theme cart adds use window.__bnFetch so the selling plan always reaches Shopify. {%- endcomment -%}
+
+  {%- comment -%}
+    PRISTINE FETCH — captured before any app script can wrap window.fetch.
+
+    Appstle's cart wrapper rewrites /cart/add.js payloads and STRIPS the
+    `selling_plan` key (store-wide incident, Jul 16-17 2026). A stripped plan
+    does not fail loudly: it silently lands a one-time, full-price line that
+    looks like a subscription until the customer is charged. Any code that adds
+    a line WITH a selling plan must therefore go through window.__bnFetch, not
+    window.fetch, and must still verify the result against /cart.js afterwards.
+    Consumer: sections/product-giveaway.liquid (Subscribe & Save module).
+    Keep this FIRST in <head>; a later capture is no longer pristine.
+  {%- endcomment -%}
   <script>window.__bnFetch = window.fetch.bind(window);</script>
+
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0">
   <meta name="theme-color" content="{{ settings.color_primary | default: '#1a1a1a' }}">
@@ -40,7 +51,16 @@
     assign brand_description = 'Base Note is a monthly luxury fragrance subscription. For $20/month, members receive a 5ml travel atomizer of a designer or niche fragrance (Creed, Tom Ford, Parfums de Marly, Bond No. 9, Xerjoff). Free US shipping, cancel anytime.'
   -%}
   <meta name="description" content="{{ meta_description | truncate: 160, '' | escape }}">
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  {%- comment -%}
+    The giveaway landing page is reachable only by a direct link from a paid ad. Shopify's Unlisted
+    product status already applies noindex, but this template emitted an explicit "index, follow"
+    on every page, which would override it. Same template.suffix test used for the promo popup below.
+  {%- endcomment -%}
+  {%- if template.suffix == 'giveaway' -%}
+    <meta name="robots" content="noindex, nofollow">
+  {%- else -%}
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  {%- endif -%}
 
   {% render 'meta-tags' %}
 
@@ -248,8 +268,17 @@
 
   {% comment %} Cookie Consent Banner (GDPR) {% endcomment %}
   {% render 'cookie-consent' %}
-  {% comment %} Promotional Pop-Up for New Visitors {% endcomment %}
-  {% render 'promo-popup' %}
+  {% comment %}
+    Promotional Pop-Up for New Visitors.
+    Suppressed on the giveaway landing page (templates/product.giveaway.json →
+    template.suffix == 'giveaway'). That page is a paid-traffic destination; the promo popup
+    pushes a competing "25% off" offer at /collections/fragrances and would bounce the visitor
+    off the very landing page the ad spend paid for. The snippet's own guard only skips
+    customers with prior orders, so cold ad traffic would see it every time.
+  {% endcomment %}
+  {%- unless template.suffix == 'giveaway' -%}
+    {% render 'promo-popup' %}
+  {%- endunless -%}
   {% render 'referral-capture' %}
 </body>
 </html>
