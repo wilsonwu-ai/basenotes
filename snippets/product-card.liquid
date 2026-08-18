@@ -192,7 +192,8 @@
     </div>
 
     <div class="product-card__content">
-      <span class="product-card__vendor">{{ product.vendor | default: 'Base Note Atelier' }}</span>
+      {%- capture card_conc -%}{% render 'product-concentration', product: product, format: 'short' %}{%- endcapture -%}
+      <span class="product-card__vendor">{{ product.vendor | default: 'Base Note Atelier' }}{%- if card_conc != blank %} <span class="product-card__conc">· {{ card_conc | strip }}</span>{%- endif -%}</span>
       <h3 class="product-card__title">{{ product.title }}</h3>
 
       {%- assign origin_country = '' -%}
@@ -559,6 +560,11 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  .product-card__conc {
+    font-weight: 500;
+    opacity: 0.85;
+    letter-spacing: 0.06em;
   }
 
   .product-card__title {

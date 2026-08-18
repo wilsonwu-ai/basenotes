@@ -32,6 +32,9 @@
   elsif v_title_down contains 'parfum'
     assign v_conc = 'Parfum'
   endif
+  if concentration != blank
+    assign v_conc = concentration | strip
+  endif
   assign v_uid = product.id | default: 0
 -%}
 {%- if image != blank -%}

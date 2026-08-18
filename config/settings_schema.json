@@ -573,6 +573,17 @@
         "id": "subscription_portal_url",
         "label": "Generic subscription portal URL",
         "info": "Used by the account page and cancellation flow. Falls back to /account if blank."
+      },
+      {
+        "type": "header",
+        "content": "Concentration"
+      },
+      {
+        "type": "text",
+        "id": "default_concentration",
+        "label": "Default concentration",
+        "default": "Eau de Parfum",
+        "info": "Shown on product pages, cards and the FAQ when a product does not say otherwise. Override per product with the metafield custom.concentration, a tag like concentration:Eau de Toilette, or the words in the title. Leave blank to show nothing."
       }
     ]
   },
@@ -679,9 +690,18 @@
         "label": "Pause offer duration",
         "info": "How long the 'pause instead of cancel' offer pauses for. This drives BOTH the pauseDurationCycle sent to Appstle AND the wording the customer reads, so the two can never disagree. Appstle accepts whole billing cycles only.",
         "options": [
-          { "value": "1", "label": "1 month" },
-          { "value": "2", "label": "2 months" },
-          { "value": "3", "label": "3 months" }
+          {
+            "value": "1",
+            "label": "1 month"
+          },
+          {
+            "value": "2",
+            "label": "2 months"
+          },
+          {
+            "value": "3",
+            "label": "3 months"
+          }
         ],
         "default": "1"
       },

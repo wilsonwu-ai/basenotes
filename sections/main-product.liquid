@@ -139,6 +139,11 @@
         <header class="product-info__header">
           <span class="product-info__vendor">{{ product.vendor | default: 'Base Note Atelier' }}</span>
           <h1 class="product-info__title">{{ product.title }}</h1>
+          {%- capture bn_conc -%}{% render 'product-concentration', product: product %}{%- endcapture -%}
+          {%- assign bn_conc = bn_conc | strip -%}
+          {%- if bn_conc != blank -%}
+            <p class="product-info__conc"><span class="product-info__conc-badge">{{ bn_conc }}</span><span class="product-info__conc-note">Decanted from the original {{ bn_conc }} bottle into a 5&nbsp;ml atomizer</span></p>
+          {%- endif -%}
 
           {% comment %} Rating {% endcomment %}
           {%- if product.metafields.reviews.rating != blank -%}
@@ -161,14 +166,14 @@
           <div class="subscription-box__header">
             <div class="subscription-box__bottle">
               <div class="bottle-visual">
-                {% render 'vial-illustration', product: product, image: section.settings.vial_image %}
+                {% render 'vial-illustration', product: product, image: section.settings.vial_image, concentration: bn_conc %}
               </div>
               <span class="bottle-label">5ml Atomizer</span>
               <span class="bottle-sprays">~60 sprays</span>
             </div>
 
             <div class="subscription-box__pricing">
-              {% render 'subscription-pricing-summary', surface: 'pdp' %}
+              {% render 'subscription-pricing-summary', surface: 'pdp', concentration: bn_conc %}
               {%- if product.compare_at_price > product.price -%}
                 <p class="price-note">Retail: {{ product.compare_at_price | money }} for a full bottle.</p>
               {%- endif -%}
@@ -852,6 +857,28 @@
     letter-spacing: 0.15em;
     color: var(--color-secondary);
     margin-bottom: var(--spacing-xs);
+  }
+
+  .product-info__conc {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin: 6px 0 var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+  .product-info__conc-badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border: 1px solid var(--color-secondary);
+    border-radius: 999px;
+    color: var(--color-secondary);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 10.5px;
+    line-height: 1.4;
   }
 
   .product-info__title {

@@ -23,7 +23,13 @@
       <span class="product-faq__chevron" aria-hidden="true">+</span>
     </summary>
     <div class="product-faq__answer">
-      <p>Exactly the concentration on the label &mdash; if the original is an Eau de Parfum, your 5&nbsp;ml is decanted from that Eau de Parfum; if it's an Eau de Toilette or a Parfum, same rule. We never substitute a lighter concentration to save cost. The product name here ({{ product.title }}) tells you which one you'll receive, and every month's pick works the same way.</p>
+      {%- capture faq_conc -%}{% render 'product-concentration', product: product %}{%- endcapture -%}
+      {%- assign faq_conc = faq_conc | strip -%}
+      {%- if faq_conc != blank -%}
+      <p><strong>This one is {{ faq_conc }}.</strong> Your 5&nbsp;ml is decanted from the original {{ faq_conc }} bottle &mdash; we never substitute a lighter concentration to save cost. Every fragrance in the rotation shows its concentration under the name at the top of its page, and each month's pick works the same way.</p>
+      {%- else -%}
+      <p>Exactly the concentration on the label &mdash; if the original is an Eau de Parfum, your 5&nbsp;ml is decanted from that Eau de Parfum; if it's an Eau de Toilette or a Parfum, same rule. We never substitute a lighter concentration to save cost, and every month's pick works the same way.</p>
+      {%- endif -%}
     </div>
   </details>
 
@@ -86,7 +92,7 @@
       "name": "Is it the EDP or the EDT? Which concentration do I get?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Exactly the concentration on the label. If the original is an Eau de Parfum, the 5 ml is decanted from that Eau de Parfum; Eau de Toilette and Parfum work the same way. Base Note never substitutes a lighter concentration, and the product name states which one you receive."
+        "text": "{% if faq_conc != blank %}This fragrance is {{ faq_conc }}. The 5 ml is decanted from the original {{ faq_conc }} bottle; Base Note never substitutes a lighter concentration.{% else %}Exactly the concentration on the label. If the original is an Eau de Parfum, the 5 ml is decanted from that Eau de Parfum; Eau de Toilette and Parfum work the same way. Base Note never substitutes a lighter concentration.{% endif %}"
       }
     },
     {

@@ -1,0 +1,89 @@
+{%- comment -%}
+  Outputs the fragrance concentration for a product (e.g. "Eau de Parfum").
+  Added 2026-08-18 after a customer asked "will I be getting EDP's or EDT's?" (Jeff ticket).
+
+  Resolution order (first hit wins):
+    1. product.metafields.custom.concentration   (per-product override, single line text)
+    2. a product tag  concentration:<value>  or  conc:<value>   (e.g. concentration:Eau de Toilette, conc:EDT)
+    3. the product title / variant title       (…Eau de Parfum, …EDT, …Parfum, …Extrait)
+    4. settings.default_concentration          (Theme settings → Subscription → Concentration; store-wide default)
+
+  Usage:
+    {% capture conc %}{% render 'product-concentration', product: product %}{% endcapture %}
+    {% render 'product-concentration', product: product, format: 'short' %}   → EDP / EDT / Parfum / Extrait / EDC
+{%- endcomment -%}
+{%- liquid
+  assign c_out = ''
+  assign c_raw = ''
+
+  if product.metafields.custom.concentration != blank
+    assign c_raw = product.metafields.custom.concentration | strip
+  endif
+
+  if c_raw == blank
+    for tag in product.tags
+      assign t_down = tag | downcase
+      if t_down contains 'concentration:'
+        assign c_raw = tag | split: ':' | last | strip
+        break
+      elsif t_down contains 'conc:'
+        assign c_raw = tag | split: ':' | last | strip
+        break
+      endif
+    endfor
+  endif
+
+  if c_raw == blank
+    assign c_title = product.title | default: ''
+    assign c_vendor = product.vendor | default: ''
+    if c_vendor != blank
+      assign c_title = c_title | remove: c_vendor
+    endif
+    assign c_title = c_title | downcase | append: ' ' | prepend: ' '
+    if c_title contains 'extrait'
+      assign c_raw = 'Extrait de Parfum'
+    elsif c_title contains 'eau de parfum' or c_title contains ' edp ' or c_title contains ' edp-'
+      assign c_raw = 'Eau de Parfum'
+    elsif c_title contains 'eau de toilette' or c_title contains ' edt ' or c_title contains ' edt-'
+      assign c_raw = 'Eau de Toilette'
+    elsif c_title contains 'eau de cologne' or c_title contains ' cologne '
+      assign c_raw = 'Eau de Cologne'
+    elsif c_title contains ' parfum ' or c_title contains ' parfum-'
+      assign c_raw = 'Parfum'
+    endif
+  endif
+
+  if c_raw == blank
+    assign c_raw = settings.default_concentration | default: '' | strip
+  endif
+
+  comment
+    Normalise short codes so 'EDP', 'edp', 'Eau De Parfum' all render consistently.
+  endcomment
+  assign c_norm = c_raw | downcase | strip
+  if c_norm == 'edp' or c_norm == 'eau de parfum'
+    assign c_long = 'Eau de Parfum'
+    assign c_short = 'EDP'
+  elsif c_norm == 'edt' or c_norm == 'eau de toilette'
+    assign c_long = 'Eau de Toilette'
+    assign c_short = 'EDT'
+  elsif c_norm == 'edc' or c_norm == 'eau de cologne' or c_norm == 'cologne'
+    assign c_long = 'Eau de Cologne'
+    assign c_short = 'EDC'
+  elsif c_norm == 'extrait' or c_norm == 'extrait de parfum'
+    assign c_long = 'Extrait de Parfum'
+    assign c_short = 'Extrait'
+  elsif c_norm == 'parfum' or c_norm == 'pure parfum'
+    assign c_long = 'Parfum'
+    assign c_short = 'Parfum'
+  else
+    assign c_long = c_raw
+    assign c_short = c_raw
+  endif
+
+  if format == 'short'
+    assign c_out = c_short
+  else
+    assign c_out = c_long
+  endif
+-%}{{ c_out | strip | escape }}
