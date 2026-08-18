@@ -141,8 +141,14 @@
           <h1 class="product-info__title">{{ product.title }}</h1>
           {%- capture bn_conc -%}{% render 'product-concentration', product: product %}{%- endcapture -%}
           {%- assign bn_conc = bn_conc | strip -%}
-          {%- if bn_conc != blank -%}
-            <p class="product-info__conc"><span class="product-info__conc-badge">{{ bn_conc }}</span><span class="product-info__conc-note">Decanted from the original {{ bn_conc }} bottle into a 5&nbsp;ml atomizer</span></p>
+          {%- capture bn_origin -%}{% render 'product-origin', product: product %}{%- endcapture -%}
+          {%- assign bn_origin = bn_origin | strip -%}
+          {%- if bn_conc != blank or bn_origin != blank -%}
+            <p class="product-info__conc">
+              {%- if bn_conc != blank -%}<span class="product-info__conc-badge">{{ bn_conc }}</span>{%- endif -%}
+              {%- if bn_origin != blank -%}<span class="product-info__conc-badge product-info__conc-badge--origin">Made in {{ bn_origin }}</span>{%- endif -%}
+              {%- if bn_conc != blank -%}<span class="product-info__conc-note">Decanted from the original {{ bn_conc }} bottle into a 5&nbsp;ml atomizer</span>{%- endif -%}
+            </p>
           {%- endif -%}
 
           {% comment %} Rating {% endcomment %}
@@ -533,6 +539,17 @@
                 {%- endif -%}
               </div>
             </div>
+            {%- if bn_origin != blank -%}
+            <div class="fragrance-characteristic">
+              <span class="fragrance-characteristic__label">Made in</span>
+              <div class="fragrance-characteristic__seasons">
+                <span class="season-badge season-badge--all">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                  {{ bn_origin }}
+                </span>
+              </div>
+            </div>
+            {%- endif -%}
           </div>
         </div>
 
@@ -879,6 +896,10 @@
     text-transform: uppercase;
     font-size: 10.5px;
     line-height: 1.4;
+  }
+  .product-info__conc-badge--origin {
+    border-color: var(--color-border);
+    color: var(--color-text-muted);
   }
 
   .product-info__title {
