@@ -161,20 +161,7 @@
           <div class="subscription-box__header">
             <div class="subscription-box__bottle">
               <div class="bottle-visual">
-                <svg viewBox="0 0 50 90" fill="none">
-                  <rect x="18" y="0" width="14" height="8" rx="2" fill="#c9a86c"/>
-                  <rect x="20" y="8" width="10" height="5" fill="#555"/>
-                  <rect x="10" y="13" width="30" height="70" rx="4" fill="url(#bottleGradient)" stroke="#c9a86c" stroke-width="0.5"/>
-                  <rect x="15" y="28" width="20" height="30" rx="2" fill="#222"/>
-                  <text x="25" y="46" text-anchor="middle" fill="#c9a86c" font-size="10" font-weight="600">BN</text>
-                  <text x="25" y="55" text-anchor="middle" fill="#888" font-size="5">5ml</text>
-                  <defs>
-                    <linearGradient id="bottleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stop-color="#1a1a1a"/>
-                      <stop offset="100%" stop-color="#2a2a2a"/>
-                    </linearGradient>
-                  </defs>
-                </svg>
+                {% render 'vial-illustration', product: product, image: section.settings.vial_image %}
               </div>
               <span class="bottle-label">5ml Atomizer</span>
               <span class="bottle-sprays">~60 sprays</span>
@@ -930,9 +917,12 @@
     margin: 0 auto;
   }
 
-  .bottle-visual svg {
+  .bottle-visual svg,
+  .bottle-visual img {
     width: 100%;
     height: 100%;
+    object-fit: contain;
+    display: block;
   }
 
   .bottle-label {
@@ -2268,6 +2258,12 @@ function doAddToCart(variantId, sellingPlan, originalText) {
       "id": "show_related",
       "label": "Show related products",
       "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "vial_image",
+      "label": "Vial photo (optional)",
+      "info": "Shown in the subscription box instead of the drawn atomizer. Use a straight-on photo of the real 5 ml vial on a plain background."
     }
   ],
   "blocks": [
@@ -2304,7 +2300,7 @@ function doAddToCart(variantId, sellingPlan, originalText) {
           "type": "accordion",
           "settings": {
             "heading": "What's Included",
-            "content": "<p>Each atomizer contains 5ml of authentic fragrance (approximately 60 sprays) — perfect for a month of daily use. The sleek, pocket-sized design is perfect for on-the-go touch-ups.</p>"
+            "content": "<p>Each atomizer contains 5ml of authentic fragrance (approximately 60 sprays) \u2014 perfect for a month of daily use. The sleek, pocket-sized design is perfect for on-the-go touch-ups.</p>"
           }
         },
         {
