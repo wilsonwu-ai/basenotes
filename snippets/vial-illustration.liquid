@@ -11,6 +11,16 @@
   assign v_brand = product.vendor | default: 'Base Note' | upcase | strip
   assign v_name = product.title | default: 'Fragrance' | split: ' - ' | first
   assign v_name = v_name | remove: '5ml' | remove: '5 ml' | remove: 'EDP' | remove: 'EDT' | remove: 'Eau de Parfum' | remove: 'Eau de Toilette' | remove: 'Parfum' | remove: 'Extrait' | strip
+  assign v_vendor_raw = product.vendor | default: '' | strip
+  if v_vendor_raw != blank
+    assign v_vendor_prefix = v_vendor_raw | append: ' '
+    if v_name contains v_vendor_prefix
+      assign v_name = v_name | remove_first: v_vendor_prefix | strip
+    endif
+  endif
+  if v_name == blank
+    assign v_name = product.title | split: ' - ' | first
+  endif
   assign v_title_down = product.title | downcase
   assign v_conc = ''
   if v_title_down contains 'eau de parfum' or v_title_down contains 'edp'
