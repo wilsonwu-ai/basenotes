@@ -1,0 +1,11 @@
+{
+  "model": "bytedance/seedance-2.0/image-to-video",
+  "prompt": "Slow cinematic push-in on the couple by the window; she leans in and laughs, soft warm light drifts, linen moves gently, subtle film grain, no text",
+  "image_url": "https://basenote-media.wilson-af8.workers.dev/img/why-you-smell-the-way-you-do/hero.jpg",
+  "duration": 5,
+  "aspect": "16:9",
+  "resolution": "720p",
+  "request_id": "01a00aca-3991-7133-b221-3be67b1b7e01",
+  "source_url": "https://v3b.fal.media/files/b/0aa692f6/krccsm7l92vYs63vmEfYj_video.mp4",
+  "bytes": 2644079
+}
