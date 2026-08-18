@@ -1,0 +1,10 @@
+{
+  "model": "fal-ai/nano-banana-2",
+  "prompt": "Editorial product photograph, overhead flat lay on dark green linen: five identical small clear-glass 5 ml perfume atomizers with brushed-silver caps and plain white labels (no text, no logos), arranged in a neat row like a comparison chart, one atomizer slightly forward and lit by a warm spotlight, subtle gold accents, soft shadows, premium magazine style, 16:9, photorealistic, no people, no brand names",
+  "aspect": "16:9",
+  "resolution": "2K",
+  "request_id": "01a015db-60a8-71b0-95c1-74ad3157dfcc",
+  "source_url": "https://v3b.fal.media/files/b/0aa6db6d/tcsz-DCg9Yzm8pbL-5oZt_0IPxY99o.jpg",
+  "bytes": 293895,
+  "extra": null
+}
