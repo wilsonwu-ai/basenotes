@@ -511,10 +511,19 @@
         "button_label": "Join",
         "privacy_note": "We respect your privacy. Unsubscribe at any time."
       }
+    },
+    "growth-goal": {
+      "type": "growth-goal",
+      "settings": {
+        "goal": 60,
+        "fallback_active": 17,
+        "show_bar": true
+      }
     }
   },
   "order": [
     "hero",
+    "growth-goal",
     "17768546331d8577f5",
     "delivery-explainer",
     "1775503735ef6a96df",
