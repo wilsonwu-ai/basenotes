@@ -91,19 +91,7 @@
               </div>
               {%- comment -%} The 25th-of-month cadence is the subscription fulfilment cycle only {%- endcomment -%}
               {%- if has_subscription -%}
-                {%- assign current_day = 'now' | date: '%d' | plus: 0 -%}
-                {%- if current_day <= 25 -%}
-                  {%- assign ship_date = 'now' | date: '%B 25, %Y' -%}
-                {%- else -%}
-                  {%- assign next_month_ts = 'now' | date: '%s' | plus: 2592000 -%}
-                  {%- assign ship_date = next_month_ts | date: '%B 25, %Y' -%}
-                {%- endif -%}
-                <p class="cart-section__ship-date">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-                  </svg>
-                  {% if has_giveaway %}Subscription fragrance ships{% else %}Expected ship date{% endif %}: <strong>{{ ship_date }}</strong>
-                </p>
+                {%- comment -%} Ship-date line removed 2026-08-17 (Jeff): the 25th-of-month estimate was wrong for new subscriptions. {%- endcomment -%}
                 {%- if has_giveaway -%}
                   {%- comment -%} The 25th-of-month cadence is the subscription cycle. It must never describe the giveaway line. {%- endcomment -%}
                   <p class="cart-section__ship-date">
@@ -196,6 +184,11 @@
                   </div>
                 </div>
               {%- endfor -%}
+
+              {%- comment -%} "Add another vial — $18" upsell (Jeff 2026-08-23). Subscription carts only. {%- endcomment -%}
+              {%- if has_subscription -%}
+                {% render 'cart-addon-picker', cart: cart, exclude_handle: 'mont-blanc-legend-eau-de-parfum-one-time' %}
+              {%- endif -%}
 
               <div class="cart-items__footer">
                 <a href="/collections/all" class="cart-continue">
