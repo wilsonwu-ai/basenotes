@@ -166,22 +166,29 @@
         {%- endcomment -%}
         {%- assign drawer_has_plan_line = false -%}
         {%- assign drawer_has_giveaway = false -%}
-        {%- assign drawer_all_giveaway = true -%}
+        {%- assign drawer_all_plan = true -%}
         {%- for item in cart.items -%}
           {%- if item.selling_plan_allocation -%}
             {%- assign drawer_has_plan_line = true -%}
+          {%- else -%}
+            {%- assign drawer_all_plan = false -%}
           {%- endif -%}
           {%- if item.properties['_bn_offer'] == 'free-5ml' -%}
             {%- assign drawer_has_giveaway = true -%}
-          {%- else -%}
-            {%- assign drawer_all_giveaway = false -%}
           {%- endif -%}
         {%- endfor -%}
 
-        {%- assign drawer_has_subscription = true -%}
-        {%- if drawer_has_plan_line == false and drawer_all_giveaway -%}
-          {%- assign drawer_has_subscription = false -%}
-        {%- endif -%}
+        {%- comment -%}
+          Same rule as templates/cart.liquid (2026-08-23): a plan line means subscription
+          framing. Plan-less lines are intentional one-time items now that subscription
+          adds are cart-verified at add time (bnCartPlanApplied rollback). The old
+          fail-safe ("subscription unless provably all-giveaway") is retired with it.
+          drawer_all_plan gates every FREE-shipping claim: the store's free-shipping
+          discount applies only to PURE subscription orders — Shopify skips it when any
+          one-time line (giveaway or add-on) shares the checkout, so a mixed cart pays
+          the profile rate ($4.99 under $50).
+        {%- endcomment -%}
+        {%- assign drawer_has_subscription = drawer_has_plan_line -%}
 
         <div class="cart-drawer__summary">
           <div class="cart-drawer__summary-line">
@@ -192,10 +199,11 @@
             <span>Shipping</span>
             <span>
               {%- comment -%}
-                The giveaway line carries its own flat shipping charge, so a mixed cart must not
-                assert FREE. Rates resolve from the shipping profiles at checkout.
+                FREE only for a PURE subscription cart: the free-shipping discount is
+                subscription-purchase-type, and Shopify skips it whenever any one-time
+                line (giveaway or add-on) shares the order. Rates resolve at checkout.
               {%- endcomment -%}
-              {%- if drawer_has_subscription and drawer_has_giveaway == false -%}
+              {%- if drawer_has_plan_line and drawer_all_plan -%}
                 <span style="color: var(--color-secondary); font-weight: 600;">FREE</span>
               {%- else -%}
                 Calculated at checkout
@@ -203,7 +211,7 @@
             </span>
           </div>
           <div class="cart-drawer__summary-line cart-drawer__summary-line--total">
-            <span>{% if drawer_has_subscription and drawer_has_giveaway == false %}Total{% else %}Total before shipping{% endif %}</span>
+            <span>{% if drawer_has_plan_line and drawer_all_plan %}Total{% else %}Total before shipping{% endif %}</span>
             <span class="cart-drawer__subtotal-price">{{ cart.total_price | money }}</span>
           </div>
         </div>
@@ -251,12 +259,12 @@
             Secure
           </span>
           {%- comment -%}
-            There is no $50 threshold in this store: subscribers ship free unconditionally and
-            everyone else pays the rate from the shipping profile. The old unconditional
-            "Free Shipping $50+" badge was wrong in both directions, and sat one row under the
-            "Shipping — Calculated at checkout" line it contradicted.
+            Badge only when the claim is literally true for THIS cart: a pure subscription
+            order ships free (discount 1500466643162, subscription purchase type). A mixed
+            cart pays the profile rate, so the badge would contradict the Shipping line
+            two rows up. One-time carts: $4.99 under $50, free at $50+ (profile tiers).
           {%- endcomment -%}
-          {%- if drawer_has_subscription -%}
+          {%- if drawer_has_plan_line and drawer_all_plan -%}
             <span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="1" y="3" width="15" height="13"/>
