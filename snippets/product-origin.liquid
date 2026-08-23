@@ -1,0 +1,38 @@
+{%- comment -%}
+  Outputs the country a fragrance is made in, e.g. "France", from the product's
+  origin:<country> tag (falls back to metafield custom.country_of_origin).
+  Added 2026-08-18 (Jeff: "made in X details on the product page").
+  Usage: {% capture origin %}{% render 'product-origin', product: product %}{% endcapture %}
+{%- endcomment -%}
+{%- liquid
+  assign o_raw = ''
+  if product.metafields.custom.country_of_origin != blank
+    assign o_raw = product.metafields.custom.country_of_origin | strip
+  endif
+  if o_raw == blank
+    for tag in product.tags
+      assign t_down = tag | downcase
+      if t_down contains 'origin:'
+        assign o_raw = tag | split: ':' | last | strip
+        break
+      endif
+    endfor
+  endif
+  assign o_key = o_raw | downcase | strip
+  assign o_out = ''
+  if o_key == 'usa' or o_key == 'us' or o_key == 'united states'
+    assign o_out = 'USA'
+  elsif o_key == 'uk' or o_key == 'united kingdom' or o_key == 'england'
+    assign o_out = 'United Kingdom'
+  elsif o_key == 'uae'
+    assign o_out = 'UAE'
+  elsif o_key != blank
+    assign o_words = o_key | split: ' '
+    assign o_out = ''
+    for w in o_words
+      assign o_out = o_out | append: w | capitalize | append: ' '
+    endfor
+    assign o_out = o_out | strip
+    assign o_out = o_out | replace: 'De ', 'de ' | replace: 'Of ', 'of '
+  endif
+-%}{{ o_out | escape }}

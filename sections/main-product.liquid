@@ -139,6 +139,17 @@
         <header class="product-info__header">
           <span class="product-info__vendor">{{ product.vendor | default: 'Base Note Atelier' }}</span>
           <h1 class="product-info__title">{{ product.title }}</h1>
+          {%- capture bn_conc -%}{% render 'product-concentration', product: product %}{%- endcapture -%}
+          {%- assign bn_conc = bn_conc | strip -%}
+          {%- capture bn_origin -%}{% render 'product-origin', product: product %}{%- endcapture -%}
+          {%- assign bn_origin = bn_origin | strip -%}
+          {%- if bn_conc != blank or bn_origin != blank -%}
+            <p class="product-info__conc">
+              {%- if bn_conc != blank -%}<span class="product-info__conc-badge">{{ bn_conc }}</span>{%- endif -%}
+              {%- if bn_origin != blank -%}<span class="product-info__conc-badge product-info__conc-badge--origin">Made in {{ bn_origin }}</span>{%- endif -%}
+              {%- if bn_conc != blank -%}<span class="product-info__conc-note">Decanted from the original {{ bn_conc }} bottle into a 5&nbsp;ml atomizer</span>{%- endif -%}
+            </p>
+          {%- endif -%}
 
           {% comment %} Rating {% endcomment %}
           {%- if product.metafields.reviews.rating != blank -%}
@@ -161,27 +172,14 @@
           <div class="subscription-box__header">
             <div class="subscription-box__bottle">
               <div class="bottle-visual">
-                <svg viewBox="0 0 50 90" fill="none">
-                  <rect x="18" y="0" width="14" height="8" rx="2" fill="#c9a86c"/>
-                  <rect x="20" y="8" width="10" height="5" fill="#555"/>
-                  <rect x="10" y="13" width="30" height="70" rx="4" fill="url(#bottleGradient)" stroke="#c9a86c" stroke-width="0.5"/>
-                  <rect x="15" y="28" width="20" height="30" rx="2" fill="#222"/>
-                  <text x="25" y="46" text-anchor="middle" fill="#c9a86c" font-size="10" font-weight="600">BN</text>
-                  <text x="25" y="55" text-anchor="middle" fill="#888" font-size="5">5ml</text>
-                  <defs>
-                    <linearGradient id="bottleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stop-color="#1a1a1a"/>
-                      <stop offset="100%" stop-color="#2a2a2a"/>
-                    </linearGradient>
-                  </defs>
-                </svg>
+                {% render 'vial-illustration', product: product, image: section.settings.vial_image, concentration: bn_conc %}
               </div>
               <span class="bottle-label">5ml Atomizer</span>
               <span class="bottle-sprays">~60 sprays</span>
             </div>
 
             <div class="subscription-box__pricing">
-              {% render 'subscription-pricing-summary', surface: 'pdp' %}
+              {% render 'subscription-pricing-summary', surface: 'pdp', concentration: bn_conc %}
               {%- if product.compare_at_price > product.price -%}
                 <p class="price-note">Retail: {{ product.compare_at_price | money }} for a full bottle.</p>
               {%- endif -%}
@@ -541,6 +539,17 @@
                 {%- endif -%}
               </div>
             </div>
+            {%- if bn_origin != blank -%}
+            <div class="fragrance-characteristic">
+              <span class="fragrance-characteristic__label">Made in</span>
+              <div class="fragrance-characteristic__seasons">
+                <span class="season-badge season-badge--all">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                  {{ bn_origin }}
+                </span>
+              </div>
+            </div>
+            {%- endif -%}
           </div>
         </div>
 
@@ -867,6 +876,32 @@
     margin-bottom: var(--spacing-xs);
   }
 
+  .product-info__conc {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin: 6px 0 var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+  .product-info__conc-badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border: 1px solid var(--color-secondary);
+    border-radius: 999px;
+    color: var(--color-secondary);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 10.5px;
+    line-height: 1.4;
+  }
+  .product-info__conc-badge--origin {
+    border-color: var(--color-border);
+    color: var(--color-text-muted);
+  }
+
   .product-info__title {
     font-size: var(--font-size-3xl);
     font-weight: 700;
@@ -930,9 +965,12 @@
     margin: 0 auto;
   }
 
-  .bottle-visual svg {
+  .bottle-visual svg,
+  .bottle-visual img {
     width: 100%;
     height: 100%;
+    object-fit: contain;
+    display: block;
   }
 
   .bottle-label {
@@ -2092,7 +2130,7 @@
         const cartPayload = { id: parseInt(variantId), quantity: 1 };
         if (sellingPlan) cartPayload.selling_plan = parseInt(sellingPlan);
 
-        fetch('/cart/add.js', {
+        (window.__bnFetch || window.fetch)('/cart/add.js', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(cartPayload)
@@ -2105,49 +2143,14 @@
           }
           return response.json();
         })
-       .then(function(data) {
-  if (!sellingPlan) return data;
-
-  function checkCart(attemptsLeft) {
-    return fetch('/cart.js')
-      .then(function(r) { return r.json(); })
-      .then(function(cart) {
-        var applied = cart.items.some(function(item) {
-          return item.variant_id === parseInt(variantId) && item.selling_plan_allocation;
-        });
-        if (!applied && attemptsLeft > 1) {
-          // Not applied yet — wait 500ms and retry
-          return new Promise(function(resolve) { setTimeout(resolve, 500); })
-            .then(function() { return checkCart(attemptsLeft - 1); });
-        }
-        if (!applied) {
-          // All retries exhausted — roll back
-          if (data.key) {
-            fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
-          }
-          console.error('[BaseNote] Subscription plan not applied after retries — rolled back. sellingPlan=', sellingPlan);
-          throw new Error('selling_plan_not_applied');
-        }
-        return data;
-      });
-  }
-
-  // Initial 300ms delay then start retry loop (3 attempts, 500ms apart = up to 1.3s total)
-  return new Promise(function(resolve) { setTimeout(resolve, 300); })
-    .then(function() { return checkCart(3); });
-})
-
+        .then(function(data) {
           // Subscription safety-net v2 (Jul 19, Jeff's approach): verify against the LIVE CART,
           // not the add response — /cart/add.js can omit selling_plan_allocation even when the
           // plan attached correctly, which made v1 roll back good subscriptions. Only roll back
           // when the cart itself confirms the plan is missing.
           if (!sellingPlan) return data;
-          return fetch('/cart.js')
-            .then(function(r) { return r.json(); })
-            .then(function(cart) {
-              var applied = cart.items.some(function(item) {
-                return item.variant_id === parseInt(variantId) && item.selling_plan_allocation;
-              });
+          return bnCartPlanApplied(variantId, 3)
+            .then(function(applied) {
               if (!applied) {
                 if (data.key) {
                   fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: data.key, quantity: 0 }) }).catch(function(){});
@@ -2188,11 +2191,34 @@
     }
 
     // ─── doAddToCart helper (used by subscription swap flow) ───
+// Cart-verified plan check with retry (Jul 20 intent, ported properly): /cart.js can lag
+// the add by a few hundred ms, so wait 300ms then check up to 3 times, 500ms apart, before
+// concluding the selling plan is missing. Resolves true/false, never throws.
+function bnCartPlanApplied(variantId, attempts) {
+  attempts = attempts || 3;
+  function check(left) {
+    return fetch('/cart.js', { credentials: 'same-origin' })
+      .then(function(r) { return r.json(); })
+      .then(function(cart) {
+        var applied = (cart.items || []).some(function(item) {
+          return item.variant_id === parseInt(variantId) && item.selling_plan_allocation;
+        });
+        if (applied) return true;
+        if (left > 1) {
+          return new Promise(function(resolve) { setTimeout(resolve, 500); }).then(function() { return check(left - 1); });
+        }
+        return false;
+      })
+      .catch(function() { return left > 1 ? check(left - 1) : false; });
+  }
+  return new Promise(function(resolve) { setTimeout(resolve, 300); }).then(function() { return check(attempts); });
+}
+
 function doAddToCart(variantId, sellingPlan, originalText) {
   var payload = { id: parseInt(variantId), quantity: 1 };
   if (sellingPlan) payload.selling_plan = parseInt(sellingPlan);
 
-  fetch('/cart/add.js', {
+  (window.__bnFetch || window.fetch)('/cart/add.js', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -2205,20 +2231,14 @@ function doAddToCart(variantId, sellingPlan, originalText) {
     }
     return response.json();
   })
-  return new Promise(function(resolve) { setTimeout(resolve, 800); })
-  .then(function() { return fetch('/cart.js'); })
-
+  .then(function(data) {
     // Verify selling plan was applied by checking cart directly.
     // /cart/add.js does not reliably return selling_plan_allocation
     // even when the plan was successfully attached — so we confirm
     // against the live cart instead of trusting the add response.
     if (!sellingPlan) return data;
-    return fetch('/cart.js')
-      .then(function(r) { return r.json(); })
-      .then(function(cart) {
-        var applied = cart.items.some(function(item) {
-          return item.variant_id === parseInt(variantId) && item.selling_plan_allocation;
-        });
+    return bnCartPlanApplied(variantId, 3)
+      .then(function(applied) {
         if (!applied) {
           // Roll back and fail loudly
           if (data.key) {
@@ -2286,6 +2306,12 @@ function doAddToCart(variantId, sellingPlan, originalText) {
       "id": "show_related",
       "label": "Show related products",
       "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "vial_image",
+      "label": "Vial photo (optional)",
+      "info": "Shown in the subscription box instead of the drawn atomizer. Use a straight-on photo of the real 5 ml vial on a plain background."
     }
   ],
   "blocks": [
@@ -2322,7 +2348,7 @@ function doAddToCart(variantId, sellingPlan, originalText) {
           "type": "accordion",
           "settings": {
             "heading": "What's Included",
-            "content": "<p>Each atomizer contains 5ml of authentic fragrance (approximately 60 sprays) — perfect for a month of daily use. The sleek, pocket-sized design is perfect for on-the-go touch-ups.</p>"
+            "content": "<p>Each atomizer contains 5ml of authentic fragrance (approximately 60 sprays) \u2014 perfect for a month of daily use. The sleek, pocket-sized design is perfect for on-the-go touch-ups.</p>"
           }
         },
         {

@@ -196,7 +196,7 @@
   function addToCart(variantId, quantity, sellingPlan) {
     var payload = { id: parseInt(variantId), quantity: quantity };
     if (sellingPlan) payload.selling_plan = parseInt(sellingPlan);
-    return fetch('/cart/add.js', {
+    return (window.__bnFetch || window.fetch)('/cart/add.js', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

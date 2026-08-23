@@ -138,6 +138,20 @@
             </ul>
           </div>
         {%- endfor -%}
+        {%- if section.settings.show_journal -%}
+          {%- assign journal_blog = blogs[section.settings.journal_blog_handle] -%}
+          {%- if journal_blog and journal_blog.articles_count > 0 -%}
+          <div class="footer__column footer__column--journal">
+            <h4 class="footer__heading">{{ section.settings.journal_heading | default: 'Journal' }}</h4>
+            <ul class="footer__list">
+              {%- for article in journal_blog.articles limit: 3 -%}
+                <li><a href="{{ article.url }}" class="footer__link">{{ article.title | truncate: 56 }}</a></li>
+              {%- endfor -%}
+              <li><a href="{{ journal_blog.url }}" class="footer__link footer__link--all">All stories &rarr;</a></li>
+            </ul>
+          </div>
+          {%- endif -%}
+        {%- endif -%}
       </div>
     </div>
   </div>
@@ -688,6 +702,28 @@
       "label": "Show payment icons",
       "default": true,
       "info": "Displays enabled payment methods"
+    },
+    {
+      "type": "header",
+      "content": "Journal column"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_journal",
+      "label": "Show Journal column (latest 3 posts)",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "journal_heading",
+      "label": "Journal heading",
+      "default": "Journal"
+    },
+    {
+      "type": "text",
+      "id": "journal_blog_handle",
+      "label": "Blog handle",
+      "default": "hub"
     }
   ],
   "blocks": [

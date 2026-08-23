@@ -16,8 +16,8 @@
         "image_url": "",
         "video": "",
         "eyebrow": "",
-        "heading": "<b>One Flat Price. Luxury Fragrances<b></b></b>",
-        "description": "<b>$20/month. No Surchages</b>",
+        "heading": "<b>One Flat Price. Luxury Fragrances</b>",
+        "description": "<b>$20/month. No Surcharges</b>",
         "button_label": "Find My Scent",
         "button_link": "/pages/find-your-scent",
         "secondary_button_label": "View the Scent Vault",
@@ -39,8 +39,8 @@
             "input_placeholder": "e.g., I like fresh citrus scents...",
             "send_button_text": "Send",
             "quick_suggestions": "I like fresh citrus scents|Recommend something woody|What's good for summer?|Show me luxury fragrances",
-            "bot_avatar_icon": "🌿",
-            "user_avatar_icon": "👤",
+            "bot_avatar_icon": "\ud83c\udf3f",
+            "user_avatar_icon": "\ud83d\udc64",
             "show_disclaimer": true,
             "disclaimer_text": "AI-powered recommendations. Results may vary.",
             "desktop_width_percent": 100,
@@ -91,7 +91,7 @@
         "benefit-1": {
           "type": "benefit",
           "settings": {
-            "icon": "✈️",
+            "icon": "\u2708\ufe0f",
             "title": "Travel Ready",
             "description": "TSA-compliant. Fits anywhere"
           }
@@ -99,7 +99,7 @@
         "benefit-2": {
           "type": "benefit",
           "settings": {
-            "icon": "💰",
+            "icon": "\ud83d\udcb0",
             "title": "Cost Effective",
             "description": "Luxury without the full price"
           }
@@ -107,7 +107,7 @@
         "benefit-3": {
           "type": "benefit",
           "settings": {
-            "icon": "🔄",
+            "icon": "\ud83d\udd04",
             "title": "No Waste",
             "description": "Designed to avoid clutter"
           }
@@ -115,7 +115,7 @@
         "benefit-4": {
           "type": "benefit",
           "settings": {
-            "icon": "📦",
+            "icon": "\ud83d\udce6",
             "title": "Free Shipping",
             "description": "Delivered to your door monthly"
           }
@@ -133,11 +133,11 @@
         "description": "The same elite fragrance found in $500 bottles -- crafted into a sleek, precision atomizer",
         "full_bottle_image": "shopify://shop_images/Screenshot_2026-05-14_at_4.47.07_PM.png",
         "full_bottle_title": "The Full Bottle",
-        "full_bottle_subtitle": "100ml · Retail Price",
+        "full_bottle_subtitle": "100ml \u00b7 Retail Price",
         "full_bottle_price": "$500",
         "atomizer_image": "shopify://shop_images/Screenshot_2026-05-14_at_4.31.57_PM.png",
         "atomizer_title": "Your Monthly Vial",
-        "atomizer_subtitle": "5ml · ~45 Sprays · 30 Days",
+        "atomizer_subtitle": "5ml \u00b7 ~45 Sprays \u00b7 30 Days",
         "atomizer_price": "$20/month",
         "atomizer_badge": "What You Get",
         "button_label": "Start Your Subscription",
@@ -151,7 +151,7 @@
           "type": "ai_gen_block_9faa96e",
           "settings": {
             "title": "No surcharges. Ever.",
-            "subtitle": "Most fragrance subscriptions charge $5–15 extra on luxury brands like Creed and Parfums de Marly. Base Note doesn't. Every fragrance is $20 flat.",
+            "subtitle": "Most fragrance subscriptions charge $5\u201315 extra on luxury brands like Creed and Parfums de Marly. Base Note doesn't. Every fragrance is $20 flat.",
             "title_size": 32,
             "subtitle_size": 16,
             "column_1_header": "Fragrance",
@@ -215,7 +215,7 @@
             "benefit_1_text": "Our fragrance experts handpick premium scents from top designers and niche houses.",
             "benefit_1_tag": "",
             "benefit_2_title": "Your Skin. Your Chemistry.",
-            "benefit_2_text": "A fragrance that smells extraordinary on someone else may read completely different on you. Wearing it on your skin — through real days and real situations — is the only true test.",
+            "benefit_2_text": "A fragrance that smells extraordinary on someone else may read completely different on you. Wearing it on your skin \u2014 through real days and real situations \u2014 is the only true test.",
             "benefit_2_tag": "",
             "benefit_3_title": "Build a Rotation That Works",
             "benefit_3_text": "Seasons shift. Occasions change. A first date calls for something different than a board meeting. A rotation means you always have the right scent for the moment.",
@@ -239,15 +239,15 @@
             "show_occasions": true,
             "occasions_heading": "A scent for every moment",
             "occasions_subtext": "Build a versatile fragrance wardrobe",
-            "occasion_1_icon": "☀️",
+            "occasion_1_icon": "\u2600\ufe0f",
             "occasion_1_label": "Daily Wear",
-            "occasion_2_icon": "💼",
+            "occasion_2_icon": "\ud83d\udcbc",
             "occasion_2_label": "Office",
-            "occasion_3_icon": "🌙",
+            "occasion_3_icon": "\ud83c\udf19",
             "occasion_3_label": "Evening",
-            "occasion_4_icon": "🎉",
+            "occasion_4_icon": "\ud83c\udf89",
             "occasion_4_label": "Special Events",
-            "occasion_5_icon": "🏖️",
+            "occasion_5_icon": "\ud83c\udfd6\ufe0f",
             "occasion_5_label": "Seasonal",
             "occasion_6_icon": "",
             "occasion_6_label": "",
@@ -262,7 +262,7 @@
             "price_col_1_row_2": "$8",
             "price_col_2_row_2": "Free",
             "price_row_3_label": "Expert curation",
-            "price_col_1_row_3": "—",
+            "price_col_1_row_3": "\u2014",
             "price_col_2_row_3": "Included",
             "price_total_label": "Total",
             "price_col_1_total": "$93",
@@ -384,7 +384,7 @@
             "name": "Annual",
             "price": "$192",
             "period": "year",
-            "billing_note": "Billed annually — 2 months free",
+            "billing_note": "Billed annually \u2014 2 months free",
             "features": "5ml premium fragrance|Free shipping|Access to all scents|Swap anytime|2 months free|Special Offers|Free Travel Gift",
             "featured": false,
             "badge": "",
@@ -412,7 +412,7 @@
         "testimonial_jQQpGh": {
           "type": "testimonial",
           "settings": {
-            "quote": "I tried Xerjoff Alexandria ii. The scent is absolutely stunning — I wear it on nights out and always get compliments. My 5ml bottle lasted  through the end of the month, which is perfect. Excited for my next fragrance.",
+            "quote": "I tried Xerjoff Alexandria ii. The scent is absolutely stunning \u2014 I wear it on nights out and always get compliments. My 5ml bottle lasted  through the end of the month, which is perfect. Excited for my next fragrance.",
             "author": "Sophie Y",
             "location": "Los Angeles, CA"
           }
@@ -428,7 +428,7 @@
         "testimonial-1": {
           "type": "testimonial",
           "settings": {
-            "quote": "Absolutely loving Parfums de Marly Perseus. It’s an absolute no-brainer for Spring! On top of the juice itself, I’m a huge fan of the presentation—the atomizer is compact, and feels incredibly robust",
+            "quote": "Absolutely loving Parfums de Marly Perseus. It\u2019s an absolute no-brainer for Spring! On top of the juice itself, I\u2019m a huge fan of the presentation\u2014the atomizer is compact, and feels incredibly robust",
             "author": "Freddy M",
             "location": "Chicago, IL"
           }
@@ -511,10 +511,19 @@
         "button_label": "Join",
         "privacy_note": "We respect your privacy. Unsubscribe at any time."
       }
+    },
+    "growth-goal": {
+      "type": "growth-goal",
+      "settings": {
+        "goal": 60,
+        "fallback_active": 17,
+        "show_bar": true
+      }
     }
   },
   "order": [
     "hero",
+    "growth-goal",
     "17768546331d8577f5",
     "delivery-explainer",
     "1775503735ef6a96df",

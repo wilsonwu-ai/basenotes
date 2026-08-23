@@ -1,0 +1,68 @@
+{%- comment -%}
+  Refer-a-friend share block. Params: heading, blurb, share_text, code (optional discount code), compact (bool).
+  Builds a personal link: https://basenotescent.com/?ref=<refid> (refid = first name + last 4 of customer id, or 'friend' when logged out).
+  If `code` is set the link becomes /discount/CODE?redirect=/%3Fref%3D<refid> so the code auto-applies for the friend.
+  The `ref` value is captured by snippets/referral-capture.liquid into the cart attribute `referred_by`, so it shows on the order.
+{%- endcomment -%}
+{%- liquid
+  if customer
+    if customer.first_name == blank
+      assign refid = 'member-' | append: customer.id | modulo: 10000
+    else
+      assign short = customer.id | modulo: 10000
+      assign refid = customer.first_name | handleize | append: '-' | append: short
+    endif
+  else
+    assign refid = 'friend'
+  endif
+  assign base = shop.url | default: 'https://basenotescent.com'
+  if code != blank
+    assign share_url = base | append: '/discount/' | append: code | append: '?redirect=%2F%3Fref%3D' | append: refid
+  else
+    assign share_url = base | append: '/?ref=' | append: refid
+  endif
+  assign msg = share_text | default: 'One flat $20/month for real luxury fragrances in 5 ml atomizers:' | append: ' ' | append: share_url
+  assign enc = msg | url_encode
+-%}
+<div class="ref-share{% if compact %} ref-share--compact{% endif %}" data-ref-share>
+  {%- if heading != blank -%}<p class="ref-share__heading">{{ heading }}</p>{%- endif -%}
+  {%- if blurb != blank -%}<p class="ref-share__blurb">{{ blurb }}</p>{%- endif -%}
+  <div class="ref-share__row">
+    <input class="ref-share__url" type="text" readonly value="{{ share_url }}" aria-label="Your referral link" data-ref-url>
+    <button type="button" class="ref-share__btn ref-share__btn--copy" data-ref-copy aria-live="polite">Copy link</button>
+  </div>
+  <div class="ref-share__row ref-share__row--apps">
+    <a class="ref-share__btn" href="https://api.whatsapp.com/send?text={{ enc }}" target="_blank" rel="noopener">WhatsApp</a>
+    <a class="ref-share__btn" href="sms:?&body={{ enc }}">Text</a>
+    <a class="ref-share__btn" href="mailto:?subject={{ 'A fragrance subscription I actually like' | url_encode }}&body={{ enc }}">Email</a>
+    <button type="button" class="ref-share__btn" data-ref-native hidden>Share…</button>
+  </div>
+  {%- unless customer -%}<p class="ref-share__note"><a href="{{ routes.account_login_url }}">Log in</a> to get a link that credits your account.</p>{%- endunless -%}
+</div>
+<style>
+  .ref-share{font-family:var(--font-body,'Lato',sans-serif);max-width:520px}
+  .ref-share__heading{font-family:var(--font-heading,'Cormorant Garamond',serif);font-size:1.25rem;font-weight:600;margin:0 0 .25rem}
+  .ref-share__blurb{font-size:.92rem;line-height:1.5;margin:0 0 .75rem;opacity:.85}
+  .ref-share__row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.5rem}
+  .ref-share__url{flex:1 1 200px;min-width:0;font-size:.85rem;padding:.65rem .8rem;border-radius:8px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:inherit}
+  .ref-share__btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.55rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.45);background:transparent;color:inherit;font:inherit;font-size:.82rem;letter-spacing:.04em;text-decoration:none;cursor:pointer;transition:background .2s}
+  .ref-share__btn:hover{background:rgba(255,255,255,.12)}
+  .ref-share__btn--copy{background:rgba(255,255,255,.14)}
+  .ref-share__note{font-size:.8rem;opacity:.75;margin:.25rem 0 0}
+  .ref-share__note a{color:inherit;text-decoration:underline}
+  .template-customers .ref-share__url,.page-thankyou .ref-share__url{border-color:#ddd;background:#fff;color:#2D2D2D}
+  .template-customers .ref-share__btn,.page-thankyou .ref-share__btn{border-color:#2D4641;color:#2D4641}
+</style>
+<script>
+(function(){
+  var root = document.currentScript && document.currentScript.previousElementSibling ? document.currentScript.parentNode.querySelector('[data-ref-share]:not([data-bound])') : document.querySelector('[data-ref-share]:not([data-bound])');
+  if (!root) return; root.setAttribute('data-bound','1');
+  var input = root.querySelector('[data-ref-url]'), copy = root.querySelector('[data-ref-copy]'), nat = root.querySelector('[data-ref-native]');
+  if (copy && input) copy.addEventListener('click', function(){
+    var done = function(){ copy.textContent = 'Copied!'; setTimeout(function(){ copy.textContent = 'Copy link'; }, 1800); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(input.value).then(done, function(){ input.select(); document.execCommand('copy'); done(); });
+    else { input.select(); document.execCommand('copy'); done(); }
+  });
+  if (nat && navigator.share) { nat.hidden = false; nat.addEventListener('click', function(){ navigator.share({ title: 'Base Note', text: input ? input.value : location.href, url: input ? input.value : location.href }).catch(function(){}); }); }
+})();
+</script>

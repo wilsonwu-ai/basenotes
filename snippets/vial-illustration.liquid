@@ -1,0 +1,75 @@
+{%- comment -%}
+  Base Note 5 ml atomizer illustration — drawn to match the REAL vial (clear glass
+  cylinder, silver cap, white label carrying the fragrance name), replacing the old
+  black "BN" bottle Jeff flagged on 2026-08-17.
+
+  Usage: {% render 'vial-illustration', product: product, image: section.settings.vial_image %}
+    product — used for the label text (vendor + short name + concentration)
+    image   — optional image object; when set, a photo is shown instead of the SVG
+{%- endcomment -%}
+{%- liquid
+  assign v_brand = product.vendor | default: 'Base Note' | upcase | strip
+  assign v_name = product.title | default: 'Fragrance' | split: ' - ' | first
+  assign v_name = v_name | remove: '5ml' | remove: '5 ml' | remove: 'EDP' | remove: 'EDT' | remove: 'Eau de Parfum' | remove: 'Eau De Parfum' | remove: 'EAU DE PARFUM' | remove: 'Eau de Toilette' | remove: 'Eau De Toilette' | remove: 'EAU DE TOILETTE' | remove: 'Extrait de Parfum' | remove: 'Extrait De Parfum' | remove: 'Parfum' | remove: 'Extrait' | strip
+  assign v_vendor_raw = product.vendor | default: '' | strip
+  if v_vendor_raw != blank
+    assign v_vendor_prefix = v_vendor_raw | append: ' '
+    if v_name contains v_vendor_prefix
+      assign v_name = v_name | remove_first: v_vendor_prefix | strip
+    endif
+  endif
+  if v_name == blank
+    assign v_name = product.title | split: ' - ' | first
+  endif
+  assign v_title_down = product.title | downcase
+  assign v_conc = ''
+  if v_title_down contains 'eau de parfum' or v_title_down contains 'edp'
+    assign v_conc = 'Eau de Parfum'
+  elsif v_title_down contains 'eau de toilette' or v_title_down contains 'edt'
+    assign v_conc = 'Eau de Toilette'
+  elsif v_title_down contains 'extrait'
+    assign v_conc = 'Extrait de Parfum'
+  elsif v_title_down contains 'parfum'
+    assign v_conc = 'Parfum'
+  endif
+  if concentration != blank
+    assign v_conc = concentration | strip
+  endif
+  assign v_uid = product.id | default: 0
+-%}
+{%- if image != blank -%}
+  <img class="bn-vial bn-vial--photo" src="{{ image | image_url: width: 280 }}" srcset="{{ image | image_url: width: 140 }} 140w, {{ image | image_url: width: 280 }} 280w" sizes="70px" width="{{ image.width }}" height="{{ image.height }}" alt="{{ image.alt | default: 'Base Note 5 ml atomizer' | escape }}" loading="lazy">
+{%- else -%}
+  <svg class="bn-vial bn-vial--svg" viewBox="0 0 50 100" role="img" aria-label="Base Note 5 ml glass atomizer with a silver cap" focusable="false">
+    <defs>
+      <linearGradient id="bnVialCap{{ v_uid }}" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#9a9da1"/><stop offset="0.25" stop-color="#e9ebed"/><stop offset="0.5" stop-color="#b9bcc0"/><stop offset="0.75" stop-color="#eceef0"/><stop offset="1" stop-color="#8f9296"/>
+      </linearGradient>
+      <linearGradient id="bnVialGlass{{ v_uid }}" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#dfe4e6"/><stop offset="0.18" stop-color="#ffffff"/><stop offset="0.5" stop-color="#f1f4f5"/><stop offset="0.85" stop-color="#e6eaec"/><stop offset="1" stop-color="#cfd5d8"/>
+      </linearGradient>
+      <clipPath id="bnVialLabel{{ v_uid }}"><rect x="15.5" y="57" width="19" height="34"/></clipPath>
+    </defs>
+    <!-- cap -->
+    <rect x="17" y="2" width="16" height="26" rx="2.2" fill="url(#bnVialCap{{ v_uid }})"/>
+    <rect x="17" y="2" width="16" height="2.2" rx="1" fill="#74777b"/>
+    <!-- collar -->
+    <rect x="19" y="28" width="12" height="4" fill="#a3a6aa"/>
+    <!-- glass body -->
+    <rect x="14.5" y="32" width="21" height="65" rx="3.5" fill="url(#bnVialGlass{{ v_uid }})" stroke="#b7bfc3" stroke-width="0.7"/>
+    <!-- liquid -->
+    <rect x="16.5" y="35" width="17" height="60" rx="2.5" fill="#f5efe1" opacity="0.75"/>
+    <!-- dip tube -->
+    <line x1="25" y1="32" x2="25" y2="94" stroke="#cfd3d6" stroke-width="1"/>
+    <!-- highlight -->
+    <rect x="17" y="35" width="2" height="58" rx="1" fill="#ffffff" opacity="0.85"/>
+    <!-- label -->
+    <rect x="15.5" y="57" width="19" height="34" fill="#ffffff" stroke="#dcdfe1" stroke-width="0.5"/>
+    <g clip-path="url(#bnVialLabel{{ v_uid }})" font-family="Georgia, 'Times New Roman', serif" text-anchor="middle" fill="#2b2b2b">
+      <text x="25" y="67" font-size="3.4" letter-spacing="0.35" font-weight="600">{{ v_brand | escape }}</text>
+      <text x="25" y="73.5" font-size="3.2">{{ v_name | escape }}</text>
+      {%- if v_conc != blank -%}<text x="25" y="79.5" font-size="2.5" fill="#6b6b6b" font-style="italic">{{ v_conc }}</text>{%- endif -%}
+      <text x="25" y="87" font-size="2.3" fill="#8a8a8a" letter-spacing="0.3">5 ML · BASE NOTE</text>
+    </g>
+  </svg>
+{%- endif -%}

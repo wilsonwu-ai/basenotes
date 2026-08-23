@@ -130,6 +130,20 @@
             {%- endif -%}
           </li>
         {%- endfor -%}
+        {%- comment -%} Journal link (blog discoverability) — hidden automatically if the menu already links to a blog {%- endcomment -%}
+        {%- liquid
+          assign menu_has_blog = false
+          for l in section.settings.menu.links
+            if l.url contains '/blogs/'
+              assign menu_has_blog = true
+            endif
+          endfor
+        -%}
+        {%- if section.settings.journal_label != blank and menu_has_blog == false -%}
+          <li class="header__nav-item">
+            <a href="{{ section.settings.journal_url | default: '/blogs/hub' }}" class="header__nav-link{% if request.page_type == 'blog' or request.page_type == 'article' %} is-active{% endif %}">{{ section.settings.journal_label }}</a>
+          </li>
+        {%- endif -%}
       </ul>
     </nav>
 
@@ -272,6 +286,11 @@
         {%- endif -%}
       </li>
     {%- endfor -%}
+    {%- if section.settings.journal_label != blank and menu_has_blog == false -%}
+      <li class="mobile-nav__item">
+        <a href="{{ section.settings.journal_url | default: '/blogs/hub' }}" class="mobile-nav__link">{{ section.settings.journal_label }}</a>
+      </li>
+    {%- endif -%}
   </ul>
 
   <div class="mobile-nav__footer">
@@ -1265,6 +1284,17 @@
       "id": "menu",
       "label": "Menu",
       "default": "main-menu"
+    },
+    {
+      "type": "text",
+      "id": "journal_label",
+      "label": "Journal link label (blank to hide)",
+      "default": "Journal"
+    },
+    {
+      "type": "url",
+      "id": "journal_url",
+      "label": "Journal link URL (default /blogs/hub)"
     },
     {
       "type": "header",
