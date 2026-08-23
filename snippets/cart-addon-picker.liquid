@@ -1,0 +1,201 @@
+{%- comment -%}
+  "Add another vial — $18" cart upsell (Jeff, 2026-08-23: "In checkout cart do we
+  have add another for $18 button. Similar to the giveaway theme").
+
+  Renders a card + a giveaway-style picker modal on the cart page, ONLY when the
+  cart already holds a subscription line. Each pick is added as a ONE-TIME line
+  (no selling plan): the "Add-on vials $18" automatic discount (10% off one-time
+  fragrances at a $33+ subtotal) turns the $20 vial into $18 in cart and at
+  checkout. The card states the $20 base and the $18 outcome so the price claim
+  stays honest even if the discount is ever paused.
+
+  Usage (templates/cart.liquid):
+    {% render 'cart-addon-picker', cart: cart, exclude_handle: 'mont-blanc-legend-eau-de-parfum-one-time' %}
+{%- endcomment -%}
+{%- liquid
+  assign addon_collection = collections['fragrances']
+  if addon_collection == blank or addon_collection.products.size == 0
+    assign addon_collection = collections['all']
+  endif
+
+  comment
+    Handles already in the cart as ONE-TIME lines are hidden from the picker so
+    the same vial is not offered twice. Subscription lines do not hide their
+    product: a subscriber may well want a one-time second bottle of the scent
+    they subscribe to.
+  endcomment
+  assign in_cart_onetime = ''
+  for item in cart.items
+    unless item.selling_plan_allocation
+      assign in_cart_onetime = in_cart_onetime | append: ',' | append: item.product.handle
+    endunless
+  endfor
+-%}
+
+<div class="bn-addon" id="bnAddon">
+  <div class="bn-addon__card">
+    <div class="bn-addon__text">
+      <h3 class="bn-addon__title">Add another fragrance &mdash; $18</h3>
+      <p class="bn-addon__sub">One-time add-on, shipped with this order. $20 a vial &mdash; the $2 add-on discount comes off automatically in cart and at checkout. No extra subscription, no recurring charge.</p>
+    </div>
+    <button type="button" class="bn-addon__open" id="bnAddonOpen" aria-haspopup="dialog" aria-controls="bnAddonPicker">Choose a fragrance</button>
+  </div>
+  <p class="bn-addon__status" id="bnAddonStatus" role="status" aria-live="polite"></p>
+
+  <div class="bn-addon-picker" id="bnAddonPicker" hidden>
+    <div class="bn-addon-picker__backdrop" data-bn-addon-close></div>
+    <div class="bn-addon-picker__panel" role="dialog" aria-modal="true" aria-labelledby="bnAddonPickerTitle">
+      <div class="bn-addon-picker__head">
+        <h2 class="bn-addon-picker__title" id="bnAddonPickerTitle">Add a one-time vial &mdash; $18</h2>
+        <button type="button" class="bn-addon-picker__close" data-bn-addon-close aria-label="Close">&times;</button>
+      </div>
+      <ul class="bn-addon-picker__list">
+        {%- for p in addon_collection.products limit: 60 -%}
+          {%- if p.handle == exclude_handle -%}{%- continue -%}{%- endif -%}
+          {%- liquid
+            assign key = ',' | append: p.handle
+            if in_cart_onetime contains key
+              continue
+            endif
+            assign pv = p.selected_or_first_available_variant
+          -%}
+          {%- if pv == blank or pv.available == false or pv.price == 0 -%}{%- continue -%}{%- endif -%}
+          <li class="bn-addon-picker__row">
+            {%- if p.featured_image != blank -%}
+              <img class="bn-addon-picker__thumb" src="{{ p.featured_image | image_url: width: 128 }}" srcset="{{ p.featured_image | image_url: width: 128 }} 128w, {{ p.featured_image | image_url: width: 256 }} 256w" sizes="64px" width="64" height="64" alt="" loading="lazy">
+            {%- else -%}
+              <span class="bn-addon-picker__thumb bn-addon-picker__thumb--empty" aria-hidden="true"></span>
+            {%- endif -%}
+            <div class="bn-addon-picker__text">
+              {%- if p.vendor != blank -%}<p class="bn-addon-picker__vendor">{{ p.vendor }}</p>{%- endif -%}
+              <p class="bn-addon-picker__name">{{ p.title }}</p>
+              <p class="bn-addon-picker__price"><s>{{ pv.price | money }}</s> $18 one-time</p>
+            </div>
+            <button type="button" class="bn-addon-picker__choose" data-bn-addon-pick data-variant-id="{{ pv.id }}" data-title="{{ p.title | escape }}">Add</button>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  </div>
+</div>
+
+{% style %}
+  .bn-addon { margin: 18px 0 6px; }
+  .bn-addon__card {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 16px 18px; border: 1px dashed var(--color-secondary, #c9a86c);
+    border-radius: 10px; background: rgba(201, 168, 108, 0.06); flex-wrap: wrap;
+  }
+  .bn-addon__title { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+  .bn-addon__sub { margin: 0; font-size: 12.5px; color: var(--color-text-muted, #777); max-width: 46ch; }
+  .bn-addon__open {
+    flex-shrink: 0; padding: 10px 18px; border: 1px solid var(--color-secondary, #c9a86c);
+    background: transparent; color: var(--color-secondary, #c9a86c); border-radius: 999px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .bn-addon__open:hover { background: var(--color-secondary, #c9a86c); color: #fff; }
+  .bn-addon__status { margin: 8px 2px 0; font-size: 12.5px; color: var(--color-text-muted, #777); min-height: 1em; }
+  .bn-addon__status.is-error { color: #b00020; }
+
+  .bn-addon-picker { position: fixed; inset: 0; z-index: 1200; }
+  .bn-addon-picker[hidden] { display: none; }
+  .bn-addon-picker__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.45); }
+  .bn-addon-picker__panel {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    width: min(520px, calc(100vw - 32px)); max-height: min(72vh, 640px);
+    background: var(--color-background, #fff); border-radius: 12px;
+    display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 18px 60px rgba(0,0,0,0.25);
+  }
+  .bn-addon-picker__head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--color-border, #e5e0d8); }
+  .bn-addon-picker__title { margin: 0; font-size: 16px; }
+  .bn-addon-picker__close { border: 0; background: transparent; font-size: 26px; line-height: 1; cursor: pointer; color: var(--color-text-muted, #777); }
+  .bn-addon-picker__list { list-style: none; margin: 0; padding: 6px 0; overflow-y: auto; }
+  .bn-addon-picker__row { display: flex; align-items: center; gap: 12px; padding: 10px 18px; border-bottom: 1px solid var(--color-border, #f0ece5); }
+  .bn-addon-picker__row:last-child { border-bottom: 0; }
+  .bn-addon-picker__thumb { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; background: #f4f1ea; flex-shrink: 0; }
+  .bn-addon-picker__text { flex: 1; min-width: 0; }
+  .bn-addon-picker__vendor { margin: 0; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted, #999); }
+  .bn-addon-picker__name { margin: 0; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bn-addon-picker__price { margin: 0; font-size: 12px; color: var(--color-text-muted, #777); }
+  .bn-addon-picker__price s { opacity: 0.6; margin-right: 4px; }
+  .bn-addon-picker__choose {
+    flex-shrink: 0; padding: 8px 16px; border: 0; border-radius: 999px;
+    background: var(--color-primary, #223a33); color: #fff; font-size: 12.5px; font-weight: 600; cursor: pointer;
+  }
+  .bn-addon-picker__choose[disabled] { opacity: 0.5; cursor: wait; }
+{% endstyle %}
+
+<script>
+  (function () {
+    'use strict';
+    var root = document.getElementById('bnAddon');
+    if (!root) { return; }
+    var picker = document.getElementById('bnAddonPicker');
+    var openBtn = document.getElementById('bnAddonOpen');
+    var statusEl = document.getElementById('bnAddonStatus');
+    var busy = false;
+    var lastFocus = null;
+
+    function bnFetch(url, opts) { return (window.__bnFetch || window.fetch)(url, opts); }
+
+    function setStatus(text, isError) {
+      if (!statusEl) { return; }
+      statusEl.textContent = text || '';
+      statusEl.className = isError ? 'bn-addon__status is-error' : 'bn-addon__status';
+    }
+
+    function openPicker() {
+      lastFocus = document.activeElement;
+      picker.hidden = false;
+      document.documentElement.style.overflow = 'hidden';
+      var first = picker.querySelector('button[data-bn-addon-pick], .bn-addon-picker__close');
+      if (first) { first.focus(); }
+    }
+
+    function closePicker() {
+      picker.hidden = true;
+      document.documentElement.style.overflow = '';
+      if (lastFocus && lastFocus.focus) { lastFocus.focus(); }
+    }
+
+    openBtn.addEventListener('click', openPicker);
+
+    picker.addEventListener('click', function (ev) {
+      var el = ev.target;
+      while (el && el !== picker) {
+        if (el.hasAttribute && el.hasAttribute('data-bn-addon-close')) { closePicker(); return; }
+        if (el.hasAttribute && el.hasAttribute('data-bn-addon-pick')) { pick(el); return; }
+        el = el.parentNode;
+      }
+    });
+
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape' && !picker.hidden) { closePicker(); }
+    });
+
+    function pick(btn) {
+      if (busy) { return; }
+      busy = true;
+      btn.disabled = true;
+      setStatus('Adding ' + (btn.getAttribute('data-title') || 'fragrance') + '…');
+      bnFetch('/cart/add.js', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ id: Number(btn.getAttribute('data-variant-id')), quantity: 1 })
+      }).then(function (res) {
+        return res.json().then(function (payload) {
+          if (!res.ok) { throw new Error((payload && payload.description) || 'add_failed'); }
+          return payload;
+        });
+      }).then(function () {
+        setStatus('Added — updating your order…');
+        window.location.reload();
+      }).catch(function () {
+        busy = false;
+        btn.disabled = false;
+        setStatus('Could not add that fragrance. Please try again.', true);
+      });
+    }
+  })();
+</script>
