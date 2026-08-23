@@ -184,7 +184,7 @@
                 <p class="price-note">Retail: {{ product.compare_at_price | money }} for a full bottle.</p>
               {%- endif -%}
             </div>
-            {% render 'subscription-renewal-disclosure', surface: 'pdp' %}
+            <div id="pdpRenewalDisclosure">{% render 'subscription-renewal-disclosure', surface: 'pdp' %}</div>
           </div>
 
           <ul class="subscription-box__benefits">
@@ -384,6 +384,28 @@
           {%- endcomment -%}
           {%- if product.selling_plan_groups.size > 0 -%}
             {%- assign sp = product.selling_plan_groups.first.selling_plans.first -%}
+            {%- comment -%}
+              Purchase options (Jeff 2026-08-23, list item 2): subscription stays the
+              default; one-time is a secondary path at the plain variant price. The
+              one-time mode clears the selling plan in JS — nothing here weakens the
+              plan-less misconfiguration guard around this block.
+            {%- endcomment -%}
+            {%- liquid
+              assign pt_first = settings.subscription_first_order_price | default: '$15'
+              assign pt_month = settings.subscription_price | default: '$20'
+            -%}
+            <fieldset class="bn-ptype" id="bnPtype">
+              <legend class="visually-hidden">Purchase options</legend>
+              <label class="bn-ptype__opt is-selected" data-ptype-opt>
+                <input type="radio" name="bn_ptype" value="subscribe" checked>
+                <span class="bn-ptype__text"><strong>Monthly subscription</strong><small>{{ pt_first }} first month, then {{ pt_month }}/month &middot; swap, pause, or cancel anytime</small></span>
+              </label>
+              <label class="bn-ptype__opt" data-ptype-opt>
+                <input type="radio" name="bn_ptype" value="onetime">
+                <span class="bn-ptype__text"><strong>One-time purchase</strong><small>{{ current_variant.price | money }} &middot; no subscription, no renewals</small></span>
+              </label>
+            </fieldset>
+            <p class="subscription-box__note" id="onetimeNote" style="display:none">One-time purchase &mdash; {{ current_variant.price | money }}. No subscription and no recurring charge. Ships once.</p>
             <button type="submit" class="add-to-queue-btn" id="addToCartButton" {% unless current_variant.available %}disabled{% endunless %} data-add-to-cart>
               {%- if current_variant.available -%}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
@@ -988,6 +1010,19 @@
     font-size: 10px;
     color: var(--color-text-muted);
   }
+
+
+  .bn-ptype { display: flex; flex-direction: column; gap: 8px; border: 0; padding: 0; margin: 0 0 14px; }
+  .bn-ptype__opt {
+    display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px;
+    border: 1px solid var(--color-border); border-radius: 10px; cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .bn-ptype__opt.is-selected { border-color: var(--color-secondary); background: rgba(201,168,108,0.07); }
+  .bn-ptype__opt input { margin-top: 3px; accent-color: var(--color-secondary); }
+  .bn-ptype__text { display: flex; flex-direction: column; gap: 2px; }
+  .bn-ptype__text strong { font-size: 14px; }
+  .bn-ptype__text small { font-size: 12px; color: var(--color-text-muted); }
 
   .subscription-box__pricing {
     flex: 1;
@@ -2010,6 +2045,33 @@
     }
 
     // ─── Add to Cart ───
+    // ─── Purchase-type toggle (Jeff 8/23) ───
+    (function () {
+      var radios = document.querySelectorAll('input[name="bn_ptype"]');
+      if (!radios.length) return;
+      var ONE_TIME_PRICE = {{ current_variant.price | money | json }};
+      var subNote = document.querySelector('.subscription-box__note--pricing');
+      var subPricing = document.querySelector('.sub-pricing--pdp');
+      var disclosure = document.getElementById('pdpRenewalDisclosure');
+      var oneNote = document.getElementById('onetimeNote');
+      function apply() {
+        var checked = document.querySelector('input[name="bn_ptype"]:checked');
+        var onetime = !!(checked && checked.value === 'onetime');
+        document.querySelectorAll('[data-ptype-opt]').forEach(function (l) {
+          l.classList.toggle('is-selected', l.contains(checked));
+        });
+        if (subNote) subNote.style.display = onetime ? 'none' : '';
+        if (subPricing) subPricing.style.display = onetime ? 'none' : '';
+        if (disclosure) disclosure.style.display = onetime ? 'none' : '';
+        if (oneNote) oneNote.style.display = onetime ? '' : 'none';
+        if (addToCartText && !addToCartBtn.classList.contains('is-loading')) {
+          addToCartText.textContent = onetime ? ('Add to Cart — ' + ONE_TIME_PRICE + ' one-time') : 'Start My Subscription — $20/month';
+        }
+      }
+      radios.forEach(function (r) { r.addEventListener('change', apply); });
+      apply();
+    })();
+
     if (productForm && addToCartBtn) {
       productForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -2035,15 +2097,21 @@
           return;
         }
 
-        // Auto-select first selling plan if none chosen (all purchases are subscriptions)
-        var sellingPlan = formData.get('selling_plan');
-        if (!sellingPlan) {
-          var fallbackPlan = document.querySelector('input[name="selling_plan"]');
-          if (fallbackPlan) sellingPlan = fallbackPlan.value;
+        // Purchase type (Jeff 8/23): subscription is the default; one-time clears the plan.
+        var ptypeChecked = document.querySelector('input[name="bn_ptype"]:checked');
+        var isOnetimeMode = !!(ptypeChecked && ptypeChecked.value === 'onetime');
+
+        // Auto-select first selling plan if none chosen — SUBSCRIPTION MODE ONLY.
+        var sellingPlan = isOnetimeMode ? null : formData.get('selling_plan');
+        if (!isOnetimeMode) {
+          if (!sellingPlan) {
+            var fallbackPlan = document.querySelector('input[name="selling_plan"]');
+            if (fallbackPlan) sellingPlan = fallbackPlan.value;
+          }
+          {%- if product.selling_plan_groups.size > 0 -%}
+          if (!sellingPlan) sellingPlan = '{{ product.selling_plan_groups[0].selling_plans[0].id }}';
+          {%- endif -%}
         }
-        {%- if product.selling_plan_groups.size > 0 -%}
-        if (!sellingPlan) sellingPlan = '{{ product.selling_plan_groups[0].selling_plans[0].id }}';
-        {%- endif -%}
         const isSubscription = !!sellingPlan;
         const productTitle = {{ product.title | json }};
         const productId = {{ product.id }};
@@ -2164,7 +2232,7 @@
         .then(function(data) {
           addToCartBtn.classList.remove('is-loading');
           addToCartBtn.classList.add('is-added');
-          if (addToCartText) addToCartText.textContent = 'Added to Queue!';
+          if (addToCartText) addToCartText.textContent = sellingPlan ? 'Added to Queue!' : 'Added to Cart!';
 
           // Refresh cart drawer with new content and open it
           if (window.refreshAndOpenCartDrawer) {
@@ -2258,7 +2326,7 @@ function doAddToCart(variantId, sellingPlan, originalText) {
       addToCartBtn.classList.remove('is-loading');
       addToCartBtn.classList.add('is-added');
     }
-    if (addToCartText) addToCartText.textContent = 'Added to Queue!';
+    if (addToCartText) addToCartText.textContent = sellingPlan ? 'Added to Queue!' : 'Added to Cart!';
 
     if (window.refreshAndOpenCartDrawer) {
       window.refreshAndOpenCartDrawer();
