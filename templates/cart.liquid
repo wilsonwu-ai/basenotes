@@ -49,11 +49,17 @@
         {%- endif -%}
       {%- endfor -%}
 
-      {%- assign has_subscription = true -%}
-      {%- if has_plan_line == false and all_giveaway -%}
-        {%- comment -%} Provably the one-time giveaway: no plan anywhere AND every line is the offer. {%- endcomment -%}
-        {%- assign has_subscription = false -%}
-      {%- endif -%}
+      {%- comment -%}
+        has_subscription is now simply "a line with a selling plan exists" (2026-08-23,
+        Jeff's one-time purchase option). The old fail-safe defaulted this to TRUE for
+        any non-giveaway cart, because a plan-less line used to mean a subscription add
+        whose plan was stripped (the Appstle fetch-wrapper bug). That failure mode is
+        closed at add time: subscription adds are cart-verified and rolled back if the
+        plan did not attach (bnCartPlanApplied), so a plan-less line in the cart today
+        is an intentional one-time item. A one-time cart gets "Your Cart", no recurring
+        disclosure, and an enabled checkout.
+      {%- endcomment -%}
+      {%- assign has_subscription = has_plan_line -%}
 
       <div class="cart-header">
         {%- if has_subscription -%}
