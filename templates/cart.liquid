@@ -438,7 +438,12 @@
                   Then {{ sub_recurring_total | money }}/month. Cancel anytime.
                   {%- if has_giveaway %} Your free 5ml is a one-time item and is not part of the recurring charge.{% endif -%}
                   {%- if has_addon_line %} Add-on fragrances are charged once and are not part of the recurring charge.{% endif -%}
-                  {%- if has_onetime_line %} Shipping for this order is charged once, at checkout.{% endif -%}
+                  {%- comment -%} "on this order", not "once": a mixed checkout stamps the
+                      order's shipping rate onto the recurring contract (Shopify voids the
+                      subscription free-shipping discount when a one-time line shares the
+                      order — verified at checkout 2026-08-23). Until that is confirmed
+                      fixed, the copy must not promise a one-off charge. {%- endcomment -%}
+                  {%- if has_onetime_line %} Shipping is charged on this order.{% endif -%}
                 </p>
 
               {%- else -%}
