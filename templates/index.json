@@ -517,7 +517,15 @@
       "settings": {
         "goal": 60,
         "fallback_active": 17,
-        "show_bar": true
+        "show_bar": true,
+        "eyebrow": "Founding Members \u00b7 Class of 2026",
+        "headline": "{active} of {goal} founding members. You'd be #{next}.",
+        "body": "Every month, one 5 ml atomizer from a house worth wearing \u2014 Creed, Tom Ford, Parfums de Marly, Xerjoff, Bond No. 9. One flat $20/month, no surcharges on any house \u2014 and founding members keep that price for as long as they stay.",
+        "honesty": "Reach {goal} together and the rotation grows \u2014 new houses, new fragrances, added for everyone. And every founding member gets a thank-you gift the day we get there.",
+        "cta_label": "Become a founding member",
+        "referral_heading": "Every friend moves the club forward",
+        "referral_blurb": "Send a friend your link. When they start a subscription, your next month is on us \u2014 and we're all one step closer to the bigger rotation and the founding gift.",
+        "share_text": "I'm a founding member at Base Note \u2014 $20/month for a 5 ml atomizer of Creed, Tom Ford, Parfums de Marly and more. They're building to 60 founding members and I want you in:"
       }
     }
   },
