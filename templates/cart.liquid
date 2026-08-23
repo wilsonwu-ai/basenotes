@@ -23,29 +23,40 @@
         "one-time" from the absence would silently drop the ROSCA consent gate on an actual
         recurring purchase. So the one-time branch requires a POSITIVE identification instead.
 
-        has_plan_line  — POSITIVE test: at least one line carries a real selling plan.
-        all_giveaway   — POSITIVE test: EVERY line is the giveaway SKU, identified by the
-                         underscore-prefixed line property the giveaway section sends with
-                         /cart/add.js (sections/product-giveaway.liquid: properties[_bn_offer]).
-                         Underscore properties are hidden from the customer but readable here.
-        has_giveaway   — at least one giveaway line. Used to stop subscription copy
-                         (ship date, renewal, free-shipping claims) describing the $0 bottle.
-
-        has_subscription is the FRAMING decision, not a raw plan test. It stays TRUE unless the
-        cart is PROVABLY the one-time giveaway. A plan-less line that is NOT the giveaway fails
-        SAFE into subscription framing, keeping the disclosure and the consent checkbox.
+        has_plan_line      — POSITIVE test: at least one line carries a real selling plan.
+        has_onetime_line   — at least one line WITHOUT a plan (giveaway or add-on). Gates every
+                             FREE-shipping claim: the free-shipping discount is
+                             subscription-purchase-type and Shopify skips it when any one-time
+                             line shares the order (verified at checkout 2026-08-23).
+        has_giveaway       — at least one giveaway line, identified by the underscore-prefixed
+                             line property the giveaway section sends with /cart/add.js
+                             (sections/product-giveaway.liquid: properties[_bn_offer]).
+        has_addon_line     — a plan-less line that is NOT the giveaway (the $18 add-on path).
+        sub_first_total    — what the plan lines cost today (first-month discount applied).
+        sub_recurring_total— what the plan lines renew at (base variant price).
       {%- endcomment -%}
       {%- assign has_plan_line = false -%}
       {%- assign has_giveaway = false -%}
-      {%- assign all_giveaway = true -%}
+      {%- assign has_onetime_line = false -%}
+      {%- assign has_addon_line = false -%}
+      {%- assign sub_first_total = 0 -%}
+      {%- assign sub_recurring_total = 0 -%}
       {%- for item in cart.items -%}
         {%- if item.selling_plan_allocation -%}
           {%- assign has_plan_line = true -%}
+          {%- assign sub_first_total = sub_first_total | plus: item.final_line_price -%}
+          {%- comment -%} Renewal price is the BASE variant price — the first-month
+              discount is a first-order-only selling-plan adjustment. {%- endcomment -%}
+          {%- assign line_recurring = item.variant.price | times: item.quantity -%}
+          {%- assign sub_recurring_total = sub_recurring_total | plus: line_recurring -%}
+        {%- else -%}
+          {%- assign has_onetime_line = true -%}
+          {%- if item.properties['_bn_offer'] != 'free-5ml' -%}
+            {%- assign has_addon_line = true -%}
+          {%- endif -%}
         {%- endif -%}
         {%- if item.properties['_bn_offer'] == 'free-5ml' -%}
           {%- assign has_giveaway = true -%}
-        {%- else -%}
-          {%- assign all_giveaway = false -%}
         {%- endif -%}
       {%- endfor -%}
 
@@ -365,16 +376,20 @@
 
                 <div class="cart-summary__row">
                   <span data-summary-plan-label>Monthly Plan</span>
-                  <span data-summary-plan-price>{{ cart.total_price | money }}</span>
+                  {%- comment -%} Subscription lines only — one-time add-ons print their own
+                      prices above and must not inflate the recurring plan figure. {%- endcomment -%}
+                  <span data-summary-plan-price>{{ sub_first_total | money }}</span>
                 </div>
 
                 <div class="cart-summary__row cart-summary__row--light">
                   <span>Shipping</span>
-                  {%- if has_giveaway -%}
+                  {%- if has_onetime_line -%}
                     {%- comment -%}
-                      Free shipping is a subscription perk, but the giveaway line carries its own
-                      flat shipping charge. Asserting FREE on a mixed cart contradicts the offer
-                      page. The rate is resolved from the shipping profiles at checkout.
+                      FREE only for a PURE subscription cart. The free-shipping discount is
+                      subscription-purchase-type: Shopify skips it whenever ANY one-time line
+                      (giveaway or add-on) shares the order, and the profile rate applies
+                      ($4.99 under $50, free at $50+). Asserting FREE on a mixed cart
+                      contradicts checkout.
                     {%- endcomment -%}
                     <span>Calculated at checkout</span>
                   {%- else -%}
@@ -412,13 +427,18 @@
               {%- if has_subscription -%}
 
                 <div class="cart-summary__row cart-summary__row--total">
-                  <span>{% if has_giveaway %}Due Today (before shipping){% else %}Due Today{% endif %}</span>
+                  <span>{% if has_onetime_line %}Due Today (before shipping){% else %}Due Today{% endif %}</span>
                   <span data-summary-total>{{ cart.total_price | money }}</span>
                 </div>
 
                 <p class="cart-summary__renewal" data-summary-renewal>
-                  Then {{ cart.total_price | money }}/month. Cancel anytime.
-                  {%- if has_giveaway %} Your free 5ml is a one-time item and is not part of the recurring charge. Its shipping is charged once, at checkout.{% endif -%}
+                  {%- comment -%} sub_recurring_total, NOT cart.total_price: the cart total is the
+                      first-month price and may include one-time items — both understate or
+                      overstate the real renewal charge. {%- endcomment -%}
+                  Then {{ sub_recurring_total | money }}/month. Cancel anytime.
+                  {%- if has_giveaway %} Your free 5ml is a one-time item and is not part of the recurring charge.{% endif -%}
+                  {%- if has_addon_line %} Add-on fragrances are charged once and are not part of the recurring charge.{% endif -%}
+                  {%- if has_onetime_line %} Shipping for this order is charged once, at checkout.{% endif -%}
                 </p>
 
               {%- else -%}
@@ -519,15 +539,17 @@
                   <span>Satisfaction Guarantee</span>
                 </div>
                 {%- comment -%}
-                  "Free Shipping" is a subscription perk — not true of a one-time cart, and an
-                  unqualified badge would contradict the giveaway's own flat shipping charge.
+                  Badge only when literally true for THIS order: a pure subscription cart
+                  ships free. Any one-time line (giveaway or add-on) voids the free-shipping
+                  discount for the whole order, so the badge would contradict the Shipping
+                  line in the summary.
                 {%- endcomment -%}
-                {%- if has_subscription -%}
+                {%- if has_plan_line and has_onetime_line == false -%}
                   <div class="cart-trust__item">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
                       <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
                     </svg>
-                    <span>{% if has_giveaway %}Free Subscription Shipping{% else %}Free Shipping{% endif %}</span>
+                    <span>Free Shipping</span>
                   </div>
                 {%- endif -%}
               </div>

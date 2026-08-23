@@ -12,7 +12,7 @@
     "main-giveaway": {
       "type": "product-giveaway",
       "settings": {
-        "sub_free_shipping": true,
+        "sub_free_shipping": false,
         "option_b_heading": "Subscribe & save",
         "option_b_body": "Add a bottle",
         "option_b_button": "Choose",
