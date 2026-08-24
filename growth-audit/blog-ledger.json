@@ -44,6 +44,17 @@
       "updated": "2026-08-16T13:33:31+00:00",
       "url": "https://basenotescent.com/blogs/hub/best-fall-fragrances-men-2026-guide"
     },
+    "best-fragrance-gifts-under-50": {
+      "file": "growth-audit/blog-post-47-best-fragrance-gifts-under-50.html",
+      "gid": "gid://shopify/Article/667932393690",
+      "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/articles/hero_f6d3f709-a7bd-47dd-8007-1b29134bd9a7.jpg?v=1787591895",
+      "is_published": false,
+      "published_at": "2026-11-03T12:00:00Z",
+      "scheduled_for": "2026-11-03T12:00:00Z",
+      "title": "Best Fragrance Gifts Under $50 (That Aren't a Gamble)",
+      "updated": "2026-08-24T17:18:15+00:00",
+      "url": "https://basenotescent.com/blogs/hub/best-fragrance-gifts-under-50"
+    },
     "best-fragrance-notes-oily-skin": {
       "file": "growth-audit/blog-post-22-best-fragrance-notes-oily-skin.html",
       "gid": "gid://shopify/Article/667861680346",
@@ -341,6 +352,28 @@
       "updated": "2026-08-18T18:32:09+00:00",
       "url": "https://basenotescent.com/blogs/hub/how-to-make-cologne-last-longer"
     },
+    "how-to-store-fragrance-collection": {
+      "file": "growth-audit/blog-post-45-how-to-store-fragrance-collection.html",
+      "gid": "gid://shopify/Article/667932328154",
+      "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/articles/hero_db387864-50ae-4fb8-9442-4bce7d982ed4.jpg?v=1787591892",
+      "is_published": false,
+      "published_at": "2026-10-12T12:00:00Z",
+      "scheduled_for": "2026-10-12T12:00:00Z",
+      "title": "How to Store Fragrance So It Doesn't Die in a Year",
+      "updated": "2026-08-24T17:18:12+00:00",
+      "url": "https://basenotescent.com/blogs/hub/how-to-store-fragrance-collection"
+    },
+    "how-we-curate-the-base-note-rotation": {
+      "file": "growth-audit/blog-post-46-how-we-curate-the-base-note-rotation.html",
+      "gid": "gid://shopify/Article/667932360922",
+      "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/articles/hero_16adcf79-4f66-4238-9721-ee098dd5e55f.jpg?v=1787591893",
+      "is_published": false,
+      "published_at": "2026-10-15T12:00:00Z",
+      "scheduled_for": "2026-10-15T12:00:00Z",
+      "title": "How We Choose What Goes Into the Rotation",
+      "updated": "2026-08-24T17:18:13+00:00",
+      "url": "https://basenotescent.com/blogs/hub/how-we-curate-the-base-note-rotation"
+    },
     "is-a-fragrance-subscription-worth-it": {
       "file": "growth-audit/blog-post-31-is-a-fragrance-subscription-worth-it.html",
       "gid": "gid://shopify/Article/667885437146",
@@ -373,6 +406,17 @@
       "title": "Parfums de Marly Pegasus Review: Is the Almond-Vanilla Hype Real?",
       "updated": "2026-08-18T18:32:15+00:00",
       "url": "https://basenotescent.com/blogs/hub/parfums-de-marly-pegasus-review"
+    },
+    "perfume-layering-guide": {
+      "file": "growth-audit/blog-post-44-perfume-layering-guide.html",
+      "gid": "gid://shopify/Article/667932295386",
+      "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/articles/hero_b093347c-8c45-4620-903e-b2d93cb9804c.jpg?v=1787591890",
+      "is_published": false,
+      "published_at": "2026-10-07T12:00:00Z",
+      "scheduled_for": "2026-10-07T12:00:00Z",
+      "title": "How to Layer Fragrance Without Ruining Both Scents",
+      "updated": "2026-08-24T17:18:10+00:00",
+      "url": "https://basenotescent.com/blogs/hub/perfume-layering-guide"
     },
     "sample-before-you-buy-full-bottle": {
       "file": "growth-audit/blog-post-21-sample-before-you-buy-full-bottle.html",
@@ -417,6 +461,17 @@
       "title": "Tom Ford Ombre Leather: The Leather Nothing Else Smells Like",
       "updated": "2026-08-16T13:33:54+00:00",
       "url": "https://basenotescent.com/blogs/hub/tom-ford-ombre-leather-review"
+    },
+    "what-to-expect-first-base-note-box": {
+      "file": "growth-audit/blog-post-43-what-to-expect-first-base-note-box.html",
+      "gid": "gid://shopify/Article/667932262618",
+      "image": "https://cdn.shopify.com/s/files/1/0802/4254/0762/articles/hero_d6b9550b-7a02-4350-b4a8-1ece0a6229b5.jpg?v=1787591889",
+      "is_published": false,
+      "published_at": "2026-10-05T12:00:00Z",
+      "scheduled_for": "2026-10-05T12:00:00Z",
+      "title": "What to Expect in Your First Base Note Delivery",
+      "updated": "2026-08-24T17:18:09+00:00",
+      "url": "https://basenotescent.com/blogs/hub/what-to-expect-first-base-note-box"
     },
     "why-perfume-smells-different-on-me": {
       "file": "growth-audit/blog-post-18-why-perfume-smells-different-on-me.html",
@@ -480,5 +535,5 @@
     "growth-audit/blog-post-15",
     "growth-audit/blog-post-16"
   ],
-  "updated_at": "2026-08-18T18:32:23+00:00"
+  "updated_at": "2026-08-24T17:18:15+00:00"
 }
