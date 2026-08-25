@@ -1,0 +1,47 @@
+{%- comment -%}
+  review-scroll-assist.liquid
+
+  WHY THIS EXISTS
+  The account page's "Rate it" control links to /products/<handle>#judgeme_product_reviews.
+  That anchor id is real, but Judge.me mounts its widget lazily — verified live 2026-08-25,
+  the widget only reaches full height ~900 ms after load. By then the browser has already
+  finished processing the hash, so the native anchor jump does nothing and the customer
+  lands at the top of a ~5,300 px page with no idea why.
+
+  This re-applies the jump once the widget has actually mounted.
+
+  SCOPE — deliberately small. It only scrolls. It does NOT try to auto-open Judge.me's
+  rating modal: that was tested and abandoned, because the modal only opens on a real
+  user gesture (7/7 synthetic clicks failed on a fresh page load). The customer taps
+  "Write a review" themselves, which is one tap and cannot break.
+
+  Degrades safely: wrong hash, missing widget, or JS disabled → does nothing at all, and
+  the customer is on the correct product page, which is where they are today.
+{%- endcomment -%}
+<script>
+(function () {
+  'use strict';
+  var TARGET = 'judgeme_product_reviews';
+  if (window.location.hash !== '#' + TARGET) return;
+
+  var DEADLINE = 12000;  // Judge.me is a third party — never poll forever
+  var STEP = 150;
+  var MIN_HEIGHT = 120;  // an unmounted container is ~0 px; a mounted one is 250 px+
+  var waited = 0;
+
+  var timer = setInterval(function () {
+    var el = document.getElementById(TARGET);
+    if (el && el.offsetHeight > MIN_HEIGHT) {
+      clearInterval(timer);
+      try {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (e) {
+        try { el.scrollIntoView(); } catch (e2) {}
+      }
+      return;
+    }
+    waited += STEP;
+    if (waited >= DEADLINE) clearInterval(timer);
+  }, STEP);
+})();
+</script>

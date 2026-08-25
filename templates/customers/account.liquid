@@ -621,6 +621,14 @@
   .dash-journey__badge--past { background: #E6EFE9; color: #5A7A6B; }
   .dash-journey__badge--queued { background: #F6EED6; color: #8B6F2B; }
   .dash-journey__badge--empty { background: #F4F0E8; color: #A39880; }
+  /* Past row carries a stretched order link + its own "Rate it" link (see renderer note). */
+  .dash-journey__row--past { position: relative; }
+  .dash-journey__row-link { position: absolute; inset: 0; border-radius: 10px; z-index: 0; }
+  .dash-journey__row--past > :not(.dash-journey__row-link) { position: relative; z-index: 1; }
+  .dash-journey__rate { display: inline-flex; align-items: center; gap: 5px; font: 700 10px/1 system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 9px; border-radius: 6px; white-space: nowrap; background: #E6EFE9; color: #4A6B5C; text-decoration: none; border: 1px solid transparent; transition: background 0.15s, color 0.15s, border-color 0.15s; }
+  .dash-journey__rate svg { width: 11px; height: 11px; flex: none; }
+  .dash-journey__rate:hover { background: #D8E7DE; color: #2D4641; border-color: #8FA89F; }
+  .dash-journey__rate:focus-visible { outline: 2px solid #2D4641; outline-offset: 2px; }
   .dash-journey__nudge { margin: 1rem 0 0; padding: 12px 14px; background: #FFF9ED; border-radius: 10px; font: 400 13px/1.5 system-ui, sans-serif; color: #6B5A2B; }
   .dash-journey__nudge--full { background: #EFF7F1; color: #3F5A4B; }
   @media (max-width: 860px) { .acct__card-grid { grid-template-columns: 1fr; } }
@@ -1052,14 +1060,25 @@
       if (past.length) {
         html += '<section class="dash-journey__section"><h4 class="dash-journey__section-title">Shipped</h4><div class="dash-journey__rows">';
         past.forEach(function(p){
-          html += '<a href="' + esc(p.orderUrl || '#') + '" class="dash-journey__row dash-journey__row--past">' +
+          // Row is a <div>, not an <a>: it now holds TWO links (the order, and "Rate it"),
+          // and an <a> nested inside an <a> is invalid — browsers silently drop the inner one.
+          // The order link becomes a stretched overlay so tapping the row still opens the order;
+          // "Rate it" sits above it and wins its own clicks. Replaces the decorative "Delivered"
+          // badge rather than adding a control, so row height is unchanged on mobile.
+          html += '<div class="dash-journey__row dash-journey__row--past">' +
+            '<a class="dash-journey__row-link" href="' + esc(p.orderUrl || '#') + '" aria-label="View order ' + esc(p.orderName || '') + '"></a>' +
             (p.image ? '<img class="dash-journey__img" src="' + esc(p.image) + '" alt="' + esc(p.title) + '" loading="lazy">' : '<div class="dash-journey__img dash-journey__img--placeholder"></div>') +
             '<div class="dash-journey__body">' +
               '<p class="dash-journey__title">' + esc(p.title || '—') + '</p>' +
               '<p class="dash-journey__meta">' + esc(p.orderName || '') + (p.orderName ? ' · ' : '') + 'Shipped ' + esc(p.shippedAt) + (p.orderTotal ? ' · ' + esc(p.orderTotal) : '') + '</p>' +
             '</div>' +
-            '<span class="dash-journey__badge dash-journey__badge--past">Delivered</span>' +
-          '</a>';
+            (p.handle
+              ? '<a class="dash-journey__rate" href="/products/' + encodeURIComponent(p.handle) + '#judgeme_product_reviews" aria-label="Rate ' + esc(p.title || 'this fragrance') + '">' +
+                  '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.4l6.5-.9L12 2.6z"/></svg>' +
+                  '<span>Rate it</span>' +
+                '</a>'
+              : '<span class="dash-journey__badge dash-journey__badge--past">Delivered</span>') +
+          '</div>';
         });
         html += '</div></section>';
       }
