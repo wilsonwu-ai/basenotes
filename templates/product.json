@@ -16,7 +16,7 @@
           "type": "accordion",
           "settings": {
             "heading": "Shipping & Returns",
-            "content": "<p><strong>Love it or swap next month.</strong> Try a fragrance for 30 days. Don't love it? Skip, swap, or cancel next month's shipment anytime before your renewal date — takes 15 seconds in your account. Free shipping on every order.</p>"
+            "content": "<p><strong>Love it or swap next month.</strong> Try a fragrance for 30 days. Don't love it? Skip, swap, or cancel next month's shipment anytime before your renewal date — takes 15 seconds in your account. Subscriptions ship free every month.</p>"
           }
         },
         "accordion-2": {
@@ -53,10 +53,29 @@
         "products_to_show": 4,
         "show_view_all": true
       }
+    },
+    "1787620629308685e6": {
+      "type": "apps",
+      "blocks": {
+        "judge_me_reviews_review_widget_gnFLyX": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "review_data": "sample_data",
+            "max_width": 1200,
+            "show_shop_reviews": false,
+            "empty_state": "empty_widget"
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_review_widget_gnFLyX"
+      ],
+      "settings": {}
     }
   },
   "order": [
     "main-product",
-    "related-products"
+    "related-products",
+    "1787620629308685e6"
   ]
 }
