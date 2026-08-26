@@ -470,6 +470,219 @@
   });
 </script>
 
+{%- comment -%}
+  FAQPage JSON-LD generated from the visible accordion above, so the two cannot drift.
+  Every answer is captured, rendered (some contain Liquid such as settings.subscription_price),
+  then strip_html + json so quotes and entities are escaped exactly once.
+  All 32 product pages already emit FAQPage; this page had 22 genuine Q&As and none.
+{%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {%- capture faq_a_0 -%}<p>Our subscription is {{ settings.subscription_price | default: '$20' }} per month. This includes a 5ml atomizer of premium fragrance and free shipping on every order. There are no hidden fees or commitments.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "How much does the subscription cost?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_0 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_1 -%}<p>After subscribing, you can browse our entire collection and add fragrances to your queue. We'll send them to you in order each month. You can also let us choose based on your scent profile from our quiz.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "How do I choose my fragrances?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_1 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_2 -%}<p>Absolutely. You can skip any month or cancel your subscription at any time from your account dashboard. Just make changes before your billing date to avoid being charged for the next month. No cancellation fees, ever.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "Can I skip a month?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_2 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_3 -%}<p>You can cancel anytime with no fees or penalties. Go to your account dashboard, click "Manage Subscription," and select cancel. You'll keep access until the end of your current billing period. We'd love to know why you're leaving so we can improve!</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "How do I cancel my subscription?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_3 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_4 -%}<p>We don't currently offer a pause option, but you can cancel anytime with no fees or penalties from your account dashboard. When you're ready to come back, simply resubscribe and your queue and preferences will be waiting for you.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "Can I pause my subscription instead of canceling?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_4 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_5 -%}<p>Your subscription renews on the same date you originally signed up. For example, if you subscribed on the 15th, you'll be charged on the 15th each month. You can view your billing date in your account dashboard.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "When will I be charged each month?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_5 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_6 -%}<p>Orders typically arrive within 3-5 business days after shipping. Your subscription renews on the same date you originally signed up. You'll receive tracking information via email once your order ships.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "How long does shipping take?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_6 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_7 -%}<p>Yes! All orders ship free within the continental United States - no minimum purchase required. Whether it's a subscription shipment or a one-time purchase, shipping is always on us.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "Is shipping really free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_7 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_8 -%}<p>Currently, we only ship within the United States. We're working on expanding internationally and hope to offer shipping to Canada, UK, and Australia soon. Sign up for our newsletter to be notified!</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "Do you ship internationally?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_8 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_9 -%}<p>Yes, you can update your shipping address anytime from your account under "Addresses." Make sure to update before your next renewal date if you want your next subscription shipment sent to a new address.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "Can I change my shipping address?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_9 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_10 -%}<p>First, check with neighbors and around your property. Sometimes packages are left in hidden spots. If you still can't find it after 24 hours, contact us and we'll help resolve the issue. We may reship at no charge.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "My package shows delivered but I didn't receive it",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_10 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_11 -%}<p>100% yes! We source all fragrances directly from brands and authorized distributors. Every product is guaranteed authentic. We never sell knockoffs, imitations, or "inspired by" fragrances.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "Are your fragrances authentic?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_11 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_12 -%}<p>Each atomizer contains 5ml of fragrance, which equals approximately 60 sprays. With normal daily use (1-2 sprays), this lasts about 30 days - perfect for your monthly subscription.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "How much fragrance is in each atomizer?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_12 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_13 -%}<p>Yes! If you fall in love with a fragrance, you can purchase the full bottle through our shop. Subscribers receive exclusive discounts on full-size bottles. Look for the "Buy Full Size" button on any product you've tried.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "Can I buy a full-size bottle?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_13 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_14 -%}<p>Store your atomizers in a cool, dry place away from direct sunlight and heat. Avoid storing in bathrooms where humidity and temperature fluctuate. Proper storage helps maintain the fragrance's quality and longevity.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "How should I store my fragrances?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_14 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_15 -%}<p>Our subscription model IS the sample experience! For just $20/month, you get a generous 5ml to truly experience the fragrance over time. This is much better than a tiny sample that only lasts a day or two.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "Do you offer samples before I commit?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_15 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_16 -%}<p>Click "Forgot Password" on the login page and enter your email. We'll send you a link to reset your password. If you don't see the email, check your spam folder or contact support.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "How do I reset my password?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_16 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_17 -%}<p>Go to your account dashboard and click "Manage Subscription." From there, you can update your credit card or payment information. Changes take effect immediately for future charges.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "How do I update my payment method?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_17 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_18 -%}<p>Yes! You can save multiple addresses in your account. This is great for sending to home, work, or gifting to friends and family. Just set your preferred default address for subscriptions.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "Can I have multiple shipping addresses?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_18 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_19 -%}<p>Fragrance is personal, and we understand not every scent will be a perfect match. If you're unhappy with a fragrance, contact us within 7 days of receiving it. We'll work with you to find a solution, whether that's a credit or recommendations for your next selection.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "What if I don't like a fragrance?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_19 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_20 -%}<p>Due to the nature of fragrances, we cannot accept returns on opened products. However, if your order arrives damaged or you received the wrong item, contact us immediately and we'll make it right with a replacement or full refund.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "What's your return policy?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_20 | strip_html | strip | json }}
+      }
+    },
+    {%- capture faq_a_21 -%}<p>We're so sorry! Please contact us within 48 hours of receiving your order with photos of the damage. We'll send a replacement right away at no additional cost to you.</p>{%- endcapture -%}
+    {
+      "@type": "Question",
+      "name": "My order arrived damaged, what do I do?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ faq_a_21 | strip_html | strip | json }}
+      }
+    }
+  ]
+}
+</script>
+
 {% schema %}
 {
   "name": "FAQ Page",
