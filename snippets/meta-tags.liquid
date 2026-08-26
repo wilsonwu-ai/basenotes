@@ -49,8 +49,15 @@
       "name": {{ product.title | json }},
       "description": {{ product.description | strip_html | json }},
       "image": {{ product.featured_image | image_url: width: 1200 | prepend: 'https:' | json }},
-      "sku": {{ product.selected_or_first_available_variant.sku | default: product.id | json }},
-      "mpn": {{ product.handle | json }},
+      {%- comment -%}
+        sku/mpn were being FABRICATED: sku fell back to product.id (a number, so it emitted
+        unquoted and invalid) and mpn was the URL handle. Neither is a real identifier, and a wrong
+        identifier is worse than an absent one — Google clusters offers on it. Emit them only when a
+        genuine variant SKU exists.
+      {%- endcomment -%}
+      {%- assign v = product.selected_or_first_available_variant -%}
+      {%- if v.sku != blank %}"sku": {{ v.sku | json }},
+      "mpn": {{ v.sku | json }},{% endif %}
       "category": "Beauty > Personal Care > Cosmetics > Fragrance",
       "brand": {
         "@type": "Brand",
@@ -61,6 +68,49 @@
         "url": {{ product.url | prepend: shop.url | json }},
         "priceCurrency": {{ cart.currency.iso_code | json }},
         "price": {{ product.price | money_without_currency | json }},
+        "itemCondition": "https://schema.org/NewCondition",
+        "priceValidUntil": {{ 'now' | date: '%Y' | plus: 1 | append: '-12-31' | json }},
+        {%- comment -%}
+          A bare price tells Google (and any AI shopping agent) nothing about the fact that this
+          charge repeats monthly, which is the entire product. UnitPriceSpecification is the
+          schema.org way to say "$20, billed every 1 month". Only emitted where a selling plan
+          actually exists, so one-time products stay a plain price.
+        {%- endcomment -%}
+        {%- if product.selling_plan_groups.size > 0 %}
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": {{ product.price | money_without_currency | json }},
+          "priceCurrency": {{ cart.currency.iso_code | json }},
+          "billingDuration": 1,
+          "billingIncrement": "MONTH",
+          "unitCode": "MON"
+        },
+        {%- endif %}
+        "shippingDetails": {
+          "@type": "OfferShippingDetails",
+          "shippingRate": {
+            "@type": "MonetaryAmount",
+            "value": {% if product.selling_plan_groups.size > 0 %}"0.00"{% else %}"4.99"{% endif %},
+            "currency": {{ cart.currency.iso_code | json }}
+          },
+          "shippingDestination": {
+            "@type": "DefinedRegion",
+            "addressCountry": "US"
+          },
+          "deliveryTime": {
+            "@type": "ShippingDeliveryTime",
+            "handlingTime": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 2, "unitCode": "DAY" },
+            "transitTime": { "@type": "QuantitativeValue", "minValue": 3, "maxValue": 5, "unitCode": "DAY" }
+          }
+        },
+        "hasMerchantReturnPolicy": {
+          "@type": "MerchantReturnPolicy",
+          "applicableCountry": "US",
+          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+          "merchantReturnDays": 30,
+          "returnMethod": "https://schema.org/ReturnByMail",
+          "returnFees": "https://schema.org/FreeReturn"
+        },
         "availability": {% if product.available %}"https://schema.org/InStock"{% else %}"https://schema.org/OutOfStock"{% endif %}
       }
     }

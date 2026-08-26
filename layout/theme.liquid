@@ -24,7 +24,17 @@
   {%- liquid
     assign seo_title = page_title
     if template.name == 'product' and product
-      assign seo_title = product.title | append: ' — 5ml Luxury Fragrance Subscription'
+      comment
+        page_title equals product.title when no SEO title is set in admin; anything else is a
+        deliberate override and must win. The old unconditional suffix was 49 chars with ' | Base
+        Note', pushing all 32 PDP titles to 64-94 chars (clipped in SERPs) and putting the
+        homepage's own target phrase 'Luxury Fragrance Subscription' on 33 competing URLs.
+      endcomment
+      if page_title != blank and page_title != product.title
+        assign seo_title = page_title
+      else
+        assign seo_title = product.title | append: ' — 5ml Sample'
+      endif
     elsif template.name == 'collection' and collection
       assign seo_title = collection.title | append: ' — Designer & Niche Fragrance Samples'
     elsif template.name == 'index'
@@ -50,14 +60,27 @@
     assign meta_description = page_description | default: shop.description | default: default_description
     assign brand_description = 'Base Note is a monthly luxury fragrance subscription. For $20/month, members receive a 5ml travel atomizer of a designer or niche fragrance (Creed, Tom Ford, Parfums de Marly, Bond No. 9, Xerjoff). Free US shipping, cancel anytime.'
   -%}
-  <meta name="description" content="{{ meta_description | truncate: 160, '' | escape }}">
+  {%- comment -%}
+    truncate: 160, '' cut mid-word and, on dolce-gabbana-light-blue, mid-HTML-entity (leaving a
+    stray '&#'). truncatewords cuts on a word boundary so neither can happen.
+  {%- endcomment -%}
+  <meta name="description" content="{{ meta_description | strip_html | truncatewords: 25, '…' | escape }}">
   {%- comment -%}
     The giveaway landing page is reachable only by a direct link from a paid ad. Shopify's Unlisted
     product status already applies noindex, but this template emitted an explicit "index, follow"
     on every page, which would override it. Same template.suffix test used for the promo popup below.
   {%- endcomment -%}
+  {%- comment -%}
+    current_tags = a Shopify-generated blog tag archive. There are 32 of them across 8 articles,
+    all sharing the H1 'Hub' and a 17-char meta description, all built from teaser excerpts of the
+    real posts. They are near-duplicates that compete with the articles themselves (/tagged/scentbird
+    was taking sessions off the comparison post). noindex removes the duplicate; follow keeps the
+    crawl paths so the articles they link to still receive the signal.
+  {%- endcomment -%}
   {%- if template.suffix == 'giveaway' -%}
-    <meta name="robots" content="noindex, nofollow">
+    <meta name="robots" content="noindex, follow">
+  {%- elsif current_tags -%}
+    <meta name="robots" content="noindex, follow">
   {%- else -%}
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   {%- endif -%}
@@ -149,7 +172,16 @@
   </script>
   {%- endif -%}
 
-  <link rel="canonical" href="{{ canonical_url }}">
+  {%- comment -%}
+    /collections/all and /collections/fragrances render the same 32 products, both index,follow,
+    both self-canonical. Only /fragrances is in the sitemap and earning sessions, so it is the
+    canonical of the pair.
+  {%- endcomment -%}
+  {%- if template.name == 'collection' and collection.handle == 'all' -%}
+    <link rel="canonical" href="{{ shop.url }}/collections/fragrances">
+  {%- else -%}
+    <link rel="canonical" href="{{ canonical_url }}">
+  {%- endif -%}
 
   {% comment %} Preconnect to critical third-party origins {% endcomment %}
   <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
