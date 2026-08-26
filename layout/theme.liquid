@@ -63,8 +63,13 @@
   {%- comment -%}
     truncate: 160, '' cut mid-word and, on dolce-gabbana-light-blue, mid-HTML-entity (leaving a
     stray '&#'). truncatewords cuts on a word boundary so neither can happen.
+
+    The replace chain runs BEFORE escape. Shopify stores descriptions with literal entities like
+    &#39; in the source; strip_html leaves them alone and escape then double-encodes them, so the
+    snippet rendered a visible '&amp;#39;'. Decoding first means escape encodes exactly once.
+    22 words lands ~155 chars, inside Google's display limit.
   {%- endcomment -%}
-  <meta name="description" content="{{ meta_description | strip_html | truncatewords: 25, '…' | escape }}">
+  <meta name="description" content="{{ meta_description | strip_html | replace: '&amp;', '&' | replace: '&#39;', "'" | replace: '&rsquo;', '’' | replace: '&quot;', '"' | replace: '&nbsp;', ' ' | truncatewords: 22, '…' | escape }}">
   {%- comment -%}
     The giveaway landing page is reachable only by a direct link from a paid ad. Shopify's Unlisted
     product status already applies noindex, but this template emitted an explicit "index, follow"
