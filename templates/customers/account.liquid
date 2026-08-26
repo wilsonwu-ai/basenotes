@@ -760,6 +760,14 @@
   'use strict';
   var validRoutes = ['dashboard','history','next-shipment','subscription','orders'];
 
+  // Jeff, 2026-08-26: "when someone signs up for a subscription they are brought to
+  // profile queued page". Shopify gives us no post-checkout redirect on this plan and the
+  // Thank You page accepts app blocks only, so the landing cannot be forced from checkout.
+  // This is the next best thing and covers every real path in: the order-confirmation
+  // email, the header account link, a bookmark. A subscriber whose queue is EMPTY lands on
+  // the picker instead of the dashboard.
+  var BN_IS_SUBSCRIBER = {{ is_subscriber | default: false | json }};
+
   // ── Subscription action helper (pause / skip) — calls Appstle customer-portal API ──
   // Exposed on window so the click handlers below can call it.
   window.bnSubscriptionAction = function(action) {
@@ -932,6 +940,7 @@
 
     window.addEventListener('hashchange', function(){ navigate(location.hash); });
     navigate(location.hash);
+    maybeRouteToQueue();
 
     // ── Open fragrance selector on any [data-open-fragrance-selector] element ──
     document.addEventListener('click', function(e){
@@ -1263,6 +1272,33 @@
       // Navigate to the queue view so user sees the result immediately
       if (location.hash.replace(/^#/, '') !== 'next-shipment') navigate('#next-shipment');
     });
+  }
+
+  // ── Land empty-queue subscribers on the picker, not the dashboard ──
+  function maybeRouteToQueue() {
+    if (!BN_IS_SUBSCRIBER) return;
+    // An explicit deep link always wins — never hijack #orders, #subscription, etc.
+    if ((location.hash || '').replace(/^#/, '')) return;
+    // Once per session. If they navigate away to the dashboard, respect that.
+    try { if (sessionStorage.getItem('bn_q_autoroute')) return; } catch (e) {}
+
+    var tries = 0;
+    (function waitForQueue() {
+      var BQ = window.BasenoteQueue;
+      if (!BQ || !BQ.sync || typeof BQ.sync.pull !== 'function') {
+        if (++tries > 60) return;              // ~3s, then give up silently
+        return setTimeout(waitForQueue, 50);
+      }
+      // Ask the SERVER, not localStorage. PRD-4 hydrates asynchronously, so a returning
+      // subscriber on a fresh device can look empty locally for a moment — routing them
+      // to the picker on that basis would be wrong.
+      Promise.resolve(BQ.sync.pull()).then(function (serverQ) {
+        var q = (serverQ && serverQ.length) ? serverQ : (BQ.load() || []);
+        if (q.length) return;                  // they have picks — dashboard is right
+        try { sessionStorage.setItem('bn_q_autoroute', '1'); } catch (e) {}
+        navigate('#next-shipment');
+      }).catch(function () { /* never block the account page on this */ });
+    })();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
