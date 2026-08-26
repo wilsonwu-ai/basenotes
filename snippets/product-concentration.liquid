@@ -16,7 +16,29 @@
   assign c_out = ''
   assign c_raw = ''
 
-  if product.metafields.custom.concentration != blank
+  comment
+    ── STOPGAP OVERRIDE, added 2026-08-26 ──────────────────────────────────────────
+    Every one of the 32 product titles ends in "EDP", so the title fallback (step 3)
+    reports Eau de Parfum for the whole catalogue. At least one is wrong: Dolce &
+    Gabbana Light Blue is an Eau de TOILETTE — its own product photograph says so in
+    print, and Jeff confirmed it on 2026-08-26.
+
+    That mattered more than a data nit: this snippet feeds the PDP FAQ answer to
+    "Is it the EDP or the EDT?" — the exact question a customer asked, which is why
+    Jeff had it built on 08-18 — and it was answering "This one is Eau de Parfum...
+    we never substitute a lighter concentration". A false claim about what is in the
+    bottle, on the page where someone went looking for the truth.
+
+    This map is a STOPGAP so the false statement stops today. The durable fix is a
+    per-product `concentration:` tag or custom.concentration metafield (steps 1-2
+    below), which requires write_products scope. REMOVE THIS BLOCK once those are set.
+  endcomment
+  case product.handle
+    when 'dolce-gabbana-light-blue'
+      assign c_raw = 'Eau de Toilette'
+  endcase
+
+  if c_raw == blank and product.metafields.custom.concentration != blank
     assign c_raw = product.metafields.custom.concentration | strip
   endif
 
