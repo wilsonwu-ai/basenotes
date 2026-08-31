@@ -1,166 +1,261 @@
-<section class="section how-it-works" id="how-it-works">
-  <div class="container">
-    <div class="section__header">
+{{ 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Work+Sans:wght@400;500;600&display=swap' | stylesheet_tag }}
+
+{%- style -%}
+  .bn-how-it-works-{{ section.id }} {
+    --bn-bg: {{ section.settings.bg_color }};
+    --bn-accent: {{ section.settings.accent_color }};
+    background: var(--bn-bg);
+    width: 100%;
+    padding: 96px 64px 96pxpx;
+    font-family: 'Work Sans', -apple-system, sans-serif;
+    box-sizing: border-box;
+  }
+  .bn-how-it-works-{{ section.id }} *,
+  .bn-how-it-works-{{ section.id }} *::before,
+  .bn-how-it-works-{{ section.id }} *::after { box-sizing: inherit; }
+
+  .bn-how-it-works-{{ section.id }} .bn-hiw__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .bn-how-it-works-{{ section.id }} .bn-hiw__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 640px;
+    margin-bottom: 80px;
+  }
+  .bn-how-it-works-{{ section.id }} .bn-hiw__eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--bn-accent);
+    margin-bottom: 20px;
+  }
+  .bn-how-it-works-{{ section.id }} .bn-hiw__heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-style: italic;
+    font-size: 52px;
+    line-height: 1.12;
+    color: #1A1A1A;
+    margin: 0 0 20px;
+  }
+  .bn-how-it-works-{{ section.id }} .bn-hiw__subheading {
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.6;
+    color: #5B5B54;
+    margin: 0;
+  }
+
+  .bn-how-it-works-{{ section.id }} .bn-hiw__steps {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .bn-how-it-works-{{ section.id }} .bn-hiw__step {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    padding: 0 32px;
+  }
+  .bn-how-it-works-{{ section.id }} .bn-hiw__icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+  .bn-how-it-works-{{ section.id }} .bn-hiw__icon svg { display: block; }
+  .bn-how-it-works-{{ section.id }} .bn-hiw__number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--bn-accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .bn-how-it-works-{{ section.id }} .bn-hiw__step-title {
+    font-weight: 600;
+    font-size: 18px;
+    color: #1A1A1A;
+    margin: 0 0 10px;
+  }
+  .bn-how-it-works-{{ section.id }} .bn-hiw__step-text {
+    font-weight: 400;
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: #6B6B63;
+    margin: 0;
+  }
+  .bn-how-it-works-{{ section.id }} .bn-hiw__divider {
+    width: 1px;
+    align-self: stretch;
+    background: #DEDACD;
+    margin-top: 8px;
+    flex: none;
+  }
+
+  .bn-how-it-works-{{ section.id }} .bn-hiw__button {
+    margin-top: 72px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bn-accent);
+    color: #F7F4EE;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 18px 44px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+  }
+  .bn-how-it-works-{{ section.id }} .bn-hiw__button:hover { opacity: 0.85; }
+
+  @media screen and (max-width: 749px) {
+    .bn-how-it-works-{{ section.id }} { padding: 64px 28px 72px; }
+    .bn-how-it-works-{{ section.id }} .bn-hiw__header { margin-bottom: 52px; }
+    .bn-how-it-works-{{ section.id }} .bn-hiw__eyebrow { font-size: 11px; letter-spacing: 0.2em; margin-bottom: 16px; }
+    .bn-how-it-works-{{ section.id }} .bn-hiw__heading { font-size: 34px; margin: 0 0 14px; }
+    .bn-how-it-works-{{ section.id }} .bn-hiw__subheading { font-size: 15px; }
+
+    .bn-how-it-works-{{ section.id }} .bn-hiw__steps { flex-direction: column; width: 100%; }
+    .bn-how-it-works-{{ section.id }} .bn-hiw__step {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 18px;
+      width: 100%;
+      padding: 26px 0;
+    }
+    .bn-how-it-works-{{ section.id }} .bn-hiw__icon { width: 40px; height: 40px; margin-bottom: 0; flex: none; }
+    .bn-how-it-works-{{ section.id }} .bn-hiw__step-copy { display: flex; flex-direction: column; align-items: flex-start; }
+    .bn-how-it-works-{{ section.id }} .bn-hiw__number { font-size: 14px; margin-bottom: 6px; }
+    .bn-how-it-works-{{ section.id }} .bn-hiw__step-title { font-size: 16.5px; margin: 0 0 8px; }
+    .bn-how-it-works-{{ section.id }} .bn-hiw__step-text { font-size: 14px; }
+
+    .bn-how-it-works-{{ section.id }} .bn-hiw__divider { width: 100%; height: 1px; align-self: auto; margin-top: 0; }
+
+    .bn-how-it-works-{{ section.id }} .bn-hiw__button { margin-top: 44px; width: 100%; padding: 18px 0; }
+  }
+{%- endstyle -%}
+
+<section class="bn-how-it-works-{{ section.id }}">
+  <div class="bn-hiw__inner">
+
+    <div class="bn-hiw__header">
       {%- if section.settings.eyebrow != blank -%}
-        <span class="section__eyebrow">{{ section.settings.eyebrow }}</span>
+        <span class="bn-hiw__eyebrow">{{ section.settings.eyebrow }}</span>
       {%- endif -%}
-      <h2 class="section__title">{{ section.settings.heading }}</h2>
-      {%- if section.settings.description != blank -%}
-        <p class="section__description">{{ section.settings.description }}</p>
+      {%- if section.settings.heading != blank -%}
+        <h2 class="bn-hiw__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subheading != blank -%}
+        <p class="bn-hiw__subheading">{{ section.settings.subheading }}</p>
       {%- endif -%}
     </div>
 
-    <div class="steps">
+    <div class="bn-hiw__steps">
       {%- for block in section.blocks -%}
-        <div class="step" {{ block.shopify_attributes }}>
-          <div class="step__number">{{ forloop.index }}</div>
-          <h3 class="step__title">{{ block.settings.title }}</h3>
-          <p class="step__description">{{ block.settings.description }}</p>
+        <div class="bn-hiw__step" {{ block.shopify_attributes }}>
+          <div class="bn-hiw__icon" aria-hidden="true">
+            {%- case block.settings.icon -%}
+              {%- when 'bag' -%}
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: var(--bn-accent);" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              {%- when 'profile' -%}
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: var(--bn-accent);" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              {%- when 'rotate' -%}
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: var(--bn-accent);" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              {%- when 'spark' -%}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="color: var(--bn-accent);"><path d="M12 2L14.2 9.8L22 12L14.2 14.2L12 22L9.8 14.2L2 12L9.8 9.8Z"/></svg>
+            {%- endcase -%}
+          </div>
+          <div class="bn-hiw__step-copy">
+            <span class="bn-hiw__number">
+              {%- case forloop.index -%}
+                {%- when 1 -%}01{%- when 2 -%}02{%- when 3 -%}03{%- when 4 -%}04{%- else -%}{{ forloop.index }}{%- endcase -%}
+            </span>
+            {%- if block.settings.title != blank -%}
+              <h3 class="bn-hiw__step-title">{{ block.settings.title }}</h3>
+            {%- endif -%}
+            {%- if block.settings.text != blank -%}
+              <p class="bn-hiw__step-text">{{ block.settings.text }}</p>
+            {%- endif -%}
+          </div>
         </div>
         {%- unless forloop.last -%}
-          <div class="step__connector">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </div>
+          <div class="bn-hiw__divider" aria-hidden="true"></div>
         {%- endunless -%}
       {%- endfor -%}
     </div>
 
     {%- if section.settings.button_label != blank -%}
-      <div class="text-center mt-5">
-        <a href="{{ section.settings.button_link }}" class="btn btn--primary btn--large">
-          {{ section.settings.button_label }}
-        </a>
-      </div>
+      <a href="{{ section.settings.button_link | default: '#' }}" class="bn-hiw__button">{{ section.settings.button_label }}</a>
     {%- endif -%}
+
   </div>
 </section>
-
-<style>
-  .how-it-works {
-    background: var(--color-background);
-  }
-
-  .steps {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: var(--spacing-md);
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-
-  .step {
-    flex: 1;
-    max-width: 250px;
-    text-align: center;
-    padding: var(--spacing-lg);
-  }
-
-  .step__number {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto var(--spacing-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--color-primary);
-    background: var(--color-secondary);
-    border-radius: 50%;
-  }
-
-  .step__title {
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-    margin-bottom: var(--spacing-sm);
-    color: var(--color-primary);
-  }
-
-  .step__description {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    line-height: 1.6;
-    margin: 0;
-  }
-
-  .step__connector {
-    display: flex;
-    align-items: center;
-    padding-top: 2rem;
-    color: var(--color-border-dark);
-  }
-
-  .step__connector svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  @media (max-width: 992px) {
-    .steps {
-      flex-wrap: wrap;
-      gap: var(--spacing-xl);
-    }
-
-    .step {
-      flex: 0 0 calc(50% - var(--spacing-lg));
-      max-width: none;
-    }
-
-    .step__connector {
-      display: none;
-    }
-  }
-
-  @media (max-width: 576px) {
-    .steps {
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .step {
-      flex: 0 0 100%;
-      max-width: 300px;
-    }
-  }
-</style>
 
 {% schema %}
 {
   "name": "How It Works",
   "tag": "section",
-  "class": "how-it-works-section",
+  "class": "section",
   "settings": [
     {
       "type": "text",
       "id": "eyebrow",
       "label": "Eyebrow text",
-      "default": "Simple & Elegant"
+      "default": "How It Works"
     },
     {
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "default": "How It Works"
+      "default": "Effortless, from day one."
     },
     {
       "type": "textarea",
-      "id": "description",
-      "label": "Description",
-      "default": "Your journey to discovering exceptional fragrances begins here."
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "No guesswork. No surcharges. Just a fragrance rotation that's entirely yours."
     },
     {
       "type": "text",
       "id": "button_label",
       "label": "Button label",
-      "default": "Get Started"
+      "default": "Start Your Subscription"
     },
     {
       "type": "url",
       "id": "button_link",
       "label": "Button link"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#F7F4EE"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#2F4B3C"
     }
   ],
   "blocks": [
@@ -169,20 +264,31 @@
       "name": "Step",
       "settings": [
         {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "bag", "label": "Shopping bag" },
+            { "value": "profile", "label": "Profile" },
+            { "value": "rotate", "label": "Rotate" },
+            { "value": "spark", "label": "Sparkle" }
+          ],
+          "default": "bag"
+        },
+        {
           "type": "text",
           "id": "title",
-          "label": "Title",
-          "default": "Step Title"
+          "label": "Title"
         },
         {
           "type": "textarea",
-          "id": "description",
-          "label": "Description",
-          "default": "Describe this step in the process."
+          "id": "text",
+          "label": "Description"
         }
       ]
     }
   ],
+  "max_blocks": 4,
   "presets": [
     {
       "name": "How It Works",
@@ -190,29 +296,33 @@
         {
           "type": "step",
           "settings": {
-            "title": "Take Our Quiz",
-            "description": "Answer a few questions about your fragrance preferences and lifestyle."
+            "icon": "bag",
+            "title": "Subscribe & Order",
+            "text": "Choose your fragrance — your 5ml vial ships right away."
           }
         },
         {
           "type": "step",
           "settings": {
-            "title": "Choose Your Plan",
-            "description": "Select monthly, quarterly, or annual subscription based on your needs."
+            "icon": "profile",
+            "title": "Log Into Your Account",
+            "text": "Log into your profile and visit your queue to pick your next fragrance."
           }
         },
         {
           "type": "step",
           "settings": {
-            "title": "Receive Your Scent",
-            "description": "Get a premium 5ml atomizer of your chosen fragrance delivered to your door."
+            "icon": "rotate",
+            "title": "Build Your Rotation",
+            "text": "Hand-pick up to 5 months of fragrances yourself, or let our experts curate one for you."
           }
         },
         {
           "type": "step",
           "settings": {
-            "title": "Discover & Repeat",
-            "description": "Rate your experience and queue your next fragrance from our collection."
+            "icon": "spark",
+            "title": "Keep the Compliments Coming",
+            "text": "Wear something unforgettable every month."
           }
         }
       ]
