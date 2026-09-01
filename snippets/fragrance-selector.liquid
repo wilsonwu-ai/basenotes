@@ -5,7 +5,12 @@
     {% render 'fragrance-selector', mode: 'modal' %}
     {% render 'fragrance-selector', mode: 'inline' %}
 
-  Dispatches CustomEvent 'fragrance:selected' with detail: { id, handle, title, image, family }
+  Dispatches CustomEvent 'fragrance:selected' with detail:
+  { id, variantId, handle, title, image, family }.
+
+  `variantId` is the exact available variant that has a subscription selling-plan
+  allocation. Queue writes must use that ID rather than resolving a product handle
+  later, because a product can have both subscription and one-time variants.
   Listen with: document.addEventListener('fragrance:selected', (e) => { ... })
   Open with: document.dispatchEvent(new Event('fragrance-selector:open'))
 {% endcomment %}
@@ -135,6 +140,19 @@
         {%- assign top_notes = product.metafields.custom.top_notes -%}
         {%- assign heart_notes = product.metafields.custom.heart_notes -%}
         {%- assign base_notes = product.metafields.custom.base_notes -%}
+        {%- comment -%}
+          The selector is subscription-only. Do not use
+          selected_or_first_available_variant here: on multi-variant products that
+          can resolve to a one-time/full-bottle variant. Select the first available
+          variant that is explicitly eligible for at least one selling plan instead.
+        {%- endcomment -%}
+        {%- assign queue_variant = nil -%}
+        {%- for variant in product.variants -%}
+          {%- if variant.available and variant.selling_plan_allocations.size > 0 -%}
+            {%- assign queue_variant = variant -%}
+            {%- break -%}
+          {%- endif -%}
+        {%- endfor -%}
         <div class="fs-card"
              data-fs-id="{{ product.id }}"
              data-fs-handle="{{ product.handle }}"
@@ -168,15 +186,22 @@
             <div class="fs-card__price">
               <span class="fs-card__retail">{{ product.price | money }} retail value</span>
             </div>
-            <button class="btn btn--primary btn--small fs-card__select"
-                    data-fs-select
-                    data-product-id="{{ product.id }}"
-                    data-product-handle="{{ product.handle }}"
-                    data-product-title="{{ product.title | escape }}"
-                    data-product-image="{{ product.featured_image | image_url: width: 400 }}"
-                    data-product-family="{{ card_ff_primary }}">
-              Add to Queue
-            </button>
+            {%- if queue_variant -%}
+              <button class="btn btn--primary btn--small fs-card__select"
+                      data-fs-select
+                      data-product-id="{{ product.id }}"
+                      data-product-variant-id="{{ queue_variant.id }}"
+                      data-product-handle="{{ product.handle }}"
+                      data-product-title="{{ product.title | escape }}"
+                      data-product-image="{{ product.featured_image | image_url: width: 400 }}"
+                      data-product-family="{{ card_ff_primary }}">
+                Add to Queue
+              </button>
+            {%- else -%}
+              <button class="btn btn--outline btn--small fs-card__select" type="button" disabled aria-disabled="true">
+                Subscription unavailable
+              </button>
+            {%- endif -%}
           </div>
         </div>
       {%- endfor -%}
@@ -486,6 +511,7 @@
     btn.addEventListener('click', function() {
       var detail = {
         id: btn.dataset.productId,
+        variantId: btn.dataset.productVariantId,
         handle: btn.dataset.productHandle,
         title: btn.dataset.productTitle,
         image: btn.dataset.productImage,
