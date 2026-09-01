@@ -18,6 +18,8 @@ const requiredFiles = [
   "src/profile-queue/service.ts",
   "src/profile-queue/repository.ts",
   "src/profile-queue/d1-repository.ts",
+  "src/profile-queue/fotm-schedule.ts",
+  "src/profile-queue/d1-fotm-schedule-repository.ts",
   "src/profile-queue/ui.ts",
   "src/subscription-history/contracts.ts",
   "src/subscription-history/backfill-importer.ts",
@@ -31,9 +33,13 @@ const requiredFiles = [
   "src/cloudflare-staging-worker/d1-form-nonce-repository.ts",
   "src/cloudflare-staging-worker/staging-test-variants.ts",
   "src/cloudflare-staging-worker/profile-queue-page.ts",
+  "src/cloudflare-staging-worker/cutoff-locker.ts",
+  "src/cloudflare-staging-worker/fotm-schedule-admin.ts",
   "src/cloudflare-staging-worker/worker.ts",
   "migrations/0001_staging_runtime.sql",
   "migrations/0002_staging_test_bindings.sql",
+  "migrations/0003_member_fragrance_choice.sql",
+  "scripts/smoke-member-choice-migration.mjs",
   "wrangler.staging.example.toml",
   "tsconfig.worker.json",
   "src/platform/subscription-gateway.ts",
@@ -66,7 +72,11 @@ const workerTemplate = readFileSync(resolve(root, "wrangler.staging.example.toml
 if (!workerTemplate.includes('name = "basenote-profile-queue-staging"')) {
   throw new Error("The Worker template must retain its explicit staging-only name.");
 }
-if (!workerTemplate.includes("STAGING_SHOP_DOMAIN") || !workerTemplate.includes("STAGING_TEST_VARIANT_IDS")) {
+if (
+  !workerTemplate.includes("STAGING_SHOP_DOMAIN")
+  || !workerTemplate.includes("STAGING_TEST_VARIANT_IDS")
+  || !workerTemplate.includes("STAGING_CUTOFF_AUTOMATION_ENABLED")
+) {
   throw new Error("The Worker template must retain staging-only shop and test-variant configuration.");
 }
 for (const requiredFragment of [
@@ -103,7 +113,7 @@ for (const requiredFragment of ["crypto.subtle.verify", "STAGING_SHOP_DOMAIN", "
 }
 
 const formNonceSource = readFileSync(resolve(root, "src/cloudflare-staging-worker/d1-form-nonce-repository.ts"), "utf8");
-for (const requiredFragment of ["consumed_at IS NULL", "expected_revision = ?", "expires_at > ?"]) {
+for (const requiredFragment of ["consumed_at IS NULL", "expected_revision = ?", "julianday(expires_at) > julianday(?)"]) {
   if (!formNonceSource.includes(requiredFragment)) {
     throw new Error(`The staging form nonce boundary must retain: ${requiredFragment}`);
   }
@@ -131,6 +141,38 @@ for (const requiredFragment of [
   if (!testBindingMigration.includes(requiredFragment)) {
     throw new Error(`The staging test-binding migration must retain: ${requiredFragment}`);
   }
+}
+
+const memberChoiceMigration = readFileSync(resolve(root, "migrations/0003_member_fragrance_choice.sql"), "utf8");
+for (const requiredFragment of [
+  "member_choice_source",
+  "profile_queue_selection_evidence",
+  "profile_queue_fotm_schedules",
+  "America/Chicago",
+  "member_choice_source = 'FOTM_FALLBACK'",
+  "profile_queue_0003_legacy_preflight",
+  "SET state = state",
+  "json_each(NEW.add_on_snapshot_json)",
+  "strftime('%Y-%m-%dT%H:%M:%S'",
+  "|| '.000Z'",
+  "'05:01:'",
+  "'06:01:'",
+  "selection evidence is append-only",
+  "FOTM schedule audit is append-only",
+]) {
+  if (!memberChoiceMigration.includes(requiredFragment)) {
+    throw new Error(`The member-choice migration must retain: ${requiredFragment}`);
+  }
+}
+
+const cutoffLocker = readFileSync(resolve(root, "src/cloudflare-staging-worker/cutoff-locker.ts"), "utf8");
+for (const forbiddenFragment of ["fetch(", "APPSTLE", "SHOPIFY_ADMIN", "MAILGUN"]) {
+  if (cutoffLocker.includes(forbiddenFragment)) {
+    throw new Error(`The cutoff locker must remain D1-only and must not contain ${forbiddenFragment}.`);
+  }
+}
+if (!cutoffLocker.includes("STAGING_CUTOFF_LOCK_BATCH_SIZE = 10")) {
+  throw new Error("The staging cutoff locker must retain its ten-cycle subrequest bound.");
 }
 
 process.stdout.write("Base Note Core local-only foundation verification passed.\n");

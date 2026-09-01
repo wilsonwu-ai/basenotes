@@ -4,7 +4,13 @@ import type {
   ProfileQueueOwnershipResolver,
 } from "./contracts.js";
 import { asProfileQueueActorRef } from "../profile-queue/contracts.js";
-import { asBindingId, asCycleKey, asIsoTimestamp, asShipMonth } from "../queue/types.js";
+import {
+  asBindingId,
+  asCycleKey,
+  asIsoTimestamp,
+  asShipMonth,
+  compareIsoTimestamps,
+} from "../queue/types.js";
 import type { D1DatabasePort } from "../staging-runtime/d1.js";
 
 interface TestBindingRow {
@@ -27,7 +33,7 @@ const SELECT_ACTIVE_TEST_BINDING = `
     AND cycle_key = ?
     AND ship_month = ?
     AND status = 'ACTIVE'
-    AND expires_at > ?`;
+    AND julianday(expires_at) > julianday(?)`;
 
 export interface D1StagingTestBindingOwnershipResolverOptions {
   readonly now?: () => Date;
@@ -75,7 +81,7 @@ export class D1StagingTestBindingOwnershipResolver implements ProfileQueueOwners
         || row.shopify_customer_id !== input.identity.shopifyCustomerId
         || row.cycle_key !== cycleKey
         || row.ship_month !== shipMonth
-        || asIsoTimestamp(row.expires_at) <= asIsoTimestamp(now)
+        || compareIsoTimestamps(asIsoTimestamp(row.expires_at), asIsoTimestamp(now)) <= 0
       ) {
         throw denied();
       }

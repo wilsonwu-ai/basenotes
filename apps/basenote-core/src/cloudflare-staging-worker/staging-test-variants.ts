@@ -56,7 +56,7 @@ export function assertStagingMutationVariantAllowed(
   mutation: NormalizedProfileQueueCustomerMutation,
   variants: readonly StagingTestVariant[],
 ): void {
-  if (mutation.kind === "REMOVE_ADD_ON") return;
+  if (mutation.kind === "REMOVE_ADD_ON" || mutation.kind === "CLEAR_MEMBER_FRAGRANCE") return;
   if (!variants.some((variant) => variant.variantId === mutation.variantId)) {
     throw new StagingTestVariantNotAllowedError("The requested variant is not in the staging test allowlist.");
   }

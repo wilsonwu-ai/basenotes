@@ -190,10 +190,36 @@ export function asSubscriptionLineId(value: string): SubscriptionLineId {
 }
 
 export function asIsoTimestamp(value: string): IsoTimestamp {
-  if (!ISO_TIMESTAMP.test(value) || Number.isNaN(Date.parse(value))) {
+  if (!ISO_TIMESTAMP.test(value)) {
+    throw new Error("timestamp must be a valid UTC ISO-8601 value.");
+  }
+  const milliseconds = Date.parse(value);
+  if (Number.isNaN(milliseconds)) {
+    throw new Error("timestamp must be a valid UTC ISO-8601 value.");
+  }
+  // Date.parse normalizes invalid calendar dates (for example, February 30),
+  // so require its UTC round trip to preserve the supplied calendar fields.
+  // Whole-second inputs are deliberately accepted alongside `.000Z` inputs.
+  const normalizedInput = value.endsWith("Z") && !value.includes(".")
+    ? `${value.slice(0, -1)}.000Z`
+    : value;
+  if (new Date(milliseconds).toISOString() !== normalizedInput) {
     throw new Error("timestamp must be a valid UTC ISO-8601 value.");
   }
   return value as IsoTimestamp;
+}
+
+/**
+ * Compares validated UTC instants numerically. Do not compare accepted ISO
+ * strings lexically: this codebase permits both `...:00Z` and
+ * `...:00.000Z`, whose textual ordering differs at the same instant.
+ */
+export function compareIsoTimestamps(left: string, right: string): -1 | 0 | 1 {
+  const leftMilliseconds = Date.parse(asIsoTimestamp(left));
+  const rightMilliseconds = Date.parse(asIsoTimestamp(right));
+  if (leftMilliseconds < rightMilliseconds) return -1;
+  if (leftMilliseconds > rightMilliseconds) return 1;
+  return 0;
 }
 
 export function asAdapterContractRef(value: string): string {

@@ -35,6 +35,10 @@ import {
 } from "./form-nonce.js";
 import { renderProfileQueueErrorPage, renderProfileQueuePage } from "./profile-queue-page.js";
 import {
+  createProfileQueueSelectionEvidence,
+  runStagingCutoffLock,
+} from "./cutoff-locker.js";
+import {
   StagingTestVariantConfigError,
   StagingTestVariantNotAllowedError,
   assertStagingMutationVariantAllowed,
@@ -195,6 +199,19 @@ export function createStagingProfileQueueWorker(
         return mapRouteError(error, request, policy);
       }
     },
+    async scheduled(event, environment, executionContext) {
+      const run = runScheduledCutoffLock({
+        createOpaqueId,
+        environment,
+        now,
+        repositoryFactory,
+      });
+      event.waitUntil(run);
+      // Awaiting the same promise keeps offline tests deterministic while
+      // Cloudflare retains it through waitUntil in a real cron invocation.
+      await run;
+      void executionContext;
+    },
   };
 }
 
@@ -245,6 +262,7 @@ async function handleRead(
       cycle,
       formNonce,
       formAction: profileQueueStorefrontAction(identity.storefrontPathPrefix),
+      now: input.now().toISOString(),
       variants,
     }), input.request, input.policy);
   } catch (error) {
@@ -288,6 +306,7 @@ async function handleFormMutation(
       cycle: result.cycle,
       formNonce,
       formAction: profileQueueStorefrontAction(result.identity.storefrontPathPrefix),
+      now: input.now().toISOString(),
       status: "success",
       variants: result.variants,
     }), input.request, input.policy);
@@ -354,20 +373,26 @@ async function mutateProfileQueue(
       cycleKey: mutation.cycleKey,
     });
   }
+  const audit = {
+    actorRef: context.actorRef,
+    bindingId: context.bindingId,
+    cycleKey: mutation.cycleKey,
+    expectedRevision: current.revision,
+    idempotencyKey: mutation.idempotencyKey,
+    mutationId: asProfileQueueMutationId(input.createOpaqueId("pqm")),
+    mutationKind: mutation.mutation.kind,
+    occurredAt: updated.updatedAt,
+    resultingRevision: updated.revision,
+  } as const;
   await repository.persist({
-    audit: {
-      actorRef: context.actorRef,
-      bindingId: context.bindingId,
-      cycleKey: mutation.cycleKey,
-      expectedRevision: current.revision,
-      idempotencyKey: mutation.idempotencyKey,
-      mutationId: asProfileQueueMutationId(input.createOpaqueId("pqm")),
-      mutationKind: mutation.mutation.kind,
-      occurredAt: updated.updatedAt,
-      resultingRevision: updated.revision,
-    },
+    audit,
     cycle: updated,
     expectedRevision: current.revision,
+    selectionEvidence: createProfileQueueSelectionEvidence({
+      audit,
+      cycle: updated,
+      evidenceId: input.createOpaqueId("pqe"),
+    }),
   });
   return { cycle: updated, identity, variants };
 }
@@ -515,6 +540,10 @@ function serializeCycle(cycle: ProfileQueueCycle): Record<string, unknown> {
       status: cycle.fotm.status,
       variantId: cycle.fotm.variantId,
     },
+    memberChoice: {
+      source: cycle.memberChoice.source,
+      variantId: cycle.memberChoice.variantId,
+    },
     revision: cycle.revision,
     shipMonth: cycle.shipMonth,
     state: cycle.state,
@@ -615,7 +644,30 @@ function emptyPolicy(): StagingHttpPolicy {
   return { allowedHosts: new Set(), allowedOrigins: new Set() };
 }
 
-function defaultOpaqueId(prefix: "pqa" | "pqm" | "pqk" | "pqf"): string {
+async function runScheduledCutoffLock(input: {
+  readonly createOpaqueId: NonNullable<StagingWorkerDependencies["createOpaqueId"]>;
+  readonly environment: StagingWorkerEnv;
+  readonly now: () => Date;
+  readonly repositoryFactory: NonNullable<StagingWorkerDependencies["repositoryFactory"]>;
+}): Promise<void> {
+  // This explicit opt-in means an existing staging Worker version has no
+  // scheduled behavior until the reviewed migration, config, and E2E gate are
+  // all intentionally enabled. It never falls through to production.
+  if (
+    input.environment.BASENOTE_RUNTIME_STAGE !== "staging"
+    || input.environment.STAGING_CUTOFF_AUTOMATION_ENABLED !== "true"
+    || !input.environment.BASENOTE_STAGING_D1
+  ) {
+    return;
+  }
+  await runStagingCutoffLock({
+    asOf: input.now().toISOString(),
+    createOpaqueId: input.createOpaqueId,
+    repository: input.repositoryFactory(input.environment.BASENOTE_STAGING_D1),
+  });
+}
+
+function defaultOpaqueId(prefix: "pqa" | "pqm" | "pqk" | "pqf" | "pqe"): string {
   const random = new Uint8Array(16);
   crypto.getRandomValues(random);
   return `${prefix}_${Array.from(random, (value) => value.toString(16).padStart(2, "0")).join("")}`;

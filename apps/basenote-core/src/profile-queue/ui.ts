@@ -30,8 +30,8 @@ export function renderProfileQueueDropdown(view: ProfileQueueDropdownView): stri
   const disabledAttribute = disabled ? " disabled" : "";
   const readonlyAttribute = view.readOnly ? " data-read-only=\"true\"" : "";
   const fotmLabel = view.cycle.fotm.variantId
-    ? `Automatic FOTM: ${escapeHtml(view.cycle.fotm.variantId)}`
-    : "Automatic FOTM will be selected at the order cutoff.";
+    ? "Included FOTM default is pre-selected; save an override only if you want a different fragrance this month."
+    : "Included FOTM default will appear after Base Note publishes this ship-month schedule.";
 
   const options = view.availableFragrances
     .map(
@@ -58,7 +58,7 @@ export function renderProfileQueueDropdown(view: ProfileQueueDropdownView): stri
       <header>
         <h2>Profile Queue</h2>
         <p>${fotmLabel}</p>
-        <p>Add up to ${MAX_FUTURE_ADD_ONS_PER_CYCLE} extra fragrances to this future shipment for ${formatUsd(FUTURE_ADD_ON_UNIT_PRICE_CENTS)} each.</p>
+        <p>One included fragrance defaults to FOTM. Add up to ${MAX_FUTURE_ADD_ONS_PER_CYCLE} separate extra fragrances to this future shipment for ${formatUsd(FUTURE_ADD_ON_UNIT_PRICE_CENTS)} each.</p>
       </header>
       <ol class="bn-profile-queue__add-ons">${addOnRows}</ol>
       <p class="bn-profile-queue__capacity" aria-live="polite">${capacityMessage}</p>

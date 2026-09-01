@@ -5,7 +5,13 @@ import {
   type IssueStagingProfileQueueFormNonceInput,
   type StagingProfileQueueFormNonceRepository,
 } from "./form-nonce.js";
-import { asBindingId, asCycleKey, asIsoTimestamp, asShipMonth } from "../queue/types.js";
+import {
+  asBindingId,
+  asCycleKey,
+  asIsoTimestamp,
+  asShipMonth,
+  compareIsoTimestamps,
+} from "../queue/types.js";
 import type { D1DatabasePort } from "../staging-runtime/d1.js";
 
 const INSERT_FORM_NONCE = `
@@ -25,7 +31,7 @@ const CONSUME_FORM_NONCE = `
     AND ship_month = ?
     AND expected_revision = ?
     AND consumed_at IS NULL
-    AND expires_at > ?`;
+    AND julianday(expires_at) > julianday(?)`;
 
 /**
  * Durable one-time form boundary for the disposable staging shop. A nonce is
@@ -79,7 +85,7 @@ function normalizeIssue(input: IssueStagingProfileQueueFormNonceInput) {
   const normalized = normalizeShared(input);
   const issuedAt = asIsoTimestamp(input.issuedAt);
   const expiresAt = asIsoTimestamp(input.expiresAt);
-  if (expiresAt <= issuedAt) {
+  if (compareIsoTimestamps(expiresAt, issuedAt) <= 0) {
     throw new Error("The staging form nonce expiry must be after issuance.");
   }
   return { ...normalized, expiresAt, issuedAt };

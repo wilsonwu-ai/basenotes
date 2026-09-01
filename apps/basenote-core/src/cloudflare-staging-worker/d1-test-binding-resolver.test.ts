@@ -27,6 +27,7 @@ test("D1 test-binding resolver authorizes only one exact active disposable-store
 
   assert.deepEqual(result, { actorRef: "profile_101", bindingId: "binding-profile-101" });
   assert.match(database.statement?.query ?? "", /staging_profile_queue_test_bindings/);
+  assert.match(database.statement?.query ?? "", /julianday\(expires_at\) > julianday\(\?\)/);
   assert.deepEqual(database.statement?.values, [
     identity.shopDomain,
     identity.shopifyCustomerId,
@@ -53,6 +54,21 @@ test("D1 test-binding resolver denies absent, expired, or mismatched seed rows",
     status: "ACTIVE",
   }), { now: () => new Date(now) });
   await assert.rejects(expired.resolve({ cycleKey, identity, shipMonth }), ProfileQueueOwnershipDeniedError);
+
+  const expiredWithoutMilliseconds = new D1StagingTestBindingOwnershipResolver(new RecordingD1Database({
+    actor_ref: "profile_101",
+    binding_id: "binding-profile-101",
+    cycle_key: cycleKey,
+    expires_at: "2026-09-01T09:00:00Z",
+    shop_domain: identity.shopDomain,
+    shopify_customer_id: identity.shopifyCustomerId,
+    ship_month: shipMonth,
+    status: "ACTIVE",
+  }), { now: () => new Date(now) });
+  await assert.rejects(
+    expiredWithoutMilliseconds.resolve({ cycleKey, identity, shipMonth }),
+    ProfileQueueOwnershipDeniedError,
+  );
 
   const mismatched = new D1StagingTestBindingOwnershipResolver(new RecordingD1Database({
     actor_ref: "profile_101",

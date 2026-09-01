@@ -8,16 +8,19 @@ import {
 } from "./contracts.js";
 import { D1ProfileQueueRepository } from "./d1-repository.js";
 import { applyProfileQueueMutation } from "./service.js";
+import { createProfileQueueSelectionEvidence } from "../cloudflare-staging-worker/cutoff-locker.js";
 import type { D1DatabasePort, D1PreparedStatement, D1Result } from "../staging-runtime/d1.js";
 
 test("D1 repository batches compare-and-swap, add-on replacement, and immutable audit writes", async () => {
   const database = new RecordingD1Database();
   const repository = new D1ProfileQueueRepository(database);
   const initial = createCycle();
+  const createAudit = auditFor(initial, null, "CREATE_CYCLE", "pqm_create001", "pqk_create001");
   await repository.persist({
-    audit: auditFor(initial, null, "CREATE_CYCLE", "pqm_create001", "pqk_create001"),
+    audit: createAudit,
     cycle: initial,
     expectedRevision: null,
+    selectionEvidence: evidenceFor(initial, createAudit),
   });
 
   const changed = applyProfileQueueMutation(initial, {
@@ -29,10 +32,12 @@ test("D1 repository batches compare-and-swap, add-on replacement, and immutable 
     },
     occurredAt: "2026-09-01T09:01:00.000Z",
   });
+  const changedAudit = auditFor(changed, 0, "ADD_ADD_ON", "pqm_addon001", "pqk_addon001");
   await repository.persist({
-    audit: auditFor(changed, 0, "ADD_ADD_ON", "pqm_addon001", "pqk_addon001"),
+    audit: changedAudit,
     cycle: changed,
     expectedRevision: 0,
+    selectionEvidence: evidenceFor(changed, changedAudit),
   });
 
   assert.equal(database.batches.length, 2);
@@ -41,6 +46,18 @@ test("D1 repository batches compare-and-swap, add-on replacement, and immutable 
   assert.ok(updateBatch.some((statement) => /DELETE FROM profile_queue_add_ons/.test(statement.query)));
   assert.ok(updateBatch.some((statement) => /INSERT INTO profile_queue_add_ons/.test(statement.query)));
   assert.ok(updateBatch.some((statement) => /INSERT INTO profile_queue_mutation_audit/.test(statement.query)));
+  const auditStatement = updateBatch.find((statement) => /INSERT INTO profile_queue_mutation_audit/.test(statement.query));
+  assert.doesNotMatch(
+    auditStatement?.query ?? "",
+    /NOT EXISTS\s*\(\s*SELECT 1 FROM profile_queue_mutation_audit/i,
+    "an audit collision must surface as a UNIQUE error that rolls the D1 batch back, never a silent zero-row insert.",
+  );
+  const evidenceStatement = updateBatch.find((statement) => /INSERT INTO profile_queue_selection_evidence/.test(statement.query));
+  assert.doesNotMatch(
+    evidenceStatement?.query ?? "",
+    /NOT EXISTS\s*\(\s*SELECT 1 FROM profile_queue_selection_evidence/i,
+    "an evidence collision must surface as a UNIQUE error that rolls the D1 batch back, never a silent zero-row insert.",
+  );
   assert.ok(updateBatch.some((statement) => statement.values.includes(1_800)));
   assert.ok(updateBatch.every((statement) => !/https?:\/\//.test(statement.query)));
 });
@@ -59,12 +76,14 @@ test("D1 repository refuses a stale compare-and-swap result", async () => {
     },
     occurredAt: "2026-09-01T09:01:00.000Z",
   });
+  const changedAudit = auditFor(changed, 0, "ADD_ADD_ON", "pqm_addon002", "pqk_addon002");
 
   await assert.rejects(
     repository.persist({
-      audit: auditFor(changed, 0, "ADD_ADD_ON", "pqm_addon001", "pqk_addon001"),
+      audit: changedAudit,
       cycle: changed,
       expectedRevision: 0,
+      selectionEvidence: evidenceFor(changed, changedAudit),
     }),
     /changed; reload before saving/,
   );
@@ -97,6 +116,17 @@ function auditFor(
     occurredAt: cycle.updatedAt,
     resultingRevision: cycle.revision,
   };
+}
+
+function evidenceFor(
+  cycle: ReturnType<typeof createCycle>,
+  audit: ProfileQueueMutationAuditRecord,
+) {
+  return createProfileQueueSelectionEvidence({
+    audit,
+    cycle,
+    evidenceId: audit.mutationId.replace(/^pqm_/, "pqe_"),
+  });
 }
 
 class RecordingD1Database implements D1DatabasePort {

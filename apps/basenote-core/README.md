@@ -13,8 +13,10 @@ subscription contract.
 
 The current storefront queue is coupled to Appstle. Base Note Core is intended
 to make a queue explicitly contract-scoped, so a customer with two subscriptions
-never has one contract selected implicitly. It also defines a deterministic
-Fragrance of the Month (FOTM) fallback when a queue slot is empty.
+never has one contract selected implicitly. It also distinguishes a visibly
+pre-selected Fragrance of the Month (FOTM) default from a saved member override
+and deterministically falls back to FOTM when no override exists at the exact
+12:01 AM America/Chicago cutoff.
 
 The boundary is intentional:
 
@@ -68,7 +70,8 @@ stored.
   title, handle, or URL fallback for new writes.
 - A queue operation may only act on the contract ID supplied by the authenticated
   context; it must never select a customer's “first active” contract.
-- The next shipment resolves to the queued variant or an explicit FOTM variant.
+- The included selection resolves to a saved member override or an explicit
+  published FOTM fallback; four `$18` add-ons remain separate.
 - A provider may mutate only a contract whose `appId` matches Base Note's future
   app ID.
 
@@ -80,12 +83,24 @@ manually seeded disposable test binding are present. Its rendered App Proxy
 forms also require a short-lived, one-use D1 nonce bound to the exact signed
 customer/cycle/revision. It includes a testable App
 Proxy HMAC verifier, pure pricing policy, an in-memory queue state machine, a
-D1-shaped-but-unbound profile-queue repository/migration, a server-rendered
-staging-only queue page, historic-member dry-run contracts, and a Messaging
+D1-shaped-but-unbound profile-queue repository/migration, future-month FOTM
+schedules with a server-only staff boundary, bounded staging-only cutoff lock
+logic, a server-rendered staging-only queue page, historic-member dry-run contracts, and a Messaging
 Core for consent, event audit, and no-send delivery intents. It has no
 configured persistence, OAuth/session implementation, webhook route, Appstle
 integration, Shopify Admin API call, recipient resolver, email sender, or
 billing attempt.
+
+The member-choice addition deliberately has no public staff write route. A
+theme FOTM setting may provide display context, but cannot configure a durable
+future-month schedule, authorize a member action, lock a cutoff, or prove a
+provider delivery change. The server-facing staging schedule port accepts only
+an opaque already-verified staff context; the authenticated Shopify Admin staff
+scheduler is tracked in [issue #35](https://github.com/wilsonwu-ai/basenotes/issues/35).
+The current source intentionally does not yet call that schedule port to
+provision an existing queue cycle: #35 and disposable staging E2E must join the
+durable month schedule to an exact cycle before this can be claimed as automated
+delivery behavior.
 
 ## Repository layout
 
@@ -102,9 +117,11 @@ src/
   messaging/outbox.ts               Explicit-eligibility, no-send outbox
   pricing/pricing-policy.ts         Pure $15/$20 and exact-$18 policy logic
   queue/in-memory-queue-service.ts  Revisioned queue/outbox state machine
-  profile-queue/contracts.ts        FOTM + maximum-four future add-on contract
+  profile-queue/contracts.ts        Included-member choice + maximum-four add-on contract
   profile-queue/service.ts          Pure queue mutation/cutoff state machine
   profile-queue/d1-repository.ts    Injected D1 persistence shape; no binding
+  profile-queue/fotm-schedule.ts    Per-month Central-time FOTM schedule model
+  profile-queue/d1-fotm-schedule-repository.ts D1 schedule/audit persistence shape
   profile-queue/ui.ts               Static staging-only dropdown renderer
   subscription-history/             Dry-run, approval-gated historic evidence
   staging-runtime/d1.ts             Minimal D1 structural port, no runtime import
@@ -113,6 +130,7 @@ src/
   platform/subscription-gateway.ts  Provider boundary for Base Note-owned contracts
 migrations/0001_staging_runtime.sql Reviewed, unapplied D1 queue schema
 migrations/0002_staging_test_bindings.sql Reviewed, unapplied disposable-binding schema
+migrations/0003_member_fragrance_choice.sql Reviewed, unapplied member choice/schedule schema
 scripts/verify-skeleton.mjs         Offline structural/safety verification
 shopify.app.example.toml            Deliberately unlinked future config template
 ```

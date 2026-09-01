@@ -40,10 +40,13 @@ apps/basenote-core/
   src/cloudflare-staging-worker/request-validation.ts
   src/cloudflare-staging-worker/staging-test-variants.ts
   src/cloudflare-staging-worker/profile-queue-page.ts
+  src/cloudflare-staging-worker/cutoff-locker.ts
+  src/cloudflare-staging-worker/fotm-schedule-admin.ts
   src/cloudflare-staging-worker/http.ts
   wrangler.staging.example.toml
   migrations/0001_staging_runtime.sql
   migrations/0002_staging_test_bindings.sql
+  migrations/0003_member_fragrance_choice.sql
 ```
 
 - `GET /healthz` is host-restricted and returns only fixed staging capability
@@ -51,9 +54,13 @@ apps/basenote-core/
 - `GET /api/shopify/app-proxy/profile-queue` renders a no-JavaScript,
   server-side Profile Queue page only after the signed-request and exact
   ownership gates pass.
-- The page shows automatic FOTM as read-only, exposes at most four `$18.00`
-  add-on slots, and gets generic eligible-variant labels only from
-  `STAGING_TEST_VARIANT_IDS`. It makes no Admin, storefront, or catalog call.
+- The page shows the published FOTM as the visibly pre-selected included
+  default. A customer saves only a month-specific override; otherwise the
+  FOTM remains the fallback at the exact **12:01 AM America/Chicago** cutoff.
+  It separately exposes at most four `$18.00`
+  add-on slots. A fragrance chosen in a prior month remains eligible; no
+  history/gamification rule exists here. Labels come only from
+  `STAGING_TEST_VARIANT_IDS`; no Admin, storefront, or catalog call is made.
 - Add/remove forms use opaque page-generated idempotency keys and POST through
   Shopify's signed storefront App Proxy child route. There is no browser API
   call, script, OAuth/session token, contract binding, or customer data in the
@@ -64,8 +71,15 @@ apps/basenote-core/
 - JSON and form requests have strict body/type/key boundaries. A browser cannot
   provide a binding ID or choose a server-generated add-on/audit ID.
 - The Worker creates add-on and audit IDs server-side, applies the existing
-  four-add-on / exact-$18 Core rules, and writes only through the Core D1
-  repository once all authorization gates are present.
+  four-add-on / exact-$18 Core rules, records an immutable non-PII resulting
+  selection snapshot whose ordered add-ons exactly reconcile to D1, and writes
+  only through the Core D1 repository once all authorization gates are present.
+- A bounded staging cron remains inert until protected staging explicitly sets
+  `STAGING_CUTOFF_AUTOMATION_ENABLED=true` after migration 0003 and a
+  disposable E2E gate. Each tick makes one due-cycle scan, at most ten add-on
+  reads, and at most ten D1-only compare-and-swap writes. It enforces the
+  `12:01 AM America/Chicago` product cutoff policy, locks D1 only, and never
+  calls Shopify, Appstle, Mailgun, or production.
 - Exact allowed staging hosts and origins are configured with no wildcard CORS.
   The code rejects production-looking hosts and refuses to run queue routes
   unless `BASENOTE_RUNTIME_STAGE=staging`.
@@ -114,6 +128,7 @@ context only:
 | `STAGING_ALLOWED_ORIGINS` | `https://base-note-subscription-staging.myshopify.com` plus local development only. Shopify may forward this Origin on a proxied native form POST; no wildcard is supported. |
 | `STAGING_SHOP_DOMAIN` | Exact disposable development shop: `base-note-subscription-staging.myshopify.com`. |
 | `STAGING_TEST_VARIANT_IDS` | Comma-separated exact disposable Shopify ProductVariant GIDs; this is the page dropdown catalog. |
+| `STAGING_CUTOFF_AUTOMATION_ENABLED` | Defaults to `false`. Exact `true` enables only the bounded staging D1 cutoff lock after migration 0003 and E2E approval. |
 | `SHOPIFY_APP_PROXY_SHARED_SECRET` | Runtime-only Shopify App Proxy shared secret, stored outside git and never in Wrangler vars/template. |
 | `BASENOTE_STAGING_D1` | Binding to a separately created empty staging D1 database only. |
 
@@ -132,13 +147,14 @@ D1 database, a designated operator must perform these reviewed steps in order:
 
 1. Apply `migrations/0001_staging_runtime.sql`.
 2. Apply `migrations/0002_staging_test_bindings.sql`.
-3. Create or seed one reviewed disposable queue cycle in
+3. Apply `migrations/0003_member_fragrance_choice.sql`.
+4. Create or seed one reviewed disposable queue cycle in
    `profile_queue_cycles` for the exact test binding, cycle key, and ship month.
-4. Seed one matching row in `staging_profile_queue_test_bindings` with that
+5. Seed one matching row in `staging_profile_queue_test_bindings` with that
    exact development shop, test customer ID, binding, cycle, ship month,
    opaque actor reference, `DISPOSABLE_DEVELOPMENT_STORE` source, `ACTIVE`
    status, opaque seed reference, and a short expiry.
-5. Configure the runtime-only variables/binding above, then perform a
+6. Configure the runtime-only variables/binding above, then perform a
    disposable-customer end-to-end test before any wider staging use.
 
 Migration `0002` creates no customer, binding, queue-cycle, or active form
@@ -148,6 +164,46 @@ intentionally impossible for an unseeded database to authorize a customer.
 Never seed names, email addresses, payment data, Appstle credentials, or
 production records. The migrations are intentionally not executed by `npm`,
 the Worker, or this branch.
+
+Apply `0003` only through `wrangler d1 migrations apply`, which stops and rolls
+back a migration on error. Do not apply it through a raw `sqlite3 < file`
+redirection. The local `npm run migration:smoke` regression invokes
+`sqlite3 -bail` specifically so an invalid legacy preflight cannot continue
+into persistent DDL.
+
+If a nonempty *staging* D1 is ever intentionally migrated, `0003` carries a
+legacy `RESOLVED` non-open cycle forward as an FOTM fallback using its existing
+FOTM variant and `updated_at`. It does not invent a member override. Other
+inconsistent closed legacy shapes, or an existing published/resolved cutoff
+that is not 12:01 AM Central, abort the migration for manual reconciliation.
+
+## Future-month FOTM schedules and staff boundary
+
+Migration `0003_member_fragrance_choice.sql` adds one durable FOTM schedule
+per `ship_month`, with draft/published state, an `America/Chicago` cutoff
+policy fixed to 12:01 AM local time (DST-safe in Worker code), revision checks,
+and an append-only non-PII audit. It supports
+independent September/October/November configuration instead of overwriting a
+single current-month setting. It is never itself a member override: at cutoff,
+the scheduler locks either the saved override or that published FOTM fallback.
+
+The existing theme FOTM setting may provide a display value, but it does not
+configure the durable schedule, authorize a member request, lock a cutoff, or
+prove a provider delivery change.
+
+`StagingFotmScheduleAdminBoundary` is a server-facing D1 port requiring an
+opaque `SERVER_VERIFIED_STAGING_STAFF` context. The Worker deliberately exposes
+no public staff write route and does not assume Shopify Admin authentication.
+The authenticated Shopify Admin staff scheduler belongs to
+[issue #35](https://github.com/wilsonwu-ai/basenotes/issues/35).
+
+There is intentionally **no current call path** from a schedule to a live
+queue-cycle provisioning write: `applyPublishedFotmScheduleToProfileQueueCycle`
+is a pure, exact-ship-month boundary for that future authenticated path. A
+durable schedule alone therefore does not change an existing cycle, theme, or
+delivery. Implementing the authenticated scheduler/provisioning path in #35,
+then proving it with disposable E2E, is a staging deploy blocker—not a hidden
+fallback to the theme's current FOTM setting.
 
 ## Transport, request, and data safeguards
 
@@ -170,17 +226,17 @@ the Worker, or this branch.
   and contain no raw request data, error stacks, customer identity, or logging
   call.
 - There is no sender, Mailgun key, Queue consumer, webhook, OAuth, Appstle
-  mutation, Shopify Admin/storefront API call, or production host/theme change.
+  mutation, Shopify Admin/storefront API call, public staff scheduler route, or
+  production host/theme change.
 
 ## Page design brief
 
 The page is a compact **luxury restraint** surface for a fragrance subscription:
-paper/ink/gold tokens, serif editorial hierarchy, a protected FOTM ledger, and
-four explicit add-on slots. It is intentionally not a generic dashboard. It
-uses semantic sections, labels, visible focus states, mobile grid fallback,
-clear disabled states, and no JavaScript or external asset. The one memorable
-interaction is the contrast between the read-only automatic FOTM and the small,
-bounded `$18` queue the customer can control.
+paper/ink/gold tokens, serif editorial hierarchy, a visibly pre-selected FOTM
+default, an optional included-fragrance override, and four explicit `$18`
+add-on slots. It is intentionally not a generic dashboard. It uses semantic
+sections, labels, visible focus states, mobile grid fallback, clear pre/post
+cutoff states, and no JavaScript or external asset.
 
 ## Checks
 
@@ -191,11 +247,14 @@ npm run check
 ```
 
 The check runs the offline structural verifier, Core typecheck, Web Worker-only
-typecheck, and unit suite. The tests cover the reconciled target path, HMAC
+typecheck, SQLite migration smoke (requires the `sqlite3` CLI), and unit suite. The tests cover the reconciled target path, HMAC
 verification, secret/shop fail-closed behavior, non-HTTPS rejection, exact D1
 binding lookup, oversized streaming body cancellation, allowlisted variants,
-one-use form nonce behavior, a fixed duplicate-parameter HMAC vector, and the
-rendered signed form workflow. They make no network, Cloudflare, Shopify,
+one-use form nonce behavior, a fixed duplicate-parameter HMAC vector, the
+pre/post-cutoff member UI, future-month schedule revisioning, and bounded
+D1-only cutoff locking. SQLite migration smoke checks cover legacy resolved
+backfill, append-only evidence, exact add-on snapshot reconciliation, and the
+12:01 AM Central cutoff guard. They make no network, Cloudflare, Shopify,
 email-provider, or file-database call.
 
 The source cannot safely be browser-tested against a live protected Worker yet:
