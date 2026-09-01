@@ -21,6 +21,7 @@ const requiredFiles = [
   "src/profile-queue/ui.ts",
   "src/subscription-history/contracts.ts",
   "src/subscription-history/backfill-importer.ts",
+  "src/subscription-history/d1-repository.ts",
   "migrations/0001_staging_runtime.sql",
   "src/platform/subscription-gateway.ts",
 ];

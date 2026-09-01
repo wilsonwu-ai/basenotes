@@ -44,6 +44,20 @@ export interface HistoricalSubscriptionHistoryWriteResult {
 }
 
 /**
+ * Optional durable-run boundary. The importer intentionally works with an
+ * in-memory test repository too, but a D1 implementation can retain the
+ * reviewed approval and mark the durable run complete only after every
+ * positive fact has been recorded.
+ */
+export interface HistoricalSubscriptionHistoryRunFinalizer {
+  markRunApplied(input: {
+    readonly approval: HistoricalBackfillApproval;
+    readonly digest: string;
+    readonly runId: HistoricalBackfillRunId;
+  }): Promise<void>;
+}
+
+/**
  * Staging-safe importer: dry-run is the first operation, and the only apply
  * path consumes a prior in-memory plan plus a non-boolean approval reference.
  * It has no CSV reader, provider credential, data export, or network client.
@@ -125,6 +139,9 @@ export class HistoricalMemberBackfillImporter {
       });
       persisted.push(cloneHistory(result.record));
     }
+    if (isRunFinalizer(this.repository)) {
+      await this.repository.markRunApplied({ approval, digest: dryRun.digest, runId });
+    }
     this.appliedRuns.add(runId);
     return persisted;
   }
@@ -148,6 +165,12 @@ export class HistoricalMemberBackfillImporter {
     }
     return decisions;
   }
+}
+
+function isRunFinalizer(
+  repository: HistoricalSubscriptionHistoryRepository,
+): repository is HistoricalSubscriptionHistoryRepository & HistoricalSubscriptionHistoryRunFinalizer {
+  return "markRunApplied" in repository && typeof repository.markRunApplied === "function";
 }
 
 /** Local-only in-memory repository used to prove import invariants in tests. */
