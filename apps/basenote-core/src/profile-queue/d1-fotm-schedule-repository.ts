@@ -1,6 +1,6 @@
 import { asProductVariantId } from "../domain/ids.js";
 import { asBindingId, asCycleKey, asIsoTimestamp, asShipMonth } from "../queue/types.js";
-import type { D1DatabasePort, D1PreparedStatement } from "../staging-runtime/d1.js";
+import type { D1DatabasePort, D1PreparedStatement, D1Result } from "../staging-runtime/d1.js";
 import {
   asProfileQueueActorRef,
   MEMBER_FRAGRANCE_CUTOFF_TIMEZONE,
@@ -202,7 +202,7 @@ export class D1ProfileQueueFotmScheduleRepository implements ProfileQueueFotmSch
         command.expectedScheduleRevision,
       )
       .run();
-    if (result.meta?.changes !== 1) {
+    if (!didApplyProvisionCommandMutation(result)) {
       throw new Error("The staging FOTM provision command changed; reload before provisioning.");
     }
     return command;
@@ -231,7 +231,7 @@ export class D1ProfileQueueFotmScheduleRepository implements ProfileQueueFotmSch
       WHERE idempotency_key = ? AND status = 'PENDING'`)
       .bind(result.configured, result.conflicted, completedAt, idempotencyKey)
       .run();
-    if (update.meta?.changes !== 1) {
+    if (!didApplyProvisionCommandMutation(update)) {
       const replay = await this.findProvisionCommandByIdempotency(idempotencyKey);
       if (replay?.status === "COMPLETED" && sameProvisioningResult(replay.result, result)) return replay;
       throw new Error("The staging FOTM provision command changed; reload before confirming it.");
@@ -276,7 +276,7 @@ export class D1ProfileQueueFotmScheduleRepository implements ProfileQueueFotmSch
         notBefore,
       )
       .run();
-    if (update.meta?.changes !== 1) {
+    if (!didApplyProvisionCommandMutation(update)) {
       const replay = await this.findProvisionCommandByIdempotency(idempotencyKey);
       if (
         replay?.status === "NEEDS_ATTENTION"
@@ -594,6 +594,19 @@ function sameProvisioningResult(
     && left.conflicted === right.conflicted
     && left.mayHaveMore === right.mayHaveMore
     && left.scanned === right.scanned;
+}
+
+/**
+ * Each provision-command mutation changes one command row and fires exactly
+ * one append-only AFTER trigger for its audit row. D1 currently includes that
+ * trigger write in `meta.changes` while some SQLite-compatible test/runtime
+ * surfaces report only the directly changed row. Accept only those two exact
+ * successful shapes; zero still preserves CAS failure, and any wider change
+ * count remains an error.
+ */
+function didApplyProvisionCommandMutation(result: D1Result): boolean {
+  return result.success !== false
+    && (result.meta?.changes === 1 || result.meta?.changes === 2);
 }
 
 function asRevision(value: unknown): number {

@@ -83,6 +83,9 @@ test("D1 FOTM schedule repository retrieves an exact durable idempotency audit f
 
 test("D1 provision claims are atomic against the published schedule revision and recovery evidence is no-mutation", async () => {
   const database = new RecordingD1Database();
+  // D1 reports the direct command insert plus its AFTER-triggered CLAIMED
+  // audit insert as two changes. That is one logical command mutation.
+  database.nextRunChangeCount = 2;
   const repository = new D1ProfileQueueFotmScheduleRepository(database);
 
   const command = await repository.claimProvisionCommand({
@@ -101,6 +104,7 @@ test("D1 provision claims are atomic against the published schedule revision and
   assert.match(claim?.query ?? "", /schedule\.revision = \?/);
   assert.deepEqual(claim?.values.slice(-2), ["2026-10", 3]);
 
+  database.nextRunChangeCount = 1;
   await repository.recordRecoveryException({
     actorRef: "staff_stage_101",
     expectedRevision: 3,
@@ -129,10 +133,61 @@ test("D1 provision claims are atomic against the published schedule revision and
     /changed; reload before provisioning/i,
     "a stale/retired schedule must fail before any cycle fan-out is possible.",
   );
+
+  const anomalousDatabase = new RecordingD1Database();
+  anomalousDatabase.nextRunChangeCount = 3;
+  const anomalousRepository = new D1ProfileQueueFotmScheduleRepository(anomalousDatabase);
+  await assert.rejects(
+    anomalousRepository.claimProvisionCommand({
+      actorRef: "staff_stage_101",
+      createdAt: "2026-09-01T09:00:00.000Z",
+      expectedScheduleRevision: 3,
+      idempotencyKey: "pfk_provision_anomalous001",
+      plan: [],
+      shipMonth: "2026-10",
+    }),
+    /changed; reload before provisioning/i,
+    "a wider-than-one-command mutation must not weaken the claim CAS gate.",
+  );
+});
+
+test("D1 provision completion accepts one command plus its append-only audit trigger", async () => {
+  const database = new RecordingD1Database();
+  database.nextFirstRow = {
+    actor_ref: "staff_stage_101",
+    attention_at: null,
+    candidate_plan_json: JSON.stringify([{
+      bindingId: "binding-stage-001",
+      cycleKey: "cycle-stage-001",
+      expectedRevision: 2,
+    }]),
+    completed_at: null,
+    configured_count: null,
+    conflicted_count: null,
+    created_at: "2026-09-01T09:00:00.000Z",
+    expected_schedule_revision: 3,
+    idempotency_key: "pfk_provision_complete001",
+    ship_month: "2026-10",
+    status: "PENDING",
+  };
+  database.nextRunChangeCount = 2;
+  const repository = new D1ProfileQueueFotmScheduleRepository(database);
+
+  const command = await repository.completeProvisionCommand({
+    completedAt: "2026-09-01T09:01:00.000Z",
+    idempotencyKey: "pfk_provision_complete001",
+    result: { configured: 1, conflicted: 0, mayHaveMore: false, scanned: 1 },
+  });
+
+  assert.equal(command.status, "COMPLETED");
+  assert.equal(command.result?.configured, 1);
+  const update = database.prepared[1];
+  assert.match(update?.query ?? "", /SET status = 'COMPLETED'/);
 });
 
 test("D1 provision recovery terminalization is delayed, one-way, and carries no fan-out result", async () => {
   const database = new RecordingD1Database();
+  database.nextRunChangeCount = 2;
   database.nextFirstRow = {
     actor_ref: "staff_stage_101",
     attention_at: null,
