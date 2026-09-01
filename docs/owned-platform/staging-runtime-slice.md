@@ -9,18 +9,22 @@ sender, or deployment has been created or connected.**
 This slice turns the agreed queue shape into testable, durable boundaries before
 any staging resource is provisioned:
 
-- Each exact future delivery cycle has one merchant-controlled automatic FOTM.
+- Each exact future delivery cycle shows its published FOTM as the included,
+  pre-selected default. A member may save one month-specific fragrance override;
+  no override means the FOTM remains the cutoff fallback.
 - A profile may add, change, or remove up to **four** separately priced future
-  add-ons for that cycle.
+  add-ons in addition to that included selection.
 - Every add-on has a fixed stored unit price of **$18.00** (`1800` cents).
-- FOTM is not one of the add-ons; it remains the automatic base selection.
-- Customer mutations stop at the published FOTM cutoff and use a revision plus
-  idempotency boundary.
+- FOTM is not one of the add-ons; it is the included default/fallback only.
+- Customer mutations stop at the published FOTM cutoff—exactly **12:01 AM
+  America/Chicago** on its configured date—and use a revision plus idempotency
+  boundary.
 
 The code deliberately does not decide catalog availability, subscription
-eligibility, billing, checkout discounts, FOTM timezone policy, or provider
-mutation. Those require authenticated, server-side Shopify/Appstle decisions
-and disposable development-store proof.
+eligibility, billing, checkout discounts, or provider mutation. It does encode
+the approved 12:01 AM America/Chicago cutoff rule (with DST-safe Worker
+validation). The remaining decisions require authenticated, server-side
+Shopify/Appstle decisions and disposable development-store proof.
 
 ## Local modules
 
@@ -28,6 +32,7 @@ and disposable development-store proof.
 apps/basenote-core/
   migrations/0001_staging_runtime.sql
   migrations/0002_staging_test_bindings.sql
+  migrations/0003_member_fragrance_choice.sql
   src/staging-runtime/d1.ts
   src/profile-queue/contracts.ts
   src/profile-queue/service.ts
@@ -57,6 +62,28 @@ must deny every signed Profile Queue request. The Worker source, signed App
 Proxy HMAC verifier, and protected configuration requirements are documented in
 [`cloudflare-staging-worker.md`](cloudflare-staging-worker.md).
 
+`0003_member_fragrance_choice.sql` adds durable `DRAFT`/`PUBLISHED` FOTM
+schedules per `ship_month` so staff can prepare September, October, November,
+and later months independently. Every schedule uses the product-approved
+`12:01 AM America/Chicago` cutoff policy and an append-only non-PII audit. It also adds
+an immutable resulting-selection snapshot for every queue mutation. A theme's
+current FOTM setting can supply display context, but it neither enforces this
+schedule nor proves a delivery change.
+
+The staging Worker contains a bounded D1-only scheduled lock that is disabled
+unless a protected staging variable is explicitly set to `true` after an E2E
+gate. It preserves a saved member override or records the published FOTM
+fallback at cutoff. It has no Shopify/Appstle write and no production behavior.
+There is deliberately no public staff write route; an authenticated Shopify
+Admin scheduler is tracked separately in
+[issue #35](https://github.com/wilsonwu-ai/basenotes/issues/35).
+
+The server-only schedule boundary and the pure exact-month cycle configurator
+exist, but no authenticated scheduler/provisioning call path currently joins
+them. Thus, a durable schedule does not yet alter an existing queue cycle,
+theme, Shopify subscription, or Appstle shipment. That #35-owned path and a
+disposable E2E proof are explicit staging-release blockers.
+
 The migration is not an install command. It must be applied manually only to an
 isolated staging database after the app configuration, retention policy,
 operator access, backup, and rollback plan are approved.
@@ -64,7 +91,8 @@ operator access, backup, and rollback plan are approved.
 ## Profile Queue API boundary
 
 The browser request shape contains a cycle key, expected revision, idempotency
-key, ship month, and a narrow add/change/remove add-on mutation. It does **not**
+key, ship month, and a narrow included-member override or add/change/remove
+add-on mutation. It does **not**
 contain a contract binding ID. An authenticated future App Proxy route must
 derive the binding from its server-side session, verify it belongs to the
 customer, verify the exact product variant is currently eligible, and create a
@@ -98,8 +126,11 @@ customers only:
 1. Create one new Base Note subscription and one former-member test profile;
    verify `$15` eligibility fails closed until historic data is reconciled and
    `$20` is used for the former member.
-2. Publish a FOTM with the merchant-approved IANA timezone and cutoff; add,
-   change, and remove up to four `$18` future add-ons before the cutoff.
+2. Through the authenticated #35 scheduler/provisioning path, schedule/publish
+   independent FOTM defaults for at least two future ship months at 12:01 AM
+   Central; prove a member override and unselected FOTM
+   fallback both lock correctly, then add, change, and remove up to four `$18`
+   future add-ons before the cutoff.
 3. Attempt a fifth add-on, stale revision, foreign contract, unavailable
    variant, and post-cutoff mutation; all must fail without a provider change.
 4. Exercise an idempotent mutation, D1 compare-and-swap conflict, Worker queue

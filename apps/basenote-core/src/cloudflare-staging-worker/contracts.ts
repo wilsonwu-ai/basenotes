@@ -15,6 +15,8 @@ export interface StagingWorkerEnv {
   readonly STAGING_SHOP_DOMAIN?: string;
   /** Comma-separated exact Shopify variant GIDs eligible in disposable tests. */
   readonly STAGING_TEST_VARIANT_IDS?: string;
+  /** Exact literal `true` enables bounded D1-only cutoff locking in staging. */
+  readonly STAGING_CUTOFF_AUTOMATION_ENABLED?: string;
   readonly STAGING_ALLOWED_HOSTS?: string;
   readonly STAGING_ALLOWED_ORIGINS?: string;
 }
@@ -62,7 +64,7 @@ export interface AuthorizedProfileQueueBinding {
 }
 
 export interface StagingWorkerDependencies {
-  readonly createOpaqueId?: (prefix: "pqa" | "pqm" | "pqk" | "pqf") => string;
+  readonly createOpaqueId?: (prefix: "pqa" | "pqm" | "pqk" | "pqf" | "pqe") => string;
   /** Test-only injection; production defaults to a D1-backed nonce repository. */
   readonly formNonceRepository?: StagingProfileQueueFormNonceRepository;
   readonly now?: () => Date;
@@ -76,10 +78,22 @@ export interface WorkerExecutionContext {
   waitUntil(promise: Promise<unknown>): void;
 }
 
+/** Minimal ScheduledEvent shape; it remains structural for offline tests. */
+export interface WorkerScheduledEvent {
+  readonly cron: string;
+  readonly scheduledTime: number;
+  waitUntil(promise: Promise<unknown>): void;
+}
+
 export interface StagingWorkerEntrypoint {
   fetch(
     request: Request,
     environment: StagingWorkerEnv,
     executionContext: WorkerExecutionContext,
   ): Response | Promise<Response>;
+  scheduled(
+    event: WorkerScheduledEvent,
+    environment: StagingWorkerEnv,
+    executionContext: WorkerExecutionContext,
+  ): void | Promise<void>;
 }

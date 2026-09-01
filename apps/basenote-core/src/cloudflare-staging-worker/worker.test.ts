@@ -7,6 +7,7 @@ import type {
   ProfileQueueOwnershipResolver,
   SignedProxyBoundary,
   StagingWorkerEnv,
+  WorkerScheduledEvent,
   WorkerExecutionContext,
 } from "./contracts.js";
 import type {
@@ -16,13 +17,17 @@ import type {
 } from "./form-nonce.js";
 import { createStagingProfileQueueWorker } from "./worker.js";
 import {
+  STAGING_CUTOFF_LOCK_BATCH_SIZE,
+  createProfileQueueSelectionEvidence,
+} from "./cutoff-locker.js";
+import {
   asProfileQueueActorRef,
   createEmptyProfileQueueCycle,
   type ProfileQueueMutationAuditRecord,
 } from "../profile-queue/contracts.js";
 import { InMemoryProfileQueueRepository } from "../profile-queue/repository.js";
 import type { D1DatabasePort, D1PreparedStatement, D1Result } from "../staging-runtime/d1.js";
-import { asIsoTimestamp } from "../queue/types.js";
+import { asIsoTimestamp, compareIsoTimestamps } from "../queue/types.js";
 
 const cycleKey = "appstle:delivery:2026-09-15";
 const shipMonth = "2026-09";
@@ -86,6 +91,33 @@ test("only the configured App Proxy target path reaches Profile Queue", async ()
   assert.equal(legacyRoute.status, 404);
 });
 
+test("scheduled cutoff locking is inert until its explicit staging-only opt-in is enabled", async () => {
+  const repository = new CountingCutoffRepository();
+  const worker = createStagingProfileQueueWorker({
+    now: () => defaultGateNow,
+    repositoryFactory: () => repository,
+  });
+  const waiting: Promise<unknown>[] = [];
+  const event: WorkerScheduledEvent = {
+    cron: "*/5 * * * *",
+    scheduledTime: defaultGateNow.getTime(),
+    waitUntil(promise) { waiting.push(promise); },
+  };
+
+  await worker.scheduled(event, stagingEnvironment(), context);
+  assert.equal(repository.findDueCalls, 0);
+  assert.equal(waiting.length, 1);
+
+  await worker.scheduled(event, {
+    ...stagingEnvironment(),
+    STAGING_CUTOFF_AUTOMATION_ENABLED: "true",
+  }, context);
+  assert.equal(repository.findDueCalls, 1);
+  assert.equal(repository.lastCutoffLimit, STAGING_CUTOFF_LOCK_BATCH_SIZE);
+  assert.equal(STAGING_CUTOFF_LOCK_BATCH_SIZE, 10);
+  assert.equal(waiting.length, 2);
+});
+
 test("default Worker refuses queue writes until the signed boundary is configured", async () => {
   const worker = createStagingProfileQueueWorker();
   const response = await worker.fetch(mutationRequest(), stagingEnvironment(), context);
@@ -100,6 +132,7 @@ test("default Worker requires a verified App Proxy request and exact seeded stag
     createOpaqueId(prefix) {
       if (prefix === "pqk") return "pqk_pagegenerated001";
       if (prefix === "pqf") return "pqf_nonce_server_generated_000000000001";
+      if (prefix === "pqe") return "pqe_evidence_server_generated_000001";
       return `${prefix}_servergenerated001`;
     },
     formNonceRepository: new TestFormNonceRepository(),
@@ -164,8 +197,10 @@ test("server-rendered Profile Queue uses signed App Proxy form posts and runtime
   assert.match(page.headers.get("Content-Type") ?? "", /^text\/html/);
   assert.match(page.headers.get("Content-Security-Policy") ?? "", /frame-ancestors 'none'/);
   assert.equal(page.headers.get("X-Frame-Options"), "DENY");
-  assert.match(markup, /Automatic Fragrance of the Month/);
-  assert.match(markup, /read-only/i);
+  assert.match(markup, /Published Fragrance of the Month fallback/);
+  assert.match(markup, /Included by default/);
+  assert.match(markup, /pre-selected/i);
+  assert.match(markup, /Override included fragrance/);
   assert.match(markup, /action="\/apps\/basenote-staging\/profile-queue"/);
   assert.match(markup, /method="post"/i);
   const formNonce = markup.match(/name="formNonce" value="([^"]+)"/)?.[1];
@@ -291,6 +326,7 @@ function configuredWorker(repository: InMemoryProfileQueueRepository) {
       if (prefix === "pqa") return `pqa_servergenerated00${serial}`;
       if (prefix === "pqk") return `pqk_servergenerated00${serial}`;
       if (prefix === "pqf") return `pqf_nonce_server_generated_000000000000${serial}`;
+      if (prefix === "pqe") return `pqe_evidence_server_generated_000000000000${serial}`;
       return `pqm_servergenerated00${serial}`;
     },
     formNonceRepository: new TestFormNonceRepository(),
@@ -334,7 +370,16 @@ async function repositoryWithCycle(): Promise<InMemoryProfileQueueRepository> {
     occurredAt,
     resultingRevision: cycle.revision,
   };
-  await repository.persist({ audit, cycle, expectedRevision: null });
+  await repository.persist({
+    audit,
+    cycle,
+    expectedRevision: null,
+    selectionEvidence: createProfileQueueSelectionEvidence({
+      audit,
+      cycle,
+      evidenceId: "pqe_create001",
+    }),
+  });
   return repository;
 }
 
@@ -519,7 +564,7 @@ class TestFormNonceRepository implements StagingProfileQueueFormNonceRepository 
       || issued.bindingId !== input.bindingId
       || issued.cycleKey !== input.cycleKey
       || issued.expectedRevision !== input.expectedRevision
-      || issued.expiresAt <= input.consumedAt
+      || compareIsoTimestamps(issued.expiresAt, input.consumedAt) <= 0
       || issued.shipMonth !== input.shipMonth
       || issued.shopDomain !== input.shopDomain
       || issued.shopifyCustomerId !== input.shopifyCustomerId
@@ -527,5 +572,16 @@ class TestFormNonceRepository implements StagingProfileQueueFormNonceRepository 
       throw new ProfileQueueFormNonceDeniedError("The test form nonce is not valid.");
     }
     this.active.delete(input.nonce);
+  }
+}
+
+class CountingCutoffRepository extends InMemoryProfileQueueRepository {
+  findDueCalls = 0;
+  lastCutoffLimit: number | null = null;
+
+  override async findDueForCutoff(input: { readonly asOf: string; readonly limit: number }) {
+    this.findDueCalls += 1;
+    this.lastCutoffLimit = input.limit;
+    return super.findDueForCutoff(input);
   }
 }

@@ -27,6 +27,10 @@ STAGING_SHOP_DOMAIN = "base-note-subscription-staging.myshopify.com"
 # Exact disposable test variant GIDs only, comma-separated. No catalog/API
 # lookup occurs in the Worker; this placeholder deliberately enables nothing.
 STAGING_TEST_VARIANT_IDS = "REPLACE_WITH_ALLOWED_DISPOSABLE_TEST_VARIANT_GIDS"
+# The cron below remains inert unless this exact value is intentionally changed
+# to `true` in protected staging after migration 0003 and a disposable E2E
+# gate. It locks D1 queue records only; it never calls Shopify or Appstle.
+STAGING_CUTOFF_AUTOMATION_ENABLED = "false"
 
 # Configure Shopify App Proxy's target URL separately as:
 # https://basenote-profile-queue-staging.wilson-af8.workers.dev/api/shopify/app-proxy
@@ -42,3 +46,9 @@ binding = "BASENOTE_STAGING_D1"
 database_name = "basenote-profile-queue-staging"
 database_id = "REPLACE_WITH_SEPARATELY_CREATED_STAGING_D1_DATABASE_ID"
 migrations_dir = "migrations"
+
+[triggers]
+# Every five minutes, an opt-in staging-only scan processes no more than ten
+# cycles (one scan, at most ten add-on reads/CAS writes). No production route
+# or trigger is defined.
+crons = ["*/5 * * * *"]

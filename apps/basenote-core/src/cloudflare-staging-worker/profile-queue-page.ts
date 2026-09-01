@@ -1,10 +1,12 @@
 import {
   FUTURE_ADD_ON_UNIT_PRICE_CENTS,
+  MEMBER_FRAGRANCE_CUTOFF_TIMEZONE,
   MAX_FUTURE_ADD_ONS_PER_CYCLE,
   type ProfileQueueCycle,
 } from "../profile-queue/contracts.js";
 import type { StagingTestVariant } from "./staging-test-variants.js";
 import type { StagingProfileQueueFormNonce } from "./form-nonce.js";
+import { compareIsoTimestamps } from "../queue/types.js";
 
 export interface ProfileQueuePageInput {
   readonly createIdempotencyKey: () => string;
@@ -13,6 +15,8 @@ export interface ProfileQueuePageInput {
   readonly formNonce: StagingProfileQueueFormNonce;
   /** Signed `path_prefix` plus the known Profile Queue child route. */
   readonly formAction: string;
+  /** Server time, used only to render safe pre/post-cutoff semantics. */
+  readonly now: string;
   readonly status?: "success";
   readonly variants: readonly StagingTestVariant[];
 }
@@ -24,15 +28,27 @@ export interface ProfileQueuePageInput {
  */
 export function renderProfileQueuePage(input: ProfileQueuePageInput): string {
   const variantsById = new Map(input.variants.map((variant) => [variant.variantId, variant]));
-  const editable = input.cycle.state === "OPEN";
+  const cutoffReached = input.cycle.fotm.cutoffAt !== null
+    && compareIsoTimestamps(input.now, input.cycle.fotm.cutoffAt) >= 0;
+  const editable = input.cycle.state === "OPEN" && !cutoffReached;
   const atCapacity = input.cycle.addOns.length >= MAX_FUTURE_ADD_ONS_PER_CYCLE;
   const formAction = escapeHtml(input.formAction);
   const status = input.status === "success"
     ? '<p class="bn-queue__status" role="status" tabindex="-1">Queue updated.</p>'
     : "";
   const fotmDescription = input.cycle.fotm.status === "UNPUBLISHED"
-    ? "Automatic Fragrance of the Month will be selected at the shipment cutoff and is read-only here."
-    : "Automatic Fragrance of the Month is set by Base Note and is read-only here.";
+    ? "Base Note has not published the fallback fragrance for this shipment yet."
+    : "The published Fragrance of the Month is used only when no included member choice is saved before the Central Time cutoff.";
+  const memberChoice = renderMemberChoice({
+    createIdempotencyKey: input.createIdempotencyKey,
+    cycle: input.cycle,
+    editable,
+    formAction,
+    formNonce: input.formNonce,
+    idempotencyKey: input.createIdempotencyKey(),
+    variants: input.variants,
+    variantsById,
+  });
   const addOnRows = renderSlots(input, variantsById, editable, formAction);
   const dropdown = renderAddOnForm({
     atCapacity,
@@ -94,6 +110,13 @@ export function renderProfileQueuePage(input: ProfileQueuePageInput): string {
         margin: 1.25rem 0 0;
         padding: .8rem 1rem;
       }
+      .bn-queue__locked {
+        background: #f0ebe2;
+        border-left: .25rem solid var(--bn-muted);
+        color: #403a34;
+        margin: 1rem 0 0;
+        padding: .8rem 1rem;
+      }
       .bn-queue__panel {
         background: var(--bn-panel);
         border: 1px solid var(--bn-line);
@@ -145,6 +168,13 @@ export function renderProfileQueuePage(input: ProfileQueuePageInput): string {
       .bn-queue__add-form { display: grid; gap: .85rem; }
       .bn-queue__add-form fieldset { border: 0; margin: 0; padding: 0; }
       .bn-queue__capacity { color: var(--bn-muted); font-size: .92rem; margin: .1rem 0 0; }
+      .bn-queue__default {
+        background: #f3eadc;
+        border-left: .25rem solid var(--bn-gold);
+        color: #40301e;
+        margin: .8rem 0;
+        padding: .7rem .85rem;
+      }
       @media (max-width: 33rem) {
         .bn-queue__slot { align-items: start; grid-template-columns: 1fr; }
         .bn-queue__slot form, .bn-queue__slot button { width: 100%; }
@@ -156,11 +186,16 @@ export function renderProfileQueuePage(input: ProfileQueuePageInput): string {
     <main class="bn-queue" aria-labelledby="profile-queue-title">
       <p class="bn-queue__eyebrow">Base Note · Staging</p>
       <h1 id="profile-queue-title">Profile Queue</h1>
-      <p class="bn-queue__lede">Plan the extra fragrances for this one future shipment.</p>
+      <p class="bn-queue__lede">Choose one included fragrance, then add up to four separate extras for this future shipment.</p>
       ${status}
       <section class="bn-queue__panel bn-queue__fotm" aria-labelledby="fotm-title">
-        <h2 id="fotm-title">Automatic Fragrance of the Month</h2>
+        <h2 id="fotm-title">Published Fragrance of the Month fallback</h2>
         <p class="bn-queue__help">${escapeHtml(fotmDescription)}</p>
+      </section>
+      <section class="bn-queue__panel" aria-labelledby="member-choice-title">
+        <h2 id="member-choice-title">Included member fragrance</h2>
+        <p class="bn-queue__help">One fragrance is included with this shipment. A fragrance selected in a prior month remains eligible here.</p>
+        ${memberChoice}
       </section>
       <section class="bn-queue__panel" aria-labelledby="add-ons-title">
         <h2 id="add-ons-title">Extra fragrances</h2>
@@ -191,6 +226,71 @@ export function renderProfileQueueErrorPage(): string {
     </main>
   </body>
 </html>`;
+}
+
+function renderMemberChoice(input: {
+  readonly createIdempotencyKey: () => string;
+  readonly cycle: ProfileQueueCycle;
+  readonly editable: boolean;
+  readonly formAction: string;
+  readonly formNonce: StagingProfileQueueFormNonce;
+  readonly idempotencyKey: string;
+  readonly variants: readonly StagingTestVariant[];
+  readonly variantsById: ReadonlyMap<string, StagingTestVariant>;
+}): string {
+  const selected = input.cycle.memberChoice;
+  const selectedLabel = selected.variantId === null
+    ? null
+    : input.variantsById.get(selected.variantId)?.label ?? "Configured test fragrance";
+  if (!input.editable) {
+    const lockedMessage = selected.source === "MEMBER_SELECTED"
+      ? `The Central Time choice window is closed. This shipment is locked to your included selection: ${selectedLabel ?? "Configured test fragrance"}.`
+      : selected.source === "FOTM_FALLBACK"
+        ? "The Central Time choice window is closed. This shipment is locked to the published Fragrance of the Month fallback."
+        : "The Central Time choice window is closed. No included override was saved, so the published Fragrance of the Month is the included default while Base Note finalizes the durable lock.";
+    return `<p class="bn-queue__locked" role="status">${escapeHtml(lockedMessage)}</p>`;
+  }
+
+  if (input.variants.length === 0) {
+    return "<p class=\"bn-queue__locked\" role=\"status\">No eligible staging fragrance is configured for the included choice.</p>";
+  }
+
+  const options = input.variants
+    .map((variant) => {
+      const selectedAttribute = variant.variantId === selected.variantId ? " selected" : "";
+      return `<option value="${escapeHtml(variant.variantId)}"${selectedAttribute}>${escapeHtml(variant.label)}</option>`;
+    })
+    .join("");
+  const actionLabel = selected.source === "MEMBER_SELECTED"
+    ? "Update included override"
+    : "Save included override";
+  const fotmLabel = input.cycle.fotm.variantId === null
+    ? "the published FOTM once Base Note schedules it"
+    : input.variantsById.get(input.cycle.fotm.variantId)?.label ?? "the published Fragrance of the Month";
+  const currentStatus = selected.source === "MEMBER_SELECTED"
+    ? `<p class="bn-queue__capacity">Current included override: ${escapeHtml(selectedLabel ?? "Configured test fragrance")}.</p>`
+    : `<div class="bn-queue__default" role="status"><strong>Included by default: ${escapeHtml(fotmLabel)}</strong><br>FOTM is pre-selected for this shipment. Do nothing to keep it; save an override below only to replace it for this month.</div>`;
+  const clearForm = selected.source === "MEMBER_SELECTED"
+    ? `<form method="post" action="${input.formAction}">
+        ${hiddenFields(input.cycle, input.createIdempotencyKey(), input.formNonce, "CLEAR_MEMBER_FRAGRANCE")}
+        <button class="bn-queue__remove" type="submit">Use FOTM default</button>
+      </form>`
+    : "";
+
+  return `<p class="bn-queue__capacity">Selections close exactly at 12:01 AM ${escapeHtml(MEMBER_FRAGRANCE_CUTOFF_TIMEZONE)} time on the configured shipment cutoff date.</p>
+    ${currentStatus}
+    <form class="bn-queue__add-form" method="post" action="${input.formAction}">
+      ${hiddenFields(input.cycle, input.idempotencyKey, input.formNonce, "SET_MEMBER_FRAGRANCE")}
+      <fieldset>
+        <label for="bn-staging-member-fragrance">Override included fragrance</label>
+        <select id="bn-staging-member-fragrance" name="variantId" required>
+          <option value="">Choose an eligible test fragrance</option>
+          ${options}
+        </select>
+      </fieldset>
+      <button type="submit">${escapeHtml(actionLabel)}</button>
+    </form>
+    ${clearForm}`;
 }
 
 function renderSlots(
@@ -228,6 +328,9 @@ function renderAddOnForm(input: {
   readonly idempotencyKey: string;
   readonly variants: readonly StagingTestVariant[];
 }): string {
+  if (!input.editable) {
+    return `<p class="bn-queue__locked" role="status">The Central Time choice window is closed; paid extras are locked with this shipment.</p>`;
+  }
   const disabled = !input.editable || input.atCapacity || input.variants.length === 0;
   const disabledAttribute = disabled ? " disabled" : "";
   const message = !input.editable
@@ -256,7 +359,7 @@ function hiddenFields(
   cycle: ProfileQueueCycle,
   idempotencyKey: string,
   formNonce: StagingProfileQueueFormNonce,
-  action: "ADD_ADD_ON" | "REMOVE_ADD_ON",
+  action: "SET_MEMBER_FRAGRANCE" | "CLEAR_MEMBER_FRAGRANCE" | "ADD_ADD_ON" | "REMOVE_ADD_ON",
 ): string {
   return `<input type="hidden" name="action" value="${action}">
     <input type="hidden" name="cycleKey" value="${escapeHtml(cycle.cycleKey)}">

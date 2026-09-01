@@ -61,6 +61,32 @@ export async function parseProfileQueueMutationFormRequest(
   const fields = readUniqueFormFields(await readBoundedBodyText(request));
   const formNonce = readFormNonce(fields);
   const action = fields.action;
+  if (action === "SET_MEMBER_FRAGRANCE") {
+    assertExactFieldKeys(fields, ["action", "cycleKey", "expectedRevision", "formNonce", "idempotencyKey", "shipMonth", "variantId"]);
+    return {
+      formNonce,
+      mutation: parseCoreRequest({
+        cycleKey: requiredFormField(fields, "cycleKey"),
+        expectedRevision: readFormRevision(requiredFormField(fields, "expectedRevision")),
+        idempotencyKey: requiredFormField(fields, "idempotencyKey"),
+        mutation: { kind: "SET_MEMBER_FRAGRANCE", variantId: requiredFormField(fields, "variantId") },
+        shipMonth: requiredFormField(fields, "shipMonth"),
+      }),
+    };
+  }
+  if (action === "CLEAR_MEMBER_FRAGRANCE") {
+    assertExactFieldKeys(fields, ["action", "cycleKey", "expectedRevision", "formNonce", "idempotencyKey", "shipMonth"]);
+    return {
+      formNonce,
+      mutation: parseCoreRequest({
+        cycleKey: requiredFormField(fields, "cycleKey"),
+        expectedRevision: readFormRevision(requiredFormField(fields, "expectedRevision")),
+        idempotencyKey: requiredFormField(fields, "idempotencyKey"),
+        mutation: { kind: "CLEAR_MEMBER_FRAGRANCE" },
+        shipMonth: requiredFormField(fields, "shipMonth"),
+      }),
+    };
+  }
   if (action === "ADD_ADD_ON") {
     assertExactFieldKeys(fields, ["action", "cycleKey", "expectedRevision", "formNonce", "idempotencyKey", "shipMonth", "variantId"]);
     return {
@@ -112,6 +138,14 @@ function sanitizeMutation(
   createOpaqueId: (prefix: "pqa") => string,
 ): Record<string, unknown> {
   const kind = mutation.kind;
+  if (kind === "SET_MEMBER_FRAGRANCE") {
+    assertExactKeys(mutation, ["kind", "variantId"]);
+    return mutation;
+  }
+  if (kind === "CLEAR_MEMBER_FRAGRANCE") {
+    assertExactKeys(mutation, ["kind"]);
+    return mutation;
+  }
   if (kind === "ADD_ADD_ON") {
     assertExactKeys(mutation, ["kind", "variantId"]);
     return { addOnId: createOpaqueId("pqa"), kind, variantId: mutation.variantId };

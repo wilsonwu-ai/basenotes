@@ -13,7 +13,7 @@ import {
   type HistoricalBackfillRunId,
   type NormalizedHistoricalMemberCandidate,
 } from "./contracts.js";
-import { asIsoTimestamp, type CustomerId, type IsoTimestamp } from "../queue/types.js";
+import { asIsoTimestamp, compareIsoTimestamps, type CustomerId, type IsoTimestamp } from "../queue/types.js";
 
 export class HistoricalBackfillRunConflictError extends Error {
   override name = "HistoricalBackfillRunConflictError";
@@ -99,7 +99,7 @@ export class HistoricalMemberBackfillImporter {
     }
     const approvalRef = asHistoricalBackfillApprovalRef(approval.approvalRef);
     const approvedAt = asIsoTimestamp(approval.approvedAt);
-    if (approvedAt < dryRun.requestedAt) {
+    if (compareIsoTimestamps(approvedAt, dryRun.requestedAt) < 0) {
       throw new HistoricalBackfillApprovalError("Backfill approval cannot predate its dry run.");
     }
 

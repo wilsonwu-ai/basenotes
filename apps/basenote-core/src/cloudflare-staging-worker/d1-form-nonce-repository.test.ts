@@ -43,7 +43,7 @@ test("D1 form nonce repository issues and consumes one exact staging form scope"
 
   const consumed = database.statements[1];
   assert.match(consumed?.query ?? "", /consumed_at IS NULL/);
-  assert.match(consumed?.query ?? "", /expires_at > \?/);
+  assert.match(consumed?.query ?? "", /julianday\(expires_at\) > julianday\(\?\)/);
   assert.deepEqual(consumed?.values, [
     "2026-09-01T09:01:00.000Z",
     nonce,
@@ -59,6 +59,11 @@ test("D1 form nonce repository issues and consumes one exact staging form scope"
 
 test("D1 form nonce repository fails closed for a stale, reused, or unbound form", async () => {
   const repository = new D1StagingProfileQueueFormNonceRepository(new RecordingD1Database([0]));
+
+  await assert.rejects(
+    repository.issue({ ...issueInput, expiresAt: "2026-09-01T09:00:00Z" }),
+    /expiry must be after issuance/,
+  );
 
   await assert.rejects(
     repository.consume({ ...issueInput, consumedAt: "2026-09-01T09:01:00.000Z" }),

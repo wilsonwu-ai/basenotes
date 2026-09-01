@@ -1,16 +1,19 @@
 import {
   FUTURE_ADD_ON_UNIT_PRICE_CENTS,
   MAX_FUTURE_ADD_ONS_PER_CYCLE,
+  MEMBER_FRAGRANCE_CUTOFF_TIMEZONE,
   asProfileQueueAddOnId,
+  assertMemberFragranceCutoff,
   assertProfileQueueCycleInvariant,
   assertProfileQueueRevision,
   type ProfileQueueAddOn,
+  type ProfileQueueMemberFragranceChoice,
   type ProfileQueueCustomerMutation,
   type ProfileQueueCycle,
 } from "./contracts.js";
 import {
   asIsoTimestamp,
-  asMerchantTimezone,
+  compareIsoTimestamps,
   type IsoTimestamp,
 } from "../queue/types.js";
 import { asProductVariantId } from "../domain/ids.js";
@@ -64,8 +67,9 @@ export function applyProfileQueueMutation(
   const occurredAt = asIsoTimestamp(input.occurredAt);
   assertCustomerWritable(cycle, input.expectedRevision, occurredAt);
 
+  const memberChoice = applyMutationToMemberChoice(cycle.memberChoice, input.mutation, occurredAt);
   const addOns = applyMutationToAddOns(cycle.addOns, input.mutation, occurredAt);
-  return nextCycle(cycle, addOns, cycle.fotm, occurredAt);
+  return nextCycle(cycle, addOns, cycle.fotm, memberChoice, occurredAt);
 }
 
 /**
@@ -85,8 +89,8 @@ export function publishProfileQueueFotm(
   }
 
   const occurredAt = asIsoTimestamp(input.occurredAt);
-  const cutoffAt = asIsoTimestamp(input.cutoffAt);
-  if (occurredAt >= cutoffAt) {
+  const cutoffAt = assertMemberFragranceCutoff(input.cutoffAt, input.merchantTimezone);
+  if (compareIsoTimestamps(occurredAt, cutoffAt) >= 0) {
     throw new ProfileQueueCutoffError("FOTM must be published before its configured cutoff.");
   }
 
@@ -95,10 +99,11 @@ export function publishProfileQueueFotm(
     cycle.addOns,
     {
       cutoffAt,
-      merchantTimezone: asMerchantTimezone(input.merchantTimezone),
+      merchantTimezone: MEMBER_FRAGRANCE_CUTOFF_TIMEZONE,
       status: "PUBLISHED",
       variantId: asProductVariantId(input.variantId),
     },
+    cycle.memberChoice,
     occurredAt,
   );
 }
@@ -123,13 +128,20 @@ export function resolveProfileQueueAtCutoff(
   ) {
     throw new ProfileQueueLockedError("A delivery cycle cannot resolve without a published FOTM.");
   }
-  if (now < cycle.fotm.cutoffAt) {
+  if (compareIsoTimestamps(now, cycle.fotm.cutoffAt) < 0) {
     throw new ProfileQueueCutoffError("A delivery cycle cannot resolve before its FOTM cutoff.");
   }
 
   const resolved: ProfileQueueCycle = {
     ...cycle,
     fotm: { ...cycle.fotm, status: "RESOLVED" },
+    memberChoice: cycle.memberChoice.source === "MEMBER_SELECTED"
+      ? { ...cycle.memberChoice }
+      : {
+          selectedAt: now,
+          source: "FOTM_FALLBACK",
+          variantId: cycle.fotm.variantId,
+        },
     revision: incrementRevision(cycle.revision),
     state: "LOCKED",
     updatedAt: now,
@@ -149,7 +161,7 @@ function assertCustomerWritable(
   if (cycle.state !== "OPEN") {
     throw new ProfileQueueLockedError("Only an open future delivery cycle may be edited.");
   }
-  if (cycle.fotm.cutoffAt !== null && occurredAt >= cycle.fotm.cutoffAt) {
+  if (cycle.fotm.cutoffAt !== null && compareIsoTimestamps(occurredAt, cycle.fotm.cutoffAt) >= 0) {
     throw new ProfileQueueCutoffError("The future delivery cycle is past its merchant cutoff.");
   }
 }
@@ -160,6 +172,9 @@ function applyMutationToAddOns(
   occurredAt: IsoTimestamp,
 ): ProfileQueueAddOn[] {
   switch (mutation.kind) {
+    case "SET_MEMBER_FRAGRANCE":
+    case "CLEAR_MEMBER_FRAGRANCE":
+      return current.map(cloneAddOn);
     case "ADD_ADD_ON": {
       if (current.length >= MAX_FUTURE_ADD_ONS_PER_CYCLE) {
         throw new ProfileQueueCapacityError(
@@ -204,16 +219,39 @@ function applyMutationToAddOns(
   }
 }
 
+function applyMutationToMemberChoice(
+  current: ProfileQueueMemberFragranceChoice,
+  mutation: ProfileQueueCustomerMutation,
+  occurredAt: IsoTimestamp,
+): ProfileQueueMemberFragranceChoice {
+  switch (mutation.kind) {
+    case "SET_MEMBER_FRAGRANCE":
+      return {
+        selectedAt: occurredAt,
+        source: "MEMBER_SELECTED",
+        variantId: asProductVariantId(mutation.variantId),
+      };
+    case "CLEAR_MEMBER_FRAGRANCE":
+      return { selectedAt: null, source: "UNSELECTED", variantId: null };
+    case "ADD_ADD_ON":
+    case "CHANGE_ADD_ON":
+    case "REMOVE_ADD_ON":
+      return { ...current };
+  }
+}
+
 function nextCycle(
   current: ProfileQueueCycle,
   addOns: readonly ProfileQueueAddOn[],
   fotm: ProfileQueueCycle["fotm"],
+  memberChoice: ProfileQueueMemberFragranceChoice,
   updatedAt: IsoTimestamp,
 ): ProfileQueueCycle {
   const next: ProfileQueueCycle = {
     ...current,
     addOns: addOns.map(cloneAddOn),
     fotm: { ...fotm },
+    memberChoice: { ...memberChoice },
     revision: incrementRevision(current.revision),
     updatedAt,
   };
@@ -233,6 +271,7 @@ export function cloneCycle(cycle: ProfileQueueCycle): ProfileQueueCycle {
     ...cycle,
     addOns: cycle.addOns.map(cloneAddOn),
     fotm: { ...cycle.fotm },
+    memberChoice: { ...cycle.memberChoice },
   };
 }
 
