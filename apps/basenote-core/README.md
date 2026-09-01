@@ -88,12 +88,11 @@ schedules with a staging-only authenticated embedded-Admin scheduler, bounded
 schedule-to-cycle provisioning, bounded staging-only cutoff lock logic, a
 server-rendered staging-only queue page, a durable historic-member
 manifest/approval lifecycle, and a Messaging Core for consent, event audit,
-and no-send delivery intents. It has no
-configured persistence, OAuth token exchange/session storage, webhook route,
-Appstle integration, Shopify Admin API call, recipient resolver, email sender,
-or billing attempt.
+and no-send delivery intents. It has no configured persistence, OAuth token
+exchange/session storage, webhook route, Appstle integration, Shopify Admin API
+call, recipient resolver, email sender, or billing attempt.
 
-The member-choice addition has no public staff write route. Its staging-only
+The member-choice addition has no unauthenticated public staff write route. Its staging-only
 embedded Admin scheduler accepts a fresh Shopify Admin ID token only after
 server verification of HS256 signature, exact app audience, exact disposable
 shop issuer/destination, token freshness, and an opaque staging staff allowlist.
