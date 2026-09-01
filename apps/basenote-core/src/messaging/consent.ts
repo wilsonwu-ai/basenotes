@@ -11,6 +11,7 @@ import {
   asIsoTimestamp,
   asMessagingEventId,
   asMessagingProfileId,
+  compareIsoTimestamps,
   type ConsentChannel,
   type ConsentRecord,
   type ConsentSnapshot,
@@ -399,7 +400,7 @@ function hasActiveSuppressionAt(events: readonly ConsentLedgerEvent[], release: 
 
 function orderEvents(events: readonly ConsentLedgerEvent[]): ConsentLedgerEvent[] {
   return [...events].sort((left, right) => {
-    const occurredComparison = left.record.occurredAt.localeCompare(right.record.occurredAt);
+    const occurredComparison = compareIsoTimestamps(left.record.occurredAt, right.record.occurredAt);
     if (occurredComparison !== 0) return occurredComparison;
 
     // At an identical instant, order from least to most protective. A later
@@ -545,12 +546,7 @@ function normalizeEventId(value: unknown): MessagingEventId | null {
 function normalizeTimestamp(value: unknown): IsoTimestamp | null {
   if (typeof value !== "string") return null;
   try {
-    const timestamp = asIsoTimestamp(value);
-    // Date.parse accepts impossible dates such as February 30 by rolling them
-    // forward. Require an exact UTC round trip instead.
-    const normalized = value.includes(".") ? value : value.replace("Z", ".000Z");
-    if (new Date(timestamp).toISOString() !== normalized) return null;
-    return timestamp;
+    return asIsoTimestamp(value);
   } catch {
     return null;
   }

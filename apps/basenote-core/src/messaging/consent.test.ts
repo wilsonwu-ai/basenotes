@@ -10,6 +10,7 @@ import {
   asIsoTimestamp,
   asMessagingEventId,
   asMessagingProfileId,
+  compareIsoTimestamps,
   type ConsentRecord,
 } from "./contracts.js";
 
@@ -42,6 +43,24 @@ function release(overrides: Partial<SuppressionReleaseInput> = {}): SuppressionR
 function applied(result: ConsentAppendResult): void {
   assert.equal(result.outcome, "APPLIED");
 }
+
+test("canonicalizes equivalent UTC representations before consent idempotency or comparison", () => {
+  const ledger = new InMemoryConsentLedger();
+  const wholeSecond = "2026-09-02T12:00:00Z";
+  const millisecond = "2026-09-02T12:00:00.000Z";
+
+  assert.equal(asIsoTimestamp(wholeSecond), millisecond);
+  assert.equal(asIsoTimestamp(millisecond), millisecond);
+  assert.equal(compareIsoTimestamps(wholeSecond, millisecond), 0);
+
+  const first = ledger.record({ ...record(), occurredAt: wholeSecond });
+  assert.equal(first.outcome, "APPLIED");
+  assert.equal(first.event.record.occurredAt, millisecond);
+
+  const replay = ledger.record({ ...record(), occurredAt: millisecond });
+  assert.equal(replay.outcome, "IDEMPOTENT");
+  assert.equal(ledger.listEvents(PROFILE_ID).length, 1);
+});
 
 test("records immutable consent events and derives the latest causal snapshot", () => {
   const ledger = new InMemoryConsentLedger();
@@ -186,6 +205,41 @@ test("same-timestamp conflicts resolve toward the safer state", () => {
   applied(ledger.record(optIn));
 
   assert.equal(ledger.getSnapshot(PROFILE_ID)?.current.state, "UNSUBSCRIBED");
+});
+
+test("equal instant precision variants preserve suppression and reject a tie-time release", () => {
+  const ledger = new InMemoryConsentLedger();
+  const wholeSecond = "2026-09-06T12:00:00Z";
+  const millisecond = "2026-09-06T12:00:00.000Z";
+  const optIn = { ...record({ eventId: asMessagingEventId("evt_precision_optin_01") }), occurredAt: millisecond };
+  const suppression = {
+    ...record({
+      eventId: asMessagingEventId("evt_precision_bounce01"),
+      source: "HARD_BOUNCE",
+      state: "SUPPRESSED",
+      legalTextVersion: null,
+    }),
+    occurredAt: wholeSecond,
+  };
+
+  applied(ledger.record(optIn));
+  applied(ledger.record(suppression));
+
+  assert.equal(ledger.getSnapshot(PROFILE_ID)?.current.state, "SUPPRESSED");
+  assert.deepEqual(
+    ledger.listEvents(PROFILE_ID).map((event) => event.record.occurredAt),
+    [millisecond, millisecond],
+  );
+
+  const tieTimeRelease = ledger.releaseSuppression({
+    ...release({ eventId: asMessagingEventId("evt_precision_release1") }),
+    occurredAt: millisecond,
+  });
+  assert.equal(tieTimeRelease.outcome, "REJECTED");
+  if (tieTimeRelease.outcome === "REJECTED") {
+    assert.equal(tieTimeRelease.reason, "release_requires_active_suppression");
+  }
+  assert.equal(ledger.getSnapshot(PROFILE_ID)?.current.state, "SUPPRESSED");
 });
 
 test("malformed input, email-like profile IDs, and invalid source-state pairs fail without mutation", () => {
