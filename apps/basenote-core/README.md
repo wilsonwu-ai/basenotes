@@ -72,9 +72,11 @@ stored.
   app ID.
 
 The current source is deliberately local-domain logic only. It includes a
-testable App Proxy HMAC verifier, pure pricing policy, and an in-memory queue
-state machine; it has no persistence, OAuth/session implementation, webhook
-route, Appstle integration, Shopify Admin API call, or billing attempt.
+testable App Proxy HMAC verifier, pure pricing policy, an in-memory queue state
+machine, and a Messaging Core for consent, event audit, and no-send delivery
+intents. It has no persistence, OAuth/session implementation, webhook route,
+Appstle integration, Shopify Admin API call, recipient resolver, email sender,
+or billing attempt.
 
 ## Repository layout
 
@@ -85,6 +87,10 @@ src/
   index.ts                          Loopback health server
   domain/ids.ts                     Strong Shopify GID validation
   domain/queue.ts                   Contract-scoped queue + FOTM resolution
+  messaging/contracts.ts            PII-minimizing messaging data contracts
+  messaging/consent.ts              Consent/suppression audit ledger
+  messaging/events.ts               Idempotent customer-event audit ledger
+  messaging/outbox.ts               Explicit-eligibility, no-send outbox
   pricing/pricing-policy.ts         Pure $15/$20 and exact-$18 policy logic
   queue/in-memory-queue-service.ts  Revisioned queue/outbox state machine
   domain/queue.test.ts              Invariant tests

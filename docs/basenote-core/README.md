@@ -38,3 +38,6 @@ connecting the local app to Shopify or Cloudflare.
 
 Use [decision-log.md](decision-log.md) to track the merchant choices and
 evidence required before a production release.
+
+For the proposed isolated subdomain/development-store rollout, read
+[staging-rollout.md](../owned-platform/staging-rollout.md).
