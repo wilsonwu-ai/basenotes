@@ -16,18 +16,15 @@ The adapter is unavailable unless all of these runtime gates are true:
 1. `BASENOTE_RUNTIME_STAGE=staging`
 2. `BASENOTE_MAILGUN_STAGING_ENABLED=true`
 3. `BASENOTE_MAILGUN_TEST_ONLY=true`
-4. `BASENOTE_STAGING_APP_ORIGIN` is a HTTPS staging host, not a production
-   Base Note host. Until a branded staging zone exists, a temporary
-   `*-staging.*.workers.dev` hostname is also permitted.
-5. The sender is either a Mailgun sandbox domain or an explicit
-   `mail-staging.` domain, and the sender address is at that exact domain.
-6. At least one manually reviewed recipient address or non-production domain is
-   allowlisted.
+4. `BASENOTE_STAGING_APP_ORIGIN` is the exact isolated Worker origin named in
+   the reference template. A branded staging host requires a separate review.
+5. The sender is a Mailgun sandbox domain and the sender address is at that
+   exact domain.
+6. At least one manually reviewed test recipient address is allowlisted.
 
-`SIMULATE` is the initial mode: it asks Mailgun to process the request with
-`o:testmode=yes`, so it is not delivered. `ALLOWLISTED_DELIVERY` is an
-explicit, later staging test mode. It can only reach the exact configured
-address/domain allow-list; it is still not a production sender mode.
+`SIMULATE` is the only mode in this release: it asks Mailgun to process the
+request with `o:testmode=yes`, so it is not delivered. Any real delivery,
+dedicated sender, or branded staging host needs a new reviewed change.
 
 The reference variable names live in
 [`../../apps/basenote-core/mailgun.staging.example.env`](../../apps/basenote-core/mailgun.staging.example.env).
@@ -62,22 +59,19 @@ and [quickstart](https://documentation.mailgun.com/docs/mailgun/quickstart).
    storefront JavaScript, Liquid, browser developer tools, WhatsApp, or a pull
    request.
 4. Copy only the **names** from the reference template into the staging runtime
-   configuration. Keep `BASENOTE_MAILGUN_TEST_DELIVERY_MODE=SIMULATE` for the
-   first request. List only the exact verified inboxes in
+   configuration. Keep `BASENOTE_MAILGUN_TEST_DELIVERY_MODE=SIMULATE`.
+   List only the exact verified disposable/test inboxes in
    `BASENOTE_MAILGUN_TEST_RECIPIENTS`. The adapter rejects any
-   `@basenotescent.com` address or subdomain, even when it is listed exactly,
-   and also rejects `basenotescent.com` as a broad recipient domain. Use a
-   separately controlled disposable/test inbox instead.
+   `@basenotescent.com` address or subdomain, even when it is listed exactly.
 5. Run the staging Worker only after its durable outbox, consent/suppression
    gate, and audit update are connected and reviewed. The adapter does not make
    those decisions for a caller.
 6. Verify a simulated Mailgun response is persisted against the one claimed
    opaque outbox intent. The caller must decide whether a response is sufficient
    to mark it sent; this adapter never does that automatically.
-7. For a single manual inbox-delivery test, obtain release-owner approval,
-   switch only the staging secret to `ALLOWLISTED_DELIVERY`, send one claimed
-   synthetic/test-profile intent, inspect its audit record and Mailgun log, and
-   switch back to `SIMULATE` when done.
+7. Do not attempt an inbox-delivery test through this branch. A separately
+   reviewed release must add that capability after the simulation audit has
+   passed.
 
 ## Dedicated staging sender: later, separate approval
 

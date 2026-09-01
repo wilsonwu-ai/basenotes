@@ -83,20 +83,20 @@ test("blocks a production-facing application host before Mailgun can be enabled"
   );
 });
 
-test("allows only a staging-named temporary Workers.dev application origin", () => {
+test("allows only the exact isolated staging Worker origin", () => {
   const configuration = readMailgunStagingTransportConfig({
     ...stagingEnvironment(),
-    BASENOTE_STAGING_APP_ORIGIN: "https://basenote-profile-queue-staging.example-account.workers.dev",
+    BASENOTE_STAGING_APP_ORIGIN: "https://basenote-profile-queue-staging.wilson-af8.workers.dev",
   });
   assert.equal(
     configuration.stagingAppOrigin,
-    "https://basenote-profile-queue-staging.example-account.workers.dev",
+    "https://basenote-profile-queue-staging.wilson-af8.workers.dev",
   );
 
   assertConfigurationError(
     () => readMailgunStagingTransportConfig({
       ...stagingEnvironment(),
-      BASENOTE_STAGING_APP_ORIGIN: "https://basenote-profile-queue.example-account.workers.dev",
+      BASENOTE_STAGING_APP_ORIGIN: "https://app-staging.basenotescent.com.evil.invalid",
     }),
     "unsafe_staging_origin",
   );
@@ -133,15 +133,6 @@ test("requires a manually reviewed test-recipient allow-list", () => {
   assertConfigurationError(
     () => readMailgunStagingTransportConfig({
       ...stagingEnvironment(),
-      BASENOTE_MAILGUN_TEST_RECIPIENT_DOMAINS: "basenotescent.com",
-      BASENOTE_MAILGUN_TEST_RECIPIENTS: "",
-    }),
-    "invalid_recipient_allowlist",
-  );
-  assertConfigurationError(
-    () => readMailgunStagingTransportConfig({
-      ...stagingEnvironment(),
-      BASENOTE_MAILGUN_TEST_RECIPIENT_DOMAINS: "",
       BASENOTE_MAILGUN_TEST_RECIPIENTS: "subscriber@basenotescent.com",
     }),
     "invalid_recipient_allowlist",
@@ -168,6 +159,7 @@ test("uses opaque outbox/event identifiers and Mailgun simulation mode for an al
   });
   assert.equal(requestUrl, "https://api.mailgun.net/v3/sandboxunit-test.mailgun.org/messages");
   assert.equal(requestInit?.method, "POST");
+  assert.equal(requestInit?.redirect, "error");
   assert.match(new Headers(requestInit?.headers).get("Authorization") ?? "", /^Basic /);
   const requestBody = requestInit?.body;
   assert.ok(requestBody instanceof FormData);
@@ -228,31 +220,24 @@ test("requires a claimed outbox and matching opaque event/profile identities bef
     }),
     (error: unknown) => error instanceof MailgunStagingDeliveryError && error.code === "profile_mismatch",
   );
+  await assert.rejects(
+    () => transport.deliver({
+      ...DELIVERY,
+      outbox: { ...OUTBOX, templateKey: "unsafe template value" },
+    }),
+    (error: unknown) => error instanceof MailgunStagingDeliveryError && error.code === "invalid_delivery_envelope",
+  );
   assert.equal(fetchCalls, 0);
 });
 
-test("allowlisted delivery is explicit and omits Mailgun simulation mode", async () => {
-  const sentForms: FormData[] = [];
-  const transport = new MailgunStagingTransport(readMailgunStagingTransportConfig({
-    ...stagingEnvironment(),
-    BASENOTE_MAILGUN_TEST_DELIVERY_MODE: "ALLOWLISTED_DELIVERY",
-  }), {
-    fetch: async (_input, init) => {
-      const body = init?.body;
-      assert.ok(body instanceof FormData);
-      sentForms.push(body);
-      return jsonResponse({ id: "<staging-delivery-202@mailgun.org>" });
-    },
-  });
-
-  const result = await transport.deliver(DELIVERY);
-
-  assert.equal(result.mode, "ALLOWLISTED_DELIVERY");
-  assert.equal(sentForms.length, 1);
-  const sentForm = sentForms[0];
-  assert.ok(sentForm);
-  assert.equal(sentForm.get("o:testmode"), null);
-  assert.equal(sentForm.get("to"), "qa@example.test");
+test("rejects every configuration that attempts a real Mailgun delivery mode", () => {
+  assertConfigurationError(
+    () => readMailgunStagingTransportConfig({
+      ...stagingEnvironment(),
+      BASENOTE_MAILGUN_TEST_DELIVERY_MODE: "ALLOWLISTED_DELIVERY",
+    }),
+    "invalid_delivery_mode",
+  );
 });
 
 test("never exposes a provider rejection response body", async () => {
@@ -280,7 +265,7 @@ function stagingEnvironment(): RuntimeEnvironment {
     BASENOTE_MAILGUN_TEST_ONLY: "true",
     BASENOTE_MAILGUN_TEST_RECIPIENTS: "qa@example.test",
     BASENOTE_RUNTIME_STAGE: "staging",
-    BASENOTE_STAGING_APP_ORIGIN: "https://app-staging.basenotescent.com",
+    BASENOTE_STAGING_APP_ORIGIN: "https://basenote-profile-queue-staging.wilson-af8.workers.dev",
   };
 }
 

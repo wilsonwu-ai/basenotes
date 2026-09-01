@@ -1,4 +1,4 @@
-import type { MessageIntent } from "./contracts.js";
+import { asTemplateKey, type MessageIntent } from "./contracts.js";
 import type { RecordedMessagingEvent } from "./events.js";
 
 /**
@@ -13,6 +13,7 @@ import type { RecordedMessagingEvent } from "./events.js";
 
 const MAILGUN_API_HOSTS = new Set(["api.mailgun.net", "api.eu.mailgun.net"]);
 const PRODUCTION_BRAND_DOMAIN = "basenotescent.com";
+const APPROVED_STAGING_APP_ORIGIN = "https://basenote-profile-queue-staging.wilson-af8.workers.dev";
 const MAX_SUBJECT_LENGTH = 180;
 const MAX_TEXT_LENGTH = 100_000;
 const MAX_HTML_LENGTH = 500_000;
@@ -23,7 +24,8 @@ const APPROVED_STAGING_CONFIGS = new WeakMap<
   MailgunStagingTransportConfig
 >();
 
-export type MailgunStagingDeliveryMode = "SIMULATE" | "ALLOWLISTED_DELIVERY";
+/** The initial Mailgun integration is deliberately simulation-only. */
+export type MailgunStagingDeliveryMode = "SIMULATE";
 
 export interface RuntimeEnvironment {
   readonly [key: string]: string | undefined;
@@ -40,7 +42,6 @@ export interface MailgunStagingTransportConfig {
   readonly sendingDomain: string;
   readonly from: string;
   readonly allowedRecipientAddresses: ReadonlySet<string>;
-  readonly allowedRecipientDomains: ReadonlySet<string>;
 }
 
 /**
@@ -162,11 +163,7 @@ export function readMailgunStagingTransportConfig(
   const allowedRecipientAddresses = parseRecipientAddresses(
     read(environment, "BASENOTE_MAILGUN_TEST_RECIPIENTS"),
   );
-  const allowedRecipientDomains = parseRecipientDomains(
-    read(environment, "BASENOTE_MAILGUN_TEST_RECIPIENT_DOMAINS"),
-  );
-
-  if (allowedRecipientAddresses.size === 0 && allowedRecipientDomains.size === 0) {
+  if (allowedRecipientAddresses.size === 0) {
     throw new MailgunStagingConfigurationError(
       "missing_recipient_allowlist",
       "Mailgun staging transport requires at least one approved test recipient address or domain.",
@@ -182,14 +179,12 @@ export function readMailgunStagingTransportConfig(
     sendingDomain,
     from,
     allowedRecipientAddresses,
-    allowedRecipientDomains,
   });
   // Keep a private snapshot. `ReadonlySet` is a TypeScript-only guarantee, so
   // the adapter must not rely on a caller's returned Set remaining unchanged.
   const internalConfig = Object.freeze({
     ...config,
     allowedRecipientAddresses: new Set(allowedRecipientAddresses),
-    allowedRecipientDomains: new Set(allowedRecipientDomains),
   });
   APPROVED_STAGING_CONFIGS.set(config, internalConfig);
   return config;
@@ -252,11 +247,12 @@ export class MailgunStagingTransport {
     try {
       response = await this.fetchImplementation(requestUrl, {
         body: form,
-        headers: {
-          Authorization: `Basic ${encodeBasicAuth(`api:${this.config.apiKey}`)}`,
-          "X-BaseNote-Staging-Delivery-Key": envelope.outbox.idempotencyKey,
-        },
-        method: "POST",
+      headers: {
+        Authorization: `Basic ${encodeBasicAuth(`api:${this.config.apiKey}`)}`,
+        "X-BaseNote-Staging-Delivery-Key": envelope.outbox.idempotencyKey,
+      },
+      method: "POST",
+      redirect: "error",
       });
     } catch {
       throw new MailgunStagingDeliveryError(
@@ -309,6 +305,14 @@ function validateEnvelope(input: MailgunStagingDeliveryInput): ValidatedEnvelope
     throw new MailgunStagingDeliveryError(
       "invalid_delivery_envelope",
       "The event record does not contain a valid opaque identifier.",
+    );
+  }
+  try {
+    asTemplateKey(input.outbox.templateKey);
+  } catch {
+    throw new MailgunStagingDeliveryError(
+      "invalid_delivery_envelope",
+      "The claimed outbox record does not contain a safe template key.",
     );
   }
   if (input.outbox.eventId !== input.event.eventId) {
@@ -368,7 +372,7 @@ function buildMailgunForm(input: {
   form.set("o:tracking-clicks", "no");
   form.set("o:tracking-opens", "no");
   form.set("o:require-tls", "yes");
-  if (input.config.deliveryMode === "SIMULATE") form.set("o:testmode", "yes");
+  form.set("o:testmode", "yes");
 
   // These are opaque correlation references only. No recipient address,
   // profile data, rendered content, or customer attributes enter provider vars.
@@ -441,13 +445,6 @@ function parseStagingAppOrigin(value: string): string {
       "Mailgun staging transport requires a safe staging application origin.",
     );
   }
-  const host = url.hostname.toLowerCase();
-  // A temporary Workers.dev hostname is allowed only when its Worker name
-  // itself carries the `-staging` suffix. That lets the isolated development
-  // store run before Base Note has delegated a branded staging DNS zone,
-  // without accepting a production-facing Workers.dev host.
-  const safeWorkerHost = /^[a-z0-9-]*-staging\.[a-z0-9-]+\.workers\.dev$/.test(host);
-  const safeHost = host.startsWith("app-staging.") || host.includes(".staging.") || safeWorkerHost;
   if (
     url.protocol !== "https:"
     || url.username !== ""
@@ -455,7 +452,7 @@ function parseStagingAppOrigin(value: string): string {
     || url.pathname !== "/"
     || url.search !== ""
     || url.hash !== ""
-    || !safeHost
+    || url.origin !== APPROVED_STAGING_APP_ORIGIN
   ) {
     throw new MailgunStagingConfigurationError(
       "unsafe_staging_origin",
@@ -494,7 +491,7 @@ function parseMailgunApiBaseUrl(value: string): string {
 }
 
 function parseDeliveryMode(value: string): MailgunStagingDeliveryMode {
-  if (value === "SIMULATE" || value === "ALLOWLISTED_DELIVERY") return value;
+  if (value === "SIMULATE") return value;
   throw new MailgunStagingConfigurationError(
     "invalid_delivery_mode",
     "Mailgun staging transport requires an explicit safe test delivery mode.",
@@ -504,8 +501,7 @@ function parseDeliveryMode(value: string): MailgunStagingDeliveryMode {
 function parseTestSendingDomain(value: string): string {
   const domain = normalizeDomain(value);
   const isSandbox = /^sandbox[a-z0-9-]+\.mailgun\.org$/.test(domain);
-  const isDedicatedStagingDomain = domain === `mail-staging.${PRODUCTION_BRAND_DOMAIN}`;
-  if (!isSandbox && !isDedicatedStagingDomain) {
+  if (!isSandbox) {
     throw new MailgunStagingConfigurationError(
       "unsafe_sending_domain",
       "Mailgun staging transport accepts only a sandbox or explicitly staging-only sender domain.",
@@ -542,29 +538,6 @@ function parseRecipientAddresses(value: string | undefined): ReadonlySet<string>
     }
   }
   return addresses;
-}
-
-function parseRecipientDomains(value: string | undefined): ReadonlySet<string> {
-  const domains = new Set<string>();
-  for (const entry of splitAllowlist(value)) {
-    let domain: string;
-    try {
-      domain = normalizeDomain(entry);
-    } catch {
-      throw new MailgunStagingConfigurationError(
-        "invalid_recipient_allowlist",
-        "The staging recipient domain allow-list contains an invalid entry.",
-      );
-    }
-    if (isProductionBrandDomain(domain)) {
-      throw new MailgunStagingConfigurationError(
-        "invalid_recipient_allowlist",
-        "A production brand domain cannot be used as a broad staging recipient allow-list entry.",
-      );
-    }
-    domains.add(domain);
-  }
-  return domains;
 }
 
 function isProductionBrandDomain(domain: string): boolean {
@@ -617,8 +590,7 @@ function normalizeDomain(value: string): string {
 }
 
 function isRecipientAllowed(recipient: string, config: MailgunStagingTransportConfig): boolean {
-  return config.allowedRecipientAddresses.has(recipient)
-    || config.allowedRecipientDomains.has(domainForEmail(recipient));
+  return config.allowedRecipientAddresses.has(recipient);
 }
 
 function isSafeHeaderValue(value: unknown, maxLength: number): value is string {
