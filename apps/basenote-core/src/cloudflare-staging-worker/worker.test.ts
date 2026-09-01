@@ -12,6 +12,7 @@ import type {
   ProfileQueueOwnershipResolver,
   SignedProxyBoundary,
   StagingAdminIdTokenBoundary,
+  StagingAdminTokenReplayRepository,
   StagingWorkerEnv,
   WorkerScheduledEvent,
   WorkerExecutionContext,
@@ -502,6 +503,39 @@ test("authenticated scheduler API uses fresh token replay protection, schedule C
   assert.deepEqual(await replayedException.json(), { attention: "RECOVERY_EXCEPTION_RECORDED", replayed: true });
 });
 
+test("authenticated scheduler canonicalizes replay consumption to D1 whole-second precision", async () => {
+  const cycles = await repositoryWithCycle();
+  const schedules = new InMemoryProfileQueueFotmScheduleRepository();
+  let consumedAt: string | null = null;
+  const replay: StagingAdminTokenReplayRepository = {
+    async consume(input) {
+      consumedAt = input.consumedAt;
+    },
+  };
+  const worker = configuredAdminSchedulerWorker({
+    cycles,
+    now: () => new Date("2026-09-01T09:01:00.987Z"),
+    replay,
+    schedules,
+  });
+
+  const saved = await worker.fetch(
+    adminCommandRequest({
+      action: "SAVE_DRAFT",
+      cutoffAt: "2026-09-10T05:01:00.000Z",
+      expectedRevision: null,
+      merchantTimezone: "America/Chicago",
+      shipMonth,
+      variantId: "gid://shopify/ProductVariant/501",
+    }, "pfk_scheduler_replay_precision001"),
+    schedulerEnvironment(),
+    context,
+  );
+
+  assert.equal(saved.status, 200);
+  assert.equal(consumedAt, "2026-09-01T09:01:00.000Z");
+});
+
 test("authenticated scheduler API exposes an explicit RETIRED-to-draft recovery path before any FOTM cycle exists", async () => {
   const cycles = await repositoryWithCycle();
   const schedules = new InMemoryProfileQueueFotmScheduleRepository();
@@ -682,6 +716,7 @@ function configuredAdminSchedulerWorker(input: {
   readonly adminIdTokenBoundary?: StagingAdminIdTokenBoundary;
   readonly cycles: InMemoryProfileQueueRepository;
   readonly now?: () => Date;
+  readonly replay?: StagingAdminTokenReplayRepository;
   readonly schedules: InMemoryProfileQueueFotmScheduleRepository;
 }): ReturnType<typeof createStagingProfileQueueWorker> {
   let serial = 0;
@@ -699,7 +734,7 @@ function configuredAdminSchedulerWorker(input: {
   } satisfies StagingAdminIdTokenBoundary;
   return createStagingProfileQueueWorker({
     adminIdTokenBoundary: boundary,
-    adminTokenReplayRepository: replay,
+    adminTokenReplayRepository: input.replay ?? replay,
     createOpaqueId(prefix) {
       serial += 1;
       return `${prefix}_admin_scheduler_${serial.toString().padStart(6, "0")}`;

@@ -386,7 +386,11 @@ async function handleAdminSchedulerCommand(
   const replayRepository = input.adminTokenReplayRepository
     ?? new D1StagingAdminIdTokenReplayRepository(requireStagingD1(input.environment));
   await replayRepository.consume({
-    consumedAt: input.now().toISOString(),
+    // The 0005 D1 replay ledger deliberately stores whole-second instants,
+    // matching Shopify's integer exp/iat claims. Real Worker clocks usually
+    // include milliseconds, so canonicalize here instead of relying on the
+    // zero-millisecond clocks used by unit fixtures.
+    consumedAt: new Date(Math.floor(input.now().getTime() / 1_000) * 1_000).toISOString(),
     tokenDigest: identity.tokenDigest,
     tokenExpiresAt: identity.tokenExpiresAt,
   });
