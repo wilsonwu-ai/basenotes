@@ -75,3 +75,6 @@ transactional-notification behavior must be preserved before any sender change.
   and send-volume warm-up.
 - The Appstle-supported strategy for existing contracts and payment methods.
 - The production data-retention, role-access, incident, and release owner.
+
+See [requirements-ledger.md](requirements-ledger.md) for the sanitized request
+traceability and test order.
