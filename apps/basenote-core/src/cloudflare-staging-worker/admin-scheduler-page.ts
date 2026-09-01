@@ -41,7 +41,8 @@ export function renderStagingAdminSchedulerShell(input: {
     <script>
       (() => {
         const API_PATH = ${apiPath};
-        const state = { pending: null, pendingProvisionCommands: [], provisionCommands: [], schedules: [], variants: [] };
+        const PENDING_STORAGE_KEY = "basenote.staging.admin-scheduler.pending.v1";
+        const state = { pending: restorePending(), pendingProvisionCommands: [], provisionCommands: [], retryInFlight: false, schedules: [], variants: [] };
         const status = document.getElementById("status");
         const scheduler = document.getElementById("scheduler");
 
@@ -57,48 +58,175 @@ export function renderStagingAdminSchedulerShell(input: {
         function idempotencyKey() {
           return "pfk_" + crypto.randomUUID().replaceAll("-", "");
         }
+        function isRecord(value) {
+          return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+        }
+        function hasExactKeys(value, expected) {
+          if (!isRecord(value)) return false;
+          const actual = Object.keys(value).sort();
+          const required = [...expected].sort();
+          return actual.length === required.length && actual.every((key, index) => key === required[index]);
+        }
+        function isRevision(value, nullable) {
+          return (nullable && value === null) || (Number.isSafeInteger(value) && value >= 0);
+        }
+        function isRestorableCommand(command) {
+          if (!isRecord(command) || typeof command.action !== "string" || !/^\\d{4}-(0[1-9]|1[0-2])$/.test(command.shipMonth)) return false;
+          if (command.action === "SAVE_DRAFT" || command.action === "RECOVER_DRAFT") {
+            return hasExactKeys(command, ["action", "cutoffAt", "expectedRevision", "merchantTimezone", "shipMonth", "variantId"])
+              && typeof command.cutoffAt === "string" && command.cutoffAt.length <= 64
+              && isRevision(command.expectedRevision, command.action === "SAVE_DRAFT")
+              && command.merchantTimezone === "America/Chicago"
+              && typeof command.variantId === "string" && /^gid:\\/\\/shopify\\/ProductVariant\\/\\d+$/.test(command.variantId);
+          }
+          if (command.action === "PUBLISH" || command.action === "RETIRE" || command.action === "RECORD_RECOVERY_EXCEPTION") {
+            return hasExactKeys(command, ["action", "expectedRevision", "shipMonth"]) && isRevision(command.expectedRevision, false);
+          }
+          if (command.action === "PROVISION" || command.action === "MARK_PROVISION_NEEDS_ATTENTION") {
+            return hasExactKeys(command, ["action", "expectedScheduleRevision", "shipMonth"]) && isRevision(command.expectedScheduleRevision, false);
+          }
+          return false;
+        }
+        function discardStoredPending() {
+          try { sessionStorage.removeItem(PENDING_STORAGE_KEY); } catch {}
+        }
+        function restorePending() {
+          try {
+            const stored = JSON.parse(sessionStorage.getItem(PENDING_STORAGE_KEY) || "null");
+            if (!isRecord(stored) || stored.version !== 1 || typeof stored.key !== "string" || !/^pfk_[A-Za-z0-9][A-Za-z0-9._:-]{7,191}$/.test(stored.key) || typeof stored.payload !== "string" || stored.payload.length > 8192) {
+              discardStoredPending();
+              return null;
+            }
+            const command = JSON.parse(stored.payload);
+            if (!isRestorableCommand(command) || JSON.stringify(command) !== stored.payload) {
+              discardStoredPending();
+              return null;
+            }
+            return { command, key:stored.key, payload:stored.payload };
+          } catch {
+            discardStoredPending();
+            return null;
+          }
+        }
+        function retainPending(pending) {
+          state.pending = pending;
+          try { sessionStorage.setItem(PENDING_STORAGE_KEY, JSON.stringify({ key:pending.key, payload:pending.payload, version:1 })); } catch {}
+        }
+        function clearPending(pending) {
+          if (state.pending !== pending) return;
+          state.pending = null;
+          discardStoredPending();
+        }
         async function idToken() {
           if (!window.shopify || typeof window.shopify.idToken !== "function") throw new Error("Shopify App Bridge did not provide an ID token.");
           return window.shopify.idToken();
         }
-        class SchedulerTransportError extends Error {}
-        async function api(method, command, commandKey) {
+        class SchedulerOutcomeUnknownError extends Error {}
+        function unknownOutcome(hasCommand) {
+          return new SchedulerOutcomeUnknownError(hasCommand
+            ? "The request outcome is unknown. Use Retry pending request to resend the exact payload with the same protected command key."
+            : "The scheduler response could not be confirmed. Reload the page and try again.");
+        }
+        async function api(method, commandPayload, commandKey) {
           const token = await idToken();
           const headers = { Authorization: "Bearer " + token };
-          if (command) {
+          if (commandPayload !== undefined) {
             headers["Content-Type"] = "application/json";
             headers["Idempotency-Key"] = commandKey;
           }
           let response;
           try {
-            response = await fetch(API_PATH, { method, headers, body: command ? JSON.stringify(command) : undefined, credentials: "same-origin" });
+            response = await fetch(API_PATH, { method, headers, body: commandPayload, credentials: "same-origin" });
           } catch {
-            throw new SchedulerTransportError("The request outcome is unknown. Retry it with the same protected command key.");
+            throw unknownOutcome(commandPayload !== undefined);
           }
+          const isClientError = response.status >= 400 && response.status < 500;
           let body;
           try { body = await response.json(); } catch {
-            if (response.ok) throw new SchedulerTransportError("The request outcome is unknown. Retry it with the same protected command key.");
+            if (!isClientError) throw unknownOutcome(commandPayload !== undefined);
             body = {};
           }
-          if (!response.ok) throw new Error(body.error === "unauthorized" ? "Shopify Admin authentication was rejected. Refresh the page and try again." : body.error === "forbidden" ? "This Shopify staff account is not allowlisted for staging." : body.error === "schedule_conflict" ? "The schedule changed. Reloaded the latest state." : body.error === "schedule_needs_attention" ? "This month already has a provisioned FOTM cycle. It was not retired or replaced; record the no-mutation recovery exception for review." : body.error === "provision_recovery_required" ? "The prior bounded provision command has no durable result. It was not run again; inspect its staging audit before creating a new command." : body.error === "provision_recovery_not_ready" ? "The pending provision command is still within its 15-minute recovery delay and was not changed." : "The staging scheduler could not complete that request.");
+          if (!response.ok) {
+            if (!isClientError) throw unknownOutcome(commandPayload !== undefined);
+            const errorCode = body && typeof body === "object" ? body.error : undefined;
+            throw new Error(errorCode === "unauthorized" ? "Shopify Admin authentication was rejected. Refresh the page and try again." : errorCode === "forbidden" ? "This Shopify staff account is not allowlisted for staging." : errorCode === "schedule_conflict" ? "The schedule changed. Reloaded the latest state." : errorCode === "schedule_needs_attention" ? "This month already has a provisioned FOTM cycle. It was not retired or replaced; record the no-mutation recovery exception for review." : errorCode === "provision_recovery_required" ? "The prior bounded provision command has no durable result. It was not run again; inspect its staging audit before creating a new command." : errorCode === "provision_recovery_not_ready" ? "The pending provision command is still within its 15-minute recovery delay and was not changed." : "The staging scheduler could not complete that request.");
+          }
           return body;
         }
-        async function post(command, fixedKey) {
-          const fingerprint = JSON.stringify(command);
-          const pending = fixedKey
-            ? { command, fingerprint, key: fixedKey }
-            : state.pending && state.pending.fingerprint === fingerprint
-            ? state.pending
-            : { command, fingerprint, key: idempotencyKey() };
-          state.pending = pending;
+        function isMutationSuccess(command, result) {
+          if (!isRecord(result) || typeof result.replayed !== "boolean") return false;
+          if (command.action === "SAVE_DRAFT" || command.action === "RECOVER_DRAFT" || command.action === "PUBLISH" || command.action === "RETIRE") {
+            const expectedStatus = command.action === "PUBLISH" ? "PUBLISHED" : command.action === "RETIRE" ? "RETIRED" : "DRAFT";
+            return isRecord(result.schedule)
+              && result.schedule.shipMonth === command.shipMonth
+              && result.schedule.status === expectedStatus
+              && isRevision(result.schedule.revision, false);
+          }
+          if (command.action === "RECORD_RECOVERY_EXCEPTION") return result.attention === "RECOVERY_EXCEPTION_RECORDED";
+          if (command.action === "MARK_PROVISION_NEEDS_ATTENTION") return result.attention === "PROVISION_NEEDS_ATTENTION_RECORDED";
+          if (command.action === "PROVISION") {
+            const provisioning = result.provisioning;
+            return isRecord(provisioning)
+              && Number.isSafeInteger(provisioning.configured) && provisioning.configured >= 0
+              && Number.isSafeInteger(provisioning.conflicted) && provisioning.conflicted >= 0
+              && Number.isSafeInteger(provisioning.scanned) && provisioning.scanned >= 0
+              && provisioning.configured + provisioning.conflicted === provisioning.scanned
+              && typeof provisioning.mayHaveMore === "boolean"
+              && typeof provisioning.replayed === "boolean";
+          }
+          return false;
+        }
+        async function post(command, options = {}) {
+          const payload = JSON.stringify(command);
+          const retry = options.retry === true;
+          let pending;
+          if (retry) {
+            if (state.retryInFlight) throw new Error("The protected retry is already in progress.");
+            if (!state.pending || state.pending.payload !== payload) throw new Error("The pending request changed and was not retried. Reload the scheduler before continuing.");
+            pending = state.pending;
+            state.retryInFlight = true;
+          } else {
+            if (state.pending) throw new Error("A prior request has an unknown outcome. Use Retry pending request before sending another command.");
+            pending = { command: JSON.parse(payload), payload, key: options.fixedKey || idempotencyKey() };
+            retainPending(pending);
+          }
           try {
-            const result = await api("POST", pending.command, pending.key);
-            state.pending = null;
+            const result = await api("POST", pending.payload, pending.key);
+            if (!isMutationSuccess(pending.command, result)) throw unknownOutcome(true);
+            clearPending(pending);
             return result;
           } catch (error) {
-            if (!(error instanceof SchedulerTransportError)) state.pending = null;
+            if (error instanceof SchedulerOutcomeUnknownError) {
+              if (retry) state.retryInFlight = false;
+              retainPending(pending);
+              render();
+            } else {
+              clearPending(pending);
+            }
             throw error;
+          } finally {
+            if (retry) state.retryInFlight = false;
           }
+        }
+        function pendingPanel() {
+          const panel = element("section"); panel.className = "panel";
+          panel.append(element("h2", "Confirm an uncertain request"));
+          panel.append(element("p", "The previous request did not return a confirmed result. Only this button resends its exact payload with the original idempotency key and a fresh Shopify ID token."));
+          const retry = element("button", "Retry pending request"); retry.type = "button"; retry.disabled = state.retryInFlight;
+          retry.addEventListener("click", async () => {
+            if (state.retryInFlight) return;
+            const pendingCommand = state.pending;
+            if (!pendingCommand) return;
+            retry.disabled = true;
+            try { message("Retrying protected staging request…"); await post(pendingCommand.command, { retry:true }); await load(); message("Pending request confirmed."); } catch (error) { message(error instanceof Error ? error.message : "Pending request was not confirmed.", true); await load().catch(() => {}); } finally { retry.disabled = false; }
+          });
+          panel.append(retry);
+          return panel;
+        }
+        function renderPendingOnly() {
+          if (!state.pending) return;
+          scheduler.replaceChildren(pendingPanel());
+          scheduler.classList.remove("hidden");
         }
         function currentSchedule(shipMonth) { return state.schedules.find((schedule) => schedule.shipMonth === shipMonth) || null; }
         function render() {
@@ -125,16 +253,7 @@ export function renderStagingAdminSchedulerShell(input: {
             } catch (error) { message(error instanceof Error ? error.message : "Draft was not saved.", true); await load().catch(() => {}); }
           });
           create.append(form); scheduler.append(create);
-          if (state.pending) {
-            const pending = element("section"); pending.className = "panel";
-            pending.append(element("h2", "Confirm an uncertain request"));
-            pending.append(element("p", "The previous request did not return a result. Retrying uses its original idempotency key and a fresh Shopify ID token."));
-            const retry = element("button", "Retry pending request"); retry.type = "button";
-            retry.addEventListener("click", async () => {
-              try { message("Retrying protected staging request…"); await post(state.pending.command); await load(); message("Pending request confirmed."); } catch (error) { message(error instanceof Error ? error.message : "Pending request was not confirmed.", true); await load().catch(() => {}); }
-            });
-            pending.append(retry); scheduler.append(pending);
-          }
+          if (state.pending) scheduler.append(pendingPanel());
 
           const list = element("section"); list.className = "panel"; list.append(element("h2", "Future-month schedules"));
           if (state.schedules.length === 0) list.append(element("p", "No authorized staging schedules are configured."));
@@ -166,7 +285,7 @@ export function renderStagingAdminSchedulerShell(input: {
                 const attention = element("button", "Mark pending provision needs attention"); attention.type = "button"; attention.className = "secondary";
                 attention.addEventListener("click", async () => {
                   if (!window.confirm("Mark this aged unknown-outcome staging provision for manual review? It will not retry, alter a schedule, or change a shipment.")) return;
-                  try { message("Terminalizing the aged provision claim without fan-out…"); await post({ action:"MARK_PROVISION_NEEDS_ATTENTION", shipMonth:schedule.shipMonth, expectedScheduleRevision:command.expectedScheduleRevision }, command.idempotencyKey); await load(); message("Provision command marked needs attention. No schedule or cycle changed."); } catch (error) { message(error instanceof Error ? error.message : "Provision command was not changed.", true); await load().catch(() => {}); }
+                  try { message("Terminalizing the aged provision claim without fan-out…"); await post({ action:"MARK_PROVISION_NEEDS_ATTENTION", shipMonth:schedule.shipMonth, expectedScheduleRevision:command.expectedScheduleRevision }, { fixedKey:command.idempotencyKey }); await load(); message("Provision command marked needs attention. No schedule or cycle changed."); } catch (error) { message(error instanceof Error ? error.message : "Provision command was not changed.", true); await load().catch(() => {}); }
                 }); actions.append(attention);
               }
               const exception = element("button", "Record no-mutation recovery exception"); exception.type = "button"; exception.className = "secondary";
@@ -198,7 +317,14 @@ export function renderStagingAdminSchedulerShell(input: {
           state.variants = Array.isArray(result.variants) ? result.variants : [];
           render(); scheduler.classList.remove("hidden");
         }
-        load().then(() => message("Authenticated staging scheduler ready.")).catch((error) => message(error instanceof Error ? error.message : "Scheduler authentication failed.", true));
+        if (state.pending) {
+          renderPendingOnly();
+          message("An earlier request still has an unknown outcome. Confirm it before sending another command.", true);
+        }
+        load().then(() => message(state.pending ? "Authenticated. An uncertain request is preserved for deliberate retry." : "Authenticated staging scheduler ready.", Boolean(state.pending))).catch((error) => {
+          if (state.pending) renderPendingOnly();
+          message(error instanceof Error ? error.message : "Scheduler authentication failed.", true);
+        });
       })();
     </script>
   </body>

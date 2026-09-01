@@ -7,7 +7,7 @@ import {
   type ProfileQueueMutationAuditRecord,
 } from "./contracts.js";
 import { D1ProfileQueueRepository } from "./d1-repository.js";
-import { applyProfileQueueMutation } from "./service.js";
+import { applyProfileQueueMutation, publishProfileQueueFotm } from "./service.js";
 import { createProfileQueueSelectionEvidence } from "../cloudflare-staging-worker/cutoff-locker.js";
 import type { D1DatabasePort, D1PreparedStatement, D1Result } from "../staging-runtime/d1.js";
 
@@ -87,6 +87,115 @@ test("D1 repository refuses a stale compare-and-swap result", async () => {
     }),
     /changed; reload before saving/,
   );
+});
+
+test("D1 repository persists an exact zero-add-on PUBLISH_FOTM batch with ordered audit evidence", async () => {
+  const database = new RecordingD1Database();
+  const repository = new D1ProfileQueueRepository(database);
+  const initial = createEmptyProfileQueueCycle({
+    bindingId: "binding-profile-220",
+    cycleKey: "staging:delivery:2026-10-15",
+    shipMonth: "2026-10",
+    updatedAt: "2026-09-01T22:14:48.000Z",
+  });
+  const published = publishProfileQueueFotm(initial, {
+    cutoffAt: "2026-10-10T05:01:00.000Z",
+    merchantTimezone: "America/Chicago",
+    occurredAt: "2026-09-01T22:14:49.000Z",
+    variantId: "gid://shopify/ProductVariant/902",
+  });
+  const audit: ProfileQueueMutationAuditRecord = {
+    actorRef: asProfileQueueActorRef("staff_stage_101"),
+    bindingId: published.bindingId,
+    cycleKey: published.cycleKey,
+    expectedRevision: 0,
+    idempotencyKey: "pqk_publish001" as ProfileQueueMutationAuditRecord["idempotencyKey"],
+    mutationId: "pqm_publish001" as ProfileQueueMutationAuditRecord["mutationId"],
+    mutationKind: "PUBLISH_FOTM",
+    occurredAt: published.updatedAt,
+    resultingRevision: published.revision,
+  };
+
+  await repository.persist({
+    audit,
+    cycle: published,
+    expectedRevision: 0,
+    selectionEvidence: evidenceFor(published, audit),
+  });
+
+  assert.equal(published.addOns.length, 0);
+  assert.equal(database.batches.length, 1);
+  const batch = database.batches[0] ?? [];
+  assert.equal(batch.length, 4, "zero add-ons must not create any add-on INSERT statements.");
+  const [cycleUpdate, addOnDelete, auditInsert, evidenceInsert] = batch;
+  assert.match(cycleUpdate?.query ?? "", /UPDATE profile_queue_cycles/);
+  assert.match(addOnDelete?.query ?? "", /DELETE FROM profile_queue_add_ons/);
+  assert.match(auditInsert?.query ?? "", /INSERT INTO profile_queue_mutation_audit/);
+  assert.match(evidenceInsert?.query ?? "", /INSERT INTO profile_queue_selection_evidence/);
+  assert.ok(batch.every((statement) => !/INSERT INTO profile_queue_add_ons/.test(statement.query)));
+
+  assert.deepEqual(cycleUpdate?.values, [
+    "OPEN",
+    1,
+    "gid://shopify/ProductVariant/902",
+    "PUBLISHED",
+    "2026-10-10T05:01:00.000Z",
+    "America/Chicago",
+    "UNSELECTED",
+    null,
+    null,
+    "pqm_publish001",
+    "2026-09-01T22:14:49.000Z",
+    "binding-profile-220",
+    "staging:delivery:2026-10-15",
+    "2026-10",
+    0,
+  ]);
+  assert.deepEqual(addOnDelete?.values, [
+    "binding-profile-220",
+    "staging:delivery:2026-10-15",
+    "binding-profile-220",
+    "staging:delivery:2026-10-15",
+    1,
+    "pqm_publish001",
+    "pqm_publish001",
+  ]);
+  assert.deepEqual(auditInsert?.values, [
+    "pqm_publish001",
+    "pqk_publish001",
+    "staff_stage_101",
+    "binding-profile-220",
+    "staging:delivery:2026-10-15",
+    "PUBLISH_FOTM",
+    0,
+    1,
+    "2026-09-01T22:14:49.000Z",
+    "binding-profile-220",
+    "staging:delivery:2026-10-15",
+    1,
+    "pqm_publish001",
+  ]);
+  assert.deepEqual(evidenceInsert?.values, [
+    "pqe_publish001",
+    "pqm_publish001",
+    "binding-profile-220",
+    "staging:delivery:2026-10-15",
+    "FOTM_PUBLISHED",
+    "UNSELECTED",
+    null,
+    "[]",
+    1,
+    "2026-09-01T22:14:49.000Z",
+    "pqm_publish001",
+    "binding-profile-220",
+    "staging:delivery:2026-10-15",
+    1,
+    "2026-09-01T22:14:49.000Z",
+    "binding-profile-220",
+    "staging:delivery:2026-10-15",
+    1,
+    "pqm_publish001",
+  ]);
 });
 
 test("D1 provisioning scan is exact-month, unpublished-only, and safely bounded", async () => {
@@ -183,6 +292,7 @@ class RecordingD1Database implements D1DatabasePort {
   async batch(statements: readonly D1PreparedStatement[]): Promise<readonly D1Result[]> {
     const recorded = statements.map((statement) => {
       if (!(statement instanceof RecordingD1Statement)) throw new Error("Unexpected statement implementation.");
+      statement.assertPlaceholderBindings();
       return { query: statement.query, values: [...statement.values] };
     });
     this.batches.push(recorded);
@@ -209,14 +319,63 @@ class RecordingD1Statement implements D1PreparedStatement {
   }
 
   async first<T = Record<string, unknown>>(): Promise<T | null> {
+    this.assertPlaceholderBindings();
     return this.database.nextFirstRow as T | null;
   }
 
   async all<T = Record<string, unknown>>(): Promise<D1Result<T>> {
+    this.assertPlaceholderBindings();
     return { results: [] };
   }
 
   async run(): Promise<D1Result> {
+    this.assertPlaceholderBindings();
     return { meta: { changes: 1 } };
   }
+
+  assertPlaceholderBindings(): void {
+    assert.equal(
+      this.values.length,
+      countSqlPlaceholders(this.query),
+      "Every prepared D1 statement must bind exactly one value per SQL placeholder.",
+    );
+  }
+}
+
+function countSqlPlaceholders(query: string): number {
+  let count = 0;
+  let index = 0;
+  let mode: "normal" | "single" | "double" | "backtick" | "bracket" | "line-comment" | "block-comment" = "normal";
+  while (index < query.length) {
+    const character = query[index];
+    const next = query[index + 1];
+    if (mode === "line-comment") {
+      if (character === "\n") mode = "normal";
+    } else if (mode === "block-comment") {
+      if (character === "*" && next === "/") {
+        mode = "normal";
+        index += 1;
+      }
+    } else if (mode === "single" || mode === "double" || mode === "backtick") {
+      const delimiter = mode === "single" ? "'" : mode === "double" ? '"' : "`";
+      if (character === delimiter) {
+        if (next === delimiter) index += 1;
+        else mode = "normal";
+      }
+    } else if (mode === "bracket") {
+      if (character === "]") mode = "normal";
+    } else if (character === "-" && next === "-") {
+      mode = "line-comment";
+      index += 1;
+    } else if (character === "/" && next === "*") {
+      mode = "block-comment";
+      index += 1;
+    } else if (character === "'") mode = "single";
+    else if (character === '"') mode = "double";
+    else if (character === "`") mode = "backtick";
+    else if (character === "[") mode = "bracket";
+    else if (character === "?") count += 1;
+    index += 1;
+  }
+  return count;
 }

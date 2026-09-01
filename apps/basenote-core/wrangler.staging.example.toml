@@ -14,6 +14,25 @@ compatibility_date = "2026-09-01"
 # are complete.
 workers_dev = true
 
+# Retain staging diagnostics without persisting Shopify App Proxy signatures,
+# customer identifiers, or other query-string values. Sampling is deliberately
+# explicit so a failed bounded E2E write can be reconciled from its trace.
+[observability]
+enabled = true
+head_sampling_rate = 1
+redact_query_string = true
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+persist = true
+
+[observability.traces]
+enabled = true
+head_sampling_rate = 1
+persist = true
+
 [vars]
 # The Worker refuses customer routes unless this exact staging value is present.
 BASENOTE_RUNTIME_STAGE = "staging"
