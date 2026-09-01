@@ -75,10 +75,12 @@ The current source is deliberately local-domain logic only. It includes a
 testable App Proxy HMAC verifier, pure pricing policy, an in-memory queue state
 machine, a D1-shaped-but-unbound profile-queue repository/migration, a
 staging-only queue-dropdown renderer, historic-member dry-run contracts, and a
-Messaging Core for consent, event audit, and no-send delivery intents. It has
-no configured persistence, OAuth/session implementation, webhook route,
-Appstle integration, Shopify Admin API call, recipient resolver, email sender,
-or billing attempt.
+Messaging Core for consent, event audit, and no-send delivery intents. It also
+contains a separate, static-only staging App Proxy bridge and raw-body webhook
+HMAC verifier. Neither is installed, deployed, configured with credentials, or
+able to call Shopify, Appstle, a database, an email provider, or production.
+It has no configured persistence, OAuth/session implementation, webhook route,
+Shopify Admin API call, recipient resolver, email sender, or billing attempt.
 
 ## Repository layout
 
@@ -101,11 +103,14 @@ src/
   profile-queue/ui.ts               Static staging-only dropdown renderer
   subscription-history/             Dry-run, approval-gated historic evidence
   staging-runtime/d1.ts             Minimal D1 structural port, no runtime import
+  shopify-staging/webhook.ts        Raw-body webhook HMAC boundary only
+  shopify-staging/app-proxy-bridge.ts Static signed Proxy preview; no writes/egress
   domain/queue.test.ts              Invariant tests
   platform/subscription-gateway.ts  Provider boundary for Base Note-owned contracts
 migrations/0001_staging_runtime.sql Reviewed, unapplied D1 schema
 scripts/verify-skeleton.mjs         Offline structural/safety verification
 shopify.app.example.toml            Deliberately unlinked future config template
+shopify.app.staging.example.toml    Separate staging-app template; no real app ID
 ```
 
 ## Required gates before any Shopify connection
@@ -157,6 +162,8 @@ It selects no provider account or live sender; it describes the proposed
 Cloudflare + Mailgun boundary and the gates required before a test integration.
 The local-only staging runtime slice is documented in
 [`../../docs/owned-platform/staging-runtime-slice.md`](../../docs/owned-platform/staging-runtime-slice.md).
+The Shopify staging-app handoff is in
+[`../../docs/owned-platform/shopify-staging-app-integration.md`](../../docs/owned-platform/shopify-staging-app-integration.md).
 
 ## Future commands (do not run yet)
 

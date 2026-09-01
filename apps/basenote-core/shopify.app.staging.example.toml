@@ -1,0 +1,65 @@
+# Staging-only Shopify app configuration reference.
+#
+# This is deliberately NOT named `shopify.app.toml`, is not linked to a Dev
+# Dashboard app, and contains no credential. A maintainer may copy it only
+# after creating a separate *staging* app and completing the checklist in
+# `docs/owned-platform/shopify-staging-app-integration.md`.
+#
+# Never reuse a production app client ID, shared client secret, OAuth redirect,
+# or sender domain in this template.
+
+name = "Base Note Staging Platform"
+client_id = "REPLACE_WITH_A_SEPARATE_STAGING_DEV_DASHBOARD_APP_CLIENT_ID"
+application_url = "https://app-staging.basenotescent.com"
+
+# The initial staging surface is a storefront App Proxy, not an embedded admin
+# app. Keep this false until a separately-reviewed authenticated admin surface
+# exists.
+embedded = false
+handle = "basenote-staging-platform"
+
+[build]
+# Do not allow a local development tunnel or CLI session to rewrite the staged
+# URLs. The application and proxy hosts must remain the reviewed staging host.
+automatically_update_urls_on_dev = false
+
+[access_scopes]
+# Required initial staging scopes only:
+# - read_products: allow a server-side eligible-variant lookup for the Queue.
+# - read_customers: bind a signed App Proxy customer to a server-side record.
+# - write_app_proxy: configure the one storefront route below.
+#
+# Do NOT add write_customers, write_orders, read_all_orders, payment scopes,
+# Appstle credentials, or Subscription API scopes here. In particular, do not
+# add read_own_subscription_contracts/write_own_subscription_contracts until
+# Shopify approval and a separately reviewed Base Note-owned contract pilot.
+scopes = "read_customers,read_products,write_app_proxy"
+
+[auth]
+# These URLs are placeholders for an OAuth implementation. They must be served
+# only by the staging host and must not be copied to a production app.
+redirect_urls = [
+  "https://app-staging.basenotescent.com/api/shopify/auth/callback",
+  "https://app-staging.basenotescent.com/api/shopify/auth/reauthorize"
+]
+
+[webhooks]
+# Pin the current stable version when the staging app is actually created.
+# Recheck Shopify's supported version before copying this template.
+api_version = "2026-07"
+
+[[webhooks.subscriptions]]
+# The initial app accepts only lifecycle/privacy notifications. It does not
+# subscribe to order, customer-update, subscription, or billing mutations.
+topics = ["app/uninstalled"]
+compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"]
+uri = "/api/shopify/webhooks"
+
+[app_proxy]
+# Shopify proxies the development-store URL
+# /apps/basenote-staging[/child-route] to this *staging-only* application URL.
+# The route implementation is intentionally a static, HMAC-gated preview until
+# the durable queue API has completed its own staging review.
+url = "https://app-staging.basenotescent.com/api/shopify/app-proxy"
+prefix = "apps"
+subpath = "basenote-staging"
