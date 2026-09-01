@@ -85,8 +85,9 @@ customer/cycle/revision. It includes a testable App
 Proxy HMAC verifier, pure pricing policy, an in-memory queue state machine, a
 D1-shaped-but-unbound profile-queue repository/migration, future-month FOTM
 schedules with a server-only staff boundary, bounded staging-only cutoff lock
-logic, a server-rendered staging-only queue page, historic-member dry-run contracts, and a Messaging
-Core for consent, event audit, and no-send delivery intents. It has no
+logic, a server-rendered staging-only queue page, a durable historic-member
+manifest/approval lifecycle, and a Messaging Core for consent, event audit,
+and no-send delivery intents. It has no
 configured persistence, OAuth/session implementation, webhook route, Appstle
 integration, Shopify Admin API call, recipient resolver, email sender, or
 billing attempt.
@@ -123,7 +124,7 @@ src/
   profile-queue/fotm-schedule.ts    Per-month Central-time FOTM schedule model
   profile-queue/d1-fotm-schedule-repository.ts D1 schedule/audit persistence shape
   profile-queue/ui.ts               Static staging-only dropdown renderer
-  subscription-history/             Dry-run, approval-gated historic evidence
+  subscription-history/             Dry-run and durable approval-gated historic evidence
   staging-runtime/d1.ts             Minimal D1 structural port, no runtime import
   cloudflare-staging-worker/        Fail-closed staging Worker, HMAC/D1 gates, HTML form, tests
   domain/queue.test.ts              Invariant tests
@@ -131,6 +132,9 @@ src/
 migrations/0001_staging_runtime.sql Reviewed, unapplied D1 queue schema
 migrations/0002_staging_test_bindings.sql Reviewed, unapplied disposable-binding schema
 migrations/0003_member_fragrance_choice.sql Reviewed, unapplied member choice/schedule schema
+migrations/0004_durable_historical_backfill.sql
+                                   Immutable dry-run manifest and staging-only
+                                   historical backfill lifecycle
 scripts/verify-skeleton.mjs         Offline structural/safety verification
 shopify.app.example.toml            Deliberately unlinked future config template
 ```
