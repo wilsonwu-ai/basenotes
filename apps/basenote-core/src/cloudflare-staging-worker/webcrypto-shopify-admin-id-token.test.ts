@@ -5,10 +5,8 @@ import test from "node:test";
 import {
   StagingAdminIdTokenNotConfiguredError,
   StagingAdminIdTokenRejectedError,
-  StagingAdminIdTokenReplayError,
   StagingAdminStaffDeniedError,
 } from "./boundaries.js";
-import { InMemoryStagingAdminIdTokenReplayRepository } from "./admin-id-token-replay.js";
 import { WebCryptoShopifyAdminIdTokenVerifier } from "./webcrypto-shopify-admin-id-token.js";
 import type { StagingWorkerEnv } from "./contracts.js";
 
@@ -24,9 +22,7 @@ test("verifies a fresh exact-shop Shopify Admin HS256 ID token and derives only 
     request: bearerRequest(signToken()),
   });
 
-  assert.equal(identity.actorRef, "staff_42");
-  assert.match(identity.tokenDigest, /^[A-Za-z0-9_-]{43}$/);
-  assert.equal(identity.tokenExpiresAt, new Date((nowSeconds + 60) * 1_000).toISOString());
+  assert.deepEqual(identity, { actorRef: "staff_42" });
   assert.doesNotMatch(JSON.stringify(identity), /client-secret/i);
 });
 
@@ -87,19 +83,6 @@ test("fails closed when required staging Admin runtime configuration is absent o
     }),
     StagingAdminIdTokenNotConfiguredError,
   );
-});
-
-test("a valid embedded Admin ID-token nonce is one-time for unsafe scheduler writes", async () => {
-  const verifier = createVerifier();
-  const identity = await verifier.verify({ environment: stagingEnvironment(), request: bearerRequest(signToken()) });
-  const replays = new InMemoryStagingAdminIdTokenReplayRepository();
-  const input = {
-    consumedAt: new Date(nowSeconds * 1_000).toISOString(),
-    tokenDigest: identity.tokenDigest,
-    tokenExpiresAt: identity.tokenExpiresAt,
-  };
-  await replays.consume(input);
-  await assert.rejects(replays.consume(input), StagingAdminIdTokenReplayError);
 });
 
 function createVerifier(): WebCryptoShopifyAdminIdTokenVerifier {

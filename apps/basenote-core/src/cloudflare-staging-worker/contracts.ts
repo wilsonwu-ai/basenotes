@@ -54,27 +54,14 @@ export interface SignedProxyBoundary {
 export interface VerifiedStagingAdminIdentity {
   /** Opaque internally-derived staff actor, never a name or email address. */
   readonly actorRef: string;
-  /** SHA-256 digest of the token's `jti`; the raw bearer nonce is never persisted. */
-  readonly tokenDigest: string;
-  /** Token expiration retained only to bound a one-time replay record. */
-  readonly tokenExpiresAt: string;
 }
 
-/** Verifies a fresh Shopify Admin ID/session token before a scheduler API runs. */
+/** Verifies a fresh Shopify Admin ID/session token before every scheduler API request. */
 export interface StagingAdminIdTokenBoundary {
   verify(input: {
     readonly environment: StagingWorkerEnv;
     readonly request: Request;
   }): Promise<VerifiedStagingAdminIdentity>;
-}
-
-/** One-time guard for unsafe Admin scheduler requests; stores only a token digest. */
-export interface StagingAdminTokenReplayRepository {
-  consume(input: {
-    readonly consumedAt: string;
-    readonly tokenDigest: string;
-    readonly tokenExpiresAt: string;
-  }): Promise<void>;
 }
 
 /**
@@ -99,7 +86,6 @@ export interface AuthorizedProfileQueueBinding {
 
 export interface StagingWorkerDependencies {
   readonly adminIdTokenBoundary?: StagingAdminIdTokenBoundary;
-  readonly adminTokenReplayRepository?: StagingAdminTokenReplayRepository;
   readonly createOpaqueId?: (prefix: "pqa" | "pqm" | "pqk" | "pqf" | "pqe" | "pfs" | "pfa" | "pfk") => string;
   /** Test-only injection; production defaults to a D1-backed nonce repository. */
   readonly formNonceRepository?: StagingProfileQueueFormNonceRepository;

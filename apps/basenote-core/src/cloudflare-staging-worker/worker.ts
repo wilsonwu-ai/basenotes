@@ -6,7 +6,6 @@ import {
   SignedProxyRejectedError,
   StagingAdminIdTokenNotConfiguredError,
   StagingAdminIdTokenRejectedError,
-  StagingAdminIdTokenReplayError,
   StagingAdminStaffDeniedError,
 } from "./boundaries.js";
 import type {
@@ -55,7 +54,6 @@ import {
   WebCryptoShopifyAdminIdTokenVerifier,
   readStagingAdminEmbedShellConfiguration,
 } from "./webcrypto-shopify-admin-id-token.js";
-import { D1StagingAdminIdTokenReplayRepository } from "./admin-id-token-replay.js";
 import {
   StagingAdminSchedulerRequestValidationError,
   parseStagingAdminSchedulerCommand,
@@ -211,7 +209,6 @@ export function createStagingProfileQueueWorker(
         if (url.pathname === ADMIN_FOTM_SCHEDULER_API_PATH && request.method === "POST") {
           return await handleAdminSchedulerCommand({
             adminIdTokenBoundary,
-            adminTokenReplayRepository: dependencies.adminTokenReplayRepository,
             createOpaqueId,
             environment,
             now,
@@ -357,7 +354,6 @@ async function handleAdminSchedulerList(input: AdminSchedulerSharedRouteInput): 
 async function handleAdminSchedulerCommand(
   input: AdminSchedulerSharedRouteInput
     & {
-      readonly adminTokenReplayRepository: StagingWorkerDependencies["adminTokenReplayRepository"];
       readonly createOpaqueId: NonNullable<StagingWorkerDependencies["createOpaqueId"]>;
       readonly repositoryFactory: NonNullable<StagingWorkerDependencies["repositoryFactory"]>;
     },
@@ -379,22 +375,10 @@ async function handleAdminSchedulerCommand(
     if (existing) assertStagingVariantAllowed(existing.variantId, variants);
   }
 
-  // A short-lived token may authenticate a read, but each unsafe command
-  // consumes only a SHA-256 digest of its jti before it can reach D1 schedule
-  // or cycle state. The raw JWT, nonce, subject, email, and name are never
-  // stored. Replays must obtain a fresh Shopify ID token.
-  const replayRepository = input.adminTokenReplayRepository
-    ?? new D1StagingAdminIdTokenReplayRepository(requireStagingD1(input.environment));
-  await replayRepository.consume({
-    // The 0005 D1 replay ledger deliberately stores whole-second instants,
-    // matching Shopify's integer exp/iat claims. Real Worker clocks usually
-    // include milliseconds, so canonicalize here instead of relying on the
-    // zero-millisecond clocks used by unit fixtures.
-    consumedAt: new Date(Math.floor(input.now().getTime() / 1_000) * 1_000).toISOString(),
-    tokenDigest: identity.tokenDigest,
-    tokenExpiresAt: identity.tokenExpiresAt,
-  });
-
+  // Shopify App Bridge may cache and reuse the same valid ID token during its
+  // roughly one-minute lifetime. Verify it on every request, then let the
+  // command's mandatory idempotency key and schedule revision protect effects.
+  // Treating `jti` as a one-command nonce would reject legitimate rapid writes.
   const boundary = createAdminSchedulerBoundary({
     createOpaqueId: input.createOpaqueId,
     cycleRepository: createRepository(input.environment, input.repositoryFactory),
@@ -866,12 +850,9 @@ function serializeCycle(cycle: ProfileQueueCycle): Record<string, unknown> {
 function mapRouteError(error: unknown, request: Request, policy: StagingHttpPolicy): Response {
   const response = genericResponse(routeErrorStatus(error), routeErrorCode(error), request, policy);
   // Shopify's embedded-app guidance asks clients to obtain a fresh ID token
-  // after an invalid/expired/replayed bearer token. Never add this hint for a
+  // after an invalid or expired bearer token. Never add this hint for a
   // staff authorization denial: a new token cannot grant missing authority.
-  if (
-    error instanceof StagingAdminIdTokenRejectedError
-    || error instanceof StagingAdminIdTokenReplayError
-  ) {
+  if (error instanceof StagingAdminIdTokenRejectedError) {
     response.headers.set("X-Shopify-Retry-Invalid-Session-Request", "1");
   }
   return response;
@@ -891,7 +872,6 @@ function routeErrorStatus(error: unknown): number {
   if (
     error instanceof SignedProxyRejectedError
     || error instanceof StagingAdminIdTokenRejectedError
-    || error instanceof StagingAdminIdTokenReplayError
   ) {
     return 401;
   }
@@ -943,7 +923,6 @@ function routeErrorCode(error: unknown): string {
   if (
     error instanceof SignedProxyRejectedError
     || error instanceof StagingAdminIdTokenRejectedError
-    || error instanceof StagingAdminIdTokenReplayError
   ) return "unauthorized";
   if (
     error instanceof ProfileQueueOwnershipDeniedError

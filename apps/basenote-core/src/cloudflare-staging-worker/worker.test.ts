@@ -12,12 +12,10 @@ import type {
   ProfileQueueOwnershipResolver,
   SignedProxyBoundary,
   StagingAdminIdTokenBoundary,
-  StagingAdminTokenReplayRepository,
   StagingWorkerEnv,
   WorkerScheduledEvent,
   WorkerExecutionContext,
 } from "./contracts.js";
-import { InMemoryStagingAdminIdTokenReplayRepository } from "./admin-id-token-replay.js";
 import type {
   ConsumeStagingProfileQueueFormNonceInput,
   IssueStagingProfileQueueFormNonceInput,
@@ -375,7 +373,7 @@ test("Admin scheduler API rejects missing or denied embedded Admin authenticatio
   assert.equal(noAppProxyWriter.status, 404);
 });
 
-test("authenticated scheduler API uses fresh token replay protection, schedule CAS, and bounded D1-only provisioning", async () => {
+test("authenticated scheduler API uses request verification, command idempotency, schedule CAS, and bounded D1-only provisioning", async () => {
   const cycles = await repositoryWithCycle();
   const schedules = new InMemoryProfileQueueFotmScheduleRepository();
   const worker = configuredAdminSchedulerWorker({ cycles, schedules });
@@ -503,39 +501,6 @@ test("authenticated scheduler API uses fresh token replay protection, schedule C
   assert.deepEqual(await replayedException.json(), { attention: "RECOVERY_EXCEPTION_RECORDED", replayed: true });
 });
 
-test("authenticated scheduler canonicalizes replay consumption to D1 whole-second precision", async () => {
-  const cycles = await repositoryWithCycle();
-  const schedules = new InMemoryProfileQueueFotmScheduleRepository();
-  let consumedAt: string | null = null;
-  const replay: StagingAdminTokenReplayRepository = {
-    async consume(input) {
-      consumedAt = input.consumedAt;
-    },
-  };
-  const worker = configuredAdminSchedulerWorker({
-    cycles,
-    now: () => new Date("2026-09-01T09:01:00.987Z"),
-    replay,
-    schedules,
-  });
-
-  const saved = await worker.fetch(
-    adminCommandRequest({
-      action: "SAVE_DRAFT",
-      cutoffAt: "2026-09-10T05:01:00.000Z",
-      expectedRevision: null,
-      merchantTimezone: "America/Chicago",
-      shipMonth,
-      variantId: "gid://shopify/ProductVariant/501",
-    }, "pfk_scheduler_replay_precision001"),
-    schedulerEnvironment(),
-    context,
-  );
-
-  assert.equal(saved.status, 200);
-  assert.equal(consumedAt, "2026-09-01T09:01:00.000Z");
-});
-
 test("authenticated scheduler API exposes an explicit RETIRED-to-draft recovery path before any FOTM cycle exists", async () => {
   const cycles = await repositoryWithCycle();
   const schedules = new InMemoryProfileQueueFotmScheduleRepository();
@@ -656,41 +621,71 @@ test("authenticated scheduler API terminalizes only an aged pending provision cl
   assert.equal(cycle?.fotm.status, "UNPUBLISHED", "terminalization must not mutate a future cycle.");
 });
 
-test("a reused embedded Admin bearer nonce cannot reach a second scheduler write", async () => {
+test("one cached valid signed embedded Admin JWT can authorize distinct rapid idempotent commands", async () => {
   const schedules = new InMemoryProfileQueueFotmScheduleRepository();
   const cycles = await repositoryWithCycle();
-  const identity: StagingAdminIdTokenBoundary = {
-    async verify() {
-      return {
-        actorRef: "staff_101",
-        tokenDigest: "r".repeat(43),
-        tokenExpiresAt: "2026-09-01T09:02:00.000Z",
-      };
+  let serial = 0;
+  const worker = createStagingProfileQueueWorker({
+    createOpaqueId(prefix) {
+      serial += 1;
+      return `${prefix}_cached_jwt_${serial.toString().padStart(10, "0")}`;
     },
-  };
-  const worker = configuredAdminSchedulerWorker({ cycles, schedules, adminIdTokenBoundary: identity });
+    now: () => defaultGateNow,
+    repositoryFactory: () => cycles,
+    scheduleRepositoryFactory: () => schedules,
+  });
+  const cachedJwt = signSchedulerAdminToken();
   const first = await worker.fetch(
-    adminCommandRequest({
+    adminCommandRequestWithBearer({
       action: "SAVE_DRAFT",
       cutoffAt: "2026-09-10T05:01:00.000Z",
       expectedRevision: null,
       merchantTimezone: "America/Chicago",
       shipMonth,
       variantId: "gid://shopify/ProductVariant/501",
-    }, "pfk_scheduler_nonce001"),
+    }, "pfk_scheduler_nonce001", cachedJwt),
     schedulerEnvironment(),
     context,
   );
   assert.equal(first.status, 200);
-  const replay = await worker.fetch(
-    adminCommandRequest({ action: "PUBLISH", expectedRevision: 0, shipMonth }, "pfk_scheduler_nonce002"),
+  const published = await worker.fetch(
+    adminCommandRequestWithBearer(
+      { action: "PUBLISH", expectedRevision: 0, shipMonth },
+      "pfk_scheduler_nonce002",
+      cachedJwt,
+    ),
     schedulerEnvironment(),
     context,
   );
-  assert.equal(replay.status, 401);
-  assert.deepEqual(await replay.json(), { error: "unauthorized" });
-  assert.equal(replay.headers.get("X-Shopify-Retry-Invalid-Session-Request"), "1");
-  assert.equal((await schedules.findSchedule(shipMonth))?.status, "DRAFT");
+  assert.equal(published.status, 200);
+  assert.equal(published.headers.get("X-Shopify-Retry-Invalid-Session-Request"), null);
+  assert.equal((await schedules.findSchedule(shipMonth))?.status, "PUBLISHED");
+
+  const exactReplay = await worker.fetch(
+    adminCommandRequestWithBearer(
+      { action: "PUBLISH", expectedRevision: 0, shipMonth },
+      "pfk_scheduler_nonce002",
+      cachedJwt,
+    ),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(exactReplay.status, 200);
+  assert.equal((await exactReplay.json() as { readonly replayed: boolean }).replayed, true);
+  assert.equal((await schedules.findSchedule(shipMonth))?.revision, 1, "an exact command replay must not mutate again.");
+
+  const retargetedKey = await worker.fetch(
+    adminCommandRequestWithBearer(
+      { action: "RETIRE", expectedRevision: 1, shipMonth },
+      "pfk_scheduler_nonce002",
+      cachedJwt,
+    ),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(retargetedKey.status, 409);
+  assert.deepEqual(await retargetedKey.json(), { error: "schedule_conflict" });
+  assert.equal((await schedules.findSchedule(shipMonth))?.status, "PUBLISHED");
 });
 
 function configuredWorker(repository: InMemoryProfileQueueRepository) {
@@ -716,25 +711,20 @@ function configuredAdminSchedulerWorker(input: {
   readonly adminIdTokenBoundary?: StagingAdminIdTokenBoundary;
   readonly cycles: InMemoryProfileQueueRepository;
   readonly now?: () => Date;
-  readonly replay?: StagingAdminTokenReplayRepository;
   readonly schedules: InMemoryProfileQueueFotmScheduleRepository;
 }): ReturnType<typeof createStagingProfileQueueWorker> {
   let serial = 0;
-  const replay = new InMemoryStagingAdminIdTokenReplayRepository();
   const now = input.now ?? (() => defaultGateNow);
   const boundary = input.adminIdTokenBoundary ?? {
     async verify() {
       serial += 1;
       return {
         actorRef: "staff_101",
-        tokenDigest: `a${serial.toString().padStart(42, "0")}`,
-        tokenExpiresAt: new Date(now().getTime() + 60_000).toISOString(),
       };
     },
   } satisfies StagingAdminIdTokenBoundary;
   return createStagingProfileQueueWorker({
     adminIdTokenBoundary: boundary,
-    adminTokenReplayRepository: input.replay ?? replay,
     createOpaqueId(prefix) {
       serial += 1;
       return `${prefix}_admin_scheduler_${serial.toString().padStart(6, "0")}`;
@@ -923,6 +913,36 @@ function adminCommandRequest(
     },
     method: "POST",
   });
+}
+
+function adminCommandRequestWithBearer(
+  body: Record<string, unknown>,
+  idempotencyKey: string,
+  bearerToken: string,
+): Request {
+  const request = adminCommandRequest(body, idempotencyKey);
+  request.headers.set("Authorization", `Bearer ${bearerToken}`);
+  return request;
+}
+
+function signSchedulerAdminToken(): string {
+  const nowSeconds = Math.floor(defaultGateNow.getTime() / 1_000);
+  const encode = (value: Record<string, string | number>) => Buffer.from(JSON.stringify(value), "utf8").toString("base64url");
+  const header = encode({ alg: "HS256", typ: "JWT" });
+  const payload = encode({
+    aud: "staging-client-id-123456",
+    dest: `https://${defaultGateShop}`,
+    exp: nowSeconds + 60,
+    iat: nowSeconds - 1,
+    iss: `https://${defaultGateShop}/admin`,
+    jti: "f8912129-1af6-4cad-9ca3-76b0f7621087",
+    nbf: nowSeconds - 1,
+    sub: "101",
+  });
+  const signature = createHmac("sha256", "scheduler-runtime-secret-not-checked-in")
+    .update(`${header}.${payload}`, "utf8")
+    .digest("base64url");
+  return `${header}.${payload}.${signature}`;
 }
 
 function adminSchedulerListRequest(): Request {

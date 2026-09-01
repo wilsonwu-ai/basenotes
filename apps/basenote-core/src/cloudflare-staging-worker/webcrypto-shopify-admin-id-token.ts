@@ -81,8 +81,6 @@ export class WebCryptoShopifyAdminIdTokenVerifier implements StagingAdminIdToken
     }
     return {
       actorRef: asProfileQueueActorRef(`staff_${validated.staffId}`),
-      tokenDigest: await sha256Base64Url(validated.jti),
-      tokenExpiresAt: new Date(validated.exp * 1_000).toISOString(),
     };
   }
 }
@@ -202,7 +200,7 @@ function validateClaims(
     readonly expectedShopDomain: string;
   },
   nowSeconds: number,
-): { readonly exp: number; readonly jti: string; readonly staffId: string } {
+): { readonly staffId: string } {
   if (claims.aud !== configuration.clientId || !STAFF_SUBJECT.test(claims.sub) || !TOKEN_JTI.test(claims.jti)) {
     throw new StagingAdminIdTokenRejectedError("The Shopify Admin ID token claims are invalid.");
   }
@@ -220,7 +218,7 @@ function validateClaims(
     throw new StagingAdminIdTokenRejectedError("The Shopify Admin ID token is not fresh.");
   }
   assertShopClaims(claims.iss, claims.dest, configuration.expectedShopDomain);
-  return { exp, jti: claims.jti, staffId: claims.sub };
+  return { staffId: claims.sub };
 }
 
 function readUnixSeconds(value: unknown, name: string): number {
@@ -291,11 +289,6 @@ async function verifyHs256(input: {
   );
 }
 
-async function sha256Base64Url(value: string): Promise<string> {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
-  return bytesToBase64Url(new Uint8Array(digest));
-}
-
 function base64UrlToBytes(value: string): Uint8Array {
   if (!BASE64URL.test(value) || value.length % 4 === 1) {
     throw new StagingAdminIdTokenRejectedError("The Shopify Admin ID token is malformed.");
@@ -309,10 +302,4 @@ function base64UrlToBytes(value: string): Uint8Array {
   } catch {
     throw new StagingAdminIdTokenRejectedError("The Shopify Admin ID token is malformed.");
   }
-}
-
-function bytesToBase64Url(bytes: Uint8Array): string {
-  let value = "";
-  for (const byte of bytes) value += String.fromCharCode(byte);
-  return btoa(value).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/u, "");
 }

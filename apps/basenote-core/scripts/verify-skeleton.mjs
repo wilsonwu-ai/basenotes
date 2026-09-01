@@ -36,7 +36,6 @@ const requiredFiles = [
   "src/cloudflare-staging-worker/cutoff-locker.ts",
   "src/cloudflare-staging-worker/fotm-schedule-admin.ts",
   "src/cloudflare-staging-worker/webcrypto-shopify-admin-id-token.ts",
-  "src/cloudflare-staging-worker/admin-id-token-replay.ts",
   "src/cloudflare-staging-worker/admin-scheduler-request-validation.ts",
   "src/cloudflare-staging-worker/admin-scheduler-page.ts",
   "src/cloudflare-staging-worker/worker.ts",
@@ -143,7 +142,7 @@ for (const requiredFragment of [
   "SHOPIFY_ADMIN_CLIENT_SECRET",
   "STAGING_ADMIN_ALLOWED_STAFF_IDS",
   "HS256",
-  "tokenDigest",
+  "TOKEN_JTI",
 ]) {
   if (!adminTokenVerifier.includes(requiredFragment)) {
     throw new Error(`The staging Admin token verifier must retain: ${requiredFragment}`);

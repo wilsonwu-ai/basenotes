@@ -51,11 +51,6 @@ export class StagingAdminStaffDeniedError extends Error {
   override name = "StagingAdminStaffDeniedError";
 }
 
-/** An unsafe scheduler POST reused the same short-lived Shopify ID-token nonce. */
-export class StagingAdminIdTokenReplayError extends Error {
-  override name = "StagingAdminIdTokenReplayError";
-}
-
 export const unconfiguredSignedProxyBoundary: SignedProxyBoundary = {
   async verify() {
     throw new SignedProxyBoundaryNotConfiguredError(

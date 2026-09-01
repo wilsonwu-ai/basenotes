@@ -96,14 +96,18 @@ The member-choice addition has no unauthenticated public staff write route. Its 
 embedded Admin scheduler accepts a fresh Shopify Admin ID token only after
 server verification of HS256 signature, exact app audience, exact disposable
 shop issuer/destination, token freshness, and an opaque staging staff allowlist.
-Unsafe requests consume a D1 record containing only a SHA-256 digest of the
-token nonce. A theme FOTM setting may provide display context, but cannot
-configure a durable future-month schedule, authorize a member action, lock a
-cutoff, or prove a provider delivery change. The scheduler can draft/publish/
-retire future months and provision at most five exact open/unpublished staging
-cycles per request with compare-and-swap, append-only selection evidence, and
-no Shopify/Appstle/email call. The same provision idempotency key replays its
-durable original result and never starts another five-cycle fan-out. A retired
+Shopify App Bridge may reuse that still-valid token during its short lifetime,
+so the Worker verifies it on every request without treating its `jti` as a
+one-command nonce. Unsafe effects instead require durable command idempotency
+keys and schedule revisions. A legacy append-only token-digest ledger from the
+initial staging build remains inert and is never read or written. A theme FOTM
+setting may provide display context, but cannot configure a durable future-month
+schedule, authorize a member action, lock a cutoff, or prove a provider delivery
+change. The scheduler can draft/publish/retire future months and provision at
+most five exact open/unpublished staging cycles per request with compare-and-swap,
+append-only selection evidence, and no Shopify/Appstle/email call. The same
+provision idempotency key replays its durable original result and never starts
+another five-cycle fan-out. A retired
 month may be explicitly recovered to a new draft only when no cycle has
 received the old FOTM; otherwise staff can record immutable, non-PII
 no-mutation recovery evidence for manual review. An unknown-outcome pending
@@ -114,8 +118,9 @@ recent-command history. It makes
 the published FOTM
 the visibly pre-selected included default; it never writes a member override.
 This is the core of [issue #35](https://github.com/wilsonwu-ai/basenotes/issues/35),
-but it remains unapplied and unconfigured pending protected staging app setup
-and a disposable end-to-end proof.
+and is connected only to the isolated development store and staging Worker.
+Production remains gated pending a disposable end-to-end proof and explicit
+cutover approval.
 
 ## Repository layout
 
@@ -149,7 +154,8 @@ migrations/0003_member_fragrance_choice.sql Reviewed, unapplied member choice/sc
 migrations/0004_durable_historical_backfill.sql
                                    Immutable dry-run manifest and staging-only
                                    historical backfill lifecycle
-migrations/0005_staging_admin_scheduler.sql Reviewed, unapplied Admin-token replay schema
+migrations/0005_staging_admin_scheduler.sql Historical append-only token-use ledger; retained
+                                   inert after Shopify cached-token compatibility fix
 migrations/0006_staging_admin_scheduler_lifecycle.sql Reviewed, unapplied RETIRED lifecycle,
                                    provision command/replay, and recovery-evidence schema
 scripts/verify-skeleton.mjs         Offline structural/safety verification
