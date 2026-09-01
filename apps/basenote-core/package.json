@@ -1,0 +1,26 @@
+{
+  "name": "@basenote/core",
+  "version": "0.0.0-local",
+  "description": "Local-only foundation for Base Note's future Shopify subscription platform.",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.10"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "test": "node --import tsx --test src/config.test.ts src/domain/queue.test.ts src/platform/subscription-gateway.test.ts",
+    "typecheck": "tsc --noEmit",
+    "verify": "node scripts/verify-skeleton.mjs",
+    "check": "npm run verify && npm run typecheck && npm test"
+  },
+  "dependencies": {
+    "@shopify/shopify-api": "^14.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  }
+}

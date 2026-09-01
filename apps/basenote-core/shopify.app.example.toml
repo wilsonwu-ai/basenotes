@@ -1,0 +1,30 @@
+# This is a reference template only. It is not a Shopify CLI configuration.
+# Do NOT rename it to shopify.app.toml or add a real client ID until every gate
+# in README.md has been approved.
+
+name = "Base Note Core"
+client_id = "REPLACE_ONLY_AFTER_EXISTING_DEV_DASHBOARD_APP_IS_APPROVED_FOR_LINKING"
+application_url = "https://example.invalid"
+embedded = true
+handle = "basenote-core"
+
+[build]
+automatically_update_urls_on_dev = true
+include_config_on_deploy = true
+
+[access_scopes]
+# Start with the least privileges needed for an approved first release.
+# Do not add protected Subscription API scopes until Shopify approves the app.
+scopes = "read_customers,read_orders,read_products"
+
+[auth]
+redirect_urls = ["https://example.invalid/auth/callback"]
+
+# A future App Proxy configuration belongs here only after its HMAC verification,
+# authorization tests, and production URL are ready. Do not point it at the
+# current queue worker by default.
+#
+# [app_proxy]
+# url = "https://example.invalid/apps/basenote"
+# subpath = "basenote"
+# prefix = "apps"
