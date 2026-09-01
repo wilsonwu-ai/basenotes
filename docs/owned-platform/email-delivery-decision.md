@@ -100,6 +100,11 @@ records. Existing DNS must be inspected first.
 7. Obtain explicit production approval for DNS, sender verification, data
    migration, warm-up plan, and a feature-flagged cohort.
 
+The first code-only, disabled-by-default Mailgun adapter and its sandbox setup
+blocker are documented in
+[`mailgun-staging-transport.md`](mailgun-staging-transport.md). It is not an
+account setup, deployment, sender verification, profile import, or send.
+
 ## Primary references
 
 - Cloudflare Email Service FAQ (transactional-email scope):

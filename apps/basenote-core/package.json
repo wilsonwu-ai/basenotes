@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
-    "test": "node --import tsx --test src/config.test.ts src/domain/queue.test.ts src/platform/subscription-gateway.test.ts src/auth/app-proxy.test.ts src/pricing/pricing-policy.test.ts src/queue/in-memory-queue-service.test.ts src/messaging/consent.test.ts src/messaging/events.test.ts src/messaging/outbox.test.ts",
+    "test": "node --import tsx --test src/config.test.ts src/domain/queue.test.ts src/platform/subscription-gateway.test.ts src/auth/app-proxy.test.ts src/pricing/pricing-policy.test.ts src/queue/in-memory-queue-service.test.ts src/messaging/consent.test.ts src/messaging/events.test.ts src/messaging/outbox.test.ts src/messaging/mailgun-staging.test.ts",
     "typecheck": "tsc --noEmit",
     "verify": "node scripts/verify-skeleton.mjs",
     "check": "npm run verify && npm run typecheck && npm test"

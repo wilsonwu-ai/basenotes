@@ -80,3 +80,5 @@ See [requirements-ledger.md](requirements-ledger.md) for the sanitized request
 traceability and test order. See
 [email-delivery-decision.md](email-delivery-decision.md) for the proposed
 Cloudflare + Mailgun staging architecture and its explicit approval gates.
+The disabled-by-default adapter and the Mailgun account/recipient-verification
+blocker are in [mailgun-staging-transport.md](mailgun-staging-transport.md).
