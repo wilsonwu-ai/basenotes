@@ -469,12 +469,157 @@ test("authenticated scheduler API uses fresh token replay protection, schedule C
     configured: 1,
     conflicted: 0,
     mayHaveMore: false,
+    replayed: false,
     scanned: 1,
   });
   const cycle = await cycles.findCycle(bindingId, cycleKey);
   assert.equal(cycle?.fotm.status, "PUBLISHED");
   assert.equal(cycle?.memberChoice.source, "UNSELECTED", "FOTM is a visible default, not a persisted member override.");
   assert.equal(cycle?.addOns.length, 0, "scheduler provisioning must not create paid add-ons or contact a provider.");
+
+  const blockedRetire = await worker.fetch(
+    adminCommandRequest({ action: "RETIRE", expectedRevision: 1, shipMonth }, "pfk_scheduler_retire_blocked001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(blockedRetire.status, 409);
+  assert.deepEqual(await blockedRetire.json(), { error: "schedule_needs_attention" });
+  assert.equal((await schedules.findSchedule(shipMonth))?.status, "PUBLISHED");
+
+  const exception = await worker.fetch(
+    adminCommandRequest({ action: "RECORD_RECOVERY_EXCEPTION", expectedRevision: 1, shipMonth }, "pfk_scheduler_exception001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(exception.status, 200);
+  assert.deepEqual(await exception.json(), { attention: "RECOVERY_EXCEPTION_RECORDED", replayed: false });
+  const replayedException = await worker.fetch(
+    adminCommandRequest({ action: "RECORD_RECOVERY_EXCEPTION", expectedRevision: 1, shipMonth }, "pfk_scheduler_exception001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(replayedException.status, 200);
+  assert.deepEqual(await replayedException.json(), { attention: "RECOVERY_EXCEPTION_RECORDED", replayed: true });
+});
+
+test("authenticated scheduler API exposes an explicit RETIRED-to-draft recovery path before any FOTM cycle exists", async () => {
+  const cycles = await repositoryWithCycle();
+  const schedules = new InMemoryProfileQueueFotmScheduleRepository();
+  const worker = configuredAdminSchedulerWorker({ cycles, schedules });
+
+  const saved = await worker.fetch(
+    adminCommandRequest({
+      action: "SAVE_DRAFT",
+      cutoffAt: "2026-09-10T05:01:00.000Z",
+      expectedRevision: null,
+      merchantTimezone: "America/Chicago",
+      shipMonth,
+      variantId: "gid://shopify/ProductVariant/501",
+    }, "pfk_scheduler_lifecycle_draft001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(saved.status, 200);
+  const retired = await worker.fetch(
+    adminCommandRequest({ action: "RETIRE", expectedRevision: 0, shipMonth }, "pfk_scheduler_lifecycle_retire001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(retired.status, 200);
+  const retiredBody = await retired.json() as { readonly schedule: { readonly revision: number; readonly status: string } };
+  assert.equal(retiredBody.schedule.revision, 1);
+  assert.equal(retiredBody.schedule.status, "RETIRED");
+  const listed = await worker.fetch(adminSchedulerListRequest(), schedulerEnvironment(), context);
+  assert.equal(listed.status, 200);
+  assert.equal((await listed.json() as { readonly schedules: readonly { readonly status: string }[] }).schedules[0]?.status, "RETIRED");
+
+  const recovered = await worker.fetch(
+    adminCommandRequest({
+      action: "RECOVER_DRAFT",
+      cutoffAt: "2026-09-11T05:01:00.000Z",
+      expectedRevision: 1,
+      merchantTimezone: "America/Chicago",
+      shipMonth,
+      variantId: "gid://shopify/ProductVariant/501",
+    }, "pfk_scheduler_lifecycle_recover001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(recovered.status, 200);
+  assert.equal((await recovered.json() as { readonly schedule: { readonly revision: number; readonly status: string } }).schedule.status, "DRAFT");
+  assert.equal((await schedules.findSchedule(shipMonth))?.revision, 2);
+});
+
+test("authenticated scheduler API terminalizes only an aged pending provision claim without fan-out", async () => {
+  const cycles = await repositoryWithCycle();
+  const schedules = new InMemoryProfileQueueFotmScheduleRepository();
+  const firstWorker = configuredAdminSchedulerWorker({ cycles, schedules });
+  const saved = await firstWorker.fetch(
+    adminCommandRequest({
+      action: "SAVE_DRAFT",
+      cutoffAt: "2026-09-10T05:01:00.000Z",
+      expectedRevision: null,
+      merchantTimezone: "America/Chicago",
+      shipMonth,
+      variantId: "gid://shopify/ProductVariant/501",
+    }, "pfk_scheduler_attention_draft001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(saved.status, 200);
+  const published = await firstWorker.fetch(
+    adminCommandRequest({ action: "PUBLISH", expectedRevision: 0, shipMonth }, "pfk_scheduler_attention_publish001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(published.status, 200);
+  await schedules.claimProvisionCommand({
+    actorRef: "staff_101",
+    createdAt: defaultGateNow.toISOString(),
+    expectedScheduleRevision: 1,
+    idempotencyKey: "pfk_scheduler_attention_provision001",
+    plan: [],
+    shipMonth,
+  });
+  const listedBeforeTerminalization = await firstWorker.fetch(adminSchedulerListRequest(), schedulerEnvironment(), context);
+  assert.equal(listedBeforeTerminalization.status, 200);
+  assert.deepEqual(
+    (await listedBeforeTerminalization.json() as {
+      readonly pendingProvisionCommands: readonly { readonly idempotencyKey: string; readonly status: string }[];
+    }).pendingProvisionCommands,
+    [{
+      attentionAt: null,
+      completedAt: null,
+      createdAt: defaultGateNow.toISOString(),
+      expectedScheduleRevision: 1,
+      idempotencyKey: "pfk_scheduler_attention_provision001",
+      shipMonth,
+      status: "PENDING",
+    }],
+    "active recovery handles are returned separately from bounded command history.",
+  );
+
+  const delayedWorker = configuredAdminSchedulerWorker({
+    cycles,
+    now: () => new Date("2026-09-01T09:16:00.000Z"),
+    schedules,
+  });
+  const marked = await delayedWorker.fetch(
+    adminCommandRequest({
+      action: "MARK_PROVISION_NEEDS_ATTENTION",
+      expectedScheduleRevision: 1,
+      shipMonth,
+    }, "pfk_scheduler_attention_provision001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(marked.status, 200);
+  assert.deepEqual(await marked.json(), { attention: "PROVISION_NEEDS_ATTENTION_RECORDED", replayed: false });
+  const command = await schedules.findProvisionCommandByIdempotency("pfk_scheduler_attention_provision001");
+  assert.equal(command?.status, "NEEDS_ATTENTION");
+  assert.equal(command?.result, null);
+  const cycle = await cycles.findCycle(bindingId, cycleKey);
+  assert.equal(cycle?.fotm.status, "UNPUBLISHED", "terminalization must not mutate a future cycle.");
 });
 
 test("a reused embedded Admin bearer nonce cannot reach a second scheduler write", async () => {
@@ -536,17 +681,19 @@ function configuredWorker(repository: InMemoryProfileQueueRepository) {
 function configuredAdminSchedulerWorker(input: {
   readonly adminIdTokenBoundary?: StagingAdminIdTokenBoundary;
   readonly cycles: InMemoryProfileQueueRepository;
+  readonly now?: () => Date;
   readonly schedules: InMemoryProfileQueueFotmScheduleRepository;
 }): ReturnType<typeof createStagingProfileQueueWorker> {
   let serial = 0;
   const replay = new InMemoryStagingAdminIdTokenReplayRepository();
+  const now = input.now ?? (() => defaultGateNow);
   const boundary = input.adminIdTokenBoundary ?? {
     async verify() {
       serial += 1;
       return {
         actorRef: "staff_101",
         tokenDigest: `a${serial.toString().padStart(42, "0")}`,
-        tokenExpiresAt: "2026-09-01T09:02:00.000Z",
+        tokenExpiresAt: new Date(now().getTime() + 60_000).toISOString(),
       };
     },
   } satisfies StagingAdminIdTokenBoundary;
@@ -557,7 +704,7 @@ function configuredAdminSchedulerWorker(input: {
       serial += 1;
       return `${prefix}_admin_scheduler_${serial.toString().padStart(6, "0")}`;
     },
-    now: () => defaultGateNow,
+    now,
     repositoryFactory: () => input.cycles,
     scheduleRepositoryFactory: () => input.schedules,
   });
@@ -740,6 +887,15 @@ function adminCommandRequest(
       Origin: workerOrigin,
     },
     method: "POST",
+  });
+}
+
+function adminSchedulerListRequest(): Request {
+  return new Request(`${workerOrigin}/api/admin/fotm-schedules`, {
+    headers: {
+      Authorization: "Bearer injected-test-token",
+      Origin: workerOrigin,
+    },
   });
 }
 

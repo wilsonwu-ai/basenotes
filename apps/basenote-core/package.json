@@ -16,7 +16,8 @@
     "verify": "node scripts/verify-skeleton.mjs",
     "migration:smoke": "node scripts/smoke-member-choice-migration.mjs",
     "admin-scheduler:migration:smoke": "node scripts/smoke-staging-admin-scheduler-migration.mjs",
-    "check": "npm run verify && npm run migration:smoke && npm run admin-scheduler:migration:smoke && npm run typecheck && npm run worker:check && npm test"
+    "admin-scheduler:lifecycle:migration:smoke": "node scripts/smoke-staging-admin-scheduler-lifecycle-migration.mjs",
+    "check": "npm run verify && npm run migration:smoke && npm run admin-scheduler:migration:smoke && npm run admin-scheduler:lifecycle:migration:smoke && npm run typecheck && npm run worker:check && npm test"
   },
   "dependencies": {
     "@shopify/shopify-api": "^14.0.1"

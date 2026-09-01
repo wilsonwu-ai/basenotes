@@ -99,14 +99,23 @@ shop issuer/destination, token freshness, and an opaque staging staff allowlist.
 Unsafe requests consume a D1 record containing only a SHA-256 digest of the
 token nonce. A theme FOTM setting may provide display context, but cannot
 configure a durable future-month schedule, authorize a member action, lock a
-cutoff, or prove a provider delivery change. The scheduler can draft/publish
-future months and provision at most five exact open/unpublished staging cycles
-per request with compare-and-swap, append-only selection evidence, and no
-Shopify/Appstle/email call. It makes the published FOTM the visibly
-pre-selected included default; it never writes a member override. This is the
-core of [issue #35](https://github.com/wilsonwu-ai/basenotes/issues/35), but it
-remains unapplied and unconfigured pending protected staging app setup and a
-disposable end-to-end proof.
+cutoff, or prove a provider delivery change. The scheduler can draft/publish/
+retire future months and provision at most five exact open/unpublished staging
+cycles per request with compare-and-swap, append-only selection evidence, and
+no Shopify/Appstle/email call. The same provision idempotency key replays its
+durable original result and never starts another five-cycle fan-out. A retired
+month may be explicitly recovered to a new draft only when no cycle has
+received the old FOTM; otherwise staff can record immutable, non-PII
+no-mutation recovery evidence for manual review. An unknown-outcome pending
+provision may instead be terminalized as `NEEDS_ATTENTION` after 15 minutes;
+that one-way audit action never fans out or changes a schedule/cycle. Active
+pending recovery handles are listed per ship month, separately from the bounded
+recent-command history. It makes
+the published FOTM
+the visibly pre-selected included default; it never writes a member override.
+This is the core of [issue #35](https://github.com/wilsonwu-ai/basenotes/issues/35),
+but it remains unapplied and unconfigured pending protected staging app setup
+and a disposable end-to-end proof.
 
 ## Repository layout
 
@@ -141,6 +150,8 @@ migrations/0004_durable_historical_backfill.sql
                                    Immutable dry-run manifest and staging-only
                                    historical backfill lifecycle
 migrations/0005_staging_admin_scheduler.sql Reviewed, unapplied Admin-token replay schema
+migrations/0006_staging_admin_scheduler_lifecycle.sql Reviewed, unapplied RETIRED lifecycle,
+                                   provision command/replay, and recovery-evidence schema
 scripts/verify-skeleton.mjs         Offline structural/safety verification
 shopify.app.example.toml            Deliberately unlinked future config template
 ```

@@ -113,6 +113,21 @@ test("D1 provisioning scan is exact-month, unpublished-only, and safely bounded"
   );
 });
 
+test("D1 lifecycle guard detects an already provisioned FOTM for one exact ship month", async () => {
+  const database = new RecordingD1Database();
+  const repository = new D1ProfileQueueRepository(database);
+  database.nextFirstRow = { present: 1 };
+  assert.equal(await repository.hasProvisionedFotmForShipMonth("2026-10"), true);
+  const statement = database.prepared.at(-1);
+  assert.match(statement?.query ?? "", /FROM profile_queue_cycles/);
+  assert.match(statement?.query ?? "", /ship_month = \?/);
+  assert.match(statement?.query ?? "", /fotm_status IN \('PUBLISHED', 'RESOLVED'\)/);
+  assert.deepEqual(statement?.values, ["2026-10"]);
+
+  database.nextFirstRow = null;
+  assert.equal(await repository.hasProvisionedFotmForShipMonth("2026-10"), false);
+});
+
 function createCycle() {
   return createEmptyProfileQueueCycle({
     bindingId: "binding-profile-101",
@@ -157,9 +172,10 @@ class RecordingD1Database implements D1DatabasePort {
   readonly batches: RecordedStatement[][] = [];
   readonly prepared: RecordingD1Statement[] = [];
   nextFirstChangeCount = 1;
+  nextFirstRow: Record<string, unknown> | null = null;
 
   prepare(query: string): D1PreparedStatement {
-    const statement = new RecordingD1Statement(query);
+    const statement = new RecordingD1Statement(query, this);
     this.prepared.push(statement);
     return statement;
   }
@@ -182,7 +198,10 @@ interface RecordedStatement {
 class RecordingD1Statement implements D1PreparedStatement {
   readonly values: unknown[] = [];
 
-  constructor(readonly query: string) {}
+  constructor(
+    readonly query: string,
+    private readonly database: RecordingD1Database,
+  ) {}
 
   bind(...values: readonly unknown[]): D1PreparedStatement {
     this.values.push(...values);
@@ -190,7 +209,7 @@ class RecordingD1Statement implements D1PreparedStatement {
   }
 
   async first<T = Record<string, unknown>>(): Promise<T | null> {
-    return null;
+    return this.database.nextFirstRow as T | null;
   }
 
   async all<T = Record<string, unknown>>(): Promise<D1Result<T>> {

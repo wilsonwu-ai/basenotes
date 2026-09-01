@@ -51,6 +51,60 @@ test("parses only explicit authenticated scheduler command shapes", async () => 
     idempotencyKey,
     shipMonth: "2026-10",
   });
+
+  const retire = await parseStagingAdminSchedulerCommand(commandRequest({
+    action: "RETIRE",
+    expectedRevision: 1,
+    shipMonth: "2026-10",
+  }));
+  assert.deepEqual(retire, {
+    action: "RETIRE",
+    expectedRevision: 1,
+    idempotencyKey,
+    shipMonth: "2026-10",
+  });
+
+  const recoveryDraft = await parseStagingAdminSchedulerCommand(commandRequest({
+    action: "RECOVER_DRAFT",
+    cutoffAt: "2026-10-11T05:01:00.000Z",
+    expectedRevision: 2,
+    merchantTimezone: "America/Chicago",
+    shipMonth: "2026-10",
+    variantId: "gid://shopify/ProductVariant/902",
+  }));
+  assert.deepEqual(recoveryDraft, {
+    action: "RECOVER_DRAFT",
+    cutoffAt: "2026-10-11T05:01:00.000Z",
+    expectedRevision: 2,
+    idempotencyKey,
+    merchantTimezone: "America/Chicago",
+    shipMonth: "2026-10",
+    variantId: "gid://shopify/ProductVariant/902",
+  });
+
+  const exception = await parseStagingAdminSchedulerCommand(commandRequest({
+    action: "RECORD_RECOVERY_EXCEPTION",
+    expectedRevision: 2,
+    shipMonth: "2026-10",
+  }));
+  assert.deepEqual(exception, {
+    action: "RECORD_RECOVERY_EXCEPTION",
+    expectedRevision: 2,
+    idempotencyKey,
+    shipMonth: "2026-10",
+  });
+
+  const markProvision = await parseStagingAdminSchedulerCommand(commandRequest({
+    action: "MARK_PROVISION_NEEDS_ATTENTION",
+    expectedScheduleRevision: 2,
+    shipMonth: "2026-10",
+  }));
+  assert.deepEqual(markProvision, {
+    action: "MARK_PROVISION_NEEDS_ATTENTION",
+    expectedScheduleRevision: 2,
+    idempotencyKey,
+    shipMonth: "2026-10",
+  });
 });
 
 test("scheduler parsing rejects malformed, overspecified, or non-opaque requests without echoing input", async () => {

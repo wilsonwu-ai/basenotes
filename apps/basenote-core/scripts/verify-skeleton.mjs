@@ -45,8 +45,10 @@ const requiredFiles = [
   "migrations/0003_member_fragrance_choice.sql",
   "migrations/0004_durable_historical_backfill.sql",
   "migrations/0005_staging_admin_scheduler.sql",
+  "migrations/0006_staging_admin_scheduler_lifecycle.sql",
   "scripts/smoke-member-choice-migration.mjs",
   "scripts/smoke-staging-admin-scheduler-migration.mjs",
+  "scripts/smoke-staging-admin-scheduler-lifecycle-migration.mjs",
   "wrangler.staging.example.toml",
   "tsconfig.worker.json",
   "src/subscription-history/d1-backfill-service.ts",
@@ -65,8 +67,10 @@ if (pkg.private !== true || pkg.name !== "@basenote/core") {
 if (
   typeof pkg.scripts?.["admin-scheduler:migration:smoke"] !== "string"
   || !pkg.scripts.check.includes("admin-scheduler:migration:smoke")
+  || typeof pkg.scripts?.["admin-scheduler:lifecycle:migration:smoke"] !== "string"
+  || !pkg.scripts.check.includes("admin-scheduler:lifecycle:migration:smoke")
 ) {
-  throw new Error("The required staging Admin scheduler migration smoke must remain part of check.");
+  throw new Error("The required staging Admin scheduler migration smokes must remain part of check.");
 }
 
 const envExample = readFileSync(resolve(root, ".env.example"), "utf8");
@@ -207,6 +211,22 @@ for (const requiredFragment of [
 ]) {
   if (!adminSchedulerMigration.includes(requiredFragment)) {
     throw new Error(`The staging Admin scheduler migration must retain: ${requiredFragment}`);
+  }
+}
+
+const adminSchedulerLifecycleMigration = readFileSync(
+  resolve(root, "migrations/0006_staging_admin_scheduler_lifecycle.sql"),
+  "utf8",
+);
+for (const requiredFragment of [
+  "profile_queue_fotm_provision_commands",
+  "profile_queue_fotm_schedule_recovery_exceptions",
+  "RECOVERED",
+  "RETIRED",
+  "provision command audit is append-only",
+]) {
+  if (!adminSchedulerLifecycleMigration.includes(requiredFragment)) {
+    throw new Error(`The staging Admin scheduler lifecycle migration must retain: ${requiredFragment}`);
   }
 }
 

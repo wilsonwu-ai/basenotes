@@ -34,14 +34,14 @@ export function renderStagingAdminSchedulerShell(input: {
     <main>
       <p class="meta">Base Note · staging only</p>
       <h1>Future FOTM scheduler</h1>
-      <p class="notice">A published FOTM is the visibly pre-selected, one included fragrance after it is provisioned to an exact future shipment. It is not an add-on. A member may still save a separate override before the Central-time cutoff.</p>
+      <p class="notice">A published FOTM is the visibly pre-selected, one included fragrance after it is provisioned to an exact future shipment. It is not an add-on. A member may still save a separate override before the Central-time cutoff. Retiring or recovering a schedule never silently changes an already published or locked shipment.</p>
       <p id="status" class="notice" role="status">Authenticating scheduler…</p>
       <section id="scheduler" class="hidden" aria-label="FOTM scheduler"></section>
     </main>
     <script>
       (() => {
         const API_PATH = ${apiPath};
-        const state = { pending: null, schedules: [], variants: [] };
+        const state = { pending: null, pendingProvisionCommands: [], provisionCommands: [], schedules: [], variants: [] };
         const status = document.getElementById("status");
         const scheduler = document.getElementById("scheduler");
 
@@ -80,12 +80,14 @@ export function renderStagingAdminSchedulerShell(input: {
             if (response.ok) throw new SchedulerTransportError("The request outcome is unknown. Retry it with the same protected command key.");
             body = {};
           }
-          if (!response.ok) throw new Error(body.error === "unauthorized" ? "Shopify Admin authentication was rejected. Refresh the page and try again." : body.error === "forbidden" ? "This Shopify staff account is not allowlisted for staging." : body.error === "schedule_conflict" ? "The schedule changed. Reloaded the latest state." : "The staging scheduler could not complete that request.");
+          if (!response.ok) throw new Error(body.error === "unauthorized" ? "Shopify Admin authentication was rejected. Refresh the page and try again." : body.error === "forbidden" ? "This Shopify staff account is not allowlisted for staging." : body.error === "schedule_conflict" ? "The schedule changed. Reloaded the latest state." : body.error === "schedule_needs_attention" ? "This month already has a provisioned FOTM cycle. It was not retired or replaced; record the no-mutation recovery exception for review." : body.error === "provision_recovery_required" ? "The prior bounded provision command has no durable result. It was not run again; inspect its staging audit before creating a new command." : body.error === "provision_recovery_not_ready" ? "The pending provision command is still within its 15-minute recovery delay and was not changed." : "The staging scheduler could not complete that request.");
           return body;
         }
-        async function post(command) {
+        async function post(command, fixedKey) {
           const fingerprint = JSON.stringify(command);
-          const pending = state.pending && state.pending.fingerprint === fingerprint
+          const pending = fixedKey
+            ? { command, fingerprint, key: fixedKey }
+            : state.pending && state.pending.fingerprint === fingerprint
             ? state.pending
             : { command, fingerprint, key: idempotencyKey() };
           state.pending = pending;
@@ -108,16 +110,18 @@ export function renderStagingAdminSchedulerShell(input: {
           const monthLabel = element("label", "Ship month"); const month = element("input"); month.type = "month"; month.name = "shipMonth"; month.required = true; monthLabel.append(month);
           const cutoffLabel = element("label", "Cutoff UTC timestamp"); const cutoff = element("input"); cutoff.type = "text"; cutoff.name = "cutoffAt"; cutoff.placeholder = "2026-10-10T05:01:00.000Z"; cutoff.required = true; cutoffLabel.append(cutoff);
           const variantLabel = element("label", "Allowed disposable test fragrance"); const variant = element("select"); variant.name = "variantId"; variant.required = true; for (const item of state.variants) { const option = element("option", item.label); option.value = item.variantId; variant.append(option); } variantLabel.append(variant);
-          const save = element("button", "Save draft"); save.type = "submit";
+          const save = element("button", "Save draft / explicitly recover retired month"); save.type = "submit";
           form.append(monthLabel, cutoffLabel, variantLabel, save);
           form.addEventListener("submit", async (event) => {
             event.preventDefault();
             const existing = currentSchedule(month.value);
             try {
-              message("Saving staging draft…");
-              await post({ action:"SAVE_DRAFT", shipMonth:month.value, cutoffAt:cutoff.value, merchantTimezone:"America/Chicago", variantId:variant.value, expectedRevision:existing ? existing.revision : null });
+              if (existing && existing.status === "PUBLISHED") throw new Error("Retire this published schedule before creating an explicit recovery draft. Existing published and locked cycles will remain unchanged.");
+              const action = existing && existing.status === "RETIRED" ? "RECOVER_DRAFT" : "SAVE_DRAFT";
+              message(action === "RECOVER_DRAFT" ? "Recording explicit staging recovery draft…" : "Saving staging draft…");
+              await post({ action, shipMonth:month.value, cutoffAt:cutoff.value, merchantTimezone:"America/Chicago", variantId:variant.value, expectedRevision:existing ? existing.revision : null });
               await load();
-              message("Draft saved.");
+              message(action === "RECOVER_DRAFT" ? "Recovery draft saved. Publish and provision it explicitly when reviewed." : "Draft saved.");
             } catch (error) { message(error instanceof Error ? error.message : "Draft was not saved.", true); await load().catch(() => {}); }
           });
           create.append(form); scheduler.append(create);
@@ -139,17 +143,48 @@ export function renderStagingAdminSchedulerShell(input: {
             row.append(element("strong", schedule.shipMonth + " · " + schedule.status));
             const details = element("p", "Included FOTM default: " + schedule.variantId + " · cutoff " + schedule.cutoffAt + " · revision " + schedule.revision); details.className = "meta"; row.append(details);
             const actions = element("div"); actions.className = "actions";
+            const pendingCommands = state.pendingProvisionCommands.filter((command) => command.shipMonth === schedule.shipMonth && command.status === "PENDING");
             if (schedule.status === "DRAFT") {
               const publish = element("button", "Publish this month"); publish.type = "button";
               publish.addEventListener("click", async () => {
                 try { message("Publishing staging schedule…"); await post({ action:"PUBLISH", shipMonth:schedule.shipMonth, expectedRevision:schedule.revision }); await load(); message("Schedule published. Provision exact future cycles when ready."); } catch (error) { message(error instanceof Error ? error.message : "Schedule was not published.", true); await load().catch(() => {}); }
               }); actions.append(publish);
             }
+            if (schedule.status === "DRAFT" || schedule.status === "PUBLISHED") {
+              const retire = element("button", "Retire this month"); retire.type = "button"; retire.className = "secondary";
+              retire.addEventListener("click", async () => {
+                if (!window.confirm("Retire this staging schedule? This does not change any already published or locked shipment.")) return;
+                try { message("Retiring staging schedule without changing cycles…"); await post({ action:"RETIRE", shipMonth:schedule.shipMonth, expectedRevision:schedule.revision }); await load(); message("Schedule retired. Use the explicit recovery draft flow to replace it."); } catch (error) { message(error instanceof Error ? error.message : "Schedule was not retired.", true); await load().catch(() => {}); }
+              }); actions.append(retire);
+            }
             if (schedule.status === "PUBLISHED") {
               const provision = element("button", "Provision up to five cycles"); provision.type = "button"; provision.className = "secondary";
               provision.addEventListener("click", async () => {
                 try { message("Provisioning bounded staging cycles…"); const result = await post({ action:"PROVISION", shipMonth:schedule.shipMonth, expectedScheduleRevision:schedule.revision }); await load(); message("Provisioned " + result.provisioning.configured + " cycle(s); conflicts " + result.provisioning.conflicted + (result.provisioning.mayHaveMore ? ". Run again for the next bounded batch." : ".")); } catch (error) { message(error instanceof Error ? error.message : "Cycles were not provisioned.", true); await load().catch(() => {}); }
               }); actions.append(provision);
+              for (const command of pendingCommands) {
+                const attention = element("button", "Mark pending provision needs attention"); attention.type = "button"; attention.className = "secondary";
+                attention.addEventListener("click", async () => {
+                  if (!window.confirm("Mark this aged unknown-outcome staging provision for manual review? It will not retry, alter a schedule, or change a shipment.")) return;
+                  try { message("Terminalizing the aged provision claim without fan-out…"); await post({ action:"MARK_PROVISION_NEEDS_ATTENTION", shipMonth:schedule.shipMonth, expectedScheduleRevision:command.expectedScheduleRevision }, command.idempotencyKey); await load(); message("Provision command marked needs attention. No schedule or cycle changed."); } catch (error) { message(error instanceof Error ? error.message : "Provision command was not changed.", true); await load().catch(() => {}); }
+                }); actions.append(attention);
+              }
+              const exception = element("button", "Record no-mutation recovery exception"); exception.type = "button"; exception.className = "secondary";
+              exception.addEventListener("click", async () => {
+                if (!window.confirm("Record an immutable staging recovery exception only if this month already has a provisioned FOTM cycle? This will not change any schedule or shipment.")) return;
+                try { message("Recording no-mutation recovery attention…"); await post({ action:"RECORD_RECOVERY_EXCEPTION", shipMonth:schedule.shipMonth, expectedRevision:schedule.revision }); message("Recovery exception recorded for manual review. No schedule or cycle changed."); } catch (error) { message(error instanceof Error ? error.message : "Recovery exception was not recorded.", true); await load().catch(() => {}); }
+              }); actions.append(exception);
+            }
+            if (schedule.status === "RETIRED") {
+              row.append(element("p", "Retired: no new cycles can be provisioned. Already published or locked cycles keep their prior FOTM; enter this month above and submit the explicit recovery draft to create a reviewed replacement."));
+              const recover = element("button", "Load for explicit recovery"); recover.type = "button"; recover.className = "secondary";
+              recover.addEventListener("click", () => {
+                month.value = schedule.shipMonth;
+                cutoff.value = schedule.cutoffAt;
+                variant.value = schedule.variantId;
+                month.focus();
+                message("Replacement values loaded. Submit the explicit recovery draft when ready.");
+              }); actions.append(recover);
             }
             row.append(actions); list.append(row);
           }
@@ -157,6 +192,8 @@ export function renderStagingAdminSchedulerShell(input: {
         }
         async function load() {
           const result = await api("GET");
+          state.pendingProvisionCommands = Array.isArray(result.pendingProvisionCommands) ? result.pendingProvisionCommands : [];
+          state.provisionCommands = Array.isArray(result.provisionCommands) ? result.provisionCommands : [];
           state.schedules = Array.isArray(result.schedules) ? result.schedules : [];
           state.variants = Array.isArray(result.variants) ? result.variants : [];
           render(); scheduler.classList.remove("hidden");

@@ -35,6 +35,7 @@ apps/basenote-core/
   migrations/0003_member_fragrance_choice.sql
   migrations/0004_durable_historical_backfill.sql
   migrations/0005_staging_admin_scheduler.sql
+  migrations/0006_staging_admin_scheduler_lifecycle.sql
   src/staging-runtime/d1.ts
   src/profile-queue/contracts.ts
   src/profile-queue/service.ts
@@ -64,9 +65,11 @@ must deny every signed Profile Queue request. The Worker source, signed App
 Proxy HMAC verifier, and protected configuration requirements are documented in
 [`cloudflare-staging-worker.md`](cloudflare-staging-worker.md).
 
-`0003_member_fragrance_choice.sql` adds durable `DRAFT`/`PUBLISHED` FOTM
-schedules per `ship_month` so staff can prepare September, October, November,
-and later months independently. Every schedule uses the product-approved
+`0003_member_fragrance_choice.sql`, evolved forward by
+`0006_staging_admin_scheduler_lifecycle.sql`, adds durable
+`DRAFT`/`PUBLISHED`/`RETIRED` FOTM schedules per `ship_month` so staff can
+prepare September, October, November, and later months independently. Every
+schedule uses the product-approved
 `12:01 AM America/Chicago` cutoff policy and an append-only non-PII audit. It also adds
 an immutable resulting-selection snapshot for every queue mutation. A theme's
 current FOTM setting can supply display context, but it neither enforces this
@@ -91,6 +94,23 @@ append-only audit, and non-PII choice evidence. It makes FOTM visibly
 pre-selected as the included default while retaining `UNSELECTED` until a
 member override is saved. It has no App Proxy scheduler writer, Shopify/Admin
 API call, Appstle call, email/provider call, or production behavior.
+
+`0006` adds the guarded staff lifecycle and provision-command evidence. Staff
+may explicitly retire an unprovisioned future month and recover a retired month
+to a new draft with a fresh CAS/idempotency key and immutable schedule audit.
+If any exact-month cycle already has the old FOTM in `PUBLISHED` or `RESOLVED`
+state, retirement/recovery fails closed: no schedule, cycle, or member choice
+is rewritten. An authenticated `RECORD_RECOVERY_EXCEPTION` command can then
+write immutable, non-PII needs-attention evidence only; it is not a repair or
+provider action. A provision command first records its exact zero-to-five-cycle
+plan durably against the current `PUBLISHED` schedule revision. A completed
+same-key retry returns that stored result; a pending command fails closed and
+never launches another bounded fan-out. After 15 minutes, an authenticated
+staff member may terminalize an unknown-outcome pending command as immutable
+`NEEDS_ATTENTION`; it writes only audit evidence and never retries, fans out,
+or changes a schedule/cycle. Each active pending handle is returned by ship
+month independently of bounded recent history, so it remains actionable until
+terminalized.
 
 This source is still unapplied and unconfigured. A durable schedule or
 provisioned D1 cycle does not itself alter a theme, Shopify subscription, or

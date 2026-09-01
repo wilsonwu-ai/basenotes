@@ -98,6 +98,13 @@ const SELECT_UNPUBLISHED_CYCLES_FOR_PROVISIONING = `
   ORDER BY binding_id ASC, cycle_key ASC
   LIMIT ?`;
 
+const SELECT_PROVISIONED_FOTM_FOR_SHIP_MONTH = `
+  SELECT 1 AS present
+  FROM profile_queue_cycles
+  WHERE ship_month = ?
+    AND fotm_status IN ('PUBLISHED', 'RESOLVED')
+  LIMIT 1`;
+
 const SELECT_ADD_ONS = `
   SELECT add_on_id, position, variant_id, unit_price_cents, created_at, updated_at
   FROM profile_queue_add_ons
@@ -174,6 +181,14 @@ export class D1ProfileQueueRepository implements ProfileQueueRepository {
       .bind(shipMonth, input.limit)
       .all<CycleRow>();
     return readCyclesWithAddOns(this.database, result.results ?? []);
+  }
+
+  async hasProvisionedFotmForShipMonth(shipMonth: string): Promise<boolean> {
+    const row = await this.database
+      .prepare(SELECT_PROVISIONED_FOTM_FOR_SHIP_MONTH)
+      .bind(asShipMonth(shipMonth))
+      .first<{ readonly present: number }>();
+    return row !== null;
   }
 
   async persist(input: PersistProfileQueueMutationInput): Promise<ProfileQueuePersistedMutation> {

@@ -24,6 +24,33 @@ export type ParsedStagingAdminSchedulerCommand =
       readonly shipMonth: string;
     }
   | {
+      readonly action: "RETIRE";
+      readonly expectedRevision: number;
+      readonly idempotencyKey: string;
+      readonly shipMonth: string;
+    }
+  | {
+      readonly action: "RECOVER_DRAFT";
+      readonly cutoffAt: string;
+      readonly expectedRevision: number;
+      readonly idempotencyKey: string;
+      readonly merchantTimezone: string;
+      readonly shipMonth: string;
+      readonly variantId: string;
+    }
+  | {
+      readonly action: "RECORD_RECOVERY_EXCEPTION";
+      readonly expectedRevision: number;
+      readonly idempotencyKey: string;
+      readonly shipMonth: string;
+    }
+  | {
+      readonly action: "MARK_PROVISION_NEEDS_ATTENTION";
+      readonly expectedScheduleRevision: number;
+      readonly idempotencyKey: string;
+      readonly shipMonth: string;
+    }
+  | {
       readonly action: "PROVISION";
       readonly expectedScheduleRevision: number;
       readonly idempotencyKey: string;
@@ -57,6 +84,41 @@ export async function parseStagingAdminSchedulerCommand(
       return {
         action,
         expectedRevision: readRevision(record, "expectedRevision"),
+        idempotencyKey,
+        shipMonth: readShipMonth(record, "shipMonth"),
+      };
+    case "RETIRE":
+      assertOnlyKeys(record, ["action", "expectedRevision", "shipMonth"]);
+      return {
+        action,
+        expectedRevision: readRevision(record, "expectedRevision"),
+        idempotencyKey,
+        shipMonth: readShipMonth(record, "shipMonth"),
+      };
+    case "RECOVER_DRAFT":
+      assertOnlyKeys(record, ["action", "cutoffAt", "expectedRevision", "merchantTimezone", "shipMonth", "variantId"]);
+      return {
+        action,
+        cutoffAt: readString(record, "cutoffAt"),
+        expectedRevision: readRevision(record, "expectedRevision"),
+        idempotencyKey,
+        merchantTimezone: readString(record, "merchantTimezone"),
+        shipMonth: readShipMonth(record, "shipMonth"),
+        variantId: readString(record, "variantId"),
+      };
+    case "RECORD_RECOVERY_EXCEPTION":
+      assertOnlyKeys(record, ["action", "expectedRevision", "shipMonth"]);
+      return {
+        action,
+        expectedRevision: readRevision(record, "expectedRevision"),
+        idempotencyKey,
+        shipMonth: readShipMonth(record, "shipMonth"),
+      };
+    case "MARK_PROVISION_NEEDS_ATTENTION":
+      assertOnlyKeys(record, ["action", "expectedScheduleRevision", "shipMonth"]);
+      return {
+        action,
+        expectedScheduleRevision: readRevision(record, "expectedScheduleRevision"),
         idempotencyKey,
         shipMonth: readShipMonth(record, "shipMonth"),
       };

@@ -21,6 +21,16 @@ test("embedded scheduler shell exposes no protected data before a fresh Admin to
   assert.match(markup, /member may still save a separate override before the Central-time cutoff/i);
   assert.match(markup, /legacy theme FOTM is display-only/i);
   assert.match(markup, /Provision up to five cycles/);
+  assert.match(markup, /Retire this month/);
+  assert.match(markup, /explicit recovery draft/i);
+  assert.match(markup, /Record no-mutation recovery exception/);
+  assert.match(markup, /It was not retired or replaced/i);
+  assert.match(markup, /provision_recovery_required/);
+  assert.match(markup, /Mark pending provision needs attention/);
+  assert.match(markup, /pendingProvisionCommands/);
+  assert.match(markup, /state\.pendingProvisionCommands\.filter/);
+  assert.match(markup, /15-minute recovery delay/);
+  assert.match(markup, /will not retry, alter a schedule, or change a shipment/i);
   assert.doesNotMatch(markup, /SHOPIFY_ADMIN_CLIENT_SECRET/);
   assert.doesNotMatch(markup, /staging_admin_id_token_replays/);
   assert.doesNotMatch(markup, /person@example\.test/);

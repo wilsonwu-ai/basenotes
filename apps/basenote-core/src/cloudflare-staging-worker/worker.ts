@@ -63,8 +63,11 @@ import {
 import { renderStagingAdminSchedulerShell } from "./admin-scheduler-page.js";
 import {
   StagingFotmProvisioningNotConfiguredError,
+  StagingFotmProvisioningRecoveryNotReadyError,
+  StagingFotmProvisioningRecoveryRequiredError,
   StagingFotmScheduleAdminBoundary,
   StagingFotmScheduleConflictError,
+  StagingFotmScheduleNeedsAttentionError,
 } from "./fotm-schedule-admin.js";
 import {
   asProfileQueueIdempotencyKey,
@@ -77,7 +80,10 @@ import {
   D1ProfileQueueRepository,
 } from "../profile-queue/d1-repository.js";
 import { D1ProfileQueueFotmScheduleRepository } from "../profile-queue/d1-fotm-schedule-repository.js";
-import type { ProfileQueueFotmSchedule } from "../profile-queue/fotm-schedule.js";
+import type {
+  ProfileQueueFotmProvisionCommand,
+  ProfileQueueFotmSchedule,
+} from "../profile-queue/fotm-schedule.js";
 import {
   ProfileQueueRepositoryConflictError,
   ProfileQueueRepositoryIdempotencyConflictError,
@@ -334,9 +340,15 @@ async function handleAdminSchedulerList(input: AdminSchedulerSharedRouteInput): 
     now: input.now,
     scheduleRepositoryFactory: input.scheduleRepositoryFactory,
   });
-  const schedules = await boundary.list(adminStaffContext(identity.actorRef));
+  const [schedules, provisionCommands, pendingProvisionCommands] = await Promise.all([
+    boundary.list(adminStaffContext(identity.actorRef)),
+    boundary.listProvisionCommands(adminStaffContext(identity.actorRef)),
+    boundary.listPendingProvisionCommands(adminStaffContext(identity.actorRef)),
+  ]);
   const variants = readStagingTestVariants(input.environment);
   return responseForJson(200, {
+    provisionCommands: provisionCommands.map(serializeFotmProvisionCommand),
+    pendingProvisionCommands: pendingProvisionCommands.map(serializeFotmProvisionCommand),
     schedules: schedules.map(serializeFotmSchedule),
     variants: variants.map((variant) => ({ label: variant.label, variantId: variant.variantId })),
   }, input.request, input.policy);
@@ -356,7 +368,7 @@ async function handleAdminSchedulerCommand(
   });
   const command = await parseStagingAdminSchedulerCommand(input.request);
   const variants = readStagingTestVariants(input.environment);
-  if (command.action === "SAVE_DRAFT") {
+  if (command.action === "SAVE_DRAFT" || command.action === "RECOVER_DRAFT") {
     assertStagingVariantAllowed(command.variantId, variants);
   } else {
     // A schedule created outside this Worker must not become a way around the
@@ -414,19 +426,69 @@ async function handleAdminSchedulerCommand(
       schedule: serializeFotmSchedule(result.schedule),
     }, input.request, input.policy);
   }
+  if (command.action === "RETIRE") {
+    const result = await boundary.submitRetire({
+      context,
+      expectedRevision: command.expectedRevision,
+      idempotencyKey: command.idempotencyKey,
+      shipMonth: command.shipMonth,
+    });
+    return responseForJson(200, {
+      replayed: result.replayed,
+      schedule: serializeFotmSchedule(result.schedule),
+    }, input.request, input.policy);
+  }
+  if (command.action === "RECOVER_DRAFT") {
+    const result = await boundary.submitRecoverDraft({
+      context,
+      cutoffAt: command.cutoffAt,
+      expectedRevision: command.expectedRevision,
+      idempotencyKey: command.idempotencyKey,
+      merchantTimezone: command.merchantTimezone,
+      shipMonth: command.shipMonth,
+      variantId: command.variantId,
+    });
+    return responseForJson(200, {
+      replayed: result.replayed,
+      schedule: serializeFotmSchedule(result.schedule),
+    }, input.request, input.policy);
+  }
+  if (command.action === "RECORD_RECOVERY_EXCEPTION") {
+    const result = await boundary.recordRecoveryException({
+      context,
+      expectedRevision: command.expectedRevision,
+      idempotencyKey: command.idempotencyKey,
+      shipMonth: command.shipMonth,
+    });
+    return responseForJson(200, {
+      attention: "RECOVERY_EXCEPTION_RECORDED",
+      replayed: result.replayed,
+    }, input.request, input.policy);
+  }
+  if (command.action === "MARK_PROVISION_NEEDS_ATTENTION") {
+    const result = await boundary.markProvisionNeedsAttention({
+      context,
+      expectedScheduleRevision: command.expectedScheduleRevision,
+      idempotencyKey: command.idempotencyKey,
+      shipMonth: command.shipMonth,
+    });
+    return responseForJson(200, {
+      attention: "PROVISION_NEEDS_ATTENTION_RECORDED",
+      replayed: result.replayed,
+    }, input.request, input.policy);
+  }
 
-  // Provisioning has no provider side effect. Its naturally idempotent target
-  // set is exact OPEN/UNPUBLISHED cycles, so a fresh retry only sees remaining
-  // candidates. The parsed command key deliberately still has the same
-  // opaque format as all unsafe scheduler requests, while ID-token one-time
-  // use protects accidental bearer replay.
-  void command.idempotencyKey;
+  // A provision key is first claimed durably with its exact five-or-fewer
+  // cycle plan. A completed same-key retry returns that stored result; a
+  // pending command fails closed and never advances to another batch.
   const provisioning = await boundary.provisionPublishedMonth({
     context,
     expectedScheduleRevision: command.expectedScheduleRevision,
+    idempotencyKey: command.idempotencyKey,
     shipMonth: command.shipMonth,
   });
   return responseForJson(200, {
+    replayed: provisioning.replayed,
     provisioning,
   }, input.request, input.policy);
 }
@@ -459,6 +521,19 @@ function serializeFotmSchedule(schedule: ProfileQueueFotmSchedule): Record<strin
     status: schedule.status,
     updatedAt: schedule.updatedAt,
     variantId: schedule.variantId,
+  };
+}
+
+/** Deliberately omits plan targets and actor references from the browser. */
+function serializeFotmProvisionCommand(command: ProfileQueueFotmProvisionCommand): Record<string, unknown> {
+  return {
+    attentionAt: command.attentionAt,
+    completedAt: command.completedAt,
+    createdAt: command.createdAt,
+    expectedScheduleRevision: command.expectedScheduleRevision,
+    idempotencyKey: command.idempotencyKey,
+    shipMonth: command.shipMonth,
+    status: command.status,
   };
 }
 
@@ -843,6 +918,9 @@ function routeErrorStatus(error: unknown): number {
     || error instanceof ProfileQueueRepositoryIdempotencyConflictError
     || error instanceof ProfileQueueIdempotencyReuseError
     || error instanceof StagingFotmScheduleConflictError
+    || error instanceof StagingFotmProvisioningRecoveryRequiredError
+    || error instanceof StagingFotmProvisioningRecoveryNotReadyError
+    || error instanceof StagingFotmScheduleNeedsAttentionError
   ) {
     return 409;
   }
@@ -893,6 +971,9 @@ function routeErrorCode(error: unknown): string {
     return "queue_conflict";
   }
   if (error instanceof StagingFotmScheduleConflictError) return "schedule_conflict";
+  if (error instanceof StagingFotmProvisioningRecoveryRequiredError) return "provision_recovery_required";
+  if (error instanceof StagingFotmProvisioningRecoveryNotReadyError) return "provision_recovery_not_ready";
+  if (error instanceof StagingFotmScheduleNeedsAttentionError) return "schedule_needs_attention";
   if (error instanceof ProfileQueueCycleNotFoundError) return "not_found";
   return "temporarily_unavailable";
 }

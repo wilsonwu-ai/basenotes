@@ -51,7 +51,9 @@ apps/basenote-core/
   migrations/0001_staging_runtime.sql
   migrations/0002_staging_test_bindings.sql
   migrations/0003_member_fragrance_choice.sql
+  migrations/0004_durable_historical_backfill.sql
   migrations/0005_staging_admin_scheduler.sql
+  migrations/0006_staging_admin_scheduler_lifecycle.sql
 ```
 
 - `GET /healthz` is host-restricted and returns only fixed staging capability
@@ -95,12 +97,22 @@ apps/basenote-core/
   audience, staging issuer/destination shop, `exp`/`nbf`, and an opaque
   allowlisted staff `sub`. Unsafe POSTs retain only a SHA-256 `jti` digest in
   D1 and reject a replay.
-- Authenticated staff can draft/publish a durable future-month FOTM and then
-  provision at most five exact `OPEN`/`UNPUBLISHED` staging cycles per request.
-  Each cycle uses CAS plus immutable audit/evidence and becomes `PUBLISHED` +
-  `UNSELECTED`: its FOTM is visibly pre-selected as the one included fragrance,
-  not a paid add-on and not a stored member override. No scheduler path calls
-  Shopify, Appstle, an email provider, or production.
+- Authenticated staff can draft/publish/retire a durable future-month FOTM and
+  then provision at most five exact `OPEN`/`UNPUBLISHED` staging cycles per
+  request. Each cycle uses CAS plus immutable audit/evidence and becomes
+  `PUBLISHED` + `UNSELECTED`: its FOTM is visibly pre-selected as the one
+  included fragrance, not a paid add-on and not a stored member override. A
+  retired month can be explicitly recovered to a draft only before its cutoff
+  and only when no exact-month cycle already carries the old FOTM. In that
+  blocked case, staff may write an immutable non-PII no-mutation recovery
+  exception for manual review; it never changes a schedule, cycle, member
+  choice, or provider. No scheduler path calls Shopify, Appstle, an email
+  provider, or production.
+- `PROVISION` first claims an immutable exact zero-to-five-cycle plan bound to
+  the current published schedule revision. A completed retry with the same
+  command key returns the original durable result without another fan-out. A
+  pending/unknown-outcome command fails closed for audit review instead of
+  provisioning a later batch.
 - Exact allowed staging hosts and origins are configured with no wildcard CORS.
   The code rejects production-looking hosts and refuses to run queue routes
   unless `BASENOTE_RUNTIME_STAGE=staging`.
@@ -185,13 +197,14 @@ D1 database, a designated operator must perform these reviewed steps in order:
 4. Apply `migrations/0004_durable_historical_backfill.sql` byte-for-byte from
    staging head; it is separately owned and this work never changes it.
 5. Apply `migrations/0005_staging_admin_scheduler.sql`.
-6. Create or seed one reviewed disposable queue cycle in
+6. Apply `migrations/0006_staging_admin_scheduler_lifecycle.sql`.
+7. Create or seed one reviewed disposable queue cycle in
    `profile_queue_cycles` for the exact test binding, cycle key, and ship month.
-7. Seed one matching row in `staging_profile_queue_test_bindings` with that
+8. Seed one matching row in `staging_profile_queue_test_bindings` with that
    exact development shop, test customer ID, binding, cycle, ship month,
    opaque actor reference, `DISPOSABLE_DEVELOPMENT_STORE` source, `ACTIVE`
    status, opaque seed reference, and a short expiry.
-8. Configure the runtime-only variables/binding above, then perform a
+9. Configure the runtime-only variables/binding above, then perform a
    disposable-customer end-to-end test before any wider staging use.
 
 Migration `0002` creates no customer, binding, queue-cycle, or active form
@@ -213,6 +226,17 @@ replay table containing just a SHA-256 digest of a short-lived Admin ID-token
 nonce and timestamps. The local `npm run admin-scheduler:migration:smoke`
 proves duplicate, malformed, expired, update, and delete records are rejected.
 
+Apply `0006` through the same migration runner only. It is a forward rebuild of
+the staging schedule/audit constraints to add `RETIRED`/`RECOVERED`, plus
+append-only provision-command and no-mutation recovery-exception evidence. A
+pending unknown-outcome provision can become immutable `NEEDS_ATTENTION` only
+after 15 minutes; that terminal audit action never fans out or writes a cycle.
+The local `npm run admin-scheduler:lifecycle:migration:smoke` proves that a
+pending command blocks retirement, stale claims fail closed, provisioned cycles
+block retirement/recovery, and recovery evidence is immutable. It never runs a
+migration, calls Cloudflare, or changes a database outside its temporary local
+SQLite file.
+
 If a nonempty *staging* D1 is ever intentionally migrated, `0003` carries a
 legacy `RESOLVED` non-open cycle forward as an FOTM fallback using its existing
 FOTM variant and `updated_at`. It does not invent a member override. Other
@@ -221,10 +245,11 @@ that is not 12:01 AM Central, abort the migration for manual reconciliation.
 
 ## Future-month FOTM schedules and staff boundary
 
-Migration `0003_member_fragrance_choice.sql` adds one durable FOTM schedule
-per `ship_month`, with draft/published state, an `America/Chicago` cutoff
-policy fixed to 12:01 AM local time (DST-safe in Worker code), revision checks,
-and an append-only non-PII audit. It supports
+Migration `0003_member_fragrance_choice.sql`, evolved only forward by
+`0006_staging_admin_scheduler_lifecycle.sql`, adds one durable FOTM schedule
+per `ship_month`, with draft/published/retired state, an `America/Chicago`
+cutoff policy fixed to 12:01 AM local time (DST-safe in Worker code), revision
+checks, and an append-only non-PII audit. It supports
 independent September/October/November configuration instead of overwriting a
 single current-month setting. It is never itself a member override: at cutoff,
 the scheduler locks either the saved override or that published FOTM fallback.
@@ -254,6 +279,32 @@ invented member selection. Repeating provisioning sees only still-unpublished
 cycles; it never calls a provider. This is still a staging deploy/E2E blocker,
 not a claim that a theme setting or D1 record changes an Appstle/Shopify
 shipment.
+
+`RETIRE` is an explicit audited transition for an otherwise unprovisioned
+future month. `RECOVER_DRAFT` is a distinct, CAS/idempotent `RETIRED` to
+`DRAFT` transition with new configuration; it never rewrites existing cycles.
+Both transitions are rejected if any cycle for that ship month already has a
+`PUBLISHED` or `RESOLVED` FOTM, which prevents a split month under two
+defaults. In that case, `RECORD_RECOVERY_EXCEPTION` is the only available
+recovery operation: it records immutable opaque actor/month/revision/time
+evidence with reason `PROVISIONED_CYCLES` and returns an explicit manual-review
+state. It changes no schedule, cycle, member choice, Shopify/Appstle contract,
+or provider data.
+
+Every `PROVISION` request uses an opaque `pfk_` idempotency key to atomically
+claim an exact plan against the `PUBLISHED` schedule revision before the first
+cycle write. The command keeps its plan and result in D1 append-only evidence.
+The same key/fingerprint returns the original completed result without a new
+five-cycle fan-out; a different fingerprint is rejected and a pending command
+fails closed for audit review. A pending command also blocks retirement, so a
+schedule cannot be retired between claim and fan-out. After the recovery delay,
+an authenticated staff member may terminalize the pending command as
+`NEEDS_ATTENTION`; that one-way audit action has no fan-out. A terminal command
+can release an otherwise unprovisioned month, while any published/resolved
+cycle still requires the separate no-mutation recovery exception.
+The protected scheduler response returns each active pending handle by ship
+month separately from its 24-row recent-history view, so an older pending claim
+cannot disappear from recovery controls while it blocks retirement.
 
 ## Transport, request, and data safeguards
 
@@ -311,8 +362,12 @@ Admin token invalid/missing/wrong-shop/staff/replay cases, duplicate/stale
 schedule submits, and bounded D1-only schedule provisioning/cutoff locking.
 SQLite migration smoke checks cover legacy resolved backfill, append-only
 evidence, exact add-on snapshot reconciliation, the 12:01 AM Central cutoff
-guard, and append-only Admin-token replay records. They make no network,
-Cloudflare, Shopify, email-provider, or file-database call.
+guard, append-only Admin-token replay records, and the forward scheduler
+lifecycle/provision-command guards. The scheduler coverage includes visible
+`RETIRED` state, guarded recovery, provisioned-cycle split-month prevention,
+same-key provision-result replay without another fan-out, and immutable
+no-mutation recovery evidence. They make no network, Cloudflare, Shopify,
+email-provider, or file-database call.
 
 The source cannot safely be browser-tested against a live protected Worker yet:
 that requires the approved disposable D1 seed, protected runtime secrets, and

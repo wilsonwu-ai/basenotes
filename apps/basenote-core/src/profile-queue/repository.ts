@@ -32,6 +32,8 @@ export interface ProfileQueueRepository {
   findDueForCutoff(input: FindProfileQueueCyclesDueForCutoffInput): Promise<readonly ProfileQueueCycle[]>;
   /** Bounded exact-month scan used only by the staging Admin FOTM provisioner. */
   findUnpublishedForProvisioning(input: FindProfileQueueCyclesForProvisioningInput): Promise<readonly ProfileQueueCycle[]>;
+  /** Fail-closed lifecycle guard: any provisioned/locked FOTM blocks schedule replacement. */
+  hasProvisionedFotmForShipMonth(shipMonth: string): Promise<boolean>;
   /** Lookup only; it is not an HTTP replay response snapshot. */
   findMutation(idempotencyKey: string): Promise<ProfileQueueMutationAuditRecord | null>;
   persist(input: PersistProfileQueueMutationInput): Promise<ProfileQueuePersistedMutation>;
@@ -119,6 +121,14 @@ export class InMemoryProfileQueueRepository implements ProfileQueueRepository {
       .sort((left, right) => `${left.bindingId}\u0000${left.cycleKey}`.localeCompare(`${right.bindingId}\u0000${right.cycleKey}`))
       .slice(0, input.limit)
       .map(cloneCycle);
+  }
+
+  async hasProvisionedFotmForShipMonth(shipMonth: string): Promise<boolean> {
+    const normalizedShipMonth = asShipMonth(shipMonth);
+    return [...this.cycles.values()].some((cycle) => (
+      cycle.shipMonth === normalizedShipMonth
+      && (cycle.fotm.status === "PUBLISHED" || cycle.fotm.status === "RESOLVED")
+    ));
   }
 
   async persist(input: PersistProfileQueueMutationInput): Promise<ProfileQueuePersistedMutation> {
