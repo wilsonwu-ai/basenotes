@@ -44,22 +44,10 @@ export interface HistoricalSubscriptionHistoryWriteResult {
 }
 
 /**
- * Optional durable-run boundary. The importer intentionally works with an
- * in-memory test repository too, but a D1 implementation can retain the
- * reviewed approval and mark the durable run complete only after every
- * positive fact has been recorded.
- */
-export interface HistoricalSubscriptionHistoryRunFinalizer {
-  markRunApplied(input: {
-    readonly approval: HistoricalBackfillApproval;
-    readonly digest: string;
-    readonly runId: HistoricalBackfillRunId;
-  }): Promise<void>;
-}
-
-/**
- * Staging-safe importer: dry-run is the first operation, and the only apply
- * path consumes a prior in-memory plan plus a non-boolean approval reference.
+ * In-memory test helper only. It proves pure decision semantics but does not
+ * retain approvals or plans across a process restart. Any durable staging
+ * path must use D1DurableHistoricalBackfillService instead.
+ *
  * It has no CSV reader, provider credential, data export, or network client.
  */
 export class HistoricalMemberBackfillImporter {
@@ -78,7 +66,7 @@ export class HistoricalMemberBackfillImporter {
     const decisions = await this.planDecisions(normalized);
     const dryRun: HistoricalBackfillDryRun = {
       decisions,
-      digest: digestFor(runId, requestedAt, decisions),
+      digest: digestHistoricalBackfillDecisions(runId, requestedAt, decisions),
       requestedAt,
       runId,
       status: "DRY_RUN_COMPLETE",
@@ -139,9 +127,6 @@ export class HistoricalMemberBackfillImporter {
       });
       persisted.push(cloneHistory(result.record));
     }
-    if (isRunFinalizer(this.repository)) {
-      await this.repository.markRunApplied({ approval, digest: dryRun.digest, runId });
-    }
     this.appliedRuns.add(runId);
     return persisted;
   }
@@ -165,12 +150,6 @@ export class HistoricalMemberBackfillImporter {
     }
     return decisions;
   }
-}
-
-function isRunFinalizer(
-  repository: HistoricalSubscriptionHistoryRepository,
-): repository is HistoricalSubscriptionHistoryRepository & HistoricalSubscriptionHistoryRunFinalizer {
-  return "markRunApplied" in repository && typeof repository.markRunApplied === "function";
 }
 
 /** Local-only in-memory repository used to prove import invariants in tests. */
@@ -215,7 +194,8 @@ export class InMemoryHistoricalSubscriptionHistoryRepository
   }
 }
 
-function digestFor(
+/** Shared canonical digest used by both local and durable backfill planners. */
+export function digestHistoricalBackfillDecisions(
   runId: HistoricalBackfillRunId,
   requestedAt: IsoTimestamp,
   decisions: readonly HistoricalBackfillDecision[],

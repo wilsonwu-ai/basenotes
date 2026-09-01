@@ -21,8 +21,9 @@ const requiredFiles = [
   "src/profile-queue/ui.ts",
   "src/subscription-history/contracts.ts",
   "src/subscription-history/backfill-importer.ts",
-  "src/subscription-history/d1-repository.ts",
+  "src/subscription-history/d1-backfill-service.ts",
   "migrations/0001_staging_runtime.sql",
+  "migrations/0004_durable_historical_backfill.sql",
   "src/platform/subscription-gateway.ts",
 ];
 
@@ -57,6 +58,20 @@ for (const requiredFragment of [
 ]) {
   if (!stagingMigration.includes(requiredFragment)) {
     throw new Error(`The staging migration must retain: ${requiredFragment}`);
+  }
+}
+
+const durableHistoryMigration = readFileSync(
+  resolve(root, "migrations/0004_durable_historical_backfill.sql"),
+  "utf8",
+);
+for (const requiredFragment of [
+  "historical subscription evidence is immutable",
+  "historical backfill lifecycle is one-way and requires a matching audit",
+  "ALREADY_RECORDED_BY_ANOTHER_RUN",
+]) {
+  if (!durableHistoryMigration.includes(requiredFragment)) {
+    throw new Error("The durable-history migration must retain: " + requiredFragment);
   }
 }
 

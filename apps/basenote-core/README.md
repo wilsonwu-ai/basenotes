@@ -74,8 +74,9 @@ stored.
 The current source is deliberately local-domain logic only. It includes a
 testable App Proxy HMAC verifier, pure pricing policy, an in-memory queue state
 machine, a D1-shaped-but-unbound profile-queue repository/migration, a
-staging-only queue-dropdown renderer, historic-member dry-run contracts, and a
-Messaging Core for consent, event audit, and no-send delivery intents. It has
+staging-only queue-dropdown renderer, a durable-but-unbound historic-member
+manifest/approval lifecycle, and a Messaging Core for consent, event audit,
+and no-send delivery intents. It has
 no configured persistence, OAuth/session implementation, webhook route,
 Appstle integration, Shopify Admin API call, recipient resolver, email sender,
 or billing attempt.
@@ -99,11 +100,14 @@ src/
   profile-queue/service.ts          Pure queue mutation/cutoff state machine
   profile-queue/d1-repository.ts    Injected D1 persistence shape; no binding
   profile-queue/ui.ts               Static staging-only dropdown renderer
-  subscription-history/             Dry-run, approval-gated historic evidence
+  subscription-history/             Dry-run and durable approval-gated historic evidence
   staging-runtime/d1.ts             Minimal D1 structural port, no runtime import
   domain/queue.test.ts              Invariant tests
   platform/subscription-gateway.ts  Provider boundary for Base Note-owned contracts
 migrations/0001_staging_runtime.sql Reviewed, unapplied D1 schema
+migrations/0004_durable_historical_backfill.sql
+                                  Immutable dry-run manifest and staging-only
+                                  historical backfill lifecycle
 scripts/verify-skeleton.mjs         Offline structural/safety verification
 shopify.app.example.toml            Deliberately unlinked future config template
 ```
