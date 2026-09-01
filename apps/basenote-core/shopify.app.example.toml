@@ -25,6 +25,6 @@ redirect_urls = ["https://example.invalid/auth/callback"]
 # current queue worker by default.
 #
 # [app_proxy]
-# url = "https://example.invalid/apps/basenote"
-# subpath = "basenote"
+# url = "https://basenote-profile-queue-staging.wilson-af8.workers.dev/api/shopify/app-proxy"
+# subpath = "basenote-staging"
 # prefix = "apps"

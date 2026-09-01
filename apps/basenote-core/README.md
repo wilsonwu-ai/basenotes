@@ -1,6 +1,7 @@
 # Base Note Core
 
-**Status: local-only foundation. It is deliberately not linked to a Shopify app.**
+**Status: unconnected staging-capable source. It is deliberately not linked to
+a Shopify app, deployed, or bound to a Cloudflare resource.**
 
 This package is the starting point for Base Note's subscription and queue
 platform. It contains no credentials, app registration, Shopify configuration,
@@ -71,14 +72,20 @@ stored.
 - A provider may mutate only a contract whose `appId` matches Base Note's future
   app ID.
 
-The current source is deliberately local-domain logic only. It includes a
-testable App Proxy HMAC verifier, pure pricing policy, an in-memory queue state
-machine, a D1-shaped-but-unbound profile-queue repository/migration, a
-staging-only queue-dropdown renderer, historic-member dry-run contracts, and a
-Messaging Core for consent, event audit, and no-send delivery intents. It has
-no configured persistence, OAuth/session implementation, webhook route,
-Appstle integration, Shopify Admin API call, recipient resolver, email sender,
-or billing attempt.
+The current source includes pure local-domain logic plus a reviewed,
+credential-free staging Worker adapter. Its customer route is still fail-closed
+unless a separately provisioned staging D1 binding, runtime-only App Proxy
+secret, exact disposable-shop domain, runtime test-variant allowlist, and a
+manually seeded disposable test binding are present. Its rendered App Proxy
+forms also require a short-lived, one-use D1 nonce bound to the exact signed
+customer/cycle/revision. It includes a testable App
+Proxy HMAC verifier, pure pricing policy, an in-memory queue state machine, a
+D1-shaped-but-unbound profile-queue repository/migration, a server-rendered
+staging-only queue page, historic-member dry-run contracts, and a Messaging
+Core for consent, event audit, and no-send delivery intents. It has no
+configured persistence, OAuth/session implementation, webhook route, Appstle
+integration, Shopify Admin API call, recipient resolver, email sender, or
+billing attempt.
 
 ## Repository layout
 
@@ -101,10 +108,11 @@ src/
   profile-queue/ui.ts               Static staging-only dropdown renderer
   subscription-history/             Dry-run, approval-gated historic evidence
   staging-runtime/d1.ts             Minimal D1 structural port, no runtime import
-  cloudflare-staging-worker/        Fail-closed staging Worker adapter and tests
+  cloudflare-staging-worker/        Fail-closed staging Worker, HMAC/D1 gates, HTML form, tests
   domain/queue.test.ts              Invariant tests
   platform/subscription-gateway.ts  Provider boundary for Base Note-owned contracts
-migrations/0001_staging_runtime.sql Reviewed, unapplied D1 schema
+migrations/0001_staging_runtime.sql Reviewed, unapplied D1 queue schema
+migrations/0002_staging_test_bindings.sql Reviewed, unapplied disposable-binding schema
 scripts/verify-skeleton.mjs         Offline structural/safety verification
 shopify.app.example.toml            Deliberately unlinked future config template
 ```

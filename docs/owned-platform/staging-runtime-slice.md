@@ -1,8 +1,8 @@
 # Base Note staging-runtime slice
 
-**Status: local-only code and a reviewed D1 migration. No Worker binding, D1
-database, Cloudflare account, Shopify app, customer data, sender, or deployment
-has been created or connected.**
+**Status: reviewed local/staging source and unapplied D1 migrations. No deployed
+Worker binding, D1 database, Cloudflare account, Shopify app, customer data,
+sender, or deployment has been created or connected.**
 
 ## Purpose
 
@@ -27,12 +27,14 @@ and disposable development-store proof.
 ```text
 apps/basenote-core/
   migrations/0001_staging_runtime.sql
+  migrations/0002_staging_test_bindings.sql
   src/staging-runtime/d1.ts
   src/profile-queue/contracts.ts
   src/profile-queue/service.ts
   src/profile-queue/repository.ts
   src/profile-queue/d1-repository.ts
   src/profile-queue/ui.ts
+  src/cloudflare-staging-worker/
   src/subscription-history/contracts.ts
   src/subscription-history/backfill-importer.ts
 ```
@@ -41,12 +43,19 @@ apps/basenote-core/
 entrypoint. This package does not declare an environment binding or a Wrangler
 configuration, so importing or testing it cannot connect to Cloudflare.
 
-The SQL migration creates:
+The queue schema migration creates:
 
 - revisioned `profile_queue_cycles` and ordered `profile_queue_add_ons`;
 - a database-level four-add-on cap and exact-`1800` price guard;
 - immutable queue mutation audit rows; and
 - historic-subscription and backfill audit tables with append-only triggers.
+
+The second migration creates an exact, expiring disposable-test-binding table
+and a one-use, short-lived form-nonce table bound to the same exact cycle
+scope. It does not seed a customer or binding; an unseeded staging database
+must deny every signed Profile Queue request. The Worker source, signed App
+Proxy HMAC verifier, and protected configuration requirements are documented in
+[`cloudflare-staging-worker.md`](cloudflare-staging-worker.md).
 
 The migration is not an install command. It must be applied manually only to an
 isolated staging database after the app configuration, retention policy,
@@ -61,10 +70,11 @@ derive the binding from its server-side session, verify it belongs to the
 customer, verify the exact product variant is currently eligible, and create a
 server-generated add-on/mutation ID before calling the service.
 
-The included dropdown is static staging markup only. It shows the automatic
-FOTM, remaining capacity, explicit `$18.00` add-on price, select control, and
-remove controls, but has no form action, API URL, JavaScript handler, contract
-identifier, or submit side effect. It is not included in the live Shopify theme.
+The Core `profile-queue/ui.ts` dropdown remains static contract markup. The
+separate staging Worker has a server-rendered no-JavaScript form page that posts
+only through Shopify's signed App Proxy path after its HMAC, exact test-binding,
+and runtime-variant gates pass. Neither surface is included in the live Shopify
+theme.
 
 ## Historic-member protection
 

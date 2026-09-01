@@ -12,11 +12,12 @@ not an in-place switch.
 | Environment | App/runtime | Shopify | Email | Customer data |
 | --- | --- | --- | --- | --- |
 | Local | `work/basenote-owned-platform` and loopback-only Core | No app connection | No sender | Synthetic fixtures only |
-| Staging | Proposed `app-staging.basenotescent.com` | Separate Dev Dashboard app configuration and Shopify development store | Sandbox/allowlisted test transport only | Test customers only |
+| Staging | Temporary `basenote-profile-queue-staging.wilson-af8.workers.dev` Worker endpoint | Separate Dev Dashboard app configuration and Shopify development store | Sandbox/allowlisted test transport only | Test customers only |
 | Production | Proposed `app.basenotescent.com` | Separate production app configuration | Approved authenticated sender | Production data under retention/access controls |
 
-The names above are proposals only. Creating DNS records, apps, stores,
-credentials, or deployments is outside this repository change.
+The temporary staging Worker endpoint is not a production DNS route. Creating
+or changing deployments, apps, stores, credentials, or production DNS remains
+outside this repository change.
 
 ## Base Note-owned components
 

@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
-    "test": "node --import tsx --test src/config.test.ts src/domain/queue.test.ts src/platform/subscription-gateway.test.ts src/auth/app-proxy.test.ts src/pricing/pricing-policy.test.ts src/queue/in-memory-queue-service.test.ts src/messaging/consent.test.ts src/messaging/events.test.ts src/messaging/outbox.test.ts src/profile-queue/profile-queue.test.ts src/profile-queue/d1-repository.test.ts src/subscription-history/backfill-importer.test.ts src/cloudflare-staging-worker/worker.test.ts",
+    "test": "node --import tsx --test src/config.test.ts src/domain/queue.test.ts src/platform/subscription-gateway.test.ts src/auth/app-proxy.test.ts src/pricing/pricing-policy.test.ts src/queue/in-memory-queue-service.test.ts src/messaging/consent.test.ts src/messaging/events.test.ts src/messaging/outbox.test.ts src/profile-queue/profile-queue.test.ts src/profile-queue/d1-repository.test.ts src/subscription-history/backfill-importer.test.ts src/cloudflare-staging-worker/worker.test.ts src/cloudflare-staging-worker/webcrypto-app-proxy.test.ts src/cloudflare-staging-worker/d1-test-binding-resolver.test.ts src/cloudflare-staging-worker/d1-form-nonce-repository.test.ts src/cloudflare-staging-worker/request-validation.test.ts",
     "typecheck": "tsc --noEmit",
     "worker:check": "tsc --noEmit -p tsconfig.worker.json",
     "verify": "node scripts/verify-skeleton.mjs",

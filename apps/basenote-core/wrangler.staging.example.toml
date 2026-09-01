@@ -8,13 +8,32 @@
 name = "basenote-profile-queue-staging"
 main = "src/cloudflare-staging-worker/worker.ts"
 compatibility_date = "2026-09-01"
-workers_dev = false
+# The temporary staging endpoint is intentionally isolated at:
+# basenote-profile-queue-staging.wilson-af8.workers.dev
+# Do not deploy this template until the separate approval gates in the runbook
+# are complete.
+workers_dev = true
 
 [vars]
 # The Worker refuses customer routes unless this exact staging value is present.
 BASENOTE_RUNTIME_STAGE = "staging"
-STAGING_ALLOWED_HOSTS = "app-staging.basenotescent.com,localhost"
-STAGING_ALLOWED_ORIGINS = "https://app-staging.basenotescent.com,http://localhost:8787"
+STAGING_ALLOWED_HOSTS = "basenote-profile-queue-staging.wilson-af8.workers.dev,localhost"
+# Shopify can forward an Origin from the disposable storefront on a native form
+# POST, so it is explicitly allowed alongside local development only.
+STAGING_ALLOWED_ORIGINS = "https://base-note-subscription-staging.myshopify.com,http://localhost:8787"
+# Exact disposable development-store domain only; never substitute a production
+# shop. This identifier is not a credential.
+STAGING_SHOP_DOMAIN = "base-note-subscription-staging.myshopify.com"
+# Exact disposable test variant GIDs only, comma-separated. No catalog/API
+# lookup occurs in the Worker; this placeholder deliberately enables nothing.
+STAGING_TEST_VARIANT_IDS = "REPLACE_WITH_ALLOWED_DISPOSABLE_TEST_VARIANT_GIDS"
+
+# Configure Shopify App Proxy's target URL separately as:
+# https://basenote-profile-queue-staging.wilson-af8.workers.dev/api/shopify/app-proxy
+# Shopify forwards child `/profile-queue` requests to the Worker target child.
+# Configure storefront prefix `apps` and subpath `basenote-staging`, producing
+# the signed customer-facing path `/apps/basenote-staging/profile-queue`.
+# Do not add a route, production URL, or secret to this file.
 
 [[d1_databases]]
 # Explicitly staging-only resource name. The ID must be supplied only in an

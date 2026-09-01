@@ -3,32 +3,37 @@ import type {
   SignedProxyBoundary,
 } from "./contracts.js";
 
-/** Returned by a future verifier for an invalid/missing Shopify signature. */
+/** Returned by the verifier for an invalid or missing Shopify signature. */
 export class SignedProxyRejectedError extends Error {
   override name = "SignedProxyRejectedError";
 }
 
 /**
- * The checked-in Worker has no App Proxy secret and consequently cannot accept
- * a customer request. This prevents a staging deployment becoming an unsigned
- * D1 write API while Shopify setup is incomplete.
+ * The checked-in source has no App Proxy runtime secret. This error prevents a
+ * staging deployment becoming an unsigned D1 write API while setup is
+ * incomplete.
  */
 export class SignedProxyBoundaryNotConfiguredError extends Error {
   override name = "SignedProxyBoundaryNotConfiguredError";
 }
 
 /**
- * A valid signature alone is not authority over a subscription. The resolver
- * is intentionally separate and unavailable until an exact binding readback
- * implementation is reviewed.
+ * A valid signature alone is not authority over a subscription. The default
+ * staging resolver permits only an exact seeded disposable binding; this error
+ * remains available for deliberately unconfigured dependency injection.
  */
 export class ProfileQueueOwnershipNotConfiguredError extends Error {
   override name = "ProfileQueueOwnershipNotConfiguredError";
 }
 
-/** Returned by a future resolver when the signed customer does not own a cycle. */
+/** Returned when the signed customer is not authorized for an exact cycle. */
 export class ProfileQueueOwnershipDeniedError extends Error {
   override name = "ProfileQueueOwnershipDeniedError";
+}
+
+/** Returned when a signed Profile Queue form nonce is absent, stale, or reused. */
+export class ProfileQueueFormNonceDeniedError extends Error {
+  override name = "ProfileQueueFormNonceDeniedError";
 }
 
 export const unconfiguredSignedProxyBoundary: SignedProxyBoundary = {

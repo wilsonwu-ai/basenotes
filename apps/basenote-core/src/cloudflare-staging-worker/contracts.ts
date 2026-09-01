@@ -1,5 +1,6 @@
 import type { D1DatabasePort } from "../staging-runtime/d1.js";
 import type { ProfileQueueRepository } from "../profile-queue/repository.js";
+import type { StagingProfileQueueFormNonceRepository } from "./form-nonce.js";
 
 /**
  * The only bindings the staging Worker is allowed to observe. This is a
@@ -8,23 +9,30 @@ import type { ProfileQueueRepository } from "../profile-queue/repository.js";
 export interface StagingWorkerEnv {
   readonly BASENOTE_RUNTIME_STAGE?: string;
   readonly BASENOTE_STAGING_D1?: D1DatabasePort;
+  /** Runtime secret only; never place a value in Wrangler configuration or git. */
+  readonly SHOPIFY_APP_PROXY_SHARED_SECRET?: string;
+  /** Exact disposable development-store `*.myshopify.com` domain. */
+  readonly STAGING_SHOP_DOMAIN?: string;
+  /** Comma-separated exact Shopify variant GIDs eligible in disposable tests. */
+  readonly STAGING_TEST_VARIANT_IDS?: string;
   readonly STAGING_ALLOWED_HOSTS?: string;
   readonly STAGING_ALLOWED_ORIGINS?: string;
 }
 
 /**
- * Identity returned only after a future App Proxy verifier has checked the
+ * Identity returned only after the App Proxy verifier has checked the
  * complete signed request. Do not log or return either field to a client.
  */
 export interface VerifiedSignedProxyIdentity {
   readonly shopDomain: string;
   readonly shopifyCustomerId: string;
+  /** Signed storefront App Proxy root used for no-JavaScript form actions. */
+  readonly storefrontPathPrefix: string;
 }
 
 /**
- * This boundary deliberately has no default implementation that accepts a
- * request. A future implementation must verify Shopify's raw App Proxy HMAC,
- * timestamp, shop, and logged-in customer before returning an identity.
+ * The default staging implementation verifies Shopify's raw App Proxy HMAC,
+ * timestamp, exact shop, and logged-in customer using runtime-only config.
  */
 export interface SignedProxyBoundary {
   verify(input: {
@@ -34,9 +42,9 @@ export interface SignedProxyBoundary {
 }
 
 /**
- * Separates signed customer identity from contract ownership. A future
- * resolver must prove that the requested exact cycle is owned by that customer
- * and is eligible for editing before it returns a server-side binding.
+ * Separates signed customer identity from contract ownership. The staging
+ * resolver proves an exact seeded disposable cycle belongs to that customer
+ * before returning a server-side binding.
  */
 export interface ProfileQueueOwnershipResolver {
   resolve(input: {
@@ -54,7 +62,9 @@ export interface AuthorizedProfileQueueBinding {
 }
 
 export interface StagingWorkerDependencies {
-  readonly createOpaqueId?: (prefix: "pqa" | "pqm") => string;
+  readonly createOpaqueId?: (prefix: "pqa" | "pqm" | "pqk" | "pqf") => string;
+  /** Test-only injection; production defaults to a D1-backed nonce repository. */
+  readonly formNonceRepository?: StagingProfileQueueFormNonceRepository;
   readonly now?: () => Date;
   readonly ownershipResolver?: ProfileQueueOwnershipResolver;
   readonly repositoryFactory?: (database: D1DatabasePort) => ProfileQueueRepository;

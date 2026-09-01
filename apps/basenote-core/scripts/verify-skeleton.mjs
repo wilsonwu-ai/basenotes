@@ -25,8 +25,15 @@ const requiredFiles = [
   "src/cloudflare-staging-worker/boundaries.ts",
   "src/cloudflare-staging-worker/http.ts",
   "src/cloudflare-staging-worker/request-validation.ts",
+  "src/cloudflare-staging-worker/webcrypto-app-proxy.ts",
+  "src/cloudflare-staging-worker/d1-test-binding-resolver.ts",
+  "src/cloudflare-staging-worker/form-nonce.ts",
+  "src/cloudflare-staging-worker/d1-form-nonce-repository.ts",
+  "src/cloudflare-staging-worker/staging-test-variants.ts",
+  "src/cloudflare-staging-worker/profile-queue-page.ts",
   "src/cloudflare-staging-worker/worker.ts",
   "migrations/0001_staging_runtime.sql",
+  "migrations/0002_staging_test_bindings.sql",
   "wrangler.staging.example.toml",
   "tsconfig.worker.json",
   "src/platform/subscription-gateway.ts",
@@ -59,6 +66,18 @@ const workerTemplate = readFileSync(resolve(root, "wrangler.staging.example.toml
 if (!workerTemplate.includes('name = "basenote-profile-queue-staging"')) {
   throw new Error("The Worker template must retain its explicit staging-only name.");
 }
+if (!workerTemplate.includes("STAGING_SHOP_DOMAIN") || !workerTemplate.includes("STAGING_TEST_VARIANT_IDS")) {
+  throw new Error("The Worker template must retain staging-only shop and test-variant configuration.");
+}
+for (const requiredFragment of [
+  "basenote-profile-queue-staging.wilson-af8.workers.dev",
+  "https://base-note-subscription-staging.myshopify.com",
+  "basenote-staging",
+]) {
+  if (!workerTemplate.includes(requiredFragment)) {
+    throw new Error(`The Worker template must retain its reviewed temporary staging target: ${requiredFragment}`);
+  }
+}
 if (/^account_id\s*=/m.test(workerTemplate) || /^\s*route\s*=/m.test(workerTemplate)) {
   throw new Error("The Worker template must not contain an account ID or a live route.");
 }
@@ -72,6 +91,23 @@ for (const forbiddenFragment of ["console.", "fetch(\"https://", "MAILGUN", "SHO
     throw new Error(`The staging Worker must not contain ${forbiddenFragment}.`);
   }
 }
+if (!workerSource.includes('const APP_PROXY_TARGET_PATH = "/api/shopify/app-proxy"')) {
+  throw new Error("The Worker must retain the reconciled Shopify App Proxy target path.");
+}
+
+const proxyVerifier = readFileSync(resolve(root, "src/cloudflare-staging-worker/webcrypto-app-proxy.ts"), "utf8");
+for (const requiredFragment of ["crypto.subtle.verify", "STAGING_SHOP_DOMAIN", "SHOPIFY_APP_PROXY_SHARED_SECRET"]) {
+  if (!proxyVerifier.includes(requiredFragment)) {
+    throw new Error(`The staging Web Crypto verifier must retain: ${requiredFragment}`);
+  }
+}
+
+const formNonceSource = readFileSync(resolve(root, "src/cloudflare-staging-worker/d1-form-nonce-repository.ts"), "utf8");
+for (const requiredFragment of ["consumed_at IS NULL", "expected_revision = ?", "expires_at > ?"]) {
+  if (!formNonceSource.includes(requiredFragment)) {
+    throw new Error(`The staging form nonce boundary must retain: ${requiredFragment}`);
+  }
+}
 
 const stagingMigration = readFileSync(resolve(root, "migrations/0001_staging_runtime.sql"), "utf8");
 for (const requiredFragment of [
@@ -81,6 +117,19 @@ for (const requiredFragment of [
 ]) {
   if (!stagingMigration.includes(requiredFragment)) {
     throw new Error(`The staging migration must retain: ${requiredFragment}`);
+  }
+}
+
+const testBindingMigration = readFileSync(resolve(root, "migrations/0002_staging_test_bindings.sql"), "utf8");
+for (const requiredFragment of [
+  "staging_profile_queue_test_bindings",
+  "DISPOSABLE_DEVELOPMENT_STORE",
+  "expires_at > seeded_at",
+  "staging_profile_queue_form_nonces",
+  "expected_revision INTEGER NOT NULL",
+]) {
+  if (!testBindingMigration.includes(requiredFragment)) {
+    throw new Error(`The staging test-binding migration must retain: ${requiredFragment}`);
   }
 }
 

@@ -11,9 +11,18 @@ export interface StagingHttpPolicy {
 
 const SECURITY_HEADERS: Readonly<Record<string, string>> = {
   "Cache-Control": "no-store",
-  "Content-Security-Policy": "default-src 'none'",
+  "Content-Security-Policy": "default-src 'none'; base-uri 'none'; frame-ancestors 'none'",
   "Referrer-Policy": "no-referrer",
   "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+};
+
+const HTML_SECURITY_HEADERS: Readonly<Record<string, string>> = {
+  ...SECURITY_HEADERS,
+  // The server-rendered staging page uses no script, network resource, or
+  // external font. Inline CSS is the only exception so the isolated App Proxy
+  // page remains readable without fetching a theme asset from another origin.
+  "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'",
 };
 
 export function createStagingHttpPolicy(environment: StagingWorkerEnv): StagingHttpPolicy {
@@ -24,7 +33,20 @@ export function createStagingHttpPolicy(environment: StagingWorkerEnv): StagingH
 }
 
 export function isAllowedHost(request: Request, policy: StagingHttpPolicy): boolean {
-  return policy.allowedHosts.has(new URL(request.url).hostname.toLowerCase());
+  const hostname = new URL(request.url).hostname.toLowerCase();
+  if (!policy.allowedHosts.has(hostname)) return false;
+  return isLocalhost(hostname) || isHttpsRequest(request);
+}
+
+/**
+ * App Proxy requests are signed credentials in transit. Treat the Worker URL
+ * as authoritative and only use `X-Forwarded-Proto` to reject an explicit
+ * insecure upstream value; never use it to upgrade an HTTP request to HTTPS.
+ */
+export function isHttpsRequest(request: Request): boolean {
+  if (new URL(request.url).protocol !== "https:") return false;
+  const forwardedProto = request.headers.get("X-Forwarded-Proto");
+  return forwardedProto === null || forwardedProto.trim().toLowerCase() === "https";
 }
 
 export function isAllowedOrigin(request: Request, policy: StagingHttpPolicy): boolean {
@@ -49,6 +71,20 @@ export function responseForJson(
   });
   appendCorsHeaders(headers, request, policy);
   return new Response(JSON.stringify(body), { headers, status });
+}
+
+export function responseForHtml(
+  status: number,
+  body: string,
+  request: Request,
+  policy: StagingHttpPolicy,
+): Response {
+  const headers = new Headers({
+    ...HTML_SECURITY_HEADERS,
+    "Content-Type": "text/html; charset=utf-8",
+  });
+  appendCorsHeaders(headers, request, policy);
+  return new Response(body, { headers, status });
 }
 
 export function responseForEmptyPreflight(
