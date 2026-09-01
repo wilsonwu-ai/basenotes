@@ -14,6 +14,14 @@ const requiredFiles = [
   "src/domain/ids.ts",
   "src/domain/queue.ts",
   "src/domain/queue.test.ts",
+  "src/profile-queue/contracts.ts",
+  "src/profile-queue/service.ts",
+  "src/profile-queue/repository.ts",
+  "src/profile-queue/d1-repository.ts",
+  "src/profile-queue/ui.ts",
+  "src/subscription-history/contracts.ts",
+  "src/subscription-history/backfill-importer.ts",
+  "migrations/0001_staging_runtime.sql",
   "src/platform/subscription-gateway.ts",
 ];
 
@@ -38,6 +46,17 @@ if (configuredSecret) {
 const appTemplate = readFileSync(resolve(root, "shopify.app.example.toml"), "utf8");
 if (!appTemplate.includes("REPLACE_ONLY_AFTER_EXISTING_DEV_DASHBOARD_APP_IS_APPROVED_FOR_LINKING")) {
   throw new Error("The Shopify template must remain deliberately unlinked.");
+}
+
+const stagingMigration = readFileSync(resolve(root, "migrations/0001_staging_runtime.sql"), "utf8");
+for (const requiredFragment of [
+  "unit_price_cents = 1800",
+  "profile queue audit is append-only",
+  "historical backfill audit is append-only",
+]) {
+  if (!stagingMigration.includes(requiredFragment)) {
+    throw new Error(`The staging migration must retain: ${requiredFragment}`);
+  }
 }
 
 process.stdout.write("Base Note Core local-only foundation verification passed.\n");
