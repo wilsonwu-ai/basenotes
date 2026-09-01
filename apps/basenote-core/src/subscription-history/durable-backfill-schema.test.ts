@@ -7,72 +7,148 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 const coreRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const migration = [
-  readFileSync(resolve(coreRoot, "migrations/0001_staging_runtime.sql"), "utf8"),
-  readFileSync(resolve(coreRoot, "migrations/0004_durable_historical_backfill.sql"), "utf8"),
-].join("\n");
+const baseMigration = readFileSync(resolve(coreRoot, "migrations/0001_staging_runtime.sql"), "utf8");
+const durableMigration = readFileSync(
+  resolve(coreRoot, "migrations/0004_durable_historical_backfill.sql"),
+  "utf8",
+);
+const migration = [baseMigration, durableMigration].join("\n");
 
-const RUN_ONE = "hbr_run00001";
-const RUN_TWO = "hbr_run00002";
+const RUN_ONE = "hbr_" + "1".repeat(32);
+const RUN_TWO = "hbr_" + "2".repeat(32);
 const CUSTOMER = "gid://shopify/Customer/101";
-const EVIDENCE = "appstle/export-row-001";
+const EVIDENCE = "appstle/sha256/" + "a".repeat(64);
+const EVIDENCE_TWO = "appstle/sha256/" + "b".repeat(64);
 const REQUESTED = "2026-09-01T09:00:00.000Z";
 const APPROVED = "2026-09-01T09:05:00.000Z";
 const APPLIED = "2026-09-01T09:10:00.000Z";
-const APPROVAL = "hba_review0001";
+const APPROVAL = "hba_" + "c".repeat(32);
 const DIGEST_ONE = "1".repeat(64);
 const DIGEST_TWO = "2".repeat(64);
 
-test("durable historical backfill schema rejects malformed writes and enforces one-way audited state", () => {
-  const directory = mkdtempSync(join(tmpdir(), "basenote-history-schema-"));
-  const database = join(directory, "history.db");
-  try {
+test("migration quarantines legacy runs and legacy unvalidated evidence instead of reopening them", () => {
+  withDatabase((database) => {
+    run(database, baseMigration);
+    run(database, sql([
+      "INSERT INTO historical_subscription_backfill_runs (",
+      "  run_id, digest, requested_at, status, approval_ref, approved_at",
+      ") VALUES ('legacy-run-001', '" + "e".repeat(64) + "', '2026-09-01T09:00:00Z',",
+      "  'DRY_RUN_COMPLETE', NULL, NULL)",
+      ";",
+      "INSERT INTO historical_subscription_backfill_audit (",
+      "  audit_id, run_id, action, customer_id, approval_ref, digest, occurred_at",
+      ") VALUES ('legacy-audit-001', 'legacy-run-001', 'DRY_RUN_COMPLETED', NULL, NULL,",
+      "  '" + "e".repeat(64) + "', '2026-09-01T09:00:00Z')",
+      ";",
+      "INSERT INTO historical_subscription_history (",
+      "  customer_id, established_at, established_by_run_id, evidence_ref, source, recorded_at",
+      ") VALUES ('gid://shopify/Customer/999', '2026-08-01T00:00:00Z', 'legacy-run-001',",
+      "  'legacy/source-row', 'APPSTLE_EXPORT', '2026-09-01T09:00:00Z')",
+    ]));
+    run(database, durableMigration);
+
+    assert.equal(
+      run(database, sql([
+        "SELECT requested_at || '|' || apply_state || '|' || legacy_quarantined || '|' ||",
+        "  legacy_quarantine_reason",
+        "FROM historical_subscription_backfill_runs WHERE run_id = 'legacy-run-001'",
+      ])).trim(),
+      "2026-09-01T09:00:00.000Z|NEEDS_REVIEW|1|NO_IMMUTABLE_PLAN",
+    );
+    assert.equal(
+      run(database, "SELECT legacy_quarantined || '|' || legacy_quarantine_reason FROM historical_subscription_history").trim(),
+      "1|PREVIOUSLY_UNVALIDATED_EVIDENCE",
+    );
+    assert.equal(
+      run(database, "SELECT legacy_quarantined || '|' || legacy_quarantine_reason FROM historical_subscription_backfill_audit").trim(),
+      "1|PREVIOUSLY_UNVALIDATED_AUDIT",
+    );
+    mustReject(
+      database,
+      "UPDATE historical_subscription_backfill_runs SET apply_state = 'PENDING_APPROVAL' WHERE run_id = 'legacy-run-001'",
+      /immutable|one-way/,
+    );
+  });
+});
+
+test("durable schema rejects PII-shaped values and enforces bound one-way lifecycle events", () => {
+  withDatabase((database) => {
     run(database, migration);
     createDryRun(database, RUN_ONE, DIGEST_ONE, "1");
+
     mustReject(
       database,
       sql([
         "INSERT INTO historical_subscription_backfill_plan (",
         "  run_id, decision_ordinal, customer_id, evidence_ref, first_observed_at, source, disposition",
-        ") VALUES ('" + RUN_ONE + "', 0, 'opaque@invalid', '" + EVIDENCE + "',",
-        "  '2026-08-15T12:00:00.000Z', 'APPSTLE_EXPORT', 'WILL_RECORD_EVER_SUBSCRIBED')",
+        ") VALUES ('" + RUN_ONE + "', 0, '" + CUSTOMER + "',",
+        "  'appstle/sha256/555-123-4567', '2026-08-15T12:00:00.000Z',",
+        "  'APPSTLE_EXPORT', 'WILL_RECORD_EVER_SUBSCRIBED')",
       ]),
-      /opaque unapproved dry-run manifest/,
+      /source-qualified/,
     );
-    insertPlan(database, RUN_ONE);
+    assert.equal(
+      run(database, "SELECT COUNT(*) FROM historical_subscription_backfill_plan WHERE evidence_ref LIKE '%555%' ").trim(),
+      "0",
+    );
     mustReject(
       database,
-      historyInsert(RUN_ONE),
-      /approved applying plan/,
+      sql([
+        "INSERT INTO historical_subscription_backfill_plan (",
+        "  run_id, decision_ordinal, customer_id, evidence_ref, first_observed_at, source, disposition",
+        ") VALUES ('" + RUN_ONE + "', 0, '" + CUSTOMER + "', '" + EVIDENCE + "',",
+        "  '2026-08-15T12:00:00Z', 'APPSTLE_EXPORT', 'WILL_RECORD_EVER_SUBSCRIBED')",
+      ]),
+      /canonical source-qualified/,
     );
+    mustReject(
+      database,
+      sql([
+        "INSERT INTO historical_subscription_backfill_lifecycle_audit (",
+        "  audit_id, run_id, action, approval_ref, digest, occurred_at",
+        ") VALUES ('" + lifecycleId("f") + "', '" + RUN_ONE + "', 'RUN_APPROVED',",
+        "  '" + APPROVAL + "', '" + DIGEST_ONE + "', '" + APPROVED + "')",
+      ]),
+      /generated by and bound/,
+    );
+    assert.equal(run(database, "SELECT COUNT(*) FROM historical_subscription_backfill_lifecycle_audit").trim(), "0");
+
+    insertPlan(database, RUN_ONE, EVIDENCE);
+    mustReject(database, historyInsert(RUN_ONE, EVIDENCE), /approved applying plan/);
+    approveRun(database, RUN_ONE, "1");
+    assert.equal(
+      run(database, "SELECT COUNT(*) FROM historical_subscription_backfill_lifecycle_audit WHERE action = 'RUN_APPROVED'").trim(),
+      "1",
+    );
+    mustReject(
+      database,
+      sql([
+        "INSERT INTO historical_subscription_backfill_lifecycle_audit (",
+        "  audit_id, run_id, action, approval_ref, digest, occurred_at",
+        ") VALUES ('" + lifecycleId("e") + "', '" + RUN_ONE + "', 'RUN_APPROVED',",
+        "  '" + APPROVAL + "', '" + DIGEST_ONE + "', '" + APPROVED + "')",
+      ]),
+      /generated by and bound/,
+    );
+    assert.equal(run(database, "SELECT COUNT(*) FROM historical_subscription_backfill_lifecycle_audit").trim(), "1");
+
     mustReject(
       database,
       sql([
         "UPDATE historical_subscription_backfill_runs",
-        "SET approval_ref = '" + APPROVAL + "', approved_at = '" + APPROVED + "',",
-        "  apply_state = 'APPROVED', lifecycle_audit_id = 'hblcaudit_9999999999999999'",
+        "SET approval_ref = 'hba_jeffsmith', approved_at = '" + APPROVED + "',",
+        "  apply_state = 'APPROVED', lifecycle_audit_id = '" + lifecycleId("d") + "'",
         "WHERE run_id = '" + RUN_ONE + "'",
       ]),
-      /one-way and requires a matching audit/,
+      /one-way/,
     );
 
-    approveRun(database, RUN_ONE, DIGEST_ONE, "1");
+    beginApply(database, RUN_ONE, "2");
+    run(database, historyInsert(RUN_ONE, EVIDENCE));
+    insertFactAudit(database, RUN_ONE, DIGEST_ONE, "2");
     mustReject(
       database,
-      sql([
-        "INSERT INTO historical_subscription_backfill_plan (",
-        "  run_id, decision_ordinal, customer_id, evidence_ref, first_observed_at, source, disposition",
-        ") VALUES ('" + RUN_ONE + "', 1, 'gid://shopify/Customer/102', 'appstle/export-row-002',",
-        "  '2026-08-15T12:00:00.000Z', 'APPSTLE_EXPORT', 'WILL_RECORD_EVER_SUBSCRIBED')",
-      ]),
-      /opaque unapproved dry-run manifest/,
-    );
-    beginApply(database, RUN_ONE, DIGEST_ONE, "1");
-    run(database, historyInsert(RUN_ONE));
-    insertFactAudit(database, RUN_ONE, DIGEST_ONE, "1");
-    mustReject(
-      database,
-      "UPDATE historical_subscription_history SET evidence_ref = 'different-evidence' WHERE customer_id = '" + CUSTOMER + "'",
+      "UPDATE historical_subscription_history SET evidence_ref = 'appstle/sha256/" + "d".repeat(64) + "' WHERE customer_id = '" + CUSTOMER + "'",
       /immutable/,
     );
     mustReject(
@@ -80,40 +156,48 @@ test("durable historical backfill schema rejects malformed writes and enforces o
       "DELETE FROM historical_subscription_history WHERE customer_id = '" + CUSTOMER + "'",
       /immutable/,
     );
-    finishApplied(database, RUN_ONE, DIGEST_ONE, "1");
+    finishApplied(database, RUN_ONE, "3");
+    assert.equal(
+      run(database, "SELECT COUNT(*) FROM historical_subscription_backfill_lifecycle_audit WHERE action = 'RUN_APPLIED'").trim(),
+      "1",
+    );
     mustReject(
       database,
       "UPDATE historical_subscription_backfill_runs SET apply_state = 'APPROVED' WHERE run_id = '" + RUN_ONE + "'",
-      /one-way and requires a matching audit/,
+      /one-way/,
     );
 
-    createDryRun(database, RUN_TWO, DIGEST_TWO, "2");
-    insertPlan(database, RUN_TWO);
-    approveRun(database, RUN_TWO, DIGEST_TWO, "2");
-    beginApply(database, RUN_TWO, DIGEST_TWO, "2");
+    createDryRun(database, RUN_TWO, DIGEST_TWO, "4");
+    insertPlan(database, RUN_TWO, EVIDENCE_TWO);
+    approveRun(database, RUN_TWO, "5");
+    beginApply(database, RUN_TWO, "6");
     run(database, sql([
       "INSERT INTO historical_subscription_backfill_apply_conflicts (",
       "  run_id, customer_id, competing_run_id, reason, detected_at",
       ") VALUES ('" + RUN_TWO + "', '" + CUSTOMER + "', '" + RUN_ONE + "',",
       "  'ALREADY_RECORDED_BY_ANOTHER_RUN', '" + APPLIED + "')",
     ]));
-    finishNeedsReview(database, RUN_TWO, DIGEST_TWO, "2");
-    const state = run(database, sql([
-      "SELECT apply_state || '|' ||",
-      "  (SELECT COUNT(*) FROM historical_subscription_history",
-      "   WHERE established_by_run_id = '" + RUN_TWO + "')",
-      "FROM historical_subscription_backfill_runs",
-      "WHERE run_id = '" + RUN_TWO + "'",
-    ])).trim();
-    assert.equal(state, "NEEDS_REVIEW|0");
+    finishNeedsReview(database, RUN_TWO, "7");
+    assert.equal(
+      run(database, sql([
+        "SELECT apply_state || '|' ||",
+        "  (SELECT COUNT(*) FROM historical_subscription_history",
+        "   WHERE established_by_run_id = '" + RUN_TWO + "')",
+        "FROM historical_subscription_backfill_runs",
+        "WHERE run_id = '" + RUN_TWO + "'",
+      ])).trim(),
+      "NEEDS_REVIEW|0",
+    );
+    assert.equal(
+      run(database, "SELECT COUNT(*) FROM historical_subscription_backfill_lifecycle_audit WHERE run_id = '" + RUN_TWO + "' AND action = 'RUN_NEEDS_REVIEW'").trim(),
+      "1",
+    );
     mustReject(
       database,
       "UPDATE historical_subscription_backfill_apply_conflicts SET reason = 'ALREADY_RECORDED_BY_ANOTHER_RUN' WHERE run_id = '" + RUN_TWO + "'",
       /append-only/,
     );
-  } finally {
-    rmSync(directory, { force: true, recursive: true });
-  }
+  });
 });
 
 function createDryRun(database: string, runId: string, digest: string, suffix: string): void {
@@ -126,56 +210,44 @@ function createDryRun(database: string, runId: string, digest: string, suffix: s
     ";",
     "INSERT INTO historical_subscription_backfill_audit (",
     "  audit_id, run_id, action, customer_id, approval_ref, digest, occurred_at",
-    ") VALUES ('hbaudit_" + suffix.repeat(16) + "', '" + runId + "', 'DRY_RUN_COMPLETED',",
+    ") VALUES ('" + factAuditId(suffix) + "', '" + runId + "', 'DRY_RUN_COMPLETED',",
     "  NULL, NULL, '" + digest + "', '" + REQUESTED + "')",
   ]));
 }
 
-function insertPlan(database: string, runId: string): void {
+function insertPlan(database: string, runId: string, evidence: string): void {
   run(database, sql([
     "INSERT INTO historical_subscription_backfill_plan (",
     "  run_id, decision_ordinal, customer_id, evidence_ref, first_observed_at, source, disposition",
-    ") VALUES ('" + runId + "', 0, '" + CUSTOMER + "', '" + EVIDENCE + "',",
+    ") VALUES ('" + runId + "', 0, '" + CUSTOMER + "', '" + evidence + "',",
     "  '2026-08-15T12:00:00.000Z', 'APPSTLE_EXPORT', 'WILL_RECORD_EVER_SUBSCRIBED')",
   ]));
 }
 
-function approveRun(database: string, runId: string, digest: string, suffix: string): void {
-  const lifecycleId = "hblcaudit_" + suffix.repeat(16);
+function approveRun(database: string, runId: string, suffix: string): void {
   run(database, sql([
-    "INSERT INTO historical_subscription_backfill_lifecycle_audit (",
-    "  audit_id, run_id, action, approval_ref, digest, occurred_at",
-    ") VALUES ('" + lifecycleId + "', '" + runId + "', 'RUN_APPROVED',",
-    "  '" + APPROVAL + "', '" + digest + "', '" + APPROVED + "')",
-    ";",
     "UPDATE historical_subscription_backfill_runs",
     "SET approval_ref = '" + APPROVAL + "', approved_at = '" + APPROVED + "',",
-    "  apply_state = 'APPROVED', lifecycle_audit_id = '" + lifecycleId + "'",
+    "  apply_state = 'APPROVED', lifecycle_audit_id = '" + lifecycleId(suffix) + "'",
     "WHERE run_id = '" + runId + "'",
   ]));
 }
 
-function beginApply(database: string, runId: string, digest: string, suffix: string): void {
-  const lifecycleId = "hblcaudit_a" + suffix.repeat(15);
+function beginApply(database: string, runId: string, suffix: string): void {
   run(database, sql([
-    "INSERT INTO historical_subscription_backfill_lifecycle_audit (",
-    "  audit_id, run_id, action, approval_ref, digest, occurred_at",
-    ") VALUES ('" + lifecycleId + "', '" + runId + "', 'RUN_APPLYING',",
-    "  '" + APPROVAL + "', '" + digest + "', '" + APPLIED + "')",
-    ";",
     "UPDATE historical_subscription_backfill_runs",
     "SET apply_state = 'APPLYING', apply_started_at = '" + APPLIED + "',",
-    "  lifecycle_audit_id = '" + lifecycleId + "'",
+    "  lifecycle_audit_id = '" + lifecycleId(suffix) + "'",
     "WHERE run_id = '" + runId + "'",
   ]));
 }
 
-function historyInsert(runId: string): string {
+function historyInsert(runId: string, evidence: string): string {
   return sql([
     "INSERT INTO historical_subscription_history (",
     "  customer_id, established_at, established_by_run_id, evidence_ref, source, recorded_at",
     ") VALUES ('" + CUSTOMER + "', '2026-08-15T12:00:00.000Z', '" + runId + "',",
-    "  '" + EVIDENCE + "', 'APPSTLE_EXPORT', '" + APPLIED + "')",
+    "  '" + evidence + "', 'APPSTLE_EXPORT', '" + APPLIED + "')",
   ]);
 }
 
@@ -183,40 +255,46 @@ function insertFactAudit(database: string, runId: string, digest: string, suffix
   run(database, sql([
     "INSERT INTO historical_subscription_backfill_audit (",
     "  audit_id, run_id, action, customer_id, approval_ref, digest, occurred_at",
-    ") VALUES ('hbaudit_a" + suffix.repeat(15) + "', '" + runId + "',",
+    ") VALUES ('" + factAuditId(suffix) + "', '" + runId + "',",
     "  'EVER_SUBSCRIBED_RECORDED', '" + CUSTOMER + "', '" + APPROVAL + "',",
     "  '" + digest + "', '" + APPLIED + "')",
   ]));
 }
 
-function finishApplied(database: string, runId: string, digest: string, suffix: string): void {
-  const lifecycleId = "hblcaudit_b" + suffix.repeat(15);
+function finishApplied(database: string, runId: string, suffix: string): void {
   run(database, sql([
-    "INSERT INTO historical_subscription_backfill_lifecycle_audit (",
-    "  audit_id, run_id, action, approval_ref, digest, occurred_at",
-    ") VALUES ('" + lifecycleId + "', '" + runId + "', 'RUN_APPLIED',",
-    "  '" + APPROVAL + "', '" + digest + "', '" + APPLIED + "')",
-    ";",
     "UPDATE historical_subscription_backfill_runs",
     "SET status = 'APPLIED', apply_state = 'APPLIED', finalized_at = '" + APPLIED + "',",
-    "  lifecycle_audit_id = '" + lifecycleId + "'",
+    "  lifecycle_audit_id = '" + lifecycleId(suffix) + "'",
     "WHERE run_id = '" + runId + "'",
   ]));
 }
 
-function finishNeedsReview(database: string, runId: string, digest: string, suffix: string): void {
-  const lifecycleId = "hblcaudit_b" + suffix.repeat(15);
+function finishNeedsReview(database: string, runId: string, suffix: string): void {
   run(database, sql([
-    "INSERT INTO historical_subscription_backfill_lifecycle_audit (",
-    "  audit_id, run_id, action, approval_ref, digest, occurred_at",
-    ") VALUES ('" + lifecycleId + "', '" + runId + "', 'RUN_NEEDS_REVIEW',",
-    "  '" + APPROVAL + "', '" + digest + "', '" + APPLIED + "')",
-    ";",
     "UPDATE historical_subscription_backfill_runs",
     "SET apply_state = 'NEEDS_REVIEW', finalized_at = '" + APPLIED + "',",
-    "  lifecycle_audit_id = '" + lifecycleId + "'",
+    "  lifecycle_audit_id = '" + lifecycleId(suffix) + "'",
     "WHERE run_id = '" + runId + "'",
   ]));
+}
+
+function factAuditId(suffix: string): string {
+  return "hbaudit_" + suffix.repeat(32);
+}
+
+function lifecycleId(suffix: string): string {
+  return "hblcaudit_" + suffix.repeat(32);
+}
+
+function withDatabase(work: (database: string) => void): void {
+  const directory = mkdtempSync(join(tmpdir(), "basenote-history-schema-"));
+  const database = join(directory, "history.db");
+  try {
+    work(database);
+  } finally {
+    rmSync(directory, { force: true, recursive: true });
+  }
 }
 
 function mustReject(database: string, statement: string, error: RegExp): void {

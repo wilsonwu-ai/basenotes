@@ -2,6 +2,8 @@ import {
   asHistoricalBackfillApprovalRef,
   asHistoricalBackfillRunId,
   asHistoricalEvidenceRef,
+  assertCanonicalHistoricalTimestamp,
+  canonicalizeHistoricalTimestamp,
   normalizeHistoricalMemberCandidate,
   type DurableHistoricalSubscriptionRecord,
   type HistoricalBackfillApproval,
@@ -14,13 +16,19 @@ import {
   type NormalizedHistoricalMemberCandidate,
 } from "./contracts.js";
 import { digestHistoricalBackfillDecisions } from "./backfill-importer.js";
-import { asCustomerId, asIsoTimestamp, type CustomerId, type IsoTimestamp } from "../queue/types.js";
+import { asCustomerId, type CustomerId, type IsoTimestamp } from "../queue/types.js";
 import type { D1DatabasePort, D1PreparedStatement, D1Result } from "../staging-runtime/d1.js";
 
-const MAX_DRY_RUN_CANDIDATES = 250;
+/**
+ * Apply uses 3 statements per candidate plus 3 transition statements. Keeping
+ * this at 14 limits its one D1 batch to 45 statements, below the Worker Free
+ * 50-subrequest budget even under a conservative accounting model.
+ */
+export const MAX_DRY_RUN_CANDIDATES = 14;
+const MAX_APPLY_BATCH_STATEMENTS = 45;
 const DIGEST = /^[0-9a-f]{64}$/;
-const FACT_AUDIT_ID = /^hbaudit_[A-Za-z0-9]{16,128}$/;
-const LIFECYCLE_AUDIT_ID = /^hblcaudit_[A-Za-z0-9]{16,128}$/;
+const FACT_AUDIT_ID = /^hbaudit_[0-9a-f]{32}$/;
+const LIFECYCLE_AUDIT_ID = /^hblcaudit_[0-9a-f]{32}$/;
 
 export type DurableHistoricalBackfillApplyState =
   | "PENDING_APPROVAL"
@@ -37,6 +45,9 @@ export interface DurableHistoricalBackfillRun {
   readonly digest: string;
   readonly finalizedAt: IsoTimestamp | null;
   readonly lifecycleAuditId: string | null;
+  /** Legacy rows that lacked a retained manifest are permanently non-runnable. */
+  readonly legacyQuarantined: boolean;
+  readonly legacyQuarantineReason: "NO_IMMUTABLE_PLAN" | null;
   readonly requestedAt: IsoTimestamp;
   readonly runId: HistoricalBackfillRunId;
   readonly status: "DRY_RUN_COMPLETE" | "APPLIED";
@@ -103,6 +114,8 @@ interface RunRow {
   readonly digest: string;
   readonly finalized_at: string | null;
   readonly lifecycle_audit_id: string | null;
+  readonly legacy_quarantined: number;
+  readonly legacy_quarantine_reason: string | null;
   readonly requested_at: string;
   readonly run_id: string;
   readonly status: string;
@@ -134,6 +147,8 @@ interface PlannedDecision {
 export class D1DurableHistoricalBackfillService {
   private readonly createFactAuditId: () => string;
   private readonly createLifecycleAuditId: () => string;
+  private readonly issuedFactAuditIds = new Set<string>();
+  private readonly issuedLifecycleAuditIds = new Set<string>();
 
   constructor(
     private readonly database: D1DatabasePort,
@@ -151,7 +166,7 @@ export class D1DurableHistoricalBackfillService {
    */
   async createDryRun(input: HistoricalBackfillDryRunInput): Promise<HistoricalBackfillDryRun> {
     const runId = asHistoricalBackfillRunId(input.runId);
-    const requestedAt = asIsoTimestamp(input.requestedAt);
+    const requestedAt = canonicalizeHistoricalTimestamp(input.requestedAt);
     if (input.candidates.length > MAX_DRY_RUN_CANDIDATES) {
       throw new Error(
         "A durable historical dry run may contain at most " + MAX_DRY_RUN_CANDIDATES + " candidates.",
@@ -207,8 +222,13 @@ export class D1DurableHistoricalBackfillService {
   async approveDryRun(input: DurableHistoricalBackfillApprovalInput): Promise<DurableHistoricalBackfillRun> {
     const runId = asHistoricalBackfillRunId(input.runId);
     const approvalRef = asHistoricalBackfillApprovalRef(input.approval.approvalRef);
-    const approvedAt = asIsoTimestamp(input.approval.approvedAt);
+    const approvedAt = canonicalizeHistoricalTimestamp(input.approval.approvedAt);
     const run = await this.requireRun(runId);
+    if (run.legacyQuarantined) {
+      throw new DurableHistoricalBackfillConflictError(
+        "This legacy backfill run is quarantined because it has no immutable reviewed plan.",
+      );
+    }
     if (run.applyState !== "PENDING_APPROVAL" || run.status !== "DRY_RUN_COMPLETE") {
       throw new DurableHistoricalBackfillConflictError("Only an unapproved durable dry run may be approved.");
     }
@@ -217,25 +237,13 @@ export class D1DurableHistoricalBackfillService {
     try {
       const results = await this.database.batch([
         this.database.prepare(sql([
-          "INSERT INTO historical_subscription_backfill_lifecycle_audit (",
-          "  audit_id, run_id, action, approval_ref, digest, occurred_at",
-          ")",
-          "SELECT ?, ?, 'RUN_APPROVED', ?, ?, ?",
-          "WHERE EXISTS (",
-          "  SELECT 1 FROM historical_subscription_backfill_runs",
-          "  WHERE run_id = ? AND digest = ? AND status = 'DRY_RUN_COMPLETE'",
-          "    AND apply_state = 'PENDING_APPROVAL' AND approval_ref IS NULL",
-          ")",
-        ])).bind(lifecycleAuditId, runId, approvalRef, run.digest, approvedAt, runId, run.digest),
-        this.database.prepare(sql([
           "UPDATE historical_subscription_backfill_runs",
           "SET approval_ref = ?, approved_at = ?, apply_state = 'APPROVED', lifecycle_audit_id = ?",
           "WHERE run_id = ? AND digest = ? AND status = 'DRY_RUN_COMPLETE'",
           "  AND apply_state = 'PENDING_APPROVAL' AND approval_ref IS NULL",
         ])).bind(approvalRef, approvedAt, lifecycleAuditId, runId, run.digest),
       ]);
-      assertChanged(results[0], "The durable approval audit was not created.");
-      assertChanged(results[1], "The durable dry run could not transition to approved.");
+      assertChanged(results[0], "The durable dry run could not transition to approved.");
     } catch (error) {
       throw asDurableConflict(error, "The durable dry run could not be approved.");
     }
@@ -249,8 +257,13 @@ export class D1DurableHistoricalBackfillService {
    */
   async applyApprovedDryRun(input: DurableHistoricalBackfillApplyInput): Promise<DurableHistoricalBackfillApplyResult> {
     const runId = asHistoricalBackfillRunId(input.runId);
-    const appliedAt = asIsoTimestamp(input.appliedAt);
+    const appliedAt = canonicalizeHistoricalTimestamp(input.appliedAt);
     const run = await this.requireRun(runId);
+    if (run.legacyQuarantined) {
+      throw new DurableHistoricalBackfillConflictError(
+        "This legacy backfill run is quarantined because it has no immutable reviewed plan.",
+      );
+    }
     if (
       run.applyState !== "APPROVED"
       || run.status !== "DRY_RUN_COMPLETE"
@@ -277,27 +290,6 @@ export class D1DurableHistoricalBackfillService {
     const appliedAuditId = this.nextLifecycleAuditId();
     const factAuditIds = willRecord.map(() => this.nextFactAuditId());
     const statements: D1PreparedStatement[] = [
-      this.database.prepare(sql([
-        "INSERT INTO historical_subscription_backfill_lifecycle_audit (",
-        "  audit_id, run_id, action, approval_ref, digest, occurred_at",
-        ")",
-        "SELECT ?, ?, 'RUN_APPLYING', ?, ?, ?",
-        "WHERE EXISTS (",
-        "  SELECT 1 FROM historical_subscription_backfill_runs",
-        "  WHERE run_id = ? AND digest = ? AND status = 'DRY_RUN_COMPLETE'",
-        "    AND apply_state = 'APPROVED' AND approval_ref = ? AND approved_at <= ?",
-        ")",
-      ])).bind(
-        applyingAuditId,
-        run.runId,
-        run.approvalRef,
-        run.digest,
-        appliedAt,
-        run.runId,
-        run.digest,
-        run.approvalRef,
-        appliedAt,
-      ),
       this.database.prepare(sql([
         "UPDATE historical_subscription_backfill_runs",
         "SET apply_state = 'APPLYING', apply_started_at = ?, lifecycle_audit_id = ?",
@@ -326,11 +318,12 @@ export class D1DurableHistoricalBackfillService {
       statements.push(bindFactAuditInsert(this.database, run, decision, factAuditId, appliedAt));
     }
     statements.push(
-      bindLifecycleAuditForNeedsReview(this.database, run, needsReviewAuditId, appliedAt),
       bindNeedsReviewTransition(this.database, run, needsReviewAuditId, appliedAt),
-      bindLifecycleAuditForApplied(this.database, run, appliedAuditId, appliedAt),
       bindAppliedTransition(this.database, run, appliedAuditId, appliedAt),
     );
+    if (statements.length > MAX_APPLY_BATCH_STATEMENTS) {
+      throw new DurableHistoricalBackfillPersistenceError("The durable apply exceeded its Worker-safe D1 batch cap.");
+    }
 
     let results: readonly D1Result[];
     try {
@@ -338,20 +331,17 @@ export class D1DurableHistoricalBackfillService {
     } catch (error) {
       throw asDurableConflict(error, "The durable apply transaction was rejected; no partial batch was retained.");
     }
-    assertChanged(results[0], "The durable apply audit was not created.");
-    assertChanged(results[1], "The durable run could not transition to applying.");
+    assertChanged(results[0], "The durable run could not transition to applying.");
 
-    const conflictsStart = 2;
+    const conflictsStart = 1;
     const factsStart = conflictsStart + willRecord.length;
     const terminalStart = factsStart + (willRecord.length * 2);
-    const needsReviewAudit = results[terminalStart];
-    const needsReviewTransition = results[terminalStart + 1];
-    const appliedAudit = results[terminalStart + 2];
-    const appliedTransition = results[terminalStart + 3];
-    const needsReview = changed(needsReviewAudit) && changed(needsReviewTransition);
-    const applied = changed(appliedAudit) && changed(appliedTransition);
+    const needsReviewTransition = results[terminalStart];
+    const appliedTransition = results[terminalStart + 1];
+    const needsReview = changed(needsReviewTransition);
+    const applied = changed(appliedTransition);
 
-    if (needsReview && !changed(appliedAudit) && !changed(appliedTransition)) {
+    if (needsReview && !changed(appliedTransition)) {
       const finalized = await this.requireRun(runId);
       const conflicts = await this.listConflicts(runId);
       if (finalized.applyState !== "NEEDS_REVIEW" || conflicts.length === 0) {
@@ -359,7 +349,7 @@ export class D1DurableHistoricalBackfillService {
       }
       return { conflictCount: conflicts.length, newlyRecordedCount: 0, run: finalized };
     }
-    if (applied && !changed(needsReviewAudit) && !changed(needsReviewTransition)) {
+    if (applied && !changed(needsReviewTransition)) {
       const finalized = await this.requireRun(runId);
       if (finalized.applyState !== "APPLIED" || finalized.status !== "APPLIED") {
         throw new DurableHistoricalBackfillPersistenceError("The durable apply did not retain its terminal state.");
@@ -379,7 +369,8 @@ export class D1DurableHistoricalBackfillService {
     const runId = asHistoricalBackfillRunId(runIdValue);
     const row = await this.database.prepare(sql([
       "SELECT run_id, digest, requested_at, status, approval_ref, approved_at,",
-      "  apply_state, apply_started_at, finalized_at, lifecycle_audit_id",
+      "  apply_state, apply_started_at, finalized_at, lifecycle_audit_id,",
+      "  legacy_quarantined, legacy_quarantine_reason",
       "FROM historical_subscription_backfill_runs",
       "WHERE run_id = ?",
     ])).bind(runId).first<RunRow>();
@@ -406,6 +397,8 @@ export class D1DurableHistoricalBackfillService {
   private async planDecisions(
     candidates: readonly NormalizedHistoricalMemberCandidate[],
   ): Promise<HistoricalBackfillDecision[]> {
+    const customerIds = [...new Set(candidates.map((candidate) => candidate.customerId))];
+    const durableByCustomer = await this.findEverSubscribedByCustomerIds(customerIds);
     const decisions: HistoricalBackfillDecision[] = [];
     const seenCustomers = new Set<CustomerId>();
     for (const candidate of candidates) {
@@ -414,7 +407,7 @@ export class D1DurableHistoricalBackfillService {
         continue;
       }
       seenCustomers.add(candidate.customerId);
-      const existing = await this.findEverSubscribed(candidate.customerId);
+      const existing = durableByCustomer.get(candidate.customerId);
       decisions.push({
         candidate,
         disposition: existing ? "ALREADY_DURABLE" : "WILL_RECORD_EVER_SUBSCRIBED",
@@ -423,14 +416,30 @@ export class D1DurableHistoricalBackfillService {
     return decisions;
   }
 
-  private async findEverSubscribed(customerIdValue: string): Promise<DurableHistoricalSubscriptionRecord | null> {
-    const customerId = asCustomerId(customerIdValue);
-    const row = await this.database.prepare(sql([
+  /** One bounded D1 lookup for the entire dry run; never one subrequest per row. */
+  private async findEverSubscribedByCustomerIds(
+    customerIds: readonly CustomerId[],
+  ): Promise<ReadonlyMap<CustomerId, DurableHistoricalSubscriptionRecord>> {
+    if (customerIds.length === 0) return new Map();
+    if (customerIds.length > MAX_DRY_RUN_CANDIDATES) {
+      throw new DurableHistoricalBackfillPersistenceError("The durable dry-run lookup exceeded its Worker-safe cap.");
+    }
+    const placeholders = customerIds.map(() => "?").join(", ");
+    const result = await this.database.prepare(sql([
       "SELECT customer_id, established_at, established_by_run_id, evidence_ref, source",
       "FROM historical_subscription_history",
-      "WHERE customer_id = ?",
-    ])).bind(customerId).first<HistoryRow>();
-    return row ? mapHistoryRow(row) : null;
+      "WHERE legacy_quarantined = 0",
+      "  AND customer_id IN (" + placeholders + ")",
+    ])).bind(...customerIds).all<HistoryRow>();
+    const durableByCustomer = new Map<CustomerId, DurableHistoricalSubscriptionRecord>();
+    for (const row of result.results ?? []) {
+      const record = mapHistoryRow(row);
+      if (durableByCustomer.has(record.customerId)) {
+        throw new DurableHistoricalBackfillPersistenceError("The durable history contains duplicate customer evidence.");
+      }
+      durableByCustomer.set(record.customerId, record);
+    }
+    return durableByCustomer;
   }
 
   private async readPlan(run: DurableHistoricalBackfillRun): Promise<readonly PlannedDecision[]> {
@@ -445,13 +454,17 @@ export class D1DurableHistoricalBackfillService {
         throw new DurableHistoricalBackfillPersistenceError("The retained durable manifest has an invalid ordinal.");
       }
       try {
+        const candidate = normalizeHistoricalMemberCandidate({
+          customerId: row.customer_id,
+          evidenceRef: row.evidence_ref,
+          firstObservedAt: row.first_observed_at,
+          source: asHistoricalMemberSource(row.source),
+        });
+        if (candidate.firstObservedAt !== row.first_observed_at) {
+          throw new Error("Retained historical plan timestamp is not canonical.");
+        }
         return {
-          candidate: normalizeHistoricalMemberCandidate({
-            customerId: row.customer_id,
-            evidenceRef: row.evidence_ref,
-            firstObservedAt: row.first_observed_at,
-            source: asHistoricalMemberSource(row.source),
-          }),
+          candidate,
           disposition: asHistoricalBackfillDisposition(row.disposition),
           ordinal: row.decision_ordinal,
         };
@@ -466,6 +479,10 @@ export class D1DurableHistoricalBackfillService {
     if (!FACT_AUDIT_ID.test(value)) {
       throw new Error("The durable fact-audit identifier must be an opaque hbaudit_ value.");
     }
+    if (this.issuedFactAuditIds.has(value)) {
+      throw new Error("The durable fact-audit identifier must be unique within one backfill service instance.");
+    }
+    this.issuedFactAuditIds.add(value);
     return value;
   }
 
@@ -474,6 +491,10 @@ export class D1DurableHistoricalBackfillService {
     if (!LIFECYCLE_AUDIT_ID.test(value)) {
       throw new Error("The durable lifecycle-audit identifier must be an opaque hblcaudit_ value.");
     }
+    if (this.issuedLifecycleAuditIds.has(value)) {
+      throw new Error("The durable lifecycle-audit identifier must be unique within one backfill service instance.");
+    }
+    this.issuedLifecycleAuditIds.add(value);
     return value;
   }
 }
@@ -634,32 +655,6 @@ function bindFactAuditInsert(
   );
 }
 
-function bindLifecycleAuditForNeedsReview(
-  database: D1DatabasePort,
-  run: DurableHistoricalBackfillRun,
-  auditId: string,
-  appliedAt: IsoTimestamp,
-): D1PreparedStatement {
-  return database.prepare(sql([
-    "INSERT INTO historical_subscription_backfill_lifecycle_audit (",
-    "  audit_id, run_id, action, approval_ref, digest, occurred_at",
-    ")",
-    "SELECT ?, ?, 'RUN_NEEDS_REVIEW', ?, ?, ?",
-    "WHERE EXISTS (",
-    "  SELECT 1 FROM historical_subscription_backfill_runs AS current_run",
-    "  WHERE current_run.run_id = ?",
-    "    AND current_run.digest = ?",
-    "    AND current_run.status = 'DRY_RUN_COMPLETE'",
-    "    AND current_run.apply_state = 'APPLYING'",
-    "    AND current_run.approval_ref = ?",
-    "    AND EXISTS (",
-    "      SELECT 1 FROM historical_subscription_backfill_apply_conflicts AS conflict",
-    "      WHERE conflict.run_id = current_run.run_id",
-    "    )",
-    ")",
-  ])).bind(auditId, run.runId, run.approvalRef, run.digest, appliedAt, run.runId, run.digest, run.approvalRef);
-}
-
 function bindNeedsReviewTransition(
   database: D1DatabasePort,
   run: DurableHistoricalBackfillRun,
@@ -676,55 +671,6 @@ function bindNeedsReviewTransition(
     "    WHERE conflict.run_id = historical_subscription_backfill_runs.run_id",
     "  )",
   ])).bind(appliedAt, auditId, run.runId, run.digest, run.approvalRef);
-}
-
-function bindLifecycleAuditForApplied(
-  database: D1DatabasePort,
-  run: DurableHistoricalBackfillRun,
-  auditId: string,
-  appliedAt: IsoTimestamp,
-): D1PreparedStatement {
-  return database.prepare(sql([
-    "INSERT INTO historical_subscription_backfill_lifecycle_audit (",
-    "  audit_id, run_id, action, approval_ref, digest, occurred_at",
-    ")",
-    "SELECT ?, ?, 'RUN_APPLIED', ?, ?, ?",
-    "WHERE EXISTS (",
-    "  SELECT 1 FROM historical_subscription_backfill_runs AS current_run",
-    "  WHERE current_run.run_id = ?",
-    "    AND current_run.digest = ?",
-    "    AND current_run.status = 'DRY_RUN_COMPLETE'",
-    "    AND current_run.apply_state = 'APPLYING'",
-    "    AND current_run.approval_ref = ?",
-    "    AND NOT EXISTS (",
-    "      SELECT 1 FROM historical_subscription_backfill_apply_conflicts AS conflict",
-    "      WHERE conflict.run_id = current_run.run_id",
-    "    )",
-    "    AND NOT EXISTS (",
-    "      SELECT 1 FROM historical_subscription_backfill_plan AS plan",
-    "      WHERE plan.run_id = current_run.run_id",
-    "        AND plan.disposition = 'WILL_RECORD_EVER_SUBSCRIBED'",
-    "        AND (",
-    "          NOT EXISTS (",
-    "            SELECT 1 FROM historical_subscription_history AS history",
-    "            WHERE history.customer_id = plan.customer_id",
-    "              AND history.established_by_run_id = current_run.run_id",
-    "              AND history.evidence_ref = plan.evidence_ref",
-    "              AND history.established_at = plan.first_observed_at",
-    "              AND history.source = plan.source",
-    "          )",
-    "          OR NOT EXISTS (",
-    "            SELECT 1 FROM historical_subscription_backfill_audit AS audit",
-    "            WHERE audit.run_id = current_run.run_id",
-    "              AND audit.action = 'EVER_SUBSCRIBED_RECORDED'",
-    "              AND audit.customer_id = plan.customer_id",
-    "              AND audit.approval_ref = current_run.approval_ref",
-    "              AND audit.digest = current_run.digest",
-    "          )",
-    "        )",
-    "    )",
-    ")",
-  ])).bind(auditId, run.runId, run.approvalRef, run.digest, appliedAt, run.runId, run.digest, run.approvalRef);
 }
 
 function bindAppliedTransition(
@@ -770,12 +716,13 @@ function bindAppliedTransition(
 
 function mapHistoryRow(row: HistoryRow): DurableHistoricalSubscriptionRecord {
   try {
+    const source = asHistoricalMemberSource(row.source);
     return {
       customerId: asCustomerId(row.customer_id),
-      establishedAt: asIsoTimestamp(row.established_at),
+      establishedAt: assertCanonicalHistoricalTimestamp(row.established_at),
       establishedByRunId: asHistoricalBackfillRunId(row.established_by_run_id),
-      evidenceRef: asHistoricalEvidenceRef(row.evidence_ref),
-      source: asHistoricalMemberSource(row.source),
+      evidenceRef: asHistoricalEvidenceRef(row.evidence_ref, source),
+      source,
     };
   } catch {
     throw new DurableHistoricalBackfillPersistenceError("The durable history row contains malformed data.");
@@ -786,9 +733,11 @@ function mapRunRow(row: RunRow): DurableHistoricalBackfillRun {
   try {
     const runId = asHistoricalBackfillRunId(row.run_id);
     const digest = asDigest(row.digest);
-    const requestedAt = asIsoTimestamp(row.requested_at);
+    const requestedAt = assertCanonicalHistoricalTimestamp(row.requested_at);
     const status = asRunStatus(row.status);
     const applyState = asApplyState(row.apply_state);
+    const legacyQuarantined = asLegacyQuarantined(row.legacy_quarantined);
+    const legacyQuarantineReason = asLegacyQuarantineReason(row.legacy_quarantine_reason);
     const approvalRef = row.approval_ref === null ? null : asHistoricalBackfillApprovalRef(row.approval_ref);
     const approvedAt = nullableTimestamp(row.approved_at);
     const applyStartedAt = nullableTimestamp(row.apply_started_at);
@@ -801,6 +750,8 @@ function mapRunRow(row: RunRow): DurableHistoricalBackfillRun {
       applyState,
       finalizedAt,
       lifecycleAuditId,
+      legacyQuarantined,
+      legacyQuarantineReason,
       status,
     });
     return {
@@ -811,6 +762,8 @@ function mapRunRow(row: RunRow): DurableHistoricalBackfillRun {
       digest,
       finalizedAt,
       lifecycleAuditId,
+      legacyQuarantined,
+      legacyQuarantineReason,
       requestedAt,
       runId,
       status,
@@ -829,7 +782,7 @@ function mapConflictRow(row: ConflictRow): DurableHistoricalBackfillConflict {
     return {
       competingRunId: asHistoricalBackfillRunId(row.competing_run_id),
       customerId: asCustomerId(row.customer_id),
-      detectedAt: asIsoTimestamp(row.detected_at),
+      detectedAt: assertCanonicalHistoricalTimestamp(row.detected_at),
       reason: row.reason,
     };
   } catch {
@@ -884,7 +837,19 @@ function asLifecycleAuditId(value: string): string {
 }
 
 function nullableTimestamp(value: string | null): IsoTimestamp | null {
-  return value === null ? null : asIsoTimestamp(value);
+  return value === null ? null : assertCanonicalHistoricalTimestamp(value);
+}
+
+function asLegacyQuarantined(value: number): boolean {
+  if (value === 0) return false;
+  if (value === 1) return true;
+  throw new Error("Durable historical legacy quarantine marker is malformed.");
+}
+
+function asLegacyQuarantineReason(value: string | null): "NO_IMMUTABLE_PLAN" | null {
+  if (value === null) return null;
+  if (value === "NO_IMMUTABLE_PLAN") return value;
+  throw new Error("Durable historical legacy quarantine reason is malformed.");
 }
 
 function assertRunStateShape(input: {
@@ -894,8 +859,25 @@ function assertRunStateShape(input: {
   readonly applyState: DurableHistoricalBackfillApplyState;
   readonly finalizedAt: IsoTimestamp | null;
   readonly lifecycleAuditId: string | null;
+  readonly legacyQuarantined: boolean;
+  readonly legacyQuarantineReason: "NO_IMMUTABLE_PLAN" | null;
   readonly status: "DRY_RUN_COMPLETE" | "APPLIED";
 }): void {
+  if (input.legacyQuarantined) {
+    if (
+      input.legacyQuarantineReason !== "NO_IMMUTABLE_PLAN"
+      || input.lifecycleAuditId !== null
+      || (input.applyState === "APPLIED" && input.status !== "APPLIED")
+      || (input.applyState === "NEEDS_REVIEW" && input.status !== "DRY_RUN_COMPLETE")
+      || (input.applyState !== "APPLIED" && input.applyState !== "NEEDS_REVIEW")
+    ) {
+      throw new DurableHistoricalBackfillPersistenceError("The legacy quarantined durable run state is malformed.");
+    }
+    return;
+  }
+  if (input.legacyQuarantineReason !== null) {
+    throw new DurableHistoricalBackfillPersistenceError("A non-legacy durable run cannot have a quarantine reason.");
+  }
   const noApproval = input.approvalRef === null && input.approvedAt === null;
   if (input.applyState === "PENDING_APPROVAL") {
     if (
@@ -957,7 +939,9 @@ function assertRunStateShape(input: {
 }
 
 function assertAtOrAfter(value: IsoTimestamp, minimum: IsoTimestamp, message: string): void {
-  if (Date.parse(value) < Date.parse(minimum)) throw new DurableHistoricalBackfillConflictError(message);
+  if (Date.parse(value) < Date.parse(minimum)) {
+    throw new DurableHistoricalBackfillConflictError(message);
+  }
 }
 
 function assertChanged(result: D1Result | undefined, message: string): void {

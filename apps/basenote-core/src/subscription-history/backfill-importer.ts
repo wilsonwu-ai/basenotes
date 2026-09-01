@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import {
   asHistoricalBackfillApprovalRef,
   asHistoricalBackfillRunId,
+  canonicalizeHistoricalTimestamp,
   normalizeHistoricalMemberCandidate,
   type DurableHistoricalSubscriptionRecord,
   type HistoricalBackfillApproval,
@@ -13,7 +14,7 @@ import {
   type HistoricalBackfillRunId,
   type NormalizedHistoricalMemberCandidate,
 } from "./contracts.js";
-import { asIsoTimestamp, type CustomerId, type IsoTimestamp } from "../queue/types.js";
+import type { CustomerId, IsoTimestamp } from "../queue/types.js";
 
 export class HistoricalBackfillRunConflictError extends Error {
   override name = "HistoricalBackfillRunConflictError";
@@ -61,7 +62,7 @@ export class HistoricalMemberBackfillImporter {
     if (this.plans.has(runId)) {
       throw new HistoricalBackfillRunConflictError("A historical backfill run ID may be planned only once.");
     }
-    const requestedAt = asIsoTimestamp(input.requestedAt);
+    const requestedAt = canonicalizeHistoricalTimestamp(input.requestedAt);
     const normalized = input.candidates.map(normalizeHistoricalMemberCandidate);
     const decisions = await this.planDecisions(normalized);
     const dryRun: HistoricalBackfillDryRun = {
@@ -100,8 +101,8 @@ export class HistoricalMemberBackfillImporter {
       throw new HistoricalBackfillRunConflictError("A historical backfill run may be applied only once.");
     }
     const approvalRef = asHistoricalBackfillApprovalRef(approval.approvalRef);
-    const approvedAt = asIsoTimestamp(approval.approvedAt);
-    if (approvedAt < dryRun.requestedAt) {
+    const approvedAt = canonicalizeHistoricalTimestamp(approval.approvedAt);
+    if (Date.parse(approvedAt) < Date.parse(dryRun.requestedAt)) {
       throw new HistoricalBackfillApprovalError("Backfill approval cannot predate its dry run.");
     }
 
@@ -200,16 +201,26 @@ export function digestHistoricalBackfillDecisions(
   requestedAt: IsoTimestamp,
   decisions: readonly HistoricalBackfillDecision[],
 ): string {
-  const canonical = decisions.map((decision) => ({
-    customerId: decision.candidate.customerId,
-    disposition: decision.disposition,
-    evidenceRef: decision.candidate.evidenceRef,
-    firstObservedAt: decision.candidate.firstObservedAt,
-    source: decision.candidate.source,
-  }));
+  const canonicalRunId = asHistoricalBackfillRunId(runId);
+  const canonical = decisions.map((decision) => {
+    const candidate = normalizeHistoricalMemberCandidate({
+      customerId: decision.candidate.customerId,
+      evidenceRef: decision.candidate.evidenceRef,
+      firstObservedAt: decision.candidate.firstObservedAt,
+      source: decision.candidate.source,
+    });
+    return {
+      customerId: candidate.customerId,
+      disposition: decision.disposition,
+      evidenceRef: candidate.evidenceRef,
+      firstObservedAt: candidate.firstObservedAt,
+      source: candidate.source,
+    };
+  });
+  const canonicalRequestedAt = canonicalizeHistoricalTimestamp(requestedAt);
   return createHash("sha256")
     .update("basenote.historical-subscription-backfill.v1\u0000")
-    .update(JSON.stringify({ canonical, requestedAt, runId }))
+    .update(JSON.stringify({ canonical, requestedAt: canonicalRequestedAt, runId: canonicalRunId }))
     .digest("hex");
 }
 
