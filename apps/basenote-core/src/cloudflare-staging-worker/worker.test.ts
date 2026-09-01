@@ -2,14 +2,21 @@ import assert from "node:assert/strict";
 import { createHmac } from "node:crypto";
 import test from "node:test";
 
-import { ProfileQueueFormNonceDeniedError, SignedProxyRejectedError } from "./boundaries.js";
+import {
+  ProfileQueueFormNonceDeniedError,
+  SignedProxyRejectedError,
+  StagingAdminIdTokenRejectedError,
+  StagingAdminStaffDeniedError,
+} from "./boundaries.js";
 import type {
   ProfileQueueOwnershipResolver,
   SignedProxyBoundary,
+  StagingAdminIdTokenBoundary,
   StagingWorkerEnv,
   WorkerScheduledEvent,
   WorkerExecutionContext,
 } from "./contracts.js";
+import { InMemoryStagingAdminIdTokenReplayRepository } from "./admin-id-token-replay.js";
 import type {
   ConsumeStagingProfileQueueFormNonceInput,
   IssueStagingProfileQueueFormNonceInput,
@@ -26,6 +33,7 @@ import {
   type ProfileQueueMutationAuditRecord,
 } from "../profile-queue/contracts.js";
 import { InMemoryProfileQueueRepository } from "../profile-queue/repository.js";
+import { InMemoryProfileQueueFotmScheduleRepository } from "../profile-queue/fotm-schedule.js";
 import type { D1DatabasePort, D1PreparedStatement, D1Result } from "../staging-runtime/d1.js";
 import { asIsoTimestamp, compareIsoTimestamps } from "../queue/types.js";
 
@@ -318,6 +326,194 @@ test("a future invalid signed request maps to a generic unauthorized response", 
   assert.deepEqual(await response.json(), { error: "unauthorized" });
 });
 
+test("the staging embedded Admin shell is frameable only by Shopify and exposes no scheduler data before authentication", async () => {
+  const worker = createStagingProfileQueueWorker();
+  const response = await worker.fetch(
+    new Request(`${workerOrigin}/admin/fotm-scheduler`),
+    schedulerEnvironment(),
+    context,
+  );
+  const markup = await response.text();
+
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("Content-Security-Policy") ?? "", /frame-ancestors https:\/\/admin\.shopify\.com https:\/\/base-note-subscription-staging\.myshopify\.com/);
+  assert.equal(response.headers.get("X-Frame-Options"), null);
+  assert.match(markup, /shopify-api-key/);
+  assert.match(markup, /visibly pre-selected, one included fragrance/i);
+  assert.doesNotMatch(markup, /scheduler-runtime-secret/);
+  assert.doesNotMatch(markup, /gid:\/\/shopify\/ProductVariant/);
+});
+
+test("Admin scheduler API rejects missing or denied embedded Admin authentication without exposing schedule data", async () => {
+  const missing = await createStagingProfileQueueWorker().fetch(
+    new Request(`${workerOrigin}/api/admin/fotm-schedules`),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(missing.status, 401);
+  assert.deepEqual(await missing.json(), { error: "unauthorized" });
+  assert.equal(missing.headers.get("X-Shopify-Retry-Invalid-Session-Request"), "1");
+
+  const rejected = await createStagingProfileQueueWorker({
+    adminIdTokenBoundary: { async verify() { throw new StagingAdminIdTokenRejectedError("not exposed"); } },
+  }).fetch(new Request(`${workerOrigin}/api/admin/fotm-schedules`), schedulerEnvironment(), context);
+  assert.equal(rejected.status, 401);
+  assert.deepEqual(await rejected.json(), { error: "unauthorized" });
+
+  const denied = await createStagingProfileQueueWorker({
+    adminIdTokenBoundary: { async verify() { throw new StagingAdminStaffDeniedError("not exposed"); } },
+  }).fetch(new Request(`${workerOrigin}/api/admin/fotm-schedules`), schedulerEnvironment(), context);
+  assert.equal(denied.status, 403);
+  assert.deepEqual(await denied.json(), { error: "forbidden" });
+
+  const noAppProxyWriter = await createStagingProfileQueueWorker().fetch(
+    adminCommandRequest({ action: "PUBLISH", expectedRevision: 0, shipMonth: "2026-09" }, "pfk_no_proxy_writer001", `${workerOrigin}/api/shopify/app-proxy/fotm-schedules`),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(noAppProxyWriter.status, 404);
+});
+
+test("authenticated scheduler API uses fresh token replay protection, schedule CAS, and bounded D1-only provisioning", async () => {
+  const cycles = await repositoryWithCycle();
+  const schedules = new InMemoryProfileQueueFotmScheduleRepository();
+  const worker = configuredAdminSchedulerWorker({ cycles, schedules });
+
+  const unallowed = await worker.fetch(
+    adminCommandRequest({
+      action: "SAVE_DRAFT",
+      cutoffAt: "2026-09-10T05:01:00.000Z",
+      expectedRevision: null,
+      merchantTimezone: "America/Chicago",
+      shipMonth,
+      variantId: "gid://shopify/ProductVariant/999",
+    }, "pfk_scheduler_unallowed001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(unallowed.status, 403);
+  assert.deepEqual(await unallowed.json(), { error: "forbidden" });
+  assert.equal(await schedules.findSchedule(shipMonth), null);
+
+  const saved = await worker.fetch(
+    adminCommandRequest({
+      action: "SAVE_DRAFT",
+      cutoffAt: "2026-09-10T05:01:00.000Z",
+      expectedRevision: null,
+      merchantTimezone: "America/Chicago",
+      shipMonth,
+      variantId: "gid://shopify/ProductVariant/501",
+    }, "pfk_scheduler_draft001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(saved.status, 200);
+  assert.deepEqual(await saved.json(), {
+    replayed: false,
+    schedule: {
+      cutoffAt: "2026-09-10T05:01:00.000Z",
+      merchantTimezone: "America/Chicago",
+      revision: 0,
+      shipMonth,
+      status: "DRAFT",
+      updatedAt: defaultGateNow.toISOString(),
+      variantId: "gid://shopify/ProductVariant/501",
+    },
+  });
+
+  const duplicate = await worker.fetch(
+    adminCommandRequest({
+      action: "SAVE_DRAFT",
+      cutoffAt: "2026-09-10T05:01:00.000Z",
+      expectedRevision: null,
+      merchantTimezone: "America/Chicago",
+      shipMonth,
+      variantId: "gid://shopify/ProductVariant/501",
+    }, "pfk_scheduler_draft001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(duplicate.status, 200);
+  assert.equal((await duplicate.json() as { readonly replayed: boolean }).replayed, true);
+
+  const stale = await worker.fetch(
+    adminCommandRequest({
+      action: "SAVE_DRAFT",
+      cutoffAt: "2026-09-10T05:01:00.000Z",
+      expectedRevision: null,
+      merchantTimezone: "America/Chicago",
+      shipMonth,
+      variantId: "gid://shopify/ProductVariant/501",
+    }, "pfk_scheduler_stale001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(stale.status, 409);
+  assert.deepEqual(await stale.json(), { error: "schedule_conflict" });
+
+  const published = await worker.fetch(
+    adminCommandRequest({ action: "PUBLISH", expectedRevision: 0, shipMonth }, "pfk_scheduler_publish001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(published.status, 200);
+  assert.equal((await published.json() as { readonly schedule: { readonly status: string; readonly revision: number } }).schedule.status, "PUBLISHED");
+
+  const provisioned = await worker.fetch(
+    adminCommandRequest({ action: "PROVISION", expectedScheduleRevision: 1, shipMonth }, "pfk_scheduler_provision001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(provisioned.status, 200);
+  assert.deepEqual((await provisioned.json() as { readonly provisioning: unknown }).provisioning, {
+    configured: 1,
+    conflicted: 0,
+    mayHaveMore: false,
+    scanned: 1,
+  });
+  const cycle = await cycles.findCycle(bindingId, cycleKey);
+  assert.equal(cycle?.fotm.status, "PUBLISHED");
+  assert.equal(cycle?.memberChoice.source, "UNSELECTED", "FOTM is a visible default, not a persisted member override.");
+  assert.equal(cycle?.addOns.length, 0, "scheduler provisioning must not create paid add-ons or contact a provider.");
+});
+
+test("a reused embedded Admin bearer nonce cannot reach a second scheduler write", async () => {
+  const schedules = new InMemoryProfileQueueFotmScheduleRepository();
+  const cycles = await repositoryWithCycle();
+  const identity: StagingAdminIdTokenBoundary = {
+    async verify() {
+      return {
+        actorRef: "staff_101",
+        tokenDigest: "r".repeat(43),
+        tokenExpiresAt: "2026-09-01T09:02:00.000Z",
+      };
+    },
+  };
+  const worker = configuredAdminSchedulerWorker({ cycles, schedules, adminIdTokenBoundary: identity });
+  const first = await worker.fetch(
+    adminCommandRequest({
+      action: "SAVE_DRAFT",
+      cutoffAt: "2026-09-10T05:01:00.000Z",
+      expectedRevision: null,
+      merchantTimezone: "America/Chicago",
+      shipMonth,
+      variantId: "gid://shopify/ProductVariant/501",
+    }, "pfk_scheduler_nonce001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(first.status, 200);
+  const replay = await worker.fetch(
+    adminCommandRequest({ action: "PUBLISH", expectedRevision: 0, shipMonth }, "pfk_scheduler_nonce002"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(replay.status, 401);
+  assert.deepEqual(await replay.json(), { error: "unauthorized" });
+  assert.equal(replay.headers.get("X-Shopify-Retry-Invalid-Session-Request"), "1");
+  assert.equal((await schedules.findSchedule(shipMonth))?.status, "DRAFT");
+});
+
 function configuredWorker(repository: InMemoryProfileQueueRepository) {
   let serial = 0;
   return createStagingProfileQueueWorker({
@@ -334,6 +530,36 @@ function configuredWorker(repository: InMemoryProfileQueueRepository) {
     ownershipResolver: acceptingOwnershipResolver,
     repositoryFactory: () => repository,
     signedProxyBoundary: acceptingSignedProxyBoundary,
+  });
+}
+
+function configuredAdminSchedulerWorker(input: {
+  readonly adminIdTokenBoundary?: StagingAdminIdTokenBoundary;
+  readonly cycles: InMemoryProfileQueueRepository;
+  readonly schedules: InMemoryProfileQueueFotmScheduleRepository;
+}): ReturnType<typeof createStagingProfileQueueWorker> {
+  let serial = 0;
+  const replay = new InMemoryStagingAdminIdTokenReplayRepository();
+  const boundary = input.adminIdTokenBoundary ?? {
+    async verify() {
+      serial += 1;
+      return {
+        actorRef: "staff_101",
+        tokenDigest: `a${serial.toString().padStart(42, "0")}`,
+        tokenExpiresAt: "2026-09-01T09:02:00.000Z",
+      };
+    },
+  } satisfies StagingAdminIdTokenBoundary;
+  return createStagingProfileQueueWorker({
+    adminIdTokenBoundary: boundary,
+    adminTokenReplayRepository: replay,
+    createOpaqueId(prefix) {
+      serial += 1;
+      return `${prefix}_admin_scheduler_${serial.toString().padStart(6, "0")}`;
+    },
+    now: () => defaultGateNow,
+    repositoryFactory: () => input.cycles,
+    scheduleRepositoryFactory: () => input.schedules,
   });
 }
 
@@ -388,8 +614,18 @@ function stagingEnvironment(): StagingWorkerEnv {
     BASENOTE_RUNTIME_STAGE: "staging",
     BASENOTE_STAGING_D1: inertD1,
     STAGING_ALLOWED_HOSTS: "basenote-profile-queue-staging.wilson-af8.workers.dev,localhost",
-    STAGING_ALLOWED_ORIGINS: "https://base-note-subscription-staging.myshopify.com,http://localhost:8787",
+    STAGING_ALLOWED_ORIGINS: `${storefrontOrigin},${workerOrigin},http://localhost:8787`,
     STAGING_TEST_VARIANT_IDS: "gid://shopify/ProductVariant/501",
+  };
+}
+
+function schedulerEnvironment(): StagingWorkerEnv {
+  return {
+    ...stagingEnvironment(),
+    SHOPIFY_ADMIN_CLIENT_ID: "staging-client-id-123456",
+    SHOPIFY_ADMIN_CLIENT_SECRET: "scheduler-runtime-secret-not-checked-in",
+    STAGING_ADMIN_ALLOWED_STAFF_IDS: "101",
+    STAGING_SHOP_DOMAIN: defaultGateShop,
   };
 }
 
@@ -485,6 +721,23 @@ function mutationRequest(
     headers: {
       "Content-Type": "application/json",
       "Idempotency-Key": "pqk_mutation001",
+    },
+    method: "POST",
+  });
+}
+
+function adminCommandRequest(
+  body: Record<string, unknown>,
+  idempotencyKey: string,
+  url = `${workerOrigin}/api/admin/fotm-schedules`,
+): Request {
+  return new Request(url, {
+    body: JSON.stringify(body),
+    headers: {
+      Authorization: "Bearer injected-test-token",
+      "Content-Type": "application/json",
+      "Idempotency-Key": idempotencyKey,
+      Origin: workerOrigin,
     },
     method: "POST",
   });

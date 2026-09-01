@@ -50,6 +50,7 @@ export interface PersistProfileQueueFotmScheduleInput {
 }
 
 export interface ProfileQueueFotmScheduleRepository {
+  findAuditByIdempotency(idempotencyKey: string): Promise<ProfileQueueFotmScheduleAuditRecord | null>;
   findSchedule(shipMonth: string): Promise<ProfileQueueFotmSchedule | null>;
   listSchedules(): Promise<readonly ProfileQueueFotmSchedule[]>;
   persist(input: PersistProfileQueueFotmScheduleInput): Promise<ProfileQueueFotmSchedule>;
@@ -222,8 +223,13 @@ export function validateProfileQueueFotmSchedulePersistInput(input: PersistProfi
 /** In-memory test double; it cannot connect to D1 or a provider. */
 export class InMemoryProfileQueueFotmScheduleRepository implements ProfileQueueFotmScheduleRepository {
   private readonly schedules = new Map<string, ProfileQueueFotmSchedule>();
-  private readonly idempotency = new Map<string, ProfileQueueFotmSchedule>();
+  private readonly idempotency = new Map<string, ProfileQueueFotmScheduleAuditRecord>();
   private readonly auditIds = new Set<string>();
+
+  async findAuditByIdempotency(idempotencyKey: string): Promise<ProfileQueueFotmScheduleAuditRecord | null> {
+    const audit = this.idempotency.get(asProfileQueueFotmScheduleIdempotencyKey(idempotencyKey));
+    return audit ? { ...audit } : null;
+  }
 
   async findSchedule(shipMonth: string): Promise<ProfileQueueFotmSchedule | null> {
     const value = this.schedules.get(asShipMonth(shipMonth));
@@ -240,10 +246,10 @@ export class InMemoryProfileQueueFotmScheduleRepository implements ProfileQueueF
     validateProfileQueueFotmSchedulePersistInput(input);
     const replay = this.idempotency.get(input.audit.idempotencyKey);
     if (replay) {
-      if (replay.revision !== input.schedule.revision || replay.shipMonth !== input.schedule.shipMonth) {
+      if (!sameAudit(replay, input.audit)) {
         throw new Error("An FOTM schedule idempotency key cannot be reused for a different write.");
       }
-      return { ...replay };
+      return scheduleFromAudit(replay);
     }
     if (this.auditIds.has(input.audit.auditId)) throw new Error("An FOTM schedule audit ID cannot be reused.");
     const existing = this.schedules.get(input.schedule.shipMonth);
@@ -255,10 +261,39 @@ export class InMemoryProfileQueueFotmScheduleRepository implements ProfileQueueF
     }
     const persisted = { ...input.schedule };
     this.schedules.set(persisted.shipMonth, persisted);
-    this.idempotency.set(input.audit.idempotencyKey, persisted);
+    this.idempotency.set(input.audit.idempotencyKey, { ...input.audit });
     this.auditIds.add(input.audit.auditId);
     return { ...persisted };
   }
+}
+
+function sameAudit(left: ProfileQueueFotmScheduleAuditRecord, right: ProfileQueueFotmScheduleAuditRecord): boolean {
+  return (
+    left.action === right.action
+    && left.actorRef === right.actorRef
+    && left.auditId === right.auditId
+    && left.cutoffAt === right.cutoffAt
+    && left.expectedRevision === right.expectedRevision
+    && left.idempotencyKey === right.idempotencyKey
+    && left.merchantTimezone === right.merchantTimezone
+    && left.mutationId === right.mutationId
+    && left.occurredAt === right.occurredAt
+    && left.resultingRevision === right.resultingRevision
+    && left.shipMonth === right.shipMonth
+    && left.variantId === right.variantId
+  );
+}
+
+export function scheduleFromAudit(audit: ProfileQueueFotmScheduleAuditRecord): ProfileQueueFotmSchedule {
+  return {
+    cutoffAt: audit.cutoffAt,
+    merchantTimezone: audit.merchantTimezone,
+    revision: audit.resultingRevision,
+    shipMonth: audit.shipMonth,
+    status: audit.action === "PUBLISHED" ? "PUBLISHED" : "DRAFT",
+    updatedAt: audit.occurredAt,
+    variantId: audit.variantId,
+  };
 }
 
 function incrementRevision(value: number): number {

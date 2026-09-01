@@ -42,11 +42,16 @@ apps/basenote-core/
   src/cloudflare-staging-worker/profile-queue-page.ts
   src/cloudflare-staging-worker/cutoff-locker.ts
   src/cloudflare-staging-worker/fotm-schedule-admin.ts
+  src/cloudflare-staging-worker/webcrypto-shopify-admin-id-token.ts
+  src/cloudflare-staging-worker/admin-id-token-replay.ts
+  src/cloudflare-staging-worker/admin-scheduler-request-validation.ts
+  src/cloudflare-staging-worker/admin-scheduler-page.ts
   src/cloudflare-staging-worker/http.ts
   wrangler.staging.example.toml
   migrations/0001_staging_runtime.sql
   migrations/0002_staging_test_bindings.sql
   migrations/0003_member_fragrance_choice.sql
+  migrations/0005_staging_admin_scheduler.sql
 ```
 
 - `GET /healthz` is host-restricted and returns only fixed staging capability
@@ -80,6 +85,22 @@ apps/basenote-core/
   reads, and at most ten D1-only compare-and-swap writes. It enforces the
   `12:01 AM America/Chicago` product cutoff policy, locks D1 only, and never
   calls Shopify, Appstle, Mailgun, or production.
+- `GET /admin/fotm-scheduler` is an unprivileged Shopify embedded-App Bridge
+  bootstrap shell. It contains no schedules, variants, customer data, staff
+  data, bearer token, or secret. Its CSP can be framed only by Shopify Admin
+  and the exact disposable shop.
+- `GET` and `POST /api/admin/fotm-schedules` are the only scheduler API routes.
+  They are not App Proxy routes and have no public schedule writer. Every API
+  request server-verifies a fresh Shopify Admin HS256 ID token with exact app
+  audience, staging issuer/destination shop, `exp`/`nbf`, and an opaque
+  allowlisted staff `sub`. Unsafe POSTs retain only a SHA-256 `jti` digest in
+  D1 and reject a replay.
+- Authenticated staff can draft/publish a durable future-month FOTM and then
+  provision at most five exact `OPEN`/`UNPUBLISHED` staging cycles per request.
+  Each cycle uses CAS plus immutable audit/evidence and becomes `PUBLISHED` +
+  `UNSELECTED`: its FOTM is visibly pre-selected as the one included fragrance,
+  not a paid add-on and not a stored member override. No scheduler path calls
+  Shopify, Appstle, an email provider, or production.
 - Exact allowed staging hosts and origins are configured with no wildcard CORS.
   The code rejects production-looking hosts and refuses to run queue routes
   unless `BASENOTE_RUNTIME_STAGE=staging`.
@@ -125,11 +146,14 @@ context only:
 | --- | --- |
 | `BASENOTE_RUNTIME_STAGE` | Exact literal `staging`; other values fail closed. |
 | `STAGING_ALLOWED_HOSTS` | `basenote-profile-queue-staging.wilson-af8.workers.dev` plus localhost only. Non-local traffic must be HTTPS. |
-| `STAGING_ALLOWED_ORIGINS` | `https://base-note-subscription-staging.myshopify.com` plus local development only. Shopify may forward this Origin on a proxied native form POST; no wildcard is supported. |
+| `STAGING_ALLOWED_ORIGINS` | Exact disposable storefront, exact temporary Worker origin, and local development only. Shopify may forward the storefront Origin on a proxied native form POST; the embedded scheduler uses its exact Worker origin. No wildcard is supported. |
 | `STAGING_SHOP_DOMAIN` | Exact disposable development shop: `base-note-subscription-staging.myshopify.com`. |
 | `STAGING_TEST_VARIANT_IDS` | Comma-separated exact disposable Shopify ProductVariant GIDs; this is the page dropdown catalog. |
 | `STAGING_CUTOFF_AUTOMATION_ENABLED` | Defaults to `false`. Exact `true` enables only the bounded staging D1 cutoff lock after migration 0003 and E2E approval. |
 | `SHOPIFY_APP_PROXY_SHARED_SECRET` | Runtime-only Shopify App Proxy shared secret, stored outside git and never in Wrangler vars/template. |
+| `SHOPIFY_ADMIN_CLIENT_ID` | Public ID of the separately approved staging embedded Shopify app. It may render only in the bootstrap shell; it is not a secret. |
+| `SHOPIFY_ADMIN_CLIENT_SECRET` | Runtime-only HMAC secret for server verification of Shopify Admin ID tokens. Use protected secret storage only; never add it to vars/template/git/browser. |
+| `STAGING_ADMIN_ALLOWED_STAFF_IDS` | Comma-separated exact opaque numeric Shopify Admin ID-token `sub` values for approved staging staff only; never names or email addresses. |
 | `BASENOTE_STAGING_D1` | Binding to a separately created empty staging D1 database only. |
 
 The expected Shopify configuration is an App Proxy with the target above,
@@ -140,6 +164,16 @@ D1 ID, secret, OAuth callback, or production route. The temporary isolated
 Worker endpoint is deliberately a `workers.dev` hostname, not a production DNS
 route; the template enables only that temporary endpoint after approval.
 
+The separate issue #35 embedded-Admin configuration is deliberately not made by
+this branch. After explicit approval, a designated operator must configure the
+already-approved staging app as embedded for only
+`base-note-subscription-staging.myshopify.com`, set its App URL to
+`https://basenote-profile-queue-staging.wilson-af8.workers.dev/admin/fotm-scheduler`,
+place its client secret in protected staging secret storage, and allowlist only
+reviewed opaque staff subjects. The scheduler has **no App Proxy target**. The
+browser must obtain a fresh App Bridge ID token for every API request; the
+Worker verifies it rather than trusting browser claims.
+
 ## D1 migration and disposable binding sequence
 
 After explicit staging resource approval, and only for a fresh isolated staging
@@ -148,13 +182,16 @@ D1 database, a designated operator must perform these reviewed steps in order:
 1. Apply `migrations/0001_staging_runtime.sql`.
 2. Apply `migrations/0002_staging_test_bindings.sql`.
 3. Apply `migrations/0003_member_fragrance_choice.sql`.
-4. Create or seed one reviewed disposable queue cycle in
+4. Apply `migrations/0004_durable_historical_backfill.sql` byte-for-byte from
+   staging head; it is separately owned and this work never changes it.
+5. Apply `migrations/0005_staging_admin_scheduler.sql`.
+6. Create or seed one reviewed disposable queue cycle in
    `profile_queue_cycles` for the exact test binding, cycle key, and ship month.
-5. Seed one matching row in `staging_profile_queue_test_bindings` with that
+7. Seed one matching row in `staging_profile_queue_test_bindings` with that
    exact development shop, test customer ID, binding, cycle, ship month,
    opaque actor reference, `DISPOSABLE_DEVELOPMENT_STORE` source, `ACTIVE`
    status, opaque seed reference, and a short expiry.
-6. Configure the runtime-only variables/binding above, then perform a
+8. Configure the runtime-only variables/binding above, then perform a
    disposable-customer end-to-end test before any wider staging use.
 
 Migration `0002` creates no customer, binding, queue-cycle, or active form
@@ -170,6 +207,11 @@ back a migration on error. Do not apply it through a raw `sqlite3 < file`
 redirection. The local `npm run migration:smoke` regression invokes
 `sqlite3 -bail` specifically so an invalid legacy preflight cannot continue
 into persistent DDL.
+
+Apply `0005` through the same migration runner only. It adds an append-only
+replay table containing just a SHA-256 digest of a short-lived Admin ID-token
+nonce and timestamps. The local `npm run admin-scheduler:migration:smoke`
+proves duplicate, malformed, expired, update, and delete records are rejected.
 
 If a nonempty *staging* D1 is ever intentionally migrated, `0003` carries a
 legacy `RESOLVED` non-open cycle forward as an FOTM fallback using its existing
@@ -192,18 +234,26 @@ configure the durable schedule, authorize a member request, lock a cutoff, or
 prove a provider delivery change.
 
 `StagingFotmScheduleAdminBoundary` is a server-facing D1 port requiring an
-opaque `SERVER_VERIFIED_STAGING_STAFF` context. The Worker deliberately exposes
-no public staff write route and does not assume Shopify Admin authentication.
-The authenticated Shopify Admin staff scheduler belongs to
-[issue #35](https://github.com/wilsonwu-ai/basenotes/issues/35).
+opaque `SERVER_VERIFIED_STAGING_STAFF` context. Issue #35 now provides that
+context only after the Worker verifies a fresh Shopify embedded Admin ID token
+on the server: HS256 HMAC, exact client ID/audience, exact staging-shop
+issuer/destination, `exp`/`nbf`, and exact opaque staff allowlist. A POST then
+consumes a D1 row holding only a SHA-256 digest of `jti`; duplicate bearer
+nonces are rejected before a schedule/cycle mutation. There is no public
+schedule writer or App Proxy writer, OAuth exchange, session persistence, or browser-supplied
+staff authority.
 
-There is intentionally **no current call path** from a schedule to a live
-queue-cycle provisioning write: `applyPublishedFotmScheduleToProfileQueueCycle`
-is a pure, exact-ship-month boundary for that future authenticated path. A
-durable schedule alone therefore does not change an existing cycle, theme, or
-delivery. Implementing the authenticated scheduler/provisioning path in #35,
-then proving it with disposable E2E, is a staging deploy blocker—not a hidden
-fallback to the theme's current FOTM setting.
+After an authenticated staff member publishes an exact month, the scheduler
+may call `applyPublishedFotmScheduleToProfileQueueCycle` only for up to five
+exact `OPEN`/`UNPUBLISHED` staging cycles in a request. Every mutation uses the
+existing revision CAS plus append-only queue audit and non-PII selection
+evidence. The result remains `UNSELECTED` until a member chooses an override:
+the FOTM is visibly pre-selected as the included item, falls back at Central
+cutoff only if no override exists, and is never converted into an add-on or
+invented member selection. Repeating provisioning sees only still-unpublished
+cycles; it never calls a provider. This is still a staging deploy/E2E blocker,
+not a claim that a theme setting or D1 record changes an Appstle/Shopify
+shipment.
 
 ## Transport, request, and data safeguards
 
@@ -212,7 +262,8 @@ fallback to the theme's current FOTM setting.
   Worker URL to HTTPS.
 - HMAC-bearing requests independently enforce the same HTTPS rule before
   signature verification.
-- JSON and form bodies are read as a bounded stream, capped at 16 KiB. An
+- Customer JSON/form bodies are read as a bounded stream, capped at 16 KiB;
+  scheduler JSON commands are capped at 8 KiB. An
   oversized declared, chunked, or misreported body is canceled rather than
   buffered with `request.text()`.
 - Form fields and JSON keys are exact/unique. The browser cannot provide a
@@ -221,10 +272,12 @@ fallback to the theme's current FOTM setting.
   and exact cycle checks. It expires after ten minutes and the D1 conditional
   update consumes it before queue persistence, so it cannot be replayed or
   retargeted by a cross-site form even when Shopify omits an `Origin` header.
-- CORS has exact configured origins only. Responses are `no-store`, use a
-  restrictive CSP with `frame-ancestors 'none'`, use `X-Frame-Options: DENY`,
-  and contain no raw request data, error stacks, customer identity, or logging
-  call.
+- CORS has exact configured origins only. Customer responses are `no-store`,
+  use a restrictive CSP with `frame-ancestors 'none'`, and use
+  `X-Frame-Options: DENY`. The unprivileged embedded Admin shell instead has a
+  CSP restricted to Shopify Admin + the exact disposable shop and intentionally
+  omits `X-Frame-Options`; its protected API remains no-store. Neither surface
+  contains raw request data, error stacks, customer identity, or logging call.
 - There is no sender, Mailgun key, Queue consumer, webhook, OAuth, Appstle
   mutation, Shopify Admin/storefront API call, public staff scheduler route, or
   production host/theme change.
@@ -236,7 +289,9 @@ paper/ink/gold tokens, serif editorial hierarchy, a visibly pre-selected FOTM
 default, an optional included-fragrance override, and four explicit `$18`
 add-on slots. It is intentionally not a generic dashboard. It uses semantic
 sections, labels, visible focus states, mobile grid fallback, clear pre/post
-cutoff states, and no JavaScript or external asset.
+cutoff states, and no JavaScript or external asset on the customer page. The
+separate embedded Admin shell uses only Shopify App Bridge plus a same-origin
+authenticated API; it contains no protected scheduler data before verification.
 
 ## Checks
 
@@ -251,16 +306,19 @@ typecheck, SQLite migration smoke (requires the `sqlite3` CLI), and unit suite. 
 verification, secret/shop fail-closed behavior, non-HTTPS rejection, exact D1
 binding lookup, oversized streaming body cancellation, allowlisted variants,
 one-use form nonce behavior, a fixed duplicate-parameter HMAC vector, the
-pre/post-cutoff member UI, future-month schedule revisioning, and bounded
-D1-only cutoff locking. SQLite migration smoke checks cover legacy resolved
-backfill, append-only evidence, exact add-on snapshot reconciliation, and the
-12:01 AM Central cutoff guard. They make no network, Cloudflare, Shopify,
-email-provider, or file-database call.
+pre/post-cutoff member UI, future-month schedule revisioning, authenticated
+Admin token invalid/missing/wrong-shop/staff/replay cases, duplicate/stale
+schedule submits, and bounded D1-only schedule provisioning/cutoff locking.
+SQLite migration smoke checks cover legacy resolved backfill, append-only
+evidence, exact add-on snapshot reconciliation, the 12:01 AM Central cutoff
+guard, and append-only Admin-token replay records. They make no network,
+Cloudflare, Shopify, email-provider, or file-database call.
 
 The source cannot safely be browser-tested against a live protected Worker yet:
-that requires the approved disposable D1 seed, protected runtime secret, and
-Shopify App Proxy configuration above. The unit-level rendered workflow is
-covered; desktop/mobile browser acceptance is an explicit later staging gate.
+that requires the approved disposable D1 seed, protected runtime secrets, and
+both Shopify App Proxy and embedded-App configuration above. The unit-level
+rendered workflows are covered; desktop/mobile browser acceptance is an
+explicit later staging gate.
 
 ## Explicit exclusions
 

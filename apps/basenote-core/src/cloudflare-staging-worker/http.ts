@@ -87,13 +87,36 @@ export function responseForHtml(
   return new Response(body, { headers, status });
 }
 
+/**
+ * The embedded Admin shell is intentionally distinct from the storefront
+ * App Proxy page: it may be framed only by Shopify Admin and the exact
+ * disposable staging shop, and it contains no protected scheduler data.
+ */
+export function responseForEmbeddedAdminHtml(
+  status: number,
+  body: string,
+  shopDomain: string,
+  request: Request,
+  policy: StagingHttpPolicy,
+): Response {
+  const headers = new Headers({
+    "Cache-Control": "no-store",
+    "Content-Security-Policy": `default-src 'none'; script-src 'unsafe-inline' https://cdn.shopify.com; connect-src 'self'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors https://admin.shopify.com https://${shopDomain}`,
+    "Content-Type": "text/html; charset=utf-8",
+    "Referrer-Policy": "no-referrer",
+    "X-Content-Type-Options": "nosniff",
+  });
+  appendCorsHeaders(headers, request, policy);
+  return new Response(body, { headers, status });
+}
+
 export function responseForEmptyPreflight(
   request: Request,
   policy: StagingHttpPolicy,
 ): Response {
   const headers = new Headers({
     ...SECURITY_HEADERS,
-    "Access-Control-Allow-Headers": "Content-Type, Idempotency-Key",
+    "Access-Control-Allow-Headers": "Authorization, Content-Type, Idempotency-Key",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Max-Age": "300",
   });

@@ -52,11 +52,43 @@ test("D1 FOTM schedule repository atomically records one future-month schedule a
   assert.ok(batch.every((statement) => !/https?:\/\//.test(statement.query)));
 });
 
+test("D1 FOTM schedule repository retrieves an exact durable idempotency audit for safe command replay", async () => {
+  const database = new RecordingD1Database();
+  database.nextFirstRow = {
+    action: "SCHEDULED",
+    actor_ref: "staff_stage_101",
+    audit_id: "pfa_schedule001",
+    cutoff_at: "2026-10-10T05:01:00.000Z",
+    expected_revision: null,
+    idempotency_key: "pfk_schedule001",
+    merchant_timezone: "America/Chicago",
+    mutation_id: "pfs_schedule001",
+    occurred_at: "2026-09-01T09:00:00.000Z",
+    resulting_revision: 0,
+    ship_month: "2026-10",
+    variant_id: "gid://shopify/ProductVariant/902",
+  };
+  const repository = new D1ProfileQueueFotmScheduleRepository(database);
+
+  const audit = await repository.findAuditByIdempotency("pfk_schedule001");
+  assert.equal(audit?.action, "SCHEDULED");
+  assert.equal(audit?.actorRef, "staff_stage_101");
+  assert.equal(audit?.resultingRevision, 0);
+  assert.equal(audit?.shipMonth, "2026-10");
+  const statement = database.prepared[0];
+  assert.match(statement?.query ?? "", /FROM profile_queue_fotm_schedule_audit/);
+  assert.deepEqual(statement?.values, ["pfk_schedule001"]);
+});
+
 class RecordingD1Database implements D1DatabasePort {
   readonly batches: RecordedStatement[][] = [];
+  readonly prepared: RecordingD1Statement[] = [];
+  nextFirstRow: Record<string, unknown> | null = null;
 
   prepare(query: string): D1PreparedStatement {
-    return new RecordingD1Statement(query);
+    const statement = new RecordingD1Statement(query, this);
+    this.prepared.push(statement);
+    return statement;
   }
 
   async batch(statements: readonly D1PreparedStatement[]): Promise<readonly D1Result[]> {
@@ -77,7 +109,10 @@ interface RecordedStatement {
 class RecordingD1Statement implements D1PreparedStatement {
   readonly values: unknown[] = [];
 
-  constructor(readonly query: string) {}
+  constructor(
+    readonly query: string,
+    private readonly database: RecordingD1Database,
+  ) {}
 
   bind(...values: readonly unknown[]): D1PreparedStatement {
     this.values.push(...values);
@@ -85,7 +120,7 @@ class RecordingD1Statement implements D1PreparedStatement {
   }
 
   async first<T = Record<string, unknown>>(): Promise<T | null> {
-    return null;
+    return this.database.nextFirstRow as T | null;
   }
 
   async all<T = Record<string, unknown>>(): Promise<D1Result<T>> {

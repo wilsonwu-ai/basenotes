@@ -84,23 +84,30 @@ forms also require a short-lived, one-use D1 nonce bound to the exact signed
 customer/cycle/revision. It includes a testable App
 Proxy HMAC verifier, pure pricing policy, an in-memory queue state machine, a
 D1-shaped-but-unbound profile-queue repository/migration, future-month FOTM
-schedules with a server-only staff boundary, bounded staging-only cutoff lock
-logic, a server-rendered staging-only queue page, historic-member dry-run contracts, and a Messaging
-Core for consent, event audit, and no-send delivery intents. It has no
-configured persistence, OAuth/session implementation, webhook route, Appstle
-integration, Shopify Admin API call, recipient resolver, email sender, or
-billing attempt.
+schedules with a staging-only authenticated embedded-Admin scheduler, bounded
+schedule-to-cycle provisioning, bounded staging-only cutoff lock logic, a
+server-rendered staging-only queue page, a durable historic-member
+manifest/approval lifecycle, and a Messaging Core for consent, event audit,
+and no-send delivery intents. It has no
+configured persistence, OAuth token exchange/session storage, webhook route,
+Appstle integration, Shopify Admin API call, recipient resolver, email sender,
+or billing attempt.
 
-The member-choice addition deliberately has no public staff write route. A
-theme FOTM setting may provide display context, but cannot configure a durable
-future-month schedule, authorize a member action, lock a cutoff, or prove a
-provider delivery change. The server-facing staging schedule port accepts only
-an opaque already-verified staff context; the authenticated Shopify Admin staff
-scheduler is tracked in [issue #35](https://github.com/wilsonwu-ai/basenotes/issues/35).
-The current source intentionally does not yet call that schedule port to
-provision an existing queue cycle: #35 and disposable staging E2E must join the
-durable month schedule to an exact cycle before this can be claimed as automated
-delivery behavior.
+The member-choice addition has no public staff write route. Its staging-only
+embedded Admin scheduler accepts a fresh Shopify Admin ID token only after
+server verification of HS256 signature, exact app audience, exact disposable
+shop issuer/destination, token freshness, and an opaque staging staff allowlist.
+Unsafe requests consume a D1 record containing only a SHA-256 digest of the
+token nonce. A theme FOTM setting may provide display context, but cannot
+configure a durable future-month schedule, authorize a member action, lock a
+cutoff, or prove a provider delivery change. The scheduler can draft/publish
+future months and provision at most five exact open/unpublished staging cycles
+per request with compare-and-swap, append-only selection evidence, and no
+Shopify/Appstle/email call. It makes the published FOTM the visibly
+pre-selected included default; it never writes a member override. This is the
+core of [issue #35](https://github.com/wilsonwu-ai/basenotes/issues/35), but it
+remains unapplied and unconfigured pending protected staging app setup and a
+disposable end-to-end proof.
 
 ## Repository layout
 
@@ -123,7 +130,7 @@ src/
   profile-queue/fotm-schedule.ts    Per-month Central-time FOTM schedule model
   profile-queue/d1-fotm-schedule-repository.ts D1 schedule/audit persistence shape
   profile-queue/ui.ts               Static staging-only dropdown renderer
-  subscription-history/             Dry-run, approval-gated historic evidence
+  subscription-history/             Dry-run and durable approval-gated historic evidence
   staging-runtime/d1.ts             Minimal D1 structural port, no runtime import
   cloudflare-staging-worker/        Fail-closed staging Worker, HMAC/D1 gates, HTML form, tests
   domain/queue.test.ts              Invariant tests
@@ -131,6 +138,10 @@ src/
 migrations/0001_staging_runtime.sql Reviewed, unapplied D1 queue schema
 migrations/0002_staging_test_bindings.sql Reviewed, unapplied disposable-binding schema
 migrations/0003_member_fragrance_choice.sql Reviewed, unapplied member choice/schedule schema
+migrations/0004_durable_historical_backfill.sql
+                                   Immutable dry-run manifest and staging-only
+                                   historical backfill lifecycle
+migrations/0005_staging_admin_scheduler.sql Reviewed, unapplied Admin-token replay schema
 scripts/verify-skeleton.mjs         Offline structural/safety verification
 shopify.app.example.toml            Deliberately unlinked future config template
 ```

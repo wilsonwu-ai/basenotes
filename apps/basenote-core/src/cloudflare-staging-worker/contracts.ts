@@ -1,5 +1,6 @@
 import type { D1DatabasePort } from "../staging-runtime/d1.js";
 import type { ProfileQueueRepository } from "../profile-queue/repository.js";
+import type { ProfileQueueFotmScheduleRepository } from "../profile-queue/fotm-schedule.js";
 import type { StagingProfileQueueFormNonceRepository } from "./form-nonce.js";
 
 /**
@@ -17,6 +18,12 @@ export interface StagingWorkerEnv {
   readonly STAGING_TEST_VARIANT_IDS?: string;
   /** Exact literal `true` enables bounded D1-only cutoff locking in staging. */
   readonly STAGING_CUTOFF_AUTOMATION_ENABLED?: string;
+  /** Public Shopify app client ID used only by the embedded scheduler shell. */
+  readonly SHOPIFY_ADMIN_CLIENT_ID?: string;
+  /** Runtime-only Shopify app client secret used to verify HS256 ID tokens. */
+  readonly SHOPIFY_ADMIN_CLIENT_SECRET?: string;
+  /** Comma-separated exact Shopify staff `sub` values allowed in staging only. */
+  readonly STAGING_ADMIN_ALLOWED_STAFF_IDS?: string;
   readonly STAGING_ALLOWED_HOSTS?: string;
   readonly STAGING_ALLOWED_ORIGINS?: string;
 }
@@ -43,6 +50,33 @@ export interface SignedProxyBoundary {
   }): Promise<VerifiedSignedProxyIdentity>;
 }
 
+/** Identity returned only after a Shopify embedded Admin ID token is verified. */
+export interface VerifiedStagingAdminIdentity {
+  /** Opaque internally-derived staff actor, never a name or email address. */
+  readonly actorRef: string;
+  /** SHA-256 digest of the token's `jti`; the raw bearer nonce is never persisted. */
+  readonly tokenDigest: string;
+  /** Token expiration retained only to bound a one-time replay record. */
+  readonly tokenExpiresAt: string;
+}
+
+/** Verifies a fresh Shopify Admin ID/session token before a scheduler API runs. */
+export interface StagingAdminIdTokenBoundary {
+  verify(input: {
+    readonly environment: StagingWorkerEnv;
+    readonly request: Request;
+  }): Promise<VerifiedStagingAdminIdentity>;
+}
+
+/** One-time guard for unsafe Admin scheduler requests; stores only a token digest. */
+export interface StagingAdminTokenReplayRepository {
+  consume(input: {
+    readonly consumedAt: string;
+    readonly tokenDigest: string;
+    readonly tokenExpiresAt: string;
+  }): Promise<void>;
+}
+
 /**
  * Separates signed customer identity from contract ownership. The staging
  * resolver proves an exact seeded disposable cycle belongs to that customer
@@ -64,12 +98,16 @@ export interface AuthorizedProfileQueueBinding {
 }
 
 export interface StagingWorkerDependencies {
-  readonly createOpaqueId?: (prefix: "pqa" | "pqm" | "pqk" | "pqf" | "pqe") => string;
+  readonly adminIdTokenBoundary?: StagingAdminIdTokenBoundary;
+  readonly adminTokenReplayRepository?: StagingAdminTokenReplayRepository;
+  readonly createOpaqueId?: (prefix: "pqa" | "pqm" | "pqk" | "pqf" | "pqe" | "pfs" | "pfa" | "pfk") => string;
   /** Test-only injection; production defaults to a D1-backed nonce repository. */
   readonly formNonceRepository?: StagingProfileQueueFormNonceRepository;
   readonly now?: () => Date;
   readonly ownershipResolver?: ProfileQueueOwnershipResolver;
   readonly repositoryFactory?: (database: D1DatabasePort) => ProfileQueueRepository;
+  /** Test-only injection; production defaults to a D1-backed FOTM schedule repository. */
+  readonly scheduleRepositoryFactory?: (database: D1DatabasePort) => ProfileQueueFotmScheduleRepository;
   readonly signedProxyBoundary?: SignedProxyBoundary;
 }
 

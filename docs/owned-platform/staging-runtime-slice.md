@@ -33,6 +33,8 @@ apps/basenote-core/
   migrations/0001_staging_runtime.sql
   migrations/0002_staging_test_bindings.sql
   migrations/0003_member_fragrance_choice.sql
+  migrations/0004_durable_historical_backfill.sql
+  migrations/0005_staging_admin_scheduler.sql
   src/staging-runtime/d1.ts
   src/profile-queue/contracts.ts
   src/profile-queue/service.ts
@@ -74,15 +76,26 @@ The staging Worker contains a bounded D1-only scheduled lock that is disabled
 unless a protected staging variable is explicitly set to `true` after an E2E
 gate. It preserves a saved member override or records the published FOTM
 fallback at cutoff. It has no Shopify/Appstle write and no production behavior.
-There is deliberately no public staff write route; an authenticated Shopify
-Admin scheduler is tracked separately in
+There is deliberately no public staff write route; the protected staging-only
+embedded Admin implementation is the core of
 [issue #35](https://github.com/wilsonwu-ai/basenotes/issues/35).
 
-The server-only schedule boundary and the pure exact-month cycle configurator
-exist, but no authenticated scheduler/provisioning call path currently joins
-them. Thus, a durable schedule does not yet alter an existing queue cycle,
-theme, Shopify subscription, or Appstle shipment. That #35-owned path and a
-disposable E2E proof are explicit staging-release blockers.
+Issue #35 now joins the server-only schedule boundary to a staging-only,
+embedded Shopify Admin scheduler. Its Worker API verifies a fresh HS256 Shopify
+ID token against the exact staging app client ID, exact staging shop
+issuer/destination, expiry/not-before values, and configured opaque staff
+subjects. Each unsafe command records only a SHA-256 digest of the token `jti`
+to reject bearer replay. The bounded provisioner then joins one published month
+to at most five exact `OPEN`/`UNPUBLISHED` D1 cycles per request through CAS,
+append-only audit, and non-PII choice evidence. It makes FOTM visibly
+pre-selected as the included default while retaining `UNSELECTED` until a
+member override is saved. It has no App Proxy scheduler writer, Shopify/Admin
+API call, Appstle call, email/provider call, or production behavior.
+
+This source is still unapplied and unconfigured. A durable schedule or
+provisioned D1 cycle does not itself alter a theme, Shopify subscription, or
+Appstle shipment. Protected staging app/D1/secrets setup and a disposable E2E
+proof remain explicit staging-release blockers.
 
 The migration is not an install command. It must be applied manually only to an
 isolated staging database after the app configuration, retention policy,
@@ -106,10 +119,30 @@ theme.
 
 ## Historic-member protection
 
-The backfill importer accepts only opaque source references plus exact Shopify
-customer IDs. It rejects email-shaped evidence references and has no CSV/API
-reader. Its initial operation is a dry run that records an append-only audit
-event while making **zero** changes to eligibility history.
+The backfill importer accepts only exact Shopify customer IDs plus a
+source-qualified SHA-256 surrogate such as `appstle/sha256/<64-lowercase-hex>`.
+It rejects raw email, phone, name, CSV-row, and ticket-shaped values before it
+prepares a D1 statement, and has no CSV/API reader. Its initial operation is a
+dry run that records an append-only audit event while making **zero** changes
+to eligibility history.
+
+All historic timestamps are normalized to canonical UTC millisecond ISO format
+(`YYYY-MM-DDTHH:mm:ss.SSSZ`) before digesting or persisting. That gives D1 text
+comparison and JavaScript comparison the same ordering semantics.
+
+Migration `0004` quarantines every pre-manifest backfill run as
+`NO_IMMUTABLE_PLAN`; incomplete rows terminalize as `NEEDS_REVIEW` and cannot
+be approved or reopened. It also quarantines pre-0004 history/audit rows rather
+than exposing or rewriting legacy values. A separately authorized remediation
+is required before any such legacy evidence could be considered.
+
+If a new approved plan encounters a quarantined legacy history row for the
+same customer, it cannot overwrite that immutable key or treat the legacy row
+as trusted evidence. It records the auditable
+`LEGACY_EVIDENCE_REQUIRES_REVIEW` conflict with no fabricated competing run,
+withholds every new fact from that batch, and terminalizes as `NEEDS_REVIEW`.
+It never fails the batch because a legacy row lacks a durable run ID, and it
+never silently filters the row and reports a successful apply.
 
 Applying a plan requires the same retained dry-run instance and a separately
 formatted approval reference. The repository boundary requires the positive
@@ -117,6 +150,14 @@ formatted approval reference. The repository boundary requires the positive
 downgrade/delete API. An absent history row maps to `unknown`, not to “new
 subscriber,” so the `$15` introductory benefit continues to fail closed until
 durable proof of never having subscribed exists.
+
+Lifecycle events are generated by the successful D1 state transition itself;
+no caller may insert an independent lifecycle audit event. The durable staging
+service is maintenance-only and caps a dry run at **14 candidates**. It performs
+one batched history lookup and at most 45 statements in one apply batch, below
+the conservative 50-subrequest Worker Free safety budget. Larger imports must
+be partitioned into independently reviewed dry runs; this code does not run a
+bulk import automatically.
 
 ## Staging acceptance tests still required
 

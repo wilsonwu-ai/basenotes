@@ -89,6 +89,30 @@ test("D1 repository refuses a stale compare-and-swap result", async () => {
   );
 });
 
+test("D1 provisioning scan is exact-month, unpublished-only, and safely bounded", async () => {
+  const database = new RecordingD1Database();
+  const repository = new D1ProfileQueueRepository(database);
+
+  const cycles = await repository.findUnpublishedForProvisioning({
+    limit: 5,
+    shipMonth: "2026-10",
+  });
+  assert.deepEqual(cycles, []);
+  const statement = database.prepared.find((candidate) => /SELECT_UNPUBLISHED_CYCLES_FOR_PROVISIONING/.test(candidate.query))
+    ?? database.prepared.find((candidate) => /fotm_status = 'UNPUBLISHED'/.test(candidate.query));
+  assert.ok(statement);
+  assert.match(statement.query, /ship_month = \?/);
+  assert.match(statement.query, /state = 'OPEN'/);
+  assert.match(statement.query, /fotm_status = 'UNPUBLISHED'/);
+  assert.match(statement.query, /LIMIT \?/);
+  assert.deepEqual(statement.values, ["2026-10", 5]);
+
+  await assert.rejects(
+    repository.findUnpublishedForProvisioning({ limit: 11, shipMonth: "2026-10" }),
+    /bounded limit between one and ten/i,
+  );
+});
+
 function createCycle() {
   return createEmptyProfileQueueCycle({
     bindingId: "binding-profile-101",
@@ -131,10 +155,13 @@ function evidenceFor(
 
 class RecordingD1Database implements D1DatabasePort {
   readonly batches: RecordedStatement[][] = [];
+  readonly prepared: RecordingD1Statement[] = [];
   nextFirstChangeCount = 1;
 
   prepare(query: string): D1PreparedStatement {
-    return new RecordingD1Statement(query);
+    const statement = new RecordingD1Statement(query);
+    this.prepared.push(statement);
+    return statement;
   }
 
   async batch(statements: readonly D1PreparedStatement[]): Promise<readonly D1Result[]> {

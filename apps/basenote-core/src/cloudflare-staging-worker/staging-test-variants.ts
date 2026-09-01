@@ -57,7 +57,17 @@ export function assertStagingMutationVariantAllowed(
   variants: readonly StagingTestVariant[],
 ): void {
   if (mutation.kind === "REMOVE_ADD_ON" || mutation.kind === "CLEAR_MEMBER_FRAGRANCE") return;
-  if (!variants.some((variant) => variant.variantId === mutation.variantId)) {
+  assertStagingVariantAllowed(mutation.variantId, variants);
+}
+
+/** Reused by the authenticated staging scheduler; no catalog lookup occurs. */
+export function assertStagingVariantAllowed(
+  variantId: string,
+  variants: readonly StagingTestVariant[],
+): ProductVariantId {
+  const normalized = asProductVariantId(variantId);
+  if (!variants.some((variant) => variant.variantId === normalized)) {
     throw new StagingTestVariantNotAllowedError("The requested variant is not in the staging test allowlist.");
   }
+  return normalized;
 }

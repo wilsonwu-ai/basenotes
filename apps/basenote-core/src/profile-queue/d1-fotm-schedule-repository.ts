@@ -2,11 +2,16 @@ import { asProductVariantId } from "../domain/ids.js";
 import { asIsoTimestamp, asShipMonth } from "../queue/types.js";
 import type { D1DatabasePort, D1PreparedStatement } from "../staging-runtime/d1.js";
 import {
+  asProfileQueueActorRef,
   MEMBER_FRAGRANCE_CUTOFF_TIMEZONE,
 } from "./contracts.js";
 import {
+  asProfileQueueFotmScheduleAuditId,
+  asProfileQueueFotmScheduleIdempotencyKey,
+  asProfileQueueFotmScheduleMutationId,
   assertProfileQueueFotmScheduleInvariant,
   type PersistProfileQueueFotmScheduleInput,
+  type ProfileQueueFotmScheduleAuditRecord,
   type ProfileQueueFotmSchedule,
   type ProfileQueueFotmScheduleRepository,
   validateProfileQueueFotmSchedulePersistInput,
@@ -22,6 +27,21 @@ interface ScheduleRow {
   readonly variant_id: string;
 }
 
+interface ScheduleAuditRow {
+  readonly action: string;
+  readonly actor_ref: string;
+  readonly audit_id: string;
+  readonly cutoff_at: string;
+  readonly expected_revision: number | null;
+  readonly idempotency_key: string;
+  readonly merchant_timezone: string;
+  readonly mutation_id: string;
+  readonly occurred_at: string;
+  readonly resulting_revision: number;
+  readonly ship_month: string;
+  readonly variant_id: string;
+}
+
 const SELECT_SCHEDULE = `
   SELECT ship_month, variant_id, cutoff_at, merchant_timezone, status, revision, updated_at
   FROM profile_queue_fotm_schedules
@@ -32,6 +52,13 @@ const SELECT_SCHEDULES = `
   FROM profile_queue_fotm_schedules
   ORDER BY ship_month ASC`;
 
+const SELECT_AUDIT_BY_IDEMPOTENCY = `
+  SELECT audit_id, mutation_id, idempotency_key, actor_ref, ship_month, action,
+    expected_revision, resulting_revision, variant_id, cutoff_at,
+    merchant_timezone, occurred_at
+  FROM profile_queue_fotm_schedule_audit
+  WHERE idempotency_key = ?`;
+
 /**
  * D1-only schedule repository. It has no staff authentication, HTTP route,
  * Shopify/Appstle client, or production fallback; the boundary injecting it
@@ -39,6 +66,14 @@ const SELECT_SCHEDULES = `
  */
 export class D1ProfileQueueFotmScheduleRepository implements ProfileQueueFotmScheduleRepository {
   constructor(private readonly database: D1DatabasePort) {}
+
+  async findAuditByIdempotency(idempotencyKey: string): Promise<ProfileQueueFotmScheduleAuditRecord | null> {
+    const row = await this.database
+      .prepare(SELECT_AUDIT_BY_IDEMPOTENCY)
+      .bind(asProfileQueueFotmScheduleIdempotencyKey(idempotencyKey))
+      .first<ScheduleAuditRow>();
+    return row ? mapAuditRow(row) : null;
+  }
 
   async findSchedule(shipMonth: string): Promise<ProfileQueueFotmSchedule | null> {
     const row = await this.database.prepare(SELECT_SCHEDULE).bind(asShipMonth(shipMonth)).first<ScheduleRow>();
@@ -164,6 +199,29 @@ function mapScheduleRow(row: ScheduleRow): ProfileQueueFotmSchedule {
   };
   assertProfileQueueFotmScheduleInvariant(schedule);
   return schedule;
+}
+
+function mapAuditRow(row: ScheduleAuditRow): ProfileQueueFotmScheduleAuditRecord {
+  const action = row.action === "SCHEDULED" || row.action === "PUBLISHED"
+    ? row.action
+    : (() => { throw new Error("FOTM schedule audit contains an unsupported action."); })();
+  const merchantTimezone = row.merchant_timezone === MEMBER_FRAGRANCE_CUTOFF_TIMEZONE
+    ? MEMBER_FRAGRANCE_CUTOFF_TIMEZONE
+    : (() => { throw new Error("FOTM schedule audit contains a non-Central cutoff timezone."); })();
+  return {
+    action,
+    actorRef: asProfileQueueActorRef(row.actor_ref),
+    auditId: asProfileQueueFotmScheduleAuditId(row.audit_id),
+    cutoffAt: asIsoTimestamp(row.cutoff_at),
+    expectedRevision: row.expected_revision === null ? null : asRevision(row.expected_revision),
+    idempotencyKey: asProfileQueueFotmScheduleIdempotencyKey(row.idempotency_key),
+    merchantTimezone,
+    mutationId: asProfileQueueFotmScheduleMutationId(row.mutation_id),
+    occurredAt: asIsoTimestamp(row.occurred_at),
+    resultingRevision: asRevision(row.resulting_revision),
+    shipMonth: asShipMonth(row.ship_month),
+    variantId: asProductVariantId(row.variant_id),
+  };
 }
 
 function asScheduleStatus(value: string): ProfileQueueFotmSchedule["status"] {

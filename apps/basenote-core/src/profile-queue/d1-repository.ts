@@ -12,6 +12,7 @@ import {
 import {
   ProfileQueueRepositoryConflictError,
   type FindProfileQueueCyclesDueForCutoffInput,
+  type FindProfileQueueCyclesForProvisioningInput,
   type PersistProfileQueueMutationInput,
   type ProfileQueuePersistedMutation,
   type ProfileQueueRepository,
@@ -86,6 +87,17 @@ const SELECT_DUE_CYCLES = `
   ORDER BY julianday(fotm_cutoff_at) ASC, binding_id ASC, cycle_key ASC
   LIMIT ?`;
 
+const SELECT_UNPUBLISHED_CYCLES_FOR_PROVISIONING = `
+  SELECT binding_id, cycle_key, ship_month, state, revision,
+    fotm_variant_id, fotm_status, fotm_cutoff_at, merchant_timezone,
+    member_choice_source, member_choice_variant_id, member_choice_selected_at, updated_at
+  FROM profile_queue_cycles
+  WHERE ship_month = ?
+    AND state = 'OPEN'
+    AND fotm_status = 'UNPUBLISHED'
+  ORDER BY binding_id ASC, cycle_key ASC
+  LIMIT ?`;
+
 const SELECT_ADD_ONS = `
   SELECT add_on_id, position, variant_id, unit_price_cents, created_at, updated_at
   FROM profile_queue_add_ons
@@ -150,6 +162,18 @@ export class D1ProfileQueueRepository implements ProfileQueueRepository {
       cycles.push(cloneCycle(cycle));
     }
     return cycles;
+  }
+
+  async findUnpublishedForProvisioning(
+    input: FindProfileQueueCyclesForProvisioningInput,
+  ): Promise<readonly ProfileQueueCycle[]> {
+    assertProvisioningScanLimit(input.limit);
+    const shipMonth = asShipMonth(input.shipMonth);
+    const result = await this.database
+      .prepare(SELECT_UNPUBLISHED_CYCLES_FOR_PROVISIONING)
+      .bind(shipMonth, input.limit)
+      .all<CycleRow>();
+    return readCyclesWithAddOns(this.database, result.results ?? []);
   }
 
   async persist(input: PersistProfileQueueMutationInput): Promise<ProfileQueuePersistedMutation> {
@@ -523,4 +547,27 @@ function assertCutoffScanLimit(value: number): void {
   if (!Number.isSafeInteger(value) || value < 1 || value > 50) {
     throw new Error("Cutoff scans must use a bounded limit between one and fifty.");
   }
+}
+
+function assertProvisioningScanLimit(value: number): void {
+  if (!Number.isSafeInteger(value) || value < 1 || value > 10) {
+    throw new Error("Staging Admin provisioning scans must use a bounded limit between one and ten.");
+  }
+}
+
+async function readCyclesWithAddOns(
+  database: D1DatabasePort,
+  rows: readonly CycleRow[],
+): Promise<readonly ProfileQueueCycle[]> {
+  const cycles: ProfileQueueCycle[] = [];
+  for (const row of rows) {
+    const addOnResult = await database
+      .prepare(SELECT_ADD_ONS)
+      .bind(row.binding_id, row.cycle_key)
+      .all<AddOnRow>();
+    const cycle = mapCycleRow(row, addOnResult.results ?? []);
+    assertProfileQueueCycleInvariant(cycle);
+    cycles.push(cloneCycle(cycle));
+  }
+  return cycles;
 }

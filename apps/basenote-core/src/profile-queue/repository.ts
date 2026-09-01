@@ -10,7 +10,7 @@ import {
   type ProfileQueueSelectionEvidenceRecord,
 } from "./contracts.js";
 import { cloneCycle } from "./service.js";
-import { asBindingId, asCycleKey, asIsoTimestamp, compareIsoTimestamps } from "../queue/types.js";
+import { asBindingId, asCycleKey, asIsoTimestamp, asShipMonth, compareIsoTimestamps } from "../queue/types.js";
 import { asProductVariantId } from "../domain/ids.js";
 
 export class ProfileQueueRepositoryConflictError extends Error {
@@ -30,6 +30,8 @@ export interface ProfileQueueRepository {
   findCycle(bindingId: string, cycleKey: string): Promise<ProfileQueueCycle | null>;
   /** Bounded, deterministic scan used only by the staging cutoff scheduler. */
   findDueForCutoff(input: FindProfileQueueCyclesDueForCutoffInput): Promise<readonly ProfileQueueCycle[]>;
+  /** Bounded exact-month scan used only by the staging Admin FOTM provisioner. */
+  findUnpublishedForProvisioning(input: FindProfileQueueCyclesForProvisioningInput): Promise<readonly ProfileQueueCycle[]>;
   /** Lookup only; it is not an HTTP replay response snapshot. */
   findMutation(idempotencyKey: string): Promise<ProfileQueueMutationAuditRecord | null>;
   persist(input: PersistProfileQueueMutationInput): Promise<ProfileQueuePersistedMutation>;
@@ -53,6 +55,11 @@ export interface ProfileQueuePersistedMutation {
 export interface FindProfileQueueCyclesDueForCutoffInput {
   readonly asOf: string;
   readonly limit: number;
+}
+
+export interface FindProfileQueueCyclesForProvisioningInput {
+  readonly limit: number;
+  readonly shipMonth: string;
 }
 
 /**
@@ -94,6 +101,22 @@ export class InMemoryProfileQueueRepository implements ProfileQueueRepository {
         if (cutoffComparison !== 0) return cutoffComparison;
         return `${left.bindingId}\u0000${left.cycleKey}`.localeCompare(`${right.bindingId}\u0000${right.cycleKey}`);
       })
+      .slice(0, input.limit)
+      .map(cloneCycle);
+  }
+
+  async findUnpublishedForProvisioning(
+    input: FindProfileQueueCyclesForProvisioningInput,
+  ): Promise<readonly ProfileQueueCycle[]> {
+    const shipMonth = asShipMonth(input.shipMonth);
+    assertProvisioningScanLimit(input.limit);
+    return [...this.cycles.values()]
+      .filter((cycle) => (
+        cycle.shipMonth === shipMonth
+        && cycle.state === "OPEN"
+        && cycle.fotm.status === "UNPUBLISHED"
+      ))
+      .sort((left, right) => `${left.bindingId}\u0000${left.cycleKey}`.localeCompare(`${right.bindingId}\u0000${right.cycleKey}`))
       .slice(0, input.limit)
       .map(cloneCycle);
   }
@@ -267,6 +290,12 @@ function selectionEvidenceKindFor(
 function assertCutoffScanLimit(value: number): void {
   if (!Number.isSafeInteger(value) || value < 1 || value > 50) {
     throw new Error("Cutoff scans must use a bounded limit between one and fifty.");
+  }
+}
+
+function assertProvisioningScanLimit(value: number): void {
+  if (!Number.isSafeInteger(value) || value < 1 || value > 10) {
+    throw new Error("Staging Admin provisioning scans must use a bounded limit between one and ten.");
   }
 }
 

@@ -36,6 +36,26 @@ export class ProfileQueueFormNonceDeniedError extends Error {
   override name = "ProfileQueueFormNonceDeniedError";
 }
 
+/** Returned for a malformed, stale, mismatched, or unsigned embedded Admin ID token. */
+export class StagingAdminIdTokenRejectedError extends Error {
+  override name = "StagingAdminIdTokenRejectedError";
+}
+
+/** The embedded Admin scheduler cannot safely start without its runtime-only app credentials. */
+export class StagingAdminIdTokenNotConfiguredError extends Error {
+  override name = "StagingAdminIdTokenNotConfiguredError";
+}
+
+/** A genuine Shopify Admin identity is not automatically authorized to schedule staging FOTM. */
+export class StagingAdminStaffDeniedError extends Error {
+  override name = "StagingAdminStaffDeniedError";
+}
+
+/** An unsafe scheduler POST reused the same short-lived Shopify ID-token nonce. */
+export class StagingAdminIdTokenReplayError extends Error {
+  override name = "StagingAdminIdTokenReplayError";
+}
+
 export const unconfiguredSignedProxyBoundary: SignedProxyBoundary = {
   async verify() {
     throw new SignedProxyBoundaryNotConfiguredError(

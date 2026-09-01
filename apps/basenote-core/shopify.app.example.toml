@@ -8,6 +8,12 @@ application_url = "https://example.invalid"
 embedded = true
 handle = "basenote-core"
 
+# Issue #35's staging-only embedded FOTM scheduler is documented in
+# docs/owned-platform/cloudflare-staging-worker.md. Keep this app URL invalid
+# until a designated operator approves the exact disposable shop, Worker URL,
+# client ID/secret storage, and opaque staging staff allowlist. Do not copy a
+# production URL, secret, or an App Proxy scheduler target into this template.
+
 [build]
 automatically_update_urls_on_dev = true
 include_config_on_deploy = true

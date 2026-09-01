@@ -4,6 +4,10 @@ import {
   ProfileQueueOwnershipNotConfiguredError,
   SignedProxyBoundaryNotConfiguredError,
   SignedProxyRejectedError,
+  StagingAdminIdTokenNotConfiguredError,
+  StagingAdminIdTokenRejectedError,
+  StagingAdminIdTokenReplayError,
+  StagingAdminStaffDeniedError,
 } from "./boundaries.js";
 import type {
   StagingWorkerDependencies,
@@ -17,6 +21,7 @@ import {
   isAllowedHost,
   isAllowedOrigin,
   responseForEmptyPreflight,
+  responseForEmbeddedAdminHtml,
   responseForHtml,
   responseForJson,
   type StagingHttpPolicy,
@@ -41,10 +46,26 @@ import {
 import {
   StagingTestVariantConfigError,
   StagingTestVariantNotAllowedError,
+  assertStagingVariantAllowed,
   assertStagingMutationVariantAllowed,
   readStagingTestVariants,
 } from "./staging-test-variants.js";
 import { WebCryptoShopifyAppProxyVerifier } from "./webcrypto-app-proxy.js";
+import {
+  WebCryptoShopifyAdminIdTokenVerifier,
+  readStagingAdminEmbedShellConfiguration,
+} from "./webcrypto-shopify-admin-id-token.js";
+import { D1StagingAdminIdTokenReplayRepository } from "./admin-id-token-replay.js";
+import {
+  StagingAdminSchedulerRequestValidationError,
+  parseStagingAdminSchedulerCommand,
+} from "./admin-scheduler-request-validation.js";
+import { renderStagingAdminSchedulerShell } from "./admin-scheduler-page.js";
+import {
+  StagingFotmProvisioningNotConfiguredError,
+  StagingFotmScheduleAdminBoundary,
+  StagingFotmScheduleConflictError,
+} from "./fotm-schedule-admin.js";
 import {
   asProfileQueueIdempotencyKey,
   asProfileQueueMutationId,
@@ -55,6 +76,8 @@ import {
 import {
   D1ProfileQueueRepository,
 } from "../profile-queue/d1-repository.js";
+import { D1ProfileQueueFotmScheduleRepository } from "../profile-queue/d1-fotm-schedule-repository.js";
+import type { ProfileQueueFotmSchedule } from "../profile-queue/fotm-schedule.js";
 import {
   ProfileQueueRepositoryConflictError,
   ProfileQueueRepositoryIdempotencyConflictError,
@@ -76,6 +99,10 @@ const HEALTH_PATH = "/healthz";
  */
 const APP_PROXY_TARGET_PATH = "/api/shopify/app-proxy";
 const PROFILE_QUEUE_PATH = `${APP_PROXY_TARGET_PATH}/profile-queue`;
+/** An embedded Admin shell, never an App Proxy destination or storefront route. */
+const ADMIN_FOTM_SCHEDULER_PATH = "/admin/fotm-scheduler";
+/** Same-origin API; all schedule reads/writes server-verify an Admin ID token. */
+const ADMIN_FOTM_SCHEDULER_API_PATH = "/api/admin/fotm-schedules";
 const FORM_NONCE_TTL_MILLISECONDS = 10 * 60 * 1_000;
 
 class StagingD1NotConfiguredError extends Error {
@@ -110,6 +137,11 @@ export function createStagingProfileQueueWorker(
   const formNonceRepository = dependencies.formNonceRepository;
   const ownershipResolver = dependencies.ownershipResolver;
   const repositoryFactory = dependencies.repositoryFactory ?? ((database) => new D1ProfileQueueRepository(database));
+  const scheduleRepositoryFactory = dependencies.scheduleRepositoryFactory
+    ?? ((database) => new D1ProfileQueueFotmScheduleRepository(database));
+  const adminIdTokenBoundary = dependencies.adminIdTokenBoundary ?? new WebCryptoShopifyAdminIdTokenVerifier({
+    nowSeconds: () => Math.floor(now().getTime() / 1_000),
+  });
   const createOpaqueId = dependencies.createOpaqueId ?? defaultOpaqueId;
 
   return {
@@ -140,7 +172,10 @@ export function createStagingProfileQueueWorker(
       }
 
       const url = new URL(request.url);
-      if (request.method === "OPTIONS" && (url.pathname === HEALTH_PATH || url.pathname === PROFILE_QUEUE_PATH)) {
+      if (
+        request.method === "OPTIONS"
+        && (url.pathname === HEALTH_PATH || url.pathname === PROFILE_QUEUE_PATH || url.pathname === ADMIN_FOTM_SCHEDULER_API_PATH)
+      ) {
         return responseForEmptyPreflight(request, policy);
       }
       if (request.method === "GET" && url.pathname === HEALTH_PATH) {
@@ -154,6 +189,32 @@ export function createStagingProfileQueueWorker(
       }
 
       try {
+        if (url.pathname === ADMIN_FOTM_SCHEDULER_PATH && request.method === "GET") {
+          return handleAdminSchedulerShell({ environment, policy, request });
+        }
+        if (url.pathname === ADMIN_FOTM_SCHEDULER_API_PATH && request.method === "GET") {
+          return await handleAdminSchedulerList({
+            adminIdTokenBoundary,
+            environment,
+            now,
+            policy,
+            request,
+            scheduleRepositoryFactory,
+          });
+        }
+        if (url.pathname === ADMIN_FOTM_SCHEDULER_API_PATH && request.method === "POST") {
+          return await handleAdminSchedulerCommand({
+            adminIdTokenBoundary,
+            adminTokenReplayRepository: dependencies.adminTokenReplayRepository,
+            createOpaqueId,
+            environment,
+            now,
+            policy,
+            repositoryFactory,
+            request,
+            scheduleRepositoryFactory,
+          });
+        }
         if (url.pathname === PROFILE_QUEUE_PATH && request.method === "GET") {
           return await handleRead({
             createOpaqueId,
@@ -226,6 +287,179 @@ interface SharedRouteInput {
   readonly repositoryFactory: NonNullable<StagingWorkerDependencies["repositoryFactory"]>;
   readonly request: Request;
   readonly signedProxyBoundary: NonNullable<StagingWorkerDependencies["signedProxyBoundary"]>;
+}
+
+interface AdminSchedulerSharedRouteInput {
+  readonly adminIdTokenBoundary: NonNullable<StagingWorkerDependencies["adminIdTokenBoundary"]>;
+  readonly environment: StagingWorkerEnv;
+  readonly now: () => Date;
+  readonly policy: StagingHttpPolicy;
+  readonly request: Request;
+  readonly scheduleRepositoryFactory: NonNullable<StagingWorkerDependencies["scheduleRepositoryFactory"]>;
+}
+
+/**
+ * This shell is deliberately unprivileged: it contains only App Bridge setup
+ * and copy describing the included-default rule. It cannot list or mutate a
+ * schedule until a fresh server-verified Shopify Admin ID token is presented
+ * to the separate same-origin API.
+ */
+function handleAdminSchedulerShell(input: {
+  readonly environment: StagingWorkerEnv;
+  readonly policy: StagingHttpPolicy;
+  readonly request: Request;
+}): Response {
+  const configuration = readStagingAdminEmbedShellConfiguration(input.environment);
+  return responseForEmbeddedAdminHtml(
+    200,
+    renderStagingAdminSchedulerShell({
+      apiPath: ADMIN_FOTM_SCHEDULER_API_PATH,
+      clientId: configuration.clientId,
+    }),
+    configuration.shopDomain,
+    input.request,
+    input.policy,
+  );
+}
+
+async function handleAdminSchedulerList(input: AdminSchedulerSharedRouteInput): Promise<Response> {
+  const identity = await input.adminIdTokenBoundary.verify({
+    environment: input.environment,
+    request: input.request,
+  });
+  const boundary = createAdminSchedulerBoundary({
+    createOpaqueId: defaultOpaqueId,
+    cycleRepository: undefined,
+    environment: input.environment,
+    now: input.now,
+    scheduleRepositoryFactory: input.scheduleRepositoryFactory,
+  });
+  const schedules = await boundary.list(adminStaffContext(identity.actorRef));
+  const variants = readStagingTestVariants(input.environment);
+  return responseForJson(200, {
+    schedules: schedules.map(serializeFotmSchedule),
+    variants: variants.map((variant) => ({ label: variant.label, variantId: variant.variantId })),
+  }, input.request, input.policy);
+}
+
+async function handleAdminSchedulerCommand(
+  input: AdminSchedulerSharedRouteInput
+    & {
+      readonly adminTokenReplayRepository: StagingWorkerDependencies["adminTokenReplayRepository"];
+      readonly createOpaqueId: NonNullable<StagingWorkerDependencies["createOpaqueId"]>;
+      readonly repositoryFactory: NonNullable<StagingWorkerDependencies["repositoryFactory"]>;
+    },
+): Promise<Response> {
+  const identity = await input.adminIdTokenBoundary.verify({
+    environment: input.environment,
+    request: input.request,
+  });
+  const command = await parseStagingAdminSchedulerCommand(input.request);
+  const variants = readStagingTestVariants(input.environment);
+  if (command.action === "SAVE_DRAFT") {
+    assertStagingVariantAllowed(command.variantId, variants);
+  } else {
+    // A schedule created outside this Worker must not become a way around the
+    // disposable test-variant boundary when an authenticated staff member
+    // later publishes or provisions it. The later CAS still protects a race.
+    const existing = await input.scheduleRepositoryFactory(requireStagingD1(input.environment))
+      .findSchedule(command.shipMonth);
+    if (existing) assertStagingVariantAllowed(existing.variantId, variants);
+  }
+
+  // A short-lived token may authenticate a read, but each unsafe command
+  // consumes only a SHA-256 digest of its jti before it can reach D1 schedule
+  // or cycle state. The raw JWT, nonce, subject, email, and name are never
+  // stored. Replays must obtain a fresh Shopify ID token.
+  const replayRepository = input.adminTokenReplayRepository
+    ?? new D1StagingAdminIdTokenReplayRepository(requireStagingD1(input.environment));
+  await replayRepository.consume({
+    consumedAt: input.now().toISOString(),
+    tokenDigest: identity.tokenDigest,
+    tokenExpiresAt: identity.tokenExpiresAt,
+  });
+
+  const boundary = createAdminSchedulerBoundary({
+    createOpaqueId: input.createOpaqueId,
+    cycleRepository: createRepository(input.environment, input.repositoryFactory),
+    environment: input.environment,
+    now: input.now,
+    scheduleRepositoryFactory: input.scheduleRepositoryFactory,
+  });
+  const context = adminStaffContext(identity.actorRef);
+  if (command.action === "SAVE_DRAFT") {
+    const result = await boundary.submitDraft({
+      context,
+      cutoffAt: command.cutoffAt,
+      expectedRevision: command.expectedRevision,
+      idempotencyKey: command.idempotencyKey,
+      merchantTimezone: command.merchantTimezone,
+      shipMonth: command.shipMonth,
+      variantId: command.variantId,
+    });
+    return responseForJson(200, {
+      replayed: result.replayed,
+      schedule: serializeFotmSchedule(result.schedule),
+    }, input.request, input.policy);
+  }
+  if (command.action === "PUBLISH") {
+    const result = await boundary.submitPublish({
+      context,
+      expectedRevision: command.expectedRevision,
+      idempotencyKey: command.idempotencyKey,
+      shipMonth: command.shipMonth,
+    });
+    return responseForJson(200, {
+      replayed: result.replayed,
+      schedule: serializeFotmSchedule(result.schedule),
+    }, input.request, input.policy);
+  }
+
+  // Provisioning has no provider side effect. Its naturally idempotent target
+  // set is exact OPEN/UNPUBLISHED cycles, so a fresh retry only sees remaining
+  // candidates. The parsed command key deliberately still has the same
+  // opaque format as all unsafe scheduler requests, while ID-token one-time
+  // use protects accidental bearer replay.
+  void command.idempotencyKey;
+  const provisioning = await boundary.provisionPublishedMonth({
+    context,
+    expectedScheduleRevision: command.expectedScheduleRevision,
+    shipMonth: command.shipMonth,
+  });
+  return responseForJson(200, {
+    provisioning,
+  }, input.request, input.policy);
+}
+
+function createAdminSchedulerBoundary(input: {
+  readonly createOpaqueId: NonNullable<StagingWorkerDependencies["createOpaqueId"]>;
+  readonly cycleRepository: ProfileQueueRepository | undefined;
+  readonly environment: StagingWorkerEnv;
+  readonly now: () => Date;
+  readonly scheduleRepositoryFactory: NonNullable<StagingWorkerDependencies["scheduleRepositoryFactory"]>;
+}): StagingFotmScheduleAdminBoundary {
+  return new StagingFotmScheduleAdminBoundary({
+    createOpaqueId: input.createOpaqueId,
+    cycleRepository: input.cycleRepository,
+    now: input.now,
+    repository: input.scheduleRepositoryFactory(requireStagingD1(input.environment)),
+  });
+}
+
+function adminStaffContext(actorRef: string): { readonly actorRef: string; readonly authorization: "SERVER_VERIFIED_STAGING_STAFF" } {
+  return { actorRef, authorization: "SERVER_VERIFIED_STAGING_STAFF" };
+}
+
+function serializeFotmSchedule(schedule: ProfileQueueFotmSchedule): Record<string, unknown> {
+  return {
+    cutoffAt: schedule.cutoffAt,
+    merchantTimezone: schedule.merchantTimezone,
+    revision: schedule.revision,
+    shipMonth: schedule.shipMonth,
+    status: schedule.status,
+    updatedAt: schedule.updatedAt,
+    variantId: schedule.variantId,
+  };
 }
 
 async function handleRead(
@@ -551,7 +785,17 @@ function serializeCycle(cycle: ProfileQueueCycle): Record<string, unknown> {
 }
 
 function mapRouteError(error: unknown, request: Request, policy: StagingHttpPolicy): Response {
-  return genericResponse(routeErrorStatus(error), routeErrorCode(error), request, policy);
+  const response = genericResponse(routeErrorStatus(error), routeErrorCode(error), request, policy);
+  // Shopify's embedded-app guidance asks clients to obtain a fresh ID token
+  // after an invalid/expired/replayed bearer token. Never add this hint for a
+  // staff authorization denial: a new token cannot grant missing authority.
+  if (
+    error instanceof StagingAdminIdTokenRejectedError
+    || error instanceof StagingAdminIdTokenReplayError
+  ) {
+    response.headers.set("X-Shopify-Retry-Invalid-Session-Request", "1");
+  }
+  return response;
 }
 
 function pageErrorResponse(error: unknown, request: Request, policy: StagingHttpPolicy): Response {
@@ -559,16 +803,24 @@ function pageErrorResponse(error: unknown, request: Request, policy: StagingHttp
 }
 
 function routeErrorStatus(error: unknown): number {
-  if (error instanceof ProfileQueueRequestValidationError) {
+  if (
+    error instanceof ProfileQueueRequestValidationError
+    || error instanceof StagingAdminSchedulerRequestValidationError
+  ) {
     return 400;
   }
-  if (error instanceof SignedProxyRejectedError) {
+  if (
+    error instanceof SignedProxyRejectedError
+    || error instanceof StagingAdminIdTokenRejectedError
+    || error instanceof StagingAdminIdTokenReplayError
+  ) {
     return 401;
   }
   if (
     error instanceof ProfileQueueOwnershipDeniedError
     || error instanceof ProfileQueueFormNonceDeniedError
     || error instanceof StagingTestVariantNotAllowedError
+    || error instanceof StagingAdminStaffDeniedError
   ) {
     return 403;
   }
@@ -577,6 +829,8 @@ function routeErrorStatus(error: unknown): number {
     || error instanceof ProfileQueueOwnershipNotConfiguredError
     || error instanceof StagingD1NotConfiguredError
     || error instanceof StagingTestVariantConfigError
+    || error instanceof StagingAdminIdTokenNotConfiguredError
+    || error instanceof StagingFotmProvisioningNotConfiguredError
   ) {
     return 503;
   }
@@ -588,6 +842,7 @@ function routeErrorStatus(error: unknown): number {
     || error instanceof ProfileQueueRepositoryConflictError
     || error instanceof ProfileQueueRepositoryIdempotencyConflictError
     || error instanceof ProfileQueueIdempotencyReuseError
+    || error instanceof StagingFotmScheduleConflictError
   ) {
     return 409;
   }
@@ -599,12 +854,20 @@ function routeErrorStatus(error: unknown): number {
 }
 
 function routeErrorCode(error: unknown): string {
-  if (error instanceof ProfileQueueRequestValidationError) return "invalid_request";
-  if (error instanceof SignedProxyRejectedError) return "unauthorized";
+  if (
+    error instanceof ProfileQueueRequestValidationError
+    || error instanceof StagingAdminSchedulerRequestValidationError
+  ) return "invalid_request";
+  if (
+    error instanceof SignedProxyRejectedError
+    || error instanceof StagingAdminIdTokenRejectedError
+    || error instanceof StagingAdminIdTokenReplayError
+  ) return "unauthorized";
   if (
     error instanceof ProfileQueueOwnershipDeniedError
     || error instanceof ProfileQueueFormNonceDeniedError
     || error instanceof StagingTestVariantNotAllowedError
+    || error instanceof StagingAdminStaffDeniedError
   ) {
     return "forbidden";
   }
@@ -613,6 +876,8 @@ function routeErrorCode(error: unknown): string {
     || error instanceof ProfileQueueOwnershipNotConfiguredError
     || error instanceof StagingD1NotConfiguredError
     || error instanceof StagingTestVariantConfigError
+    || error instanceof StagingAdminIdTokenNotConfiguredError
+    || error instanceof StagingFotmProvisioningNotConfiguredError
   ) {
     return "staging_not_configured";
   }
@@ -627,6 +892,7 @@ function routeErrorCode(error: unknown): string {
   ) {
     return "queue_conflict";
   }
+  if (error instanceof StagingFotmScheduleConflictError) return "schedule_conflict";
   if (error instanceof ProfileQueueCycleNotFoundError) return "not_found";
   return "temporarily_unavailable";
 }
@@ -667,7 +933,7 @@ async function runScheduledCutoffLock(input: {
   });
 }
 
-function defaultOpaqueId(prefix: "pqa" | "pqm" | "pqk" | "pqf" | "pqe"): string {
+function defaultOpaqueId(prefix: "pqa" | "pqm" | "pqk" | "pqf" | "pqe" | "pfs" | "pfa" | "pfk"): string {
   const random = new Uint8Array(16);
   crypto.getRandomValues(random);
   return `${prefix}_${Array.from(random, (value) => value.toString(16).padStart(2, "0")).join("")}`;
