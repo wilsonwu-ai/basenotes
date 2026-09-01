@@ -35,3 +35,6 @@ The work is deliberately split into independent phases:
 
 Read [architecture-and-rollout.md](architecture-and-rollout.md) before
 connecting the local app to Shopify or Cloudflare.
+
+Use [decision-log.md](decision-log.md) to track the merchant choices and
+evidence required before a production release.

@@ -109,6 +109,12 @@ All v2 operations use verified customer identity from a signed App Proxy or a
 customer-account extension session token. The browser must never provide
 authority merely by naming a customer or contract ID.
 
+Base Note currently uses **legacy customer accounts**. The first Queue v2
+surface must therefore use a signed App Proxy behind the existing theme rather
+than a Customer Account UI extension, which customers cannot yet access. A
+customer-account upgrade is a separate preview/approval/release decision; it
+is not part of this migration.
+
 | Route | Purpose |
 | --- | --- |
 | `GET /apps/basenote/v2/contracts` | Return only the caller's verified bindings, slots, effective selection, cutoff, and revision. |

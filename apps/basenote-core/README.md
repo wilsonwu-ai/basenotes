@@ -71,18 +71,22 @@ stored.
 - A provider may mutate only a contract whose `appId` matches Base Note's future
   app ID.
 
-The current source is deliberately domain logic and interfaces only. Persistence,
-OAuth/session handling, webhook verification, App Proxy verification, Appstle
-integration, Shopify Admin API calls, and billing attempts are not implemented.
+The current source is deliberately local-domain logic only. It includes a
+testable App Proxy HMAC verifier, pure pricing policy, and an in-memory queue
+state machine; it has no persistence, OAuth/session implementation, webhook
+route, Appstle integration, Shopify Admin API call, or billing attempt.
 
 ## Repository layout
 
 ```text
 src/
+  auth/app-proxy.ts                  Signed Shopify App Proxy verification
   config.ts                         Local-only startup gate
   index.ts                          Loopback health server
   domain/ids.ts                     Strong Shopify GID validation
   domain/queue.ts                   Contract-scoped queue + FOTM resolution
+  pricing/pricing-policy.ts         Pure $15/$20 and exact-$18 policy logic
+  queue/in-memory-queue-service.ts  Revisioned queue/outbox state machine
   domain/queue.test.ts              Invariant tests
   platform/subscription-gateway.ts  Provider boundary for Base Note-owned contracts
 scripts/verify-skeleton.mjs         Offline structural/safety verification
@@ -113,8 +117,10 @@ an app, or deploying an app version.
    Functions where appropriate. Verify `$15` first order, `$20` renewals, and
    the exact `$18` add-on with disposable test customers. Theme text alone is
    not enforcement.
-7. Add a Customer Account extension or approved account surface and an admin
-   surface; do not expose internal contract IDs or actions without authorization.
+7. The current store uses legacy customer accounts, so add an approved signed
+   App Proxy/theme surface for the first release. Use a Customer Account
+   extension only after a separately approved account upgrade; do not expose
+   internal contract IDs or actions without authorization.
 8. Test one-contract, two-contract, paused, cancelled, retry, FOTM fallback,
    failed webhook, duplicate request, and rollback cases in a development store.
 9. Obtain an explicit production-release approval with a migration/rollback plan
