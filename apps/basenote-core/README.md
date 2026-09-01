@@ -1,6 +1,7 @@
 # Base Note Core
 
-**Status: local-only foundation. It is deliberately not linked to a Shopify app.**
+**Status: unconnected staging-capable source. It is deliberately not linked to
+a Shopify app, deployed, or bound to a Cloudflare resource.**
 
 This package is the starting point for Base Note's subscription and queue
 platform. It contains no credentials, app registration, Shopify configuration,
@@ -12,8 +13,10 @@ subscription contract.
 
 The current storefront queue is coupled to Appstle. Base Note Core is intended
 to make a queue explicitly contract-scoped, so a customer with two subscriptions
-never has one contract selected implicitly. It also defines a deterministic
-Fragrance of the Month (FOTM) fallback when a queue slot is empty.
+never has one contract selected implicitly. It also distinguishes a visibly
+pre-selected Fragrance of the Month (FOTM) default from a saved member override
+and deterministically falls back to FOTM when no override exists at the exact
+12:01 AM America/Chicago cutoff.
 
 The boundary is intentional:
 
@@ -67,18 +70,57 @@ stored.
   title, handle, or URL fallback for new writes.
 - A queue operation may only act on the contract ID supplied by the authenticated
   context; it must never select a customer's “first active” contract.
-- The next shipment resolves to the queued variant or an explicit FOTM variant.
+- The included selection resolves to a saved member override or an explicit
+  published FOTM fallback; four `$18` add-ons remain separate.
 - A provider may mutate only a contract whose `appId` matches Base Note's future
   app ID.
 
-The current source is deliberately local-domain logic only. It includes a
-testable App Proxy HMAC verifier, pure pricing policy, an in-memory queue state
-machine, a D1-shaped-but-unbound profile-queue repository/migration, a
-staging-only queue-dropdown renderer, historic-member dry-run contracts, and a
-Messaging Core for consent, event audit, and no-send delivery intents. It has
-no configured persistence, OAuth/session implementation, webhook route,
-Appstle integration, Shopify Admin API call, recipient resolver, email sender,
-or billing attempt.
+The current source includes pure local-domain logic plus a reviewed,
+credential-free staging Worker adapter. Its customer route is still fail-closed
+unless a separately provisioned staging D1 binding, runtime-only App Proxy
+secret, exact disposable-shop domain, runtime test-variant allowlist, and a
+manually seeded disposable test binding are present. Its rendered App Proxy
+forms also require a short-lived, one-use D1 nonce bound to the exact signed
+customer/cycle/revision. It includes a testable App
+Proxy HMAC verifier, pure pricing policy, an in-memory queue state machine, a
+D1-shaped-but-unbound profile-queue repository/migration, future-month FOTM
+schedules with a staging-only authenticated embedded-Admin scheduler, bounded
+schedule-to-cycle provisioning, bounded staging-only cutoff lock logic, a
+server-rendered staging-only queue page, a durable historic-member
+manifest/approval lifecycle, and a Messaging Core for consent, event audit,
+and no-send delivery intents. It has no configured persistence, OAuth token
+exchange/session storage, webhook route, Appstle integration, Shopify Admin API
+call, recipient resolver, email sender, or billing attempt.
+
+The member-choice addition has no unauthenticated public staff write route. Its staging-only
+embedded Admin scheduler accepts a fresh Shopify Admin ID token only after
+server verification of HS256 signature, exact app audience, exact disposable
+shop issuer/destination, token freshness, and an opaque staging staff allowlist.
+Shopify App Bridge may reuse that still-valid token during its short lifetime,
+so the Worker verifies it on every request without treating its `jti` as a
+one-command nonce. Unsafe effects instead require durable command idempotency
+keys and schedule revisions. A legacy append-only token-digest ledger from the
+initial staging build remains inert and is never read or written. A theme FOTM
+setting may provide display context, but cannot configure a durable future-month
+schedule, authorize a member action, lock a cutoff, or prove a provider delivery
+change. The scheduler can draft/publish/retire future months and provision at
+most five exact open/unpublished staging cycles per request with compare-and-swap,
+append-only selection evidence, and no Shopify/Appstle/email call. The same
+provision idempotency key replays its durable original result and never starts
+another five-cycle fan-out. A retired
+month may be explicitly recovered to a new draft only when no cycle has
+received the old FOTM; otherwise staff can record immutable, non-PII
+no-mutation recovery evidence for manual review. An unknown-outcome pending
+provision may instead be terminalized as `NEEDS_ATTENTION` after 15 minutes;
+that one-way audit action never fans out or changes a schedule/cycle. Active
+pending recovery handles are listed per ship month, separately from the bounded
+recent-command history. It makes
+the published FOTM
+the visibly pre-selected included default; it never writes a member override.
+This is the core of [issue #35](https://github.com/wilsonwu-ai/basenotes/issues/35),
+and is connected only to the isolated development store and staging Worker.
+Production remains gated pending a disposable end-to-end proof and explicit
+cutover approval.
 
 ## Repository layout
 
@@ -95,15 +137,27 @@ src/
   messaging/outbox.ts               Explicit-eligibility, no-send outbox
   pricing/pricing-policy.ts         Pure $15/$20 and exact-$18 policy logic
   queue/in-memory-queue-service.ts  Revisioned queue/outbox state machine
-  profile-queue/contracts.ts        FOTM + maximum-four future add-on contract
+  profile-queue/contracts.ts        Included-member choice + maximum-four add-on contract
   profile-queue/service.ts          Pure queue mutation/cutoff state machine
   profile-queue/d1-repository.ts    Injected D1 persistence shape; no binding
+  profile-queue/fotm-schedule.ts    Per-month Central-time FOTM schedule model
+  profile-queue/d1-fotm-schedule-repository.ts D1 schedule/audit persistence shape
   profile-queue/ui.ts               Static staging-only dropdown renderer
-  subscription-history/             Dry-run, approval-gated historic evidence
+  subscription-history/             Dry-run and durable approval-gated historic evidence
   staging-runtime/d1.ts             Minimal D1 structural port, no runtime import
+  cloudflare-staging-worker/        Fail-closed staging Worker, HMAC/D1 gates, HTML form, tests
   domain/queue.test.ts              Invariant tests
   platform/subscription-gateway.ts  Provider boundary for Base Note-owned contracts
-migrations/0001_staging_runtime.sql Reviewed, unapplied D1 schema
+migrations/0001_staging_runtime.sql Reviewed, unapplied D1 queue schema
+migrations/0002_staging_test_bindings.sql Reviewed, unapplied disposable-binding schema
+migrations/0003_member_fragrance_choice.sql Reviewed, unapplied member choice/schedule schema
+migrations/0004_durable_historical_backfill.sql
+                                   Immutable dry-run manifest and staging-only
+                                   historical backfill lifecycle
+migrations/0005_staging_admin_scheduler.sql Historical append-only token-use ledger; retained
+                                   inert after Shopify cached-token compatibility fix
+migrations/0006_staging_admin_scheduler_lifecycle.sql Reviewed, unapplied RETIRED lifecycle,
+                                   provision command/replay, and recovery-evidence schema
 scripts/verify-skeleton.mjs         Offline structural/safety verification
 shopify.app.example.toml            Deliberately unlinked future config template
 ```
@@ -157,6 +211,8 @@ It selects no provider account or live sender; it describes the proposed
 Cloudflare + Mailgun boundary and the gates required before a test integration.
 The local-only staging runtime slice is documented in
 [`../../docs/owned-platform/staging-runtime-slice.md`](../../docs/owned-platform/staging-runtime-slice.md).
+The separately staged, fail-closed Cloudflare Worker adapter is documented in
+[`../../docs/owned-platform/cloudflare-staging-worker.md`](../../docs/owned-platform/cloudflare-staging-worker.md).
 
 ## Future commands (do not run yet)
 

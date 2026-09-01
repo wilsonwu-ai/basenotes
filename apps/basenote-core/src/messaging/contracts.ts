@@ -1,3 +1,5 @@
+import { canonicalizeUtcIsoTimestamp, compareUtcIsoInstants } from "../time/utc.js";
+
 /**
  * Base Note Messaging Core contracts.
  *
@@ -94,7 +96,6 @@ const PROFILE_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$/;
 const EVENT_ID = /^evt_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$/;
 const INTENT_ID = /^msg_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$/;
 const IDEMPOTENCY_KEY = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,199}$/;
-const ISO_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
 const TEMPLATE_KEY = /^[a-z0-9][a-z0-9._-]{2,127}$/;
 const STATUS_REASON = /^[A-Z][A-Z0-9_]{2,63}$/;
 
@@ -127,10 +128,17 @@ export function asIdempotencyKey(value: string): IdempotencyKey {
 }
 
 export function asIsoTimestamp(value: string): IsoTimestamp {
-  if (!ISO_TIMESTAMP.test(value) || Number.isNaN(Date.parse(value))) {
-    throw new Error("timestamp must be a valid UTC ISO-8601 value.");
-  }
-  return value as IsoTimestamp;
+  return canonicalizeUtcIsoTimestamp(value) as IsoTimestamp;
+}
+
+/**
+ * Compares messaging timestamps as instants. Messaging accepts whole-second
+ * input at its boundary, but stores and compares the canonical millisecond
+ * form so equivalent instants cannot produce a different consent or outbox
+ * result.
+ */
+export function compareIsoTimestamps(left: string, right: string): -1 | 0 | 1 {
+  return compareUtcIsoInstants(left, right);
 }
 
 export function asTemplateKey(value: string): string {

@@ -1,7 +1,6 @@
 import type { DurableSubscriptionHistory } from "../pricing/pricing-policy.js";
 import {
   asCustomerId,
-  asIsoTimestamp,
   type CustomerId,
   type IsoTimestamp,
 } from "../queue/types.js";
@@ -78,29 +77,78 @@ export interface HistoricalBackfillAuditRecord {
   readonly runId: HistoricalBackfillRunId;
 }
 
-const RUN_ID = /^hbr_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$/;
-const EVIDENCE_REF = /^[A-Za-z0-9][A-Za-z0-9._:/-]{2,191}$/;
-const APPROVAL_REF = /^hba_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$/;
+/**
+ * These identifiers deliberately cannot carry a human-entered name, phone
+ * number, email address, CSV row label, or ticket title. A caller creates an
+ * opaque random identifier outside this service; it must not derive the value
+ * from a raw export field.
+ */
+const RUN_ID = /^hbr_[0-9a-f]{32}$/;
+const APPROVAL_REF = /^hba_[0-9a-f]{32}$/;
+const EVIDENCE_REF_BY_SOURCE: Readonly<Record<HistoricalMemberSource, RegExp>> = {
+  APPSTLE_EXPORT: /^appstle\/sha256\/[0-9a-f]{64}$/,
+  SHOPIFY_ORDER_EXPORT: /^shopify-order\/sha256\/[0-9a-f]{64}$/,
+  MERCHANT_REVIEW: /^merchant-review\/sha256\/[0-9a-f]{64}$/,
+};
+const HISTORICAL_INPUT_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
 
 export function asHistoricalBackfillRunId(value: string): HistoricalBackfillRunId {
   if (!RUN_ID.test(value)) {
-    throw new Error("runId must begin with hbr_ and contain 12-132 URL-safe characters.");
+    throw new Error("runId must be an opaque hbr_ identifier followed by 32 lowercase hexadecimal characters.");
   }
   return value as HistoricalBackfillRunId;
 }
 
-export function asHistoricalEvidenceRef(value: string): HistoricalEvidenceRef {
-  if (!EVIDENCE_REF.test(value) || value.includes("@")) {
-    throw new Error("evidenceRef must be an opaque reference and must not contain an email address.");
+/**
+ * Evidence is a source-qualified SHA-256 surrogate, never a raw export cell.
+ * Hash raw exports before calling this boundary and retain the linking data in
+ * the separately controlled source system, not D1.
+ */
+export function asHistoricalEvidenceRef(
+  value: string,
+  source: HistoricalMemberSource,
+): HistoricalEvidenceRef {
+  const sourcePattern = EVIDENCE_REF_BY_SOURCE[source];
+  if (!sourcePattern || !sourcePattern.test(value)) {
+    throw new Error(
+      "evidenceRef must be a source-qualified SHA-256 surrogate; raw export values are not permitted.",
+    );
   }
   return value as HistoricalEvidenceRef;
 }
 
 export function asHistoricalBackfillApprovalRef(value: string): HistoricalBackfillApprovalRef {
   if (!APPROVAL_REF.test(value)) {
-    throw new Error("approvalRef must begin with hba_ and contain 12-132 URL-safe characters.");
+    throw new Error("approvalRef must be an opaque hba_ identifier followed by 32 lowercase hexadecimal characters.");
   }
   return value as HistoricalBackfillApprovalRef;
+}
+
+/**
+ * Accept only UTC ISO input at second or millisecond precision and normalize
+ * it to canonical millisecond precision. All historical durable values and
+ * the reviewed digest use this representation, so SQLite string comparisons
+ * and JavaScript comparisons agree.
+ */
+export function canonicalizeHistoricalTimestamp(value: string): IsoTimestamp {
+  if (!HISTORICAL_INPUT_TIMESTAMP.test(value)) {
+    throw new Error("historical timestamp must be a valid UTC ISO-8601 value with second or millisecond precision.");
+  }
+  const expected = value.length === 20 ? value.slice(0, -1) + ".000Z" : value;
+  const canonical = new Date(value).toISOString();
+  if (canonical !== expected) {
+    throw new Error("historical timestamp must name a real UTC instant.");
+  }
+  return canonical as IsoTimestamp;
+}
+
+/** Reject a D1 value unless it was already persisted canonically. */
+export function assertCanonicalHistoricalTimestamp(value: string): IsoTimestamp {
+  const canonical = canonicalizeHistoricalTimestamp(value);
+  if (canonical !== value) {
+    throw new Error("durable historical timestamp must use canonical millisecond ISO-8601 precision.");
+  }
+  return canonical;
 }
 
 export function normalizeHistoricalMemberCandidate(
@@ -111,8 +159,8 @@ export function normalizeHistoricalMemberCandidate(
   }
   return {
     customerId: asCustomerId(input.customerId),
-    evidenceRef: asHistoricalEvidenceRef(input.evidenceRef),
-    firstObservedAt: asIsoTimestamp(input.firstObservedAt),
+    evidenceRef: asHistoricalEvidenceRef(input.evidenceRef, input.source),
+    firstObservedAt: canonicalizeHistoricalTimestamp(input.firstObservedAt),
     source: input.source,
   };
 }

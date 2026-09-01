@@ -121,6 +121,37 @@ test("failed and suppressed intents are terminal: an idempotency replay never au
   );
 });
 
+test("canonicalizes equal-instant clock values and claims exactly one deterministically ordered intent", () => {
+  const clockInputs = [
+    "2026-09-01T12:00:00Z",
+    "2026-09-01T12:00:00.000Z",
+    "2026-09-01T12:00:00Z",
+  ];
+  let clockIndex = 0;
+  const outbox = new InMemoryMessageOutbox({
+    clock: () => new Date(clockInputs[clockIndex++] ?? "2026-09-01T12:00:00.000Z"),
+  });
+  const first = outbox.enqueue({ ...INPUT, idempotencyKey: "timestamp-ordering-001" });
+  const second = outbox.enqueue({ ...INPUT, idempotencyKey: "timestamp-ordering-002" });
+
+  assert.equal(first.createdAt, "2026-09-01T12:00:00.000Z");
+  assert.equal(second.createdAt, "2026-09-01T12:00:00.000Z");
+  const ordered = outbox.list();
+  assert.deepEqual(
+    ordered.map((intent) => intent.id),
+    [first, second].map((intent) => intent.id).sort(),
+  );
+
+  const claimed = outbox.claim({ intentId: ordered[0]!.id, eligibility: { eligible: true } });
+  assert.equal(claimed.status, "CLAIMED");
+  assert.equal(claimed.updatedAt, "2026-09-01T12:00:00.000Z");
+  assert.equal(outbox.get(ordered[1]!.id)?.status, "PENDING");
+  assert.throws(
+    () => outbox.claim({ intentId: claimed.id, eligibility: { eligible: true } }),
+    MessageOutboxTransitionError,
+  );
+});
+
 test("the public outbox stores profile references only and returns defensive snapshots", () => {
   const outbox = createOutbox();
   const created = outbox.enqueue(INPUT);

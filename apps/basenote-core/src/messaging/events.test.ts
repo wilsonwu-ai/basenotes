@@ -67,6 +67,17 @@ test("replays an identical event only once by both event ID and idempotency key"
   assert.equal(ledger.listEventsForProfile("profile-001").length, 1);
 });
 
+test("canonicalizes precision-equivalent event instants before idempotency checks", () => {
+  const ledger = createLedger();
+  const first = ledger.record(eventInput({ occurredAt: "2026-09-01T11:59:00Z" }));
+  const replay = ledger.record(eventInput({ occurredAt: "2026-09-01T11:59:00.000Z" }));
+
+  assert.equal(first.outcome, "RECORDED");
+  assert.equal(first.event.occurredAt, "2026-09-01T11:59:00.000Z");
+  assert.equal(replay.outcome, "DEDUPLICATED");
+  assert.equal(ledger.size, 1);
+});
+
 test("an event ID or idempotency key cannot be recycled for a different immutable event", () => {
   const ledger = createLedger();
   ledger.record(eventInput());

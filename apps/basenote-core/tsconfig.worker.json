@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "WebWorker"],
+    "types": []
+  },
+  "include": [
+    "src/cloudflare-staging-worker/**/*.ts",
+    "src/domain/ids.ts",
+    "src/profile-queue/contracts.ts",
+    "src/profile-queue/d1-repository.ts",
+    "src/profile-queue/repository.ts",
+    "src/profile-queue/service.ts",
+    "src/queue/types.ts",
+    "src/staging-runtime/d1.ts"
+  ],
+  "exclude": ["src/**/*.test.ts"]
+}
