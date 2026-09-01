@@ -1,0 +1,30 @@
+{% comment %}
+  Base Note Profile Queue — staging-only inert mount
+
+  This snippet is deliberately not referenced by any template, section, or
+  layout. It performs no fetch, form submission, script loading, or App Proxy
+  call. It can only render when a maintainer explicitly passes both a true
+  staging flag and the exact development-store permanent domain.
+
+  Copy this into an unpublished development-store theme only. Never render it
+  from the live theme, never set the expected domain to a production storefront,
+  and never add a remote script URL to this file.
+
+  Example approved-dev-theme usage:
+  {% render 'basenote-profile-queue-staging-mount',
+    basenote_staging_enabled: true,
+    basenote_staging_shop_domain: 'REPLACE_WITH_DEVELOPMENT_STORE.myshopify.com'
+  %}
+{% endcomment %}
+
+{% if basenote_staging_enabled == true and request.host == basenote_staging_shop_domain %}
+  <section
+    class="bn-profile-queue"
+    data-basenote-staging-queue-mount="inert"
+    aria-labelledby="bn-profile-queue-staging-heading"
+  >
+    <h2 id="bn-profile-queue-staging-heading">Profile Queue</h2>
+    <p>Staging preview only. Queue data is not loaded or saved from this theme mount.</p>
+    <p>When the separately approved signed App Proxy route is ready, it will replace this preview in the unpublished staging theme.</p>
+  </section>
+{% endif %}

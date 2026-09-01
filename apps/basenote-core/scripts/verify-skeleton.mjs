@@ -9,6 +9,7 @@ const requiredFiles = [
   "tsconfig.json",
   ".env.example",
   "shopify.app.example.toml",
+  "shopify.app.staging.example.toml",
   "src/config.ts",
   "src/index.ts",
   "src/domain/ids.ts",
@@ -23,6 +24,8 @@ const requiredFiles = [
   "src/subscription-history/backfill-importer.ts",
   "migrations/0001_staging_runtime.sql",
   "src/platform/subscription-gateway.ts",
+  "src/shopify-staging/webhook.ts",
+  "src/shopify-staging/app-proxy-bridge.ts",
 ];
 
 const missing = requiredFiles.filter((file) => !existsSync(resolve(root, file)));
@@ -46,6 +49,31 @@ if (configuredSecret) {
 const appTemplate = readFileSync(resolve(root, "shopify.app.example.toml"), "utf8");
 if (!appTemplate.includes("REPLACE_ONLY_AFTER_EXISTING_DEV_DASHBOARD_APP_IS_APPROVED_FOR_LINKING")) {
   throw new Error("The Shopify template must remain deliberately unlinked.");
+}
+
+const stagingAppTemplate = readFileSync(resolve(root, "shopify.app.staging.example.toml"), "utf8");
+for (const requiredFragment of [
+  "REPLACE_WITH_A_SEPARATE_STAGING_DEV_DASHBOARD_APP_CLIENT_ID",
+  "application_url = \"https://app-staging.basenotescent.com\"",
+  "scopes = \"read_customers,read_products,write_app_proxy\"",
+  "url = \"https://app-staging.basenotescent.com/api/shopify/app-proxy\"",
+  "subpath = \"basenote-staging\"",
+]) {
+  if (!stagingAppTemplate.includes(requiredFragment)) {
+    throw new Error(`The staging Shopify template must retain: ${requiredFragment}`);
+  }
+}
+if (/client_id\s*=\s*"(?!REPLACE_WITH_A_SEPARATE_STAGING_DEV_DASHBOARD_APP_CLIENT_ID")/u.test(stagingAppTemplate)) {
+  throw new Error("The staging Shopify template must not contain a real client ID.");
+}
+const configuredScopes = /^scopes\s*=\s*"([^"]*)"$/mu.exec(stagingAppTemplate)?.[1] ?? "";
+if (/(?:read|write)_own_subscription_contracts|write_customers|write_orders|read_all_orders/u.test(configuredScopes)) {
+  throw new Error("The staging Shopify template must retain least-privilege initial scopes.");
+}
+
+const proxyBridge = readFileSync(resolve(root, "src/shopify-staging/app-proxy-bridge.ts"), "utf8");
+if (/\bfetch\s*\(|https?:\/\//u.test(proxyBridge)) {
+  throw new Error("The staging App Proxy bridge must remain network-free.");
 }
 
 const stagingMigration = readFileSync(resolve(root, "migrations/0001_staging_runtime.sql"), "utf8");

@@ -18,6 +18,11 @@ not an in-place switch.
 The names above are proposals only. Creating DNS records, apps, stores,
 credentials, or deployments is outside this repository change.
 
+The staging Shopify app configuration, scope rationale, raw-HMAC boundaries,
+and development-store checklist are kept separately in
+[shopify-staging-app-integration.md](shopify-staging-app-integration.md). It is
+a no-credential scaffold, not an installation or production release.
+
 ## Base Note-owned components
 
 ```text
