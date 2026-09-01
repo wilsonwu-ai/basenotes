@@ -83,6 +83,25 @@ test("blocks a production-facing application host before Mailgun can be enabled"
   );
 });
 
+test("allows only a staging-named temporary Workers.dev application origin", () => {
+  const configuration = readMailgunStagingTransportConfig({
+    ...stagingEnvironment(),
+    BASENOTE_STAGING_APP_ORIGIN: "https://basenote-profile-queue-staging.example-account.workers.dev",
+  });
+  assert.equal(
+    configuration.stagingAppOrigin,
+    "https://basenote-profile-queue-staging.example-account.workers.dev",
+  );
+
+  assertConfigurationError(
+    () => readMailgunStagingTransportConfig({
+      ...stagingEnvironment(),
+      BASENOTE_STAGING_APP_ORIGIN: "https://basenote-profile-queue.example-account.workers.dev",
+    }),
+    "unsafe_staging_origin",
+  );
+});
+
 test("rejects an unapproved provider endpoint and an absent runtime secret", () => {
   assertConfigurationError(
     () => readMailgunStagingTransportConfig({

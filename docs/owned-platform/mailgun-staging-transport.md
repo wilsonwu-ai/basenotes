@@ -17,7 +17,8 @@ The adapter is unavailable unless all of these runtime gates are true:
 2. `BASENOTE_MAILGUN_STAGING_ENABLED=true`
 3. `BASENOTE_MAILGUN_TEST_ONLY=true`
 4. `BASENOTE_STAGING_APP_ORIGIN` is a HTTPS staging host, not a production
-   Base Note host.
+   Base Note host. Until a branded staging zone exists, a temporary
+   `*-staging.*.workers.dev` hostname is also permitted.
 5. The sender is either a Mailgun sandbox domain or an explicit
    `mail-staging.` domain, and the sender address is at that exact domain.
 6. At least one manually reviewed recipient address or non-production domain is

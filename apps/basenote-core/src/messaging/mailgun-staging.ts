@@ -442,7 +442,12 @@ function parseStagingAppOrigin(value: string): string {
     );
   }
   const host = url.hostname.toLowerCase();
-  const safeHost = host.startsWith("app-staging.") || host.includes(".staging.");
+  // A temporary Workers.dev hostname is allowed only when its Worker name
+  // itself carries the `-staging` suffix. That lets the isolated development
+  // store run before Base Note has delegated a branded staging DNS zone,
+  // without accepting a production-facing Workers.dev host.
+  const safeWorkerHost = /^[a-z0-9-]*-staging\.[a-z0-9-]+\.workers\.dev$/.test(host);
+  const safeHost = host.startsWith("app-staging.") || host.includes(".staging.") || safeWorkerHost;
   if (
     url.protocol !== "https:"
     || url.username !== ""
