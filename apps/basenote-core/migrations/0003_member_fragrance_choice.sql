@@ -17,46 +17,49 @@ PRAGMA foreign_keys = ON;
 
 -- Preflight the old schema before any persistent 0003 DDL. A legacy resolved
 -- non-open cycle can be carried forward as an FOTM fallback below; every other
--- closed state is ambiguous and must be reconciled manually. This temporary
--- trigger also verifies the newly approved 12:01 AM Central rule against old
--- published/resolved cutoffs. It disappears with the migration connection.
-CREATE TEMP TRIGGER profile_queue_0003_legacy_preflight
-BEFORE UPDATE OF state ON profile_queue_cycles
-FOR EACH ROW
-WHEN (
-  (OLD.state <> 'OPEN' AND OLD.fotm_status <> 'RESOLVED')
-  OR (OLD.state = 'OPEN' AND OLD.fotm_status = 'RESOLVED')
-  OR (OLD.fotm_status IN ('PUBLISHED', 'RESOLVED') AND OLD.merchant_timezone <> 'America/Chicago')
-  OR (OLD.fotm_status IN ('PUBLISHED', 'RESOLVED') AND COALESCE(NOT (
-    strftime('%Y-%m-%dT%H:%M:%S', OLD.fotm_cutoff_at) = substr(OLD.fotm_cutoff_at, 1, 19)
+-- closed state is ambiguous and must be reconciled manually. The guard also
+-- verifies the newly approved 12:01 AM Central rule against old
+-- published/resolved cutoffs. D1 does not authorize TEMP triggers, so use a
+-- regular table that is created and dropped inside Wrangler's migration
+-- transaction. A failed CHECK rolls that migration back, including this table.
+CREATE TABLE profile_queue_0003_legacy_preflight_guard (
+  singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
+  is_valid INTEGER NOT NULL CHECK (is_valid = 1)
+);
+
+INSERT INTO profile_queue_0003_legacy_preflight_guard (singleton, is_valid)
+SELECT 1, CASE WHEN EXISTS (
+  SELECT 1
+  FROM profile_queue_cycles
+  WHERE
+  (state <> 'OPEN' AND fotm_status <> 'RESOLVED')
+  OR (state = 'OPEN' AND fotm_status = 'RESOLVED')
+  OR (fotm_status IN ('PUBLISHED', 'RESOLVED') AND merchant_timezone <> 'America/Chicago')
+  OR (fotm_status IN ('PUBLISHED', 'RESOLVED') AND COALESCE(NOT (
+    strftime('%Y-%m-%dT%H:%M:%S', fotm_cutoff_at) = substr(fotm_cutoff_at, 1, 19)
     AND (
-      OLD.fotm_cutoff_at = substr(OLD.fotm_cutoff_at, 1, 19) || 'Z'
-      OR OLD.fotm_cutoff_at = substr(OLD.fotm_cutoff_at, 1, 19) || '.000Z'
+      fotm_cutoff_at = substr(fotm_cutoff_at, 1, 19) || 'Z'
+      OR fotm_cutoff_at = substr(fotm_cutoff_at, 1, 19) || '.000Z'
     )
-    AND substr(OLD.fotm_cutoff_at, 18, 2) = '00'
+    AND substr(fotm_cutoff_at, 18, 2) = '00'
     AND CASE WHEN (
-      CAST(strftime('%m', OLD.fotm_cutoff_at) AS INTEGER) BETWEEN 4 AND 10
+      CAST(strftime('%m', fotm_cutoff_at) AS INTEGER) BETWEEN 4 AND 10
       OR (
-        strftime('%m', OLD.fotm_cutoff_at) = '03'
-        AND CAST(strftime('%d', OLD.fotm_cutoff_at) AS INTEGER) > CAST(strftime('%d', date(strftime('%Y-%m-01', OLD.fotm_cutoff_at), 'weekday 0', '+7 days')) AS INTEGER)
+        strftime('%m', fotm_cutoff_at) = '03'
+        AND CAST(strftime('%d', fotm_cutoff_at) AS INTEGER) > CAST(strftime('%d', date(strftime('%Y-%m-01', fotm_cutoff_at), 'weekday 0', '+7 days')) AS INTEGER)
       )
       OR (
-        strftime('%m', OLD.fotm_cutoff_at) = '11'
-        AND CAST(strftime('%d', OLD.fotm_cutoff_at) AS INTEGER) <= CAST(strftime('%d', date(strftime('%Y-%m-01', OLD.fotm_cutoff_at), 'weekday 0')) AS INTEGER)
+        strftime('%m', fotm_cutoff_at) = '11'
+        AND CAST(strftime('%d', fotm_cutoff_at) AS INTEGER) <= CAST(strftime('%d', date(strftime('%Y-%m-01', fotm_cutoff_at), 'weekday 0')) AS INTEGER)
       )
-    ) THEN substr(OLD.fotm_cutoff_at, 12, 6) = '05:01:'
-      ELSE substr(OLD.fotm_cutoff_at, 12, 6) = '06:01:'
+    ) THEN substr(fotm_cutoff_at, 12, 6) = '05:01:'
+      ELSE substr(fotm_cutoff_at, 12, 6) = '06:01:'
     END
   ), 1))
-)
-BEGIN
-  SELECT RAISE(ABORT, '0003 legacy queue cycle requires manual reconciliation');
-END;
+  LIMIT 1
+) THEN 0 ELSE 1 END;
 
-UPDATE profile_queue_cycles
-SET state = state;
-
-DROP TRIGGER profile_queue_0003_legacy_preflight;
+DROP TABLE profile_queue_0003_legacy_preflight_guard;
 
 ALTER TABLE profile_queue_cycles
   ADD COLUMN member_choice_source TEXT NOT NULL DEFAULT 'UNSELECTED'

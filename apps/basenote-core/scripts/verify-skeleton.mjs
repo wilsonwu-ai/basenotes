@@ -189,7 +189,9 @@ for (const requiredFragment of [
   "America/Chicago",
   "member_choice_source = 'FOTM_FALLBACK'",
   "profile_queue_0003_legacy_preflight",
-  "SET state = state",
+  "is_valid INTEGER NOT NULL CHECK (is_valid = 1)",
+  "SELECT 1, CASE WHEN EXISTS",
+  "DROP TABLE profile_queue_0003_legacy_preflight_guard",
   "json_each(NEW.add_on_snapshot_json)",
   "strftime('%Y-%m-%dT%H:%M:%S'",
   "|| '.000Z'",
@@ -201,6 +203,10 @@ for (const requiredFragment of [
   if (!memberChoiceMigration.includes(requiredFragment)) {
     throw new Error(`The member-choice migration must retain: ${requiredFragment}`);
   }
+}
+
+if (/CREATE\s+TEMP(?:ORARY)?\s+TRIGGER/i.test(memberChoiceMigration)) {
+  throw new Error("The member-choice migration must remain compatible with Cloudflare D1 (no TEMP triggers)");
 }
 
 const adminSchedulerMigration = readFileSync(resolve(root, "migrations/0005_staging_admin_scheduler.sql"), "utf8");
