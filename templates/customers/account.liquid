@@ -788,7 +788,7 @@
 
   // ── Subscription action helper (pause / skip) — calls Appstle customer-portal API ──
   // Exposed on window so the click handlers below can call it.
-  window.bnSubscriptionAction = function(action, requestedContractId) {
+  window.bnSubscriptionAction = function(action, requestedContractId, sourceButton) {
     var cpBase = '/apps/subscriptions/cp/api';
     var paymentBtn = document.getElementById('subUpdatePaymentBtn');
     var savedContractId = paymentBtn && paymentBtn.dataset ? paymentBtn.dataset.contractId : '';
@@ -797,6 +797,36 @@
     // for that action. The legacy fallback is retained only for the old single
     // subscription card and never reuses a known terminal contract.
     var contractId = requestedContractId || ((savedContractStatus === '' || savedContractStatus === 'ACTIVE') ? savedContractId : '');
+
+    // Dynamic active-contract cards pass their own button here. Keep that
+    // exact control disabled for the request lifetime so a fast double-click
+    // cannot send duplicate Appstle mutations or payment-update emails. The
+    // legacy single-card button continues to use its established UI below.
+    var sourceButtonOriginalHtml = '';
+    function beginSourceButtonRequest(label) {
+      if (!sourceButton) return true;
+      if (sourceButton.disabled || sourceButton.dataset.bnRequestPending === 'true') return false;
+      sourceButtonOriginalHtml = sourceButton.innerHTML;
+      sourceButton.disabled = true;
+      sourceButton.dataset.bnRequestPending = 'true';
+      sourceButton.setAttribute('aria-busy', 'true');
+      sourceButton.textContent = label || 'Working…';
+      return true;
+    }
+    function restoreSourceButton() {
+      if (!sourceButton || sourceButton.dataset.bnRequestPending !== 'true') return;
+      sourceButton.innerHTML = sourceButtonOriginalHtml;
+      sourceButton.disabled = false;
+      sourceButton.removeAttribute('aria-busy');
+      delete sourceButton.dataset.bnRequestPending;
+    }
+    function completeSourceButton(label) {
+      if (!sourceButton) return;
+      sourceButton.textContent = label;
+      sourceButton.disabled = true;
+      sourceButton.removeAttribute('aria-busy');
+      sourceButton.dataset.bnRequestPending = 'complete';
+    }
 
     function showError(msg) { alert(msg || 'Something went wrong. Please email hello@basenotescent.com and we’ll sort it out.'); }
     function showOk(msg) { alert(msg); try { location.reload(); } catch(e){} }
@@ -844,7 +874,10 @@
           if (!id) return Promise.reject('no-id');
           cb(id);
         })
-        .catch(function(){ showError('We couldn’t load your subscription. Please refresh the page or email hello@basenotescent.com.'); });
+        .catch(function(){
+          restoreSourceButton();
+          showError('We couldn’t load your subscription. Please refresh the page or email hello@basenotescent.com.');
+        });
     }
 
     if (action === 'pause') {
@@ -852,6 +885,7 @@
       if (rawCycles === null) return; // user cancelled
       var cycles = parseInt(rawCycles, 10);
       if (!cycles || cycles < 1 || cycles > 3) { showError('Please enter 1, 2, or 3.'); return; }
+      if (!beginSourceButtonRequest('Saving…')) return;
       ensureContractId(function(id){
         var url = cpBase + '/subscription-contracts-update-status'
           + '?contractId=' + encodeURIComponent(id)
@@ -865,13 +899,18 @@
               return r.text().then(function(t){ throw new Error(t || ('HTTP ' + r.status)); });
             }
           })
-          .catch(function(err){ console.error('[bn-subscription] pause failed', err); showError('We couldn’t pause your subscription right now. Please email hello@basenotescent.com.'); });
+          .catch(function(err){
+            console.error('[bn-subscription] pause failed', err);
+            restoreSourceButton();
+            showError('We couldn’t pause your subscription right now. Please email hello@basenotescent.com.');
+          });
       });
       return;
     }
 
     if (action === 'skip') {
       if (!confirm('Skip next month’s shipment? You won’t be charged for next month, and shipments resume automatically the month after.')) return;
+      if (!beginSourceButtonRequest('Saving…')) return;
       ensureContractId(function(id){
         var url = cpBase + '/subscription-billing-attempts/skip-upcoming-order'
           + '?subscriptionContractId=' + encodeURIComponent(id);
@@ -899,15 +938,20 @@
               return r.text().then(function(t){ throw new Error(t || ('HTTP ' + r.status)); });
             }
           })
-          .catch(function(err){ console.error('[bn-subscription] skip failed', err); showError('We couldn’t skip next month right now. Please email hello@basenotescent.com.'); });
+          .catch(function(err){
+            console.error('[bn-subscription] skip failed', err);
+            restoreSourceButton();
+            showError('We couldn’t skip next month right now. Please email hello@basenotescent.com.');
+          });
       });
       return;
     }
 
     if (action === 'update-payment') {
-      var btn = document.getElementById('subUpdatePaymentBtn');
+      if (!beginSourceButtonRequest('Sending…')) return;
+      var btn = sourceButton || document.getElementById('subUpdatePaymentBtn');
       var originalHtml = btn ? btn.innerHTML : '';
-      if (btn) {
+      if (btn && !sourceButton) {
         btn.disabled = true;
         btn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="31.4" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" dur="0.8s" from="0 12 12" to="360 12 12" repeatCount="indefinite"/></circle></svg> Sending…';
       }
@@ -916,7 +960,9 @@
         fetch(url, { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: '{}' })
           .then(function(r){
             if (!r.ok) throw new Error('HTTP ' + r.status);
-            if (btn) {
+            if (sourceButton) {
+              completeSourceButton('Email sent!');
+            } else if (btn) {
               btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" width="20" height="20"><polyline points="20 6 9 17 4 12"/></svg> Email sent!';
               btn.style.borderColor = '#4CAF50';
               btn.style.background = 'rgba(76,175,80,0.04)';
@@ -925,7 +971,8 @@
           })
           .catch(function(err){
             console.error('[bn-subscription] update-payment failed', err);
-            if (btn) { btn.innerHTML = originalHtml; btn.disabled = false; }
+            if (sourceButton) restoreSourceButton();
+            else if (btn) { btn.innerHTML = originalHtml; btn.disabled = false; }
             showError('We couldn’t send the update email right now. Please try again or email hello@basenotescent.com.');
           });
       });
@@ -1004,7 +1051,8 @@
         e.preventDefault();
         var contractAction = contractActionBtn.getAttribute('data-bn-contract-action');
         var contractId = contractActionBtn.getAttribute('data-contract-id');
-        if (contractAction && contractId) bnSubscriptionAction(contractAction, contractId);
+        if (contractActionBtn.disabled || contractActionBtn.dataset.bnRequestPending === 'true') return;
+        if (contractAction && contractId) bnSubscriptionAction(contractAction, contractId, contractActionBtn);
       }
     }, false);
 
