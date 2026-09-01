@@ -225,6 +225,41 @@ test("a conflict outcome withholds every new fact and terminalizes as needs-revi
   assert.match(statements[4]?.query ?? "", /NEEDS_REVIEW/);
 });
 
+test("a quarantined legacy collision becomes an auditable needs-review outcome", async () => {
+  const database = configuredApprovedPlanDatabase();
+  database.conflictRows = [{
+    competing_run_id: null,
+    customer_id: "gid://shopify/Customer/101",
+    detected_at: APPLIED_AT,
+    reason: "LEGACY_EVIDENCE_REQUIRES_REVIEW",
+  }];
+  const service = createService(database);
+  database.onBatch = (statements) => {
+    database.runRow = needsReviewRunRow();
+    const results = changedResults(statements.length, 0);
+    results[0] = changedResult();
+    results[1] = changedResult();
+    results[4] = changedResult();
+    return results;
+  };
+
+  const result = await service.applyApprovedDryRun({ appliedAt: APPLIED_AT, runId: RUN_ID });
+  assert.equal(result.run.applyState, "NEEDS_REVIEW");
+  assert.equal(result.conflictCount, 1);
+  assert.equal(result.newlyRecordedCount, 0);
+  const statements = database.batches[0] ?? [];
+  assert.match(statements[1]?.query ?? "", /LEGACY_EVIDENCE_REQUIRES_REVIEW/);
+  assert.match(statements[1]?.query ?? "", /history\.legacy_quarantined = 1/);
+  assert.ok(statements[2]?.query.includes("NOT EXISTS (\n    SELECT 1 FROM historical_subscription_backfill_apply_conflicts"));
+  const conflicts = await service.listConflicts(RUN_ID);
+  assert.deepEqual(conflicts, [{
+    competingRunId: null,
+    customerId: "gid://shopify/Customer/101",
+    detectedAt: APPLIED_AT,
+    reason: "LEGACY_EVIDENCE_REQUIRES_REVIEW",
+  }]);
+});
+
 function candidate(customerNumber: string, evidenceRef: string) {
   return {
     customerId: "gid://shopify/Customer/" + customerNumber,

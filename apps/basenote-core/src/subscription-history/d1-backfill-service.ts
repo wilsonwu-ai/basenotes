@@ -70,10 +70,13 @@ export interface DurableHistoricalBackfillApplyResult {
 }
 
 export interface DurableHistoricalBackfillConflict {
-  readonly competingRunId: HistoricalBackfillRunId;
+  /** Null only when a quarantined legacy row blocks safe automatic recording. */
+  readonly competingRunId: HistoricalBackfillRunId | null;
   readonly customerId: CustomerId;
   readonly detectedAt: IsoTimestamp;
-  readonly reason: "ALREADY_RECORDED_BY_ANOTHER_RUN";
+  readonly reason:
+    | "ALREADY_RECORDED_BY_ANOTHER_RUN"
+    | "LEGACY_EVIDENCE_REQUIRES_REVIEW";
 }
 
 export class DurableHistoricalBackfillConflictError extends Error {
@@ -122,7 +125,7 @@ interface RunRow {
 }
 
 interface ConflictRow {
-  readonly competing_run_id: string;
+  readonly competing_run_id: string | null;
   readonly customer_id: string;
   readonly detected_at: string;
   readonly reason: string;
@@ -141,8 +144,11 @@ interface PlannedDecision {
  * binding and invoke only dry-run, approval, then apply.
  *
  * Each phase is one D1 batch. Apply first records conflicts, then writes facts
- * only when no retained candidate conflicts. A run therefore ends APPLIED with
- * every planned fact, or NEEDS_REVIEW with no new partial facts.
+ * only when no retained candidate conflicts. A quarantined legacy row is not
+ * trusted as durable evidence, but because it occupies the immutable customer
+ * key it must terminalize the run as an auditable NEEDS_REVIEW rather than
+ * causing a failed batch or a silent overwrite. A run therefore ends APPLIED
+ * with every planned fact, or NEEDS_REVIEW with no new partial facts.
  */
 export class D1DurableHistoricalBackfillService {
   private readonly createFactAuditId: () => string;
@@ -252,8 +258,9 @@ export class D1DurableHistoricalBackfillService {
 
   /**
    * Applies a retained approved plan atomically. Conflict rows are written
-   * first. If any candidate already has a durable fact from another run, all
-   * new fact inserts are withheld and the run terminalizes as NEEDS_REVIEW.
+   * first. If any candidate already has a durable fact from another run, or a
+   * quarantined legacy row blocks safe recording, all new fact inserts are
+   * withheld and the run terminalizes as NEEDS_REVIEW.
    */
   async applyApprovedDryRun(input: DurableHistoricalBackfillApplyInput): Promise<DurableHistoricalBackfillApplyResult> {
     const runId = asHistoricalBackfillRunId(input.runId);
@@ -513,7 +520,10 @@ function bindConflictDetection(
     "INSERT INTO historical_subscription_backfill_apply_conflicts (",
     "  run_id, customer_id, competing_run_id, reason, detected_at",
     ")",
-    "SELECT ?, ?, history.established_by_run_id, 'ALREADY_RECORDED_BY_ANOTHER_RUN', ?",
+    "SELECT ?, ?,",
+    "  CASE WHEN history.legacy_quarantined = 1 THEN NULL ELSE history.established_by_run_id END,",
+    "  CASE WHEN history.legacy_quarantined = 1 THEN 'LEGACY_EVIDENCE_REQUIRES_REVIEW' ELSE 'ALREADY_RECORDED_BY_ANOTHER_RUN' END,",
+    "  ?",
     "FROM historical_subscription_history AS history",
     "JOIN historical_subscription_backfill_plan AS plan",
     "  ON plan.customer_id = history.customer_id",
@@ -526,7 +536,7 @@ function bindConflictDetection(
     "  AND plan.decision_ordinal = ?",
     "  AND plan.disposition = 'WILL_RECORD_EVER_SUBSCRIBED'",
     "  AND plan.customer_id = ?",
-    "  AND history.established_by_run_id <> current_run.run_id",
+    "  AND (history.legacy_quarantined = 1 OR history.established_by_run_id <> current_run.run_id)",
     "  AND NOT EXISTS (",
     "    SELECT 1",
     "    FROM historical_subscription_backfill_apply_conflicts AS existing",
@@ -776,7 +786,16 @@ function mapRunRow(row: RunRow): DurableHistoricalBackfillRun {
 
 function mapConflictRow(row: ConflictRow): DurableHistoricalBackfillConflict {
   try {
-    if (row.reason !== "ALREADY_RECORDED_BY_ANOTHER_RUN") {
+    if (row.reason === "LEGACY_EVIDENCE_REQUIRES_REVIEW") {
+      if (row.competing_run_id !== null) throw new Error("Legacy conflict must not name a durable competing run.");
+      return {
+        competingRunId: null,
+        customerId: asCustomerId(row.customer_id),
+        detectedAt: assertCanonicalHistoricalTimestamp(row.detected_at),
+        reason: row.reason,
+      };
+    }
+    if (row.reason !== "ALREADY_RECORDED_BY_ANOTHER_RUN" || row.competing_run_id === null) {
       throw new Error("Unsupported conflict reason.");
     }
     return {

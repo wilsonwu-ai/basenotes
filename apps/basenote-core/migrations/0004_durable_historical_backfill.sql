@@ -55,12 +55,14 @@ UPDATE historical_subscription_backfill_runs
 SET
   requested_at = CASE
     WHEN strftime('%Y-%m-%dT%H:%M:%fZ', requested_at) IS NOT NULL
+      AND substr(requested_at, 12, 2) BETWEEN '00' AND '23'
       THEN strftime('%Y-%m-%dT%H:%M:%fZ', requested_at)
     ELSE requested_at
   END,
   approved_at = CASE
     WHEN approved_at IS NULL THEN NULL
     WHEN strftime('%Y-%m-%dT%H:%M:%fZ', approved_at) IS NOT NULL
+      AND substr(approved_at, 12, 2) BETWEEN '00' AND '23'
       THEN strftime('%Y-%m-%dT%H:%M:%fZ', approved_at)
     ELSE approved_at
   END;
@@ -124,8 +126,12 @@ CREATE TABLE IF NOT EXISTS historical_subscription_backfill_lifecycle_audit (
 CREATE TABLE IF NOT EXISTS historical_subscription_backfill_apply_conflicts (
   run_id TEXT NOT NULL,
   customer_id TEXT NOT NULL,
-  competing_run_id TEXT NOT NULL,
-  reason TEXT NOT NULL CHECK (reason = 'ALREADY_RECORDED_BY_ANOTHER_RUN'),
+  -- A quarantined legacy row has no trustworthy durable run identity. Preserve
+  -- the ambiguity explicitly rather than inventing one or failing the batch.
+  competing_run_id TEXT,
+  reason TEXT NOT NULL CHECK (
+    reason IN ('ALREADY_RECORDED_BY_ANOTHER_RUN', 'LEGACY_EVIDENCE_REQUIRES_REVIEW')
+  ),
   detected_at TEXT NOT NULL,
   PRIMARY KEY (run_id, customer_id),
   FOREIGN KEY (run_id) REFERENCES historical_subscription_backfill_runs (run_id)
@@ -170,9 +176,11 @@ WHEN NEW.legacy_quarantined != 0
   )
   OR length(NEW.established_at) != 24
   OR NEW.established_at NOT GLOB '????-??-??T??:??:??.???Z'
+  OR substr(NEW.established_at, 12, 2) NOT BETWEEN '00' AND '23'
   OR strftime('%Y-%m-%dT%H:%M:%fZ', NEW.established_at) IS NOT NEW.established_at
   OR length(NEW.recorded_at) != 24
   OR NEW.recorded_at NOT GLOB '????-??-??T??:??:??.???Z'
+  OR substr(NEW.recorded_at, 12, 2) NOT BETWEEN '00' AND '23'
   OR strftime('%Y-%m-%dT%H:%M:%fZ', NEW.recorded_at) IS NOT NEW.recorded_at
   OR NOT EXISTS (
     SELECT 1
@@ -205,6 +213,7 @@ WHEN NEW.run_id NOT GLOB 'hbr_*'
   OR NEW.digest GLOB '*[^0-9a-f]*'
   OR length(NEW.requested_at) != 24
   OR NEW.requested_at NOT GLOB '????-??-??T??:??:??.???Z'
+  OR substr(NEW.requested_at, 12, 2) NOT BETWEEN '00' AND '23'
   OR strftime('%Y-%m-%dT%H:%M:%fZ', NEW.requested_at) IS NOT NEW.requested_at
   OR NEW.status != 'DRY_RUN_COMPLETE'
   OR NEW.apply_state != 'PENDING_APPROVAL'
@@ -258,6 +267,7 @@ WHEN OLD.legacy_quarantined != 0
       AND NEW.approved_at IS NOT NULL
       AND length(NEW.approved_at) = 24
       AND NEW.approved_at GLOB '????-??-??T??:??:??.???Z'
+      AND substr(NEW.approved_at, 12, 2) BETWEEN '00' AND '23'
       AND strftime('%Y-%m-%dT%H:%M:%fZ', NEW.approved_at) IS NEW.approved_at
       AND NEW.approved_at >= OLD.requested_at
       AND NEW.apply_started_at IS NULL
@@ -286,6 +296,7 @@ WHEN OLD.legacy_quarantined != 0
       AND NEW.apply_started_at IS NOT NULL
       AND length(NEW.apply_started_at) = 24
       AND NEW.apply_started_at GLOB '????-??-??T??:??:??.???Z'
+      AND substr(NEW.apply_started_at, 12, 2) BETWEEN '00' AND '23'
       AND strftime('%Y-%m-%dT%H:%M:%fZ', NEW.apply_started_at) IS NEW.apply_started_at
       AND NEW.apply_started_at >= OLD.approved_at
       AND NEW.finalized_at IS NULL
@@ -315,6 +326,7 @@ WHEN OLD.legacy_quarantined != 0
       AND NEW.finalized_at IS NOT NULL
       AND length(NEW.finalized_at) = 24
       AND NEW.finalized_at GLOB '????-??-??T??:??:??.???Z'
+      AND substr(NEW.finalized_at, 12, 2) BETWEEN '00' AND '23'
       AND strftime('%Y-%m-%dT%H:%M:%fZ', NEW.finalized_at) IS NEW.finalized_at
       AND NEW.finalized_at >= OLD.apply_started_at
       AND NEW.lifecycle_audit_id IS NOT NULL
@@ -347,6 +359,7 @@ WHEN OLD.legacy_quarantined != 0
       AND NEW.finalized_at IS NOT NULL
       AND length(NEW.finalized_at) = 24
       AND NEW.finalized_at GLOB '????-??-??T??:??:??.???Z'
+      AND substr(NEW.finalized_at, 12, 2) BETWEEN '00' AND '23'
       AND strftime('%Y-%m-%dT%H:%M:%fZ', NEW.finalized_at) IS NEW.finalized_at
       AND NEW.finalized_at >= OLD.apply_started_at
       AND NEW.lifecycle_audit_id IS NOT NULL
@@ -444,6 +457,7 @@ WHEN NEW.decision_ordinal != (
   )
   OR length(NEW.first_observed_at) != 24
   OR NEW.first_observed_at NOT GLOB '????-??-??T??:??:??.???Z'
+  OR substr(NEW.first_observed_at, 12, 2) NOT BETWEEN '00' AND '23'
   OR strftime('%Y-%m-%dT%H:%M:%fZ', NEW.first_observed_at) IS NOT NEW.first_observed_at
   OR NOT EXISTS (
     SELECT 1
@@ -490,6 +504,7 @@ WHEN NEW.legacy_quarantined != 0
   OR NEW.digest GLOB '*[^0-9a-f]*'
   OR length(NEW.occurred_at) != 24
   OR NEW.occurred_at NOT GLOB '????-??-??T??:??:??.???Z'
+  OR substr(NEW.occurred_at, 12, 2) NOT BETWEEN '00' AND '23'
   OR strftime('%Y-%m-%dT%H:%M:%fZ', NEW.occurred_at) IS NOT NEW.occurred_at
   OR (
     NEW.action = 'DRY_RUN_COMPLETED'
@@ -572,6 +587,7 @@ WHEN NEW.audit_id NOT GLOB 'hblcaudit_*'
   OR NEW.digest GLOB '*[^0-9a-f]*'
   OR length(NEW.occurred_at) != 24
   OR NEW.occurred_at NOT GLOB '????-??-??T??:??:??.???Z'
+  OR substr(NEW.occurred_at, 12, 2) NOT BETWEEN '00' AND '23'
   OR strftime('%Y-%m-%dT%H:%M:%fZ', NEW.occurred_at) IS NOT NEW.occurred_at
   OR NOT EXISTS (
     SELECT 1
@@ -617,36 +633,64 @@ BEGIN
 END;
 
 -- A concurrent run which reaches the same customer never silently converges:
--- the second run records the competing run and terminalizes as NEEDS_REVIEW.
+-- the second run records the competing durable run and terminalizes as
+-- NEEDS_REVIEW. A quarantined legacy row cannot safely name a durable run, so
+-- it records a distinct, auditable review conflict with no competing ID.
 CREATE TRIGGER IF NOT EXISTS historical_subscription_backfill_apply_conflicts_validate_insert
 BEFORE INSERT ON historical_subscription_backfill_apply_conflicts
 WHEN NEW.customer_id NOT GLOB 'gid://shopify/Customer/[1-9]*'
   OR substr(NEW.customer_id, 24) GLOB '*[^0-9]*'
-  OR NEW.competing_run_id NOT GLOB 'hbr_*'
-  OR length(NEW.competing_run_id) != 36
-  OR substr(NEW.competing_run_id, 5) GLOB '*[^0-9a-f]*'
   OR length(NEW.detected_at) != 24
   OR NEW.detected_at NOT GLOB '????-??-??T??:??:??.???Z'
+  OR substr(NEW.detected_at, 12, 2) NOT BETWEEN '00' AND '23'
   OR strftime('%Y-%m-%dT%H:%M:%fZ', NEW.detected_at) IS NOT NEW.detected_at
-  OR NOT EXISTS (
-    SELECT 1
-    FROM historical_subscription_backfill_runs AS run
-    JOIN historical_subscription_backfill_plan AS plan
-      ON plan.run_id = run.run_id
-    JOIN historical_subscription_history AS history
-      ON history.customer_id = plan.customer_id
-    WHERE run.run_id = NEW.run_id
-      AND run.legacy_quarantined = 0
-      AND run.status = 'DRY_RUN_COMPLETE'
-      AND run.apply_state = 'APPLYING'
-      AND plan.disposition = 'WILL_RECORD_EVER_SUBSCRIBED'
-      AND plan.customer_id = NEW.customer_id
-      AND history.legacy_quarantined = 0
-      AND history.established_by_run_id = NEW.competing_run_id
-      AND history.established_by_run_id <> run.run_id
+  OR NOT (
+    (
+      NEW.reason = 'ALREADY_RECORDED_BY_ANOTHER_RUN'
+      AND NEW.competing_run_id IS NOT NULL
+      AND NEW.competing_run_id GLOB 'hbr_*'
+      AND length(NEW.competing_run_id) = 36
+      AND substr(NEW.competing_run_id, 5) NOT GLOB '*[^0-9a-f]*'
+      AND EXISTS (
+        SELECT 1
+        FROM historical_subscription_backfill_runs AS run
+        JOIN historical_subscription_backfill_plan AS plan
+          ON plan.run_id = run.run_id
+        JOIN historical_subscription_history AS history
+          ON history.customer_id = plan.customer_id
+        WHERE run.run_id = NEW.run_id
+          AND run.legacy_quarantined = 0
+          AND run.status = 'DRY_RUN_COMPLETE'
+          AND run.apply_state = 'APPLYING'
+          AND plan.disposition = 'WILL_RECORD_EVER_SUBSCRIBED'
+          AND plan.customer_id = NEW.customer_id
+          AND history.legacy_quarantined = 0
+          AND history.established_by_run_id = NEW.competing_run_id
+          AND history.established_by_run_id <> run.run_id
+      )
+    )
+    OR (
+      NEW.reason = 'LEGACY_EVIDENCE_REQUIRES_REVIEW'
+      AND NEW.competing_run_id IS NULL
+      AND EXISTS (
+        SELECT 1
+        FROM historical_subscription_backfill_runs AS run
+        JOIN historical_subscription_backfill_plan AS plan
+          ON plan.run_id = run.run_id
+        JOIN historical_subscription_history AS history
+          ON history.customer_id = plan.customer_id
+        WHERE run.run_id = NEW.run_id
+          AND run.legacy_quarantined = 0
+          AND run.status = 'DRY_RUN_COMPLETE'
+          AND run.apply_state = 'APPLYING'
+          AND plan.disposition = 'WILL_RECORD_EVER_SUBSCRIBED'
+          AND plan.customer_id = NEW.customer_id
+          AND history.legacy_quarantined = 1
+      )
+    )
   )
 BEGIN
-  SELECT RAISE(ABORT, 'historical backfill conflict must name a competing durable run');
+  SELECT RAISE(ABORT, 'historical backfill conflict must be bound to a durable or quarantined legacy record');
 END;
 
 CREATE TRIGGER IF NOT EXISTS historical_subscription_backfill_apply_conflicts_no_update

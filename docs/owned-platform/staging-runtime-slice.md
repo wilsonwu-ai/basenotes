@@ -85,6 +85,14 @@ be approved or reopened. It also quarantines pre-0004 history/audit rows rather
 than exposing or rewriting legacy values. A separately authorized remediation
 is required before any such legacy evidence could be considered.
 
+If a new approved plan encounters a quarantined legacy history row for the
+same customer, it cannot overwrite that immutable key or treat the legacy row
+as trusted evidence. It records the auditable
+`LEGACY_EVIDENCE_REQUIRES_REVIEW` conflict with no fabricated competing run,
+withholds every new fact from that batch, and terminalizes as `NEEDS_REVIEW`.
+It never fails the batch because a legacy row lacks a durable run ID, and it
+never silently filters the row and reports a successful apply.
+
 Applying a plan requires the same retained dry-run instance and a separately
 formatted approval reference. The repository boundary requires the positive
 `ever subscribed` fact and its audit event to be appended atomically; it has no

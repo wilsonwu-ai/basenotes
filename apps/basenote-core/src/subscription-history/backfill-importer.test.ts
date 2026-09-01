@@ -131,6 +131,10 @@ test("historical digest is stable across equivalent UTC second and millisecond i
     () => canonicalizeHistoricalTimestamp("2026-02-31T09:00:00.000Z"),
     /real UTC instant/,
   );
+  assert.throws(
+    () => canonicalizeHistoricalTimestamp("2026-09-01T24:00:00.000Z"),
+    /real UTC instant/,
+  );
 });
 
 function candidate(customerNumber: string, evidenceRef: string) {
