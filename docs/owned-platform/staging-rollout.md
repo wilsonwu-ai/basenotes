@@ -77,4 +77,6 @@ transactional-notification behavior must be preserved before any sender change.
 - The production data-retention, role-access, incident, and release owner.
 
 See [requirements-ledger.md](requirements-ledger.md) for the sanitized request
-traceability and test order.
+traceability and test order. See
+[email-delivery-decision.md](email-delivery-decision.md) for the proposed
+Cloudflare + Mailgun staging architecture and its explicit approval gates.

@@ -142,6 +142,11 @@ an app, or deploying an app version.
 - Accessing Shopify credentials, payment methods, customer data, or the existing
   Cloudflare Worker secrets
 
+The companion staging decision is documented in
+[`../../docs/owned-platform/email-delivery-decision.md`](../../docs/owned-platform/email-delivery-decision.md).
+It selects no provider account or live sender; it describes the proposed
+Cloudflare + Mailgun boundary and the gates required before a test integration.
+
 ## Future commands (do not run yet)
 
 After the gates above are approved, a maintainer can link the existing approved
