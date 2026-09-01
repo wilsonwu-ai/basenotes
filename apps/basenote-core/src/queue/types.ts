@@ -1,4 +1,5 @@
 import type { ProductVariantId, SubscriptionContractId } from "../domain/ids.js";
+import { canonicalizeUtcIsoTimestamp, compareUtcIsoInstants } from "../time/utc.js";
 
 export type BindingId = string & { readonly __brand: "BindingId" };
 export type CycleKey = string & { readonly __brand: "CycleKey" };
@@ -151,7 +152,6 @@ export type QueueResolutionResult =
 const BINDING_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$/;
 const CUSTOMER_GID = /^gid:\/\/shopify\/Customer\/[1-9]\d*$/;
 const SUBSCRIPTION_LINE_GID = /^gid:\/\/shopify\/SubscriptionLine\/[1-9]\d*$/;
-const ISO_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
 const IDEMPOTENCY_KEY = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,199}$/;
 
 export function asBindingId(value: string): BindingId {
@@ -190,23 +190,7 @@ export function asSubscriptionLineId(value: string): SubscriptionLineId {
 }
 
 export function asIsoTimestamp(value: string): IsoTimestamp {
-  if (!ISO_TIMESTAMP.test(value)) {
-    throw new Error("timestamp must be a valid UTC ISO-8601 value.");
-  }
-  const milliseconds = Date.parse(value);
-  if (Number.isNaN(milliseconds)) {
-    throw new Error("timestamp must be a valid UTC ISO-8601 value.");
-  }
-  // Date.parse normalizes invalid calendar dates (for example, February 30),
-  // so require its UTC round trip to preserve the supplied calendar fields.
-  // Whole-second inputs are deliberately accepted alongside `.000Z` inputs.
-  const normalizedInput = value.endsWith("Z") && !value.includes(".")
-    ? `${value.slice(0, -1)}.000Z`
-    : value;
-  if (new Date(milliseconds).toISOString() !== normalizedInput) {
-    throw new Error("timestamp must be a valid UTC ISO-8601 value.");
-  }
-  return value as IsoTimestamp;
+  return canonicalizeUtcIsoTimestamp(value) as IsoTimestamp;
 }
 
 /**
@@ -215,11 +199,7 @@ export function asIsoTimestamp(value: string): IsoTimestamp {
  * `...:00.000Z`, whose textual ordering differs at the same instant.
  */
 export function compareIsoTimestamps(left: string, right: string): -1 | 0 | 1 {
-  const leftMilliseconds = Date.parse(asIsoTimestamp(left));
-  const rightMilliseconds = Date.parse(asIsoTimestamp(right));
-  if (leftMilliseconds < rightMilliseconds) return -1;
-  if (leftMilliseconds > rightMilliseconds) return 1;
-  return 0;
+  return compareUtcIsoInstants(left, right);
 }
 
 export function asAdapterContractRef(value: string): string {

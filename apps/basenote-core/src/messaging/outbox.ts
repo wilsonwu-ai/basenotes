@@ -8,6 +8,7 @@ import {
   asMessagingProfileId,
   asMessageStatusReason,
   asTemplateKey,
+  compareIsoTimestamps,
   type IdempotencyKey,
   type IsoTimestamp,
   type MessageIntent,
@@ -160,7 +161,7 @@ export class InMemoryMessageOutbox {
     return [...this.intents.values()]
       .map(({ intent }) => intent)
       .sort((left, right) => {
-        const byCreatedAt = left.createdAt.localeCompare(right.createdAt);
+        const byCreatedAt = compareIsoTimestamps(left.createdAt, right.createdAt);
         return byCreatedAt === 0 ? left.id.localeCompare(right.id) : byCreatedAt;
       })
       .map(cloneIntent);
