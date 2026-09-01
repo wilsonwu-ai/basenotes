@@ -1,0 +1,25 @@
+# REVIEW-ONLY STAGING TEMPLATE -- do not rename to wrangler.toml, do not deploy
+# directly, and do not add credentials to this repository.
+#
+# This file can only target a separately approved, empty staging account scope.
+# It intentionally has no `account_id`, route, custom domain, secret, sender,
+# Queue consumer, production resource, or deployment command.
+
+name = "basenote-profile-queue-staging"
+main = "src/cloudflare-staging-worker/worker.ts"
+compatibility_date = "2026-09-01"
+workers_dev = false
+
+[vars]
+# The Worker refuses customer routes unless this exact staging value is present.
+BASENOTE_RUNTIME_STAGE = "staging"
+STAGING_ALLOWED_HOSTS = "app-staging.basenotescent.com,localhost"
+STAGING_ALLOWED_ORIGINS = "https://app-staging.basenotescent.com,http://localhost:8787"
+
+[[d1_databases]]
+# Explicitly staging-only resource name. The ID must be supplied only in an
+# approved Cloudflare dashboard/secret-managed deployment context, never here.
+binding = "BASENOTE_STAGING_D1"
+database_name = "basenote-profile-queue-staging"
+database_id = "REPLACE_WITH_SEPARATELY_CREATED_STAGING_D1_DATABASE_ID"
+migrations_dir = "migrations"

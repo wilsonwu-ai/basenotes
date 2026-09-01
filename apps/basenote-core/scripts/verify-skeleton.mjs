@@ -21,7 +21,14 @@ const requiredFiles = [
   "src/profile-queue/ui.ts",
   "src/subscription-history/contracts.ts",
   "src/subscription-history/backfill-importer.ts",
+  "src/cloudflare-staging-worker/contracts.ts",
+  "src/cloudflare-staging-worker/boundaries.ts",
+  "src/cloudflare-staging-worker/http.ts",
+  "src/cloudflare-staging-worker/request-validation.ts",
+  "src/cloudflare-staging-worker/worker.ts",
   "migrations/0001_staging_runtime.sql",
+  "wrangler.staging.example.toml",
+  "tsconfig.worker.json",
   "src/platform/subscription-gateway.ts",
 ];
 
@@ -46,6 +53,24 @@ if (configuredSecret) {
 const appTemplate = readFileSync(resolve(root, "shopify.app.example.toml"), "utf8");
 if (!appTemplate.includes("REPLACE_ONLY_AFTER_EXISTING_DEV_DASHBOARD_APP_IS_APPROVED_FOR_LINKING")) {
   throw new Error("The Shopify template must remain deliberately unlinked.");
+}
+
+const workerTemplate = readFileSync(resolve(root, "wrangler.staging.example.toml"), "utf8");
+if (!workerTemplate.includes('name = "basenote-profile-queue-staging"')) {
+  throw new Error("The Worker template must retain its explicit staging-only name.");
+}
+if (/^account_id\s*=/m.test(workerTemplate) || /^\s*route\s*=/m.test(workerTemplate)) {
+  throw new Error("The Worker template must not contain an account ID or a live route.");
+}
+if (/^[A-Z][A-Z0-9_]*SECRET[A-Z0-9_]*\s*=/m.test(workerTemplate)) {
+  throw new Error("The Worker template must not contain a secret value.");
+}
+
+const workerSource = readFileSync(resolve(root, "src/cloudflare-staging-worker/worker.ts"), "utf8");
+for (const forbiddenFragment of ["console.", "fetch(\"https://", "MAILGUN", "SHOPIFY_ADMIN"]) {
+  if (workerSource.includes(forbiddenFragment)) {
+    throw new Error(`The staging Worker must not contain ${forbiddenFragment}.`);
+  }
 }
 
 const stagingMigration = readFileSync(resolve(root, "migrations/0001_staging_runtime.sql"), "utf8");

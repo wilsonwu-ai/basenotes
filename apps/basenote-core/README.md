@@ -101,6 +101,7 @@ src/
   profile-queue/ui.ts               Static staging-only dropdown renderer
   subscription-history/             Dry-run, approval-gated historic evidence
   staging-runtime/d1.ts             Minimal D1 structural port, no runtime import
+  cloudflare-staging-worker/        Fail-closed staging Worker adapter and tests
   domain/queue.test.ts              Invariant tests
   platform/subscription-gateway.ts  Provider boundary for Base Note-owned contracts
 migrations/0001_staging_runtime.sql Reviewed, unapplied D1 schema
@@ -157,6 +158,8 @@ It selects no provider account or live sender; it describes the proposed
 Cloudflare + Mailgun boundary and the gates required before a test integration.
 The local-only staging runtime slice is documented in
 [`../../docs/owned-platform/staging-runtime-slice.md`](../../docs/owned-platform/staging-runtime-slice.md).
+The separately staged, fail-closed Cloudflare Worker adapter is documented in
+[`../../docs/owned-platform/cloudflare-staging-worker.md`](../../docs/owned-platform/cloudflare-staging-worker.md).
 
 ## Future commands (do not run yet)
 
