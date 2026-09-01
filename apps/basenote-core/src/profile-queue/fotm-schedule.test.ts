@@ -441,6 +441,18 @@ test("an aged unknown-outcome provision can terminalize to immutable needs-atten
   );
 
   lifecycleNow = "2026-08-01T15:15:00.000Z";
+  await assert.rejects(
+    boundary.markProvisionNeedsAttention({
+      context,
+      expectedScheduleRevision: 1,
+      idempotencyKey: "pfk_admin_attention_provision_001",
+      shipMonth: "2026-10",
+    }),
+    (error: unknown) => error instanceof StagingFotmProvisioningRecoveryNotReadyError,
+    "whole-second evidence needs one conservative precision quantum beyond the 900-second policy delay.",
+  );
+
+  lifecycleNow = "2026-08-01T15:15:01.000Z";
   const marked = await boundary.markProvisionNeedsAttention({
     context,
     expectedScheduleRevision: 1,

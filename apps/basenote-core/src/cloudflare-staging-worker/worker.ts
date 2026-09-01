@@ -491,7 +491,14 @@ function createAdminSchedulerBoundary(input: {
   return new StagingFotmScheduleAdminBoundary({
     createOpaqueId: input.createOpaqueId,
     cycleRepository: input.cycleRepository,
-    now: input.now,
+    // Migration 0006 deliberately stores command lifecycle evidence at whole-
+    // second precision, matching Shopify's integer JWT instants and avoiding
+    // multiple equivalent timestamp encodings in immutable audit rows. Worker
+    // clocks include milliseconds, so normalize every Admin write at the
+    // boundary rather than relying on zero-millisecond test fixtures. Floor
+    // audit instants so evidence never appears later than the actual event;
+    // the recovery gate adds one full precision quantum before terminalizing.
+    now: () => new Date(Math.floor(input.now().getTime() / 1_000) * 1_000),
     repository: input.scheduleRepositoryFactory(requireStagingD1(input.environment)),
   });
 }

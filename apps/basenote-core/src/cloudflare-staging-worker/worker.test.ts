@@ -501,6 +501,61 @@ test("authenticated scheduler API uses request verification, command idempotency
   assert.deepEqual(await replayedException.json(), { attention: "RECOVERY_EXCEPTION_RECORDED", replayed: true });
 });
 
+test("authenticated scheduler canonicalizes every durable Admin timestamp to D1 whole-second precision", async () => {
+  const cycles = await repositoryWithCycle();
+  const schedules = new InMemoryProfileQueueFotmScheduleRepository();
+  const worker = configuredAdminSchedulerWorker({
+    cycles,
+    now: () => new Date("2026-09-01T09:01:00.987Z"),
+    schedules,
+  });
+
+  const saved = await worker.fetch(
+    adminCommandRequest({
+      action: "SAVE_DRAFT",
+      cutoffAt: "2026-09-10T05:01:00.000Z",
+      expectedRevision: null,
+      merchantTimezone: "America/Chicago",
+      shipMonth,
+      variantId: "gid://shopify/ProductVariant/501",
+    }, "pfk_scheduler_precision_draft001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(saved.status, 200);
+
+  const published = await worker.fetch(
+    adminCommandRequest(
+      { action: "PUBLISH", expectedRevision: 0, shipMonth },
+      "pfk_scheduler_precision_publish001",
+    ),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(published.status, 200);
+
+  const provisioned = await worker.fetch(
+    adminCommandRequest(
+      { action: "PROVISION", expectedScheduleRevision: 1, shipMonth },
+      "pfk_scheduler_precision_provision001",
+    ),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(provisioned.status, 200);
+
+  const listed = await worker.fetch(adminSchedulerListRequest(), schedulerEnvironment(), context);
+  assert.equal(listed.status, 200);
+  const body = await listed.json() as {
+    readonly provisionCommands: readonly { readonly completedAt: string; readonly createdAt: string }[];
+    readonly schedules: readonly { readonly updatedAt: string }[];
+  };
+  assert.equal(body.schedules[0]?.updatedAt, "2026-09-01T09:01:00.000Z");
+  assert.equal(body.provisionCommands[0]?.createdAt, "2026-09-01T09:01:00.000Z");
+  assert.equal(body.provisionCommands[0]?.completedAt, "2026-09-01T09:01:00.000Z");
+  assert.equal((await cycles.findCycle(bindingId, cycleKey))?.updatedAt, "2026-09-01T09:01:00.000Z");
+});
+
 test("authenticated scheduler API exposes an explicit RETIRED-to-draft recovery path before any FOTM cycle exists", async () => {
   const cycles = await repositoryWithCycle();
   const schedules = new InMemoryProfileQueueFotmScheduleRepository();
@@ -552,7 +607,9 @@ test("authenticated scheduler API exposes an explicit RETIRED-to-draft recovery 
 test("authenticated scheduler API terminalizes only an aged pending provision claim without fan-out", async () => {
   const cycles = await repositoryWithCycle();
   const schedules = new InMemoryProfileQueueFotmScheduleRepository();
-  const firstWorker = configuredAdminSchedulerWorker({ cycles, schedules });
+  const fractionalClaimNow = new Date("2026-09-01T09:01:00.987Z");
+  const persistedClaimAt = "2026-09-01T09:01:00.000Z";
+  const firstWorker = configuredAdminSchedulerWorker({ cycles, now: () => fractionalClaimNow, schedules });
   const saved = await firstWorker.fetch(
     adminCommandRequest({
       action: "SAVE_DRAFT",
@@ -574,7 +631,9 @@ test("authenticated scheduler API terminalizes only an aged pending provision cl
   assert.equal(published.status, 200);
   await schedules.claimProvisionCommand({
     actorRef: "staff_101",
-    createdAt: defaultGateNow.toISOString(),
+    // The preceding precision regression proves a real .987Z provision claim
+    // is floored to this whole-second value before D1 persistence.
+    createdAt: persistedClaimAt,
     expectedScheduleRevision: 1,
     idempotencyKey: "pfk_scheduler_attention_provision001",
     plan: [],
@@ -589,7 +648,7 @@ test("authenticated scheduler API terminalizes only an aged pending provision cl
     [{
       attentionAt: null,
       completedAt: null,
-      createdAt: defaultGateNow.toISOString(),
+      createdAt: persistedClaimAt,
       expectedScheduleRevision: 1,
       idempotencyKey: "pfk_scheduler_attention_provision001",
       shipMonth,
@@ -598,9 +657,28 @@ test("authenticated scheduler API terminalizes only an aged pending provision cl
     "active recovery handles are returned separately from bounded command history.",
   );
 
+  const quantizedTooSoonWorker = configuredAdminSchedulerWorker({
+    cycles,
+    // Exactly 900 real seconds after the fractional claim is still rejected:
+    // persisted seconds cannot prove the full duration without one quantum.
+    now: () => new Date("2026-09-01T09:16:00.987Z"),
+    schedules,
+  });
+  const tooSoon = await quantizedTooSoonWorker.fetch(
+    adminCommandRequest({
+      action: "MARK_PROVISION_NEEDS_ATTENTION",
+      expectedScheduleRevision: 1,
+      shipMonth,
+    }, "pfk_scheduler_attention_provision001"),
+    schedulerEnvironment(),
+    context,
+  );
+  assert.equal(tooSoon.status, 409);
+  assert.deepEqual(await tooSoon.json(), { error: "provision_recovery_not_ready" });
+
   const delayedWorker = configuredAdminSchedulerWorker({
     cycles,
-    now: () => new Date("2026-09-01T09:16:00.000Z"),
+    now: () => new Date("2026-09-01T09:16:01.000Z"),
     schedules,
   });
   const marked = await delayedWorker.fetch(

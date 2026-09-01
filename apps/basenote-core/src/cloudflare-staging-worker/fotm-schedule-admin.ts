@@ -36,6 +36,8 @@ export const STAGING_ADMIN_PROVISION_BATCH_SIZE = 5;
 export const STAGING_ADMIN_PROVISION_RECOVERY_DELAY_MILLISECONDS = 15 * 60 * 1_000;
 /** Kept equal to the D1 trigger's `+900 seconds` safety gate. */
 export const STAGING_ADMIN_PROVISION_RECOVERY_DELAY_SECONDS = 900;
+/** Whole-second D1 evidence needs one conservative quantum before recovery. */
+const STAGING_ADMIN_PERSISTED_CLOCK_QUANTUM_MILLISECONDS = 1_000;
 
 export class StagingFotmScheduleConflictError extends Error {
   override name = "StagingFotmScheduleConflictError";
@@ -470,7 +472,11 @@ export class StagingFotmScheduleAdminBoundary {
     }
     const attentionAt = asIsoTimestamp(this.dependencies.now().toISOString());
     const notBefore = asIsoTimestamp(
-      new Date(new Date(attentionAt).getTime() - STAGING_ADMIN_PROVISION_RECOVERY_DELAY_MILLISECONDS).toISOString(),
+      new Date(
+        new Date(attentionAt).getTime()
+        - STAGING_ADMIN_PROVISION_RECOVERY_DELAY_MILLISECONDS
+        - STAGING_ADMIN_PERSISTED_CLOCK_QUANTUM_MILLISECONDS,
+      ).toISOString(),
     );
     if (compareIsoTimestamps(command.createdAt, notBefore) > 0) {
       throw new StagingFotmProvisioningRecoveryNotReadyError(
