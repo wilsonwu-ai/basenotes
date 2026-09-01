@@ -54,7 +54,8 @@ try {
 
 function smokeFreshMigration() {
   const database = databasePath("fresh");
-  run(database, `${baseSchema}\n${migration003}`);
+  run(database, baseSchema);
+  applyMemberChoiceMigration(database);
   const output = run(database, `
     SELECT COUNT(*)
     FROM sqlite_master
@@ -66,7 +67,8 @@ function smokeFreshMigration() {
 
 function smokeScheduleCutoffExactness() {
   const database = databasePath("schedule-cutoff");
-  run(database, `${baseSchema}\n${migration003}`);
+  run(database, baseSchema);
+  applyMemberChoiceMigration(database);
   for (const [label, invalidCutoff] of [
     ["normalized invalid calendar date", "2030-02-30T06:01:00.000Z"],
     ["subsecond cutoff", "2030-10-01T05:01:00.999Z"],
@@ -101,7 +103,7 @@ function smokeLegacyResolvedBackfill() {
       'America/Chicago', 'pqm-legacy-resolved', '2026-09-10T05:01:00.000Z'
     );
   `);
-  run(database, migration003);
+  applyMemberChoiceMigration(database);
   const output = run(database, `
     SELECT member_choice_source, member_choice_variant_id, member_choice_selected_at
     FROM profile_queue_cycles
@@ -117,23 +119,29 @@ function smokeLegacyResolvedBackfill() {
 function assertLegacyRejectionLeavesNo0003Artifacts(label, seedSql) {
   const database = databasePath(label);
   run(database, `${baseSchema}\n${seedSql}`);
-  const rejected = invoke(database, migration003);
+  const rejected = invokeMemberChoiceMigration(database);
   assert.notEqual(rejected.status, 0, `${label} legacy row must stop 0003 before persistent DDL.`);
 
   const schemaObjects = run(database, `
     SELECT name
     FROM sqlite_master
     WHERE type = 'table'
-      AND name IN ('profile_queue_fotm_schedules', 'profile_queue_selection_evidence');
+      AND name IN (
+        'profile_queue_fotm_schedules',
+        'profile_queue_selection_evidence',
+        'profile_queue_0003_legacy_preflight_guard'
+      );
   `);
-  assert.equal(schemaObjects.trim(), "", `${label} rejection must not leave 0003 tables behind.`);
+  assert.equal(schemaObjects.trim(), "", `${label} rejection must not leave 0003 tables or its preflight guard behind.`);
   const cycleColumns = run(database, "PRAGMA table_info(profile_queue_cycles);");
   assert.doesNotMatch(cycleColumns, /member_choice_/, `${label} rejection must not leave 0003 cycle columns behind.`);
 }
 
 function smokeEvidenceReconciliation() {
   const database = databasePath("evidence");
-  run(database, `${baseSchema}\n${migration003}
+  run(database, baseSchema);
+  applyMemberChoiceMigration(database);
+  run(database, `
     INSERT INTO profile_queue_cycles (
       binding_id, cycle_key, ship_month, state, revision, fotm_variant_id,
       fotm_status, fotm_cutoff_at, merchant_timezone, last_mutation_id, updated_at
@@ -217,6 +225,15 @@ function readMigration(name) {
 
 function databasePath(label) {
   return join(smokeDirectory, `${label}.sqlite`);
+}
+
+/** Mirrors Wrangler's all-or-nothing D1 migration runner for the local SQLite smoke. */
+function applyMemberChoiceMigration(database) {
+  return run(database, `BEGIN IMMEDIATE;\n${migration003}\nCOMMIT;`);
+}
+
+function invokeMemberChoiceMigration(database) {
+  return invoke(database, `BEGIN IMMEDIATE;\n${migration003}\nCOMMIT;`);
 }
 
 function run(database, sql) {
