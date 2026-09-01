@@ -88,9 +88,10 @@ src/
   domain/ids.ts                     Strong Shopify GID validation
   domain/queue.ts                   Contract-scoped queue + FOTM resolution
   messaging/contracts.ts            PII-minimizing messaging data contracts
-  messaging/consent.ts              Consent/suppression audit ledger
-  messaging/events.ts               Idempotent customer-event audit ledger
-  messaging/outbox.ts               Explicit-eligibility, no-send outbox
+messaging/consent.ts              Consent/suppression audit ledger
+messaging/events.ts               Idempotent customer-event audit ledger
+messaging/outbox.ts               Explicit-eligibility, no-send outbox
+messaging/mailgun-staging.ts      Disabled-by-default, allowlisted staging transport
   pricing/pricing-policy.ts         Pure $15/$20 and exact-$18 policy logic
   queue/in-memory-queue-service.ts  Revisioned queue/outbox state machine
   domain/queue.test.ts              Invariant tests
@@ -146,6 +147,9 @@ The companion staging decision is documented in
 [`../../docs/owned-platform/email-delivery-decision.md`](../../docs/owned-platform/email-delivery-decision.md).
 It selects no provider account or live sender; it describes the proposed
 Cloudflare + Mailgun boundary and the gates required before a test integration.
+The credential-free Mailgun staging transport reference and account-verification
+blocker are in
+[`../../docs/owned-platform/mailgun-staging-transport.md`](../../docs/owned-platform/mailgun-staging-transport.md).
 
 ## Future commands (do not run yet)
 

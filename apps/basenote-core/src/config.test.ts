@@ -21,4 +21,8 @@ test("local mode refuses credential-like environment variables", () => {
     () => readLocalConfig({ SHOPIFY_API_SECRET: "not-a-real-secret" }),
     /Refusing local startup/,
   );
+  assert.throws(
+    () => readLocalConfig({ BASENOTE_MAILGUN_API_KEY: "not-a-real-secret" }),
+    /Refusing local startup/,
+  );
 });
