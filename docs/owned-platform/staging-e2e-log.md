@@ -36,7 +36,7 @@ The following behavior was observed end to end:
 The test records expire on 2026-09-08. They are not production customer or
 subscription data and are not a migration rehearsal.
 
-### Known follow-up before review or production
+### Known follow-up at the time of this run
 
 - Jeff clarified after this run that the included fragrance must be
   member-selectable for each future shipment. If it is left unselected at the
@@ -51,3 +51,32 @@ subscription data and are not a migration rehearsal.
 - The production store's plan and required Shopify protected subscription/API
   approvals remain explicit release gates.
 
+## 2026-09-01 — authenticated scheduler and member-choice acceptance
+
+The later staging increment applied migrations `0003` through `0006` to the
+same isolated D1 database and deployed commit `703d7bf` only to the staging
+Worker. A fresh install passed the structural verifier, all migration smokes,
+both TypeScript checks, and 149 of 149 tests.
+
+The controlled development-store acceptance run verified:
+
+1. Two retained ambiguous provision claims were terminalized to
+   `NEEDS_ATTENTION` without provisioning a delivery cycle.
+2. One fresh October provision completed with one configured cycle and zero
+   conflicts.
+3. The published FOTM appeared as the included preselected fragrance.
+4. A member override could be saved and cleared without changing the FOTM
+   schedule, and a fragrance used in a prior month remained eligible.
+5. Four ordered `$18` add-ons could be added; the fifth slot was disabled.
+6. Removing all four add-ons returned the cycle to the published FOTM with no
+   member override and zero add-ons.
+7. The resulting command, mutation, selection, and append-only audit evidence
+   reconciled to the final D1 state.
+
+This acceptance run proves only the isolated scheduler and Profile Queue
+boundary. It did not create or bill a Shopify subscription contract, alter an
+Appstle contract or production customer, import subscriber history, send an
+email, or deploy a production route. Automatic cutoff execution and all
+provider egress remain disabled. Native subscription-contract integration,
+approved history migration, messaging-provider setup, and an explicit
+production change window remain release gates.
