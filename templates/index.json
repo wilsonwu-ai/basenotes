@@ -12,17 +12,91 @@
     "hero": {
       "type": "hero",
       "settings": {
-        "image": "shopify://shop_images/case-forest-green.png",
+        "image": "shopify://shop_images/davinci__image1__image2__image3__image4__image5__image6__i.png",
         "image_url": "",
         "video": "",
         "eyebrow": "",
-        "heading": "<b>One Flat Price. Luxury Fragrances</b>",
-        "description": "<b>$20/month. No Surcharges</b>",
+        "heading": "One Flat Price. Luxury Fragrances",
+        "description": "<b>$20 Flat. No surcharges.</b>\n<br>Subscription | One-Time Purchase",
         "button_label": "Find My Scent",
         "button_link": "/pages/find-your-scent",
-        "secondary_button_label": "View the Scent Vault",
+        "secondary_button_label": "View the Collection",
         "secondary_button_link": "shopify://collections/fragrances",
         "show_scroll_indicator": true
+      }
+    },
+    "growth-goal": {
+      "type": "growth-goal",
+      "settings": {
+        "endpoint": "https://basenote-media.wilson-af8.workers.dev/member-count",
+        "goal": 60,
+        "fallback_active": 17,
+        "deadline_date": "2026-11-30",
+        "deadline_label": "Nov 30",
+        "show_bar": true,
+        "hide_after_deadline": true,
+        "eyebrow": "Founding Members · Class of 2026",
+        "headline": "{active} of {goal} founding members. You'd be #{next}.",
+        "body": "Every month, one 5 ml atomizer from a house worth wearing — Creed, Tom Ford, Parfums de Marly, Xerjoff, Bond No. 9. One flat $20/month, no surcharges on any house — and founding members keep that price for as long as they stay.",
+        "honesty": "Reach {goal} together and the rotation grows — new houses, new fragrances, added for everyone. And every founding member gets a thank-you gift the day we get there.",
+        "cta_label": "Become a founding member",
+        "cta_link": "",
+        "referral_heading": "Every friend moves the club forward",
+        "referral_blurb": "Send a friend your link. When they start a subscription, your next month is on us — and we're all one step closer to the bigger rotation and the founding gift.",
+        "share_text": "I'm a founding member at Base Note — $20/month for a 5 ml atomizer of Creed, Tom Ford, Parfums de Marly and more. They're building to 60 founding members and I want you in:",
+        "referral_code": ""
+      }
+    },
+    "how-it-works": {
+      "type": "how-it-works",
+      "blocks": {
+        "step-1": {
+          "type": "step",
+          "settings": {
+            "icon": "bag",
+            "title": "Subscribe & Order",
+            "text": "Choose your fragrance — your 5ml vial ships right away."
+          }
+        },
+        "step-2": {
+          "type": "step",
+          "settings": {
+            "icon": "profile",
+            "title": "Log Into Your Account",
+            "text": "Log into your profile and visit your queue to pick your next fragrance."
+          }
+        },
+        "step-3": {
+          "type": "step",
+          "settings": {
+            "icon": "rotate",
+            "title": "Build Your Rotation",
+            "text": "Hand-pick up to 5 months of fragrances yourself, or let our experts curate one for you."
+          }
+        },
+        "step-4": {
+          "type": "step",
+          "settings": {
+            "icon": "spark",
+            "title": "Keep the Compliments Coming",
+            "text": "Wear something unforgettable every month."
+          }
+        }
+      },
+      "block_order": [
+        "step-1",
+        "step-2",
+        "step-3",
+        "step-4"
+      ],
+      "settings": {
+        "eyebrow": "How the Subscription Works",
+        "heading": "Effortless, from day one.",
+        "subheading": "No guesswork. No surcharges. Just a fragrance rotation that's entirely yours.",
+        "button_label": "View Fragrances",
+        "button_link": "shopify://collections/fragrances",
+        "bg_color": "#f7f4ee",
+        "accent_color": "#2f4b3c"
       }
     },
     "17768546331d8577f5": {
@@ -39,8 +113,8 @@
             "input_placeholder": "e.g., I like fresh citrus scents...",
             "send_button_text": "Send",
             "quick_suggestions": "I like fresh citrus scents|Recommend something woody|What's good for summer?|Show me luxury fragrances",
-            "bot_avatar_icon": "\ud83c\udf3f",
-            "user_avatar_icon": "\ud83d\udc64",
+            "bot_avatar_icon": "🌿",
+            "user_avatar_icon": "👤",
             "show_disclaimer": true,
             "disclaimer_text": "AI-powered recommendations. Results may vary.",
             "desktop_width_percent": 100,
@@ -91,7 +165,7 @@
         "benefit-1": {
           "type": "benefit",
           "settings": {
-            "icon": "\u2708\ufe0f",
+            "icon": "✈️",
             "title": "Travel Ready",
             "description": "TSA-compliant. Fits anywhere"
           }
@@ -99,7 +173,7 @@
         "benefit-2": {
           "type": "benefit",
           "settings": {
-            "icon": "\ud83d\udcb0",
+            "icon": "💰",
             "title": "Cost Effective",
             "description": "Luxury without the full price"
           }
@@ -107,7 +181,7 @@
         "benefit-3": {
           "type": "benefit",
           "settings": {
-            "icon": "\ud83d\udd04",
+            "icon": "🔄",
             "title": "No Waste",
             "description": "Designed to avoid clutter"
           }
@@ -115,7 +189,7 @@
         "benefit-4": {
           "type": "benefit",
           "settings": {
-            "icon": "\ud83d\udce6",
+            "icon": "📦",
             "title": "Free Shipping",
             "description": "Delivered to your door monthly"
           }
@@ -133,11 +207,11 @@
         "description": "The same elite fragrance found in $500 bottles -- crafted into a sleek, precision atomizer",
         "full_bottle_image": "shopify://shop_images/Screenshot_2026-05-14_at_4.47.07_PM.png",
         "full_bottle_title": "The Full Bottle",
-        "full_bottle_subtitle": "100ml \u00b7 Retail Price",
+        "full_bottle_subtitle": "100ml · Retail Price",
         "full_bottle_price": "$500",
         "atomizer_image": "shopify://shop_images/Screenshot_2026-05-14_at_4.31.57_PM.png",
         "atomizer_title": "Your Monthly Vial",
-        "atomizer_subtitle": "5ml \u00b7 ~45 Sprays \u00b7 30 Days",
+        "atomizer_subtitle": "5ml · ~60 sprays · 30 Days",
         "atomizer_price": "$20/month",
         "atomizer_badge": "What You Get",
         "button_label": "Start Your Subscription",
@@ -151,7 +225,7 @@
           "type": "ai_gen_block_9faa96e",
           "settings": {
             "title": "No surcharges. Ever.",
-            "subtitle": "Most fragrance subscriptions charge $5\u201315 extra on luxury brands like Creed and Parfums de Marly. Base Note doesn't. Every fragrance is $20 flat.",
+            "subtitle": "Most fragrance subscriptions charge $5–15 extra on luxury brands like Creed and Parfums de Marly. Base Note doesn't. Every fragrance is $20 flat.",
             "title_size": 32,
             "subtitle_size": 16,
             "column_1_header": "Fragrance",
@@ -215,7 +289,7 @@
             "benefit_1_text": "Our fragrance experts handpick premium scents from top designers and niche houses.",
             "benefit_1_tag": "",
             "benefit_2_title": "Your Skin. Your Chemistry.",
-            "benefit_2_text": "A fragrance that smells extraordinary on someone else may read completely different on you. Wearing it on your skin \u2014 through real days and real situations \u2014 is the only true test.",
+            "benefit_2_text": "A fragrance that smells extraordinary on someone else may read completely different on you. Wearing it on your skin — through real days and real situations — is the only true test.",
             "benefit_2_tag": "",
             "benefit_3_title": "Build a Rotation That Works",
             "benefit_3_text": "Seasons shift. Occasions change. A first date calls for something different than a board meeting. A rotation means you always have the right scent for the moment.",
@@ -239,15 +313,15 @@
             "show_occasions": true,
             "occasions_heading": "A scent for every moment",
             "occasions_subtext": "Build a versatile fragrance wardrobe",
-            "occasion_1_icon": "\u2600\ufe0f",
+            "occasion_1_icon": "☀️",
             "occasion_1_label": "Daily Wear",
-            "occasion_2_icon": "\ud83d\udcbc",
+            "occasion_2_icon": "💼",
             "occasion_2_label": "Office",
-            "occasion_3_icon": "\ud83c\udf19",
+            "occasion_3_icon": "🌙",
             "occasion_3_label": "Evening",
-            "occasion_4_icon": "\ud83c\udf89",
+            "occasion_4_icon": "🎉",
             "occasion_4_label": "Special Events",
-            "occasion_5_icon": "\ud83c\udfd6\ufe0f",
+            "occasion_5_icon": "🏖️",
             "occasion_5_label": "Seasonal",
             "occasion_6_icon": "",
             "occasion_6_label": "",
@@ -262,7 +336,7 @@
             "price_col_1_row_2": "$8",
             "price_col_2_row_2": "Free",
             "price_row_3_label": "Expert curation",
-            "price_col_1_row_3": "\u2014",
+            "price_col_1_row_3": "—",
             "price_col_2_row_3": "Included",
             "price_total_label": "Total",
             "price_col_1_total": "$93",
@@ -289,52 +363,6 @@
       ],
       "name": "Subscription Benefits",
       "settings": {}
-    },
-    "how-it-works": {
-      "type": "how-it-works",
-      "blocks": {
-        "step-1": {
-          "type": "step",
-          "settings": {
-            "title": "Find Your Profile",
-            "description": "Find your signature scent in 2 minutes"
-          }
-        },
-        "step-2": {
-          "type": "step",
-          "settings": {
-            "title": "Select Your Fragrance",
-            "description": "Choose from our exclusive selection"
-          }
-        },
-        "step-3": {
-          "type": "step",
-          "settings": {
-            "title": "Receive Your Atomizer",
-            "description": "45 sprays of luxury delivered"
-          }
-        },
-        "step-4": {
-          "type": "step",
-          "settings": {
-            "title": "Explore & Refine",
-            "description": "Curate your elite fragrance collection - one vial at a time."
-          }
-        }
-      },
-      "block_order": [
-        "step-1",
-        "step-2",
-        "step-3",
-        "step-4"
-      ],
-      "settings": {
-        "eyebrow": "",
-        "heading": "How It Works",
-        "description": "Luxury, simplified: one elite fragrance delivered monthly",
-        "button_label": "Get Started",
-        "button_link": "/collections/fragrances"
-      }
     },
     "featured-collection": {
       "type": "featured-collection",
@@ -384,7 +412,7 @@
             "name": "Annual",
             "price": "$192",
             "period": "year",
-            "billing_note": "Billed annually \u2014 2 months free",
+            "billing_note": "Billed annually — 2 months free",
             "features": "5ml premium fragrance|Free shipping|Access to all scents|Swap anytime|2 months free|Special Offers|Free Travel Gift",
             "featured": false,
             "badge": "",
@@ -402,7 +430,7 @@
       "settings": {
         "eyebrow": "For Men of Standards",
         "heading": "Choose Your Plan",
-        "description": "One 5ml atomizer per month. 45 sprays of curated luxury.",
+        "description": "One 5ml atomizer per month. 60 sprays of curated luxury.",
         "note": "Cancel anytime. Free shipping on all orders."
       }
     },
@@ -412,7 +440,7 @@
         "testimonial_jQQpGh": {
           "type": "testimonial",
           "settings": {
-            "quote": "I tried Xerjoff Alexandria ii. The scent is absolutely stunning \u2014 I wear it on nights out and always get compliments. My 5ml bottle lasted  through the end of the month, which is perfect. Excited for my next fragrance.",
+            "quote": "I tried Xerjoff Alexandria ii. The scent is absolutely stunning — I wear it on nights out and always get compliments. My 5ml bottle lasted  through the end of the month, which is perfect. Excited for my next fragrance.",
             "author": "Sophie Y",
             "location": "Los Angeles, CA"
           }
@@ -428,7 +456,7 @@
         "testimonial-1": {
           "type": "testimonial",
           "settings": {
-            "quote": "Absolutely loving Parfums de Marly Perseus. It\u2019s an absolute no-brainer for Spring! On top of the juice itself, I\u2019m a huge fan of the presentation\u2014the atomizer is compact, and feels incredibly robust",
+            "quote": "Absolutely loving Parfums de Marly Perseus. It’s an absolute no-brainer for Spring! On top of the juice itself, I’m a huge fan of the presentation—the atomizer is compact, and feels incredibly robust",
             "author": "Freddy M",
             "location": "Chicago, IL"
           }
@@ -511,32 +539,16 @@
         "button_label": "Join",
         "privacy_note": "We respect your privacy. Unsubscribe at any time."
       }
-    },
-    "growth-goal": {
-      "type": "growth-goal",
-      "settings": {
-        "goal": 60,
-        "fallback_active": 17,
-        "show_bar": true,
-        "eyebrow": "Founding Members \u00b7 Class of 2026",
-        "headline": "{active} of {goal} founding members. You'd be #{next}.",
-        "body": "Every month, one 5 ml atomizer from a house worth wearing \u2014 Creed, Tom Ford, Parfums de Marly, Xerjoff, Bond No. 9. One flat $20/month, no surcharges on any house \u2014 and founding members keep that price for as long as they stay.",
-        "honesty": "Reach {goal} together and the rotation grows \u2014 new houses, new fragrances, added for everyone. And every founding member gets a thank-you gift the day we get there.",
-        "cta_label": "Become a founding member",
-        "referral_heading": "Every friend moves the club forward",
-        "referral_blurb": "Send a friend your link. When they start a subscription, your next month is on us \u2014 and we're all one step closer to the bigger rotation and the founding gift.",
-        "share_text": "I'm a founding member at Base Note \u2014 $20/month for a 5 ml atomizer of Creed, Tom Ford, Parfums de Marly and more. They're building to 60 founding members and I want you in:"
-      }
     }
   },
   "order": [
     "hero",
     "growth-goal",
+    "how-it-works",
     "17768546331d8577f5",
     "delivery-explainer",
     "1775503735ef6a96df",
     "1775502539958abd4e",
-    "how-it-works",
     "featured-collection",
     "subscription-plans",
     "testimonials",
