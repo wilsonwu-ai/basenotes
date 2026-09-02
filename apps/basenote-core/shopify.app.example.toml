@@ -1,0 +1,36 @@
+# This is a reference template only. It is not a Shopify CLI configuration.
+# Do NOT rename it to shopify.app.toml or add a real client ID until every gate
+# in README.md has been approved.
+
+name = "Base Note Core"
+client_id = "REPLACE_ONLY_AFTER_EXISTING_DEV_DASHBOARD_APP_IS_APPROVED_FOR_LINKING"
+application_url = "https://example.invalid"
+embedded = true
+handle = "basenote-core"
+
+# Issue #35's staging-only embedded FOTM scheduler is documented in
+# docs/owned-platform/cloudflare-staging-worker.md. Keep this app URL invalid
+# until a designated operator approves the exact disposable shop, Worker URL,
+# client ID/secret storage, and opaque staging staff allowlist. Do not copy a
+# production URL, secret, or an App Proxy scheduler target into this template.
+
+[build]
+automatically_update_urls_on_dev = true
+include_config_on_deploy = true
+
+[access_scopes]
+# Start with the least privileges needed for an approved first release.
+# Do not add protected Subscription API scopes until Shopify approves the app.
+scopes = "read_customers,read_orders,read_products"
+
+[auth]
+redirect_urls = ["https://example.invalid/auth/callback"]
+
+# A future App Proxy configuration belongs here only after its HMAC verification,
+# authorization tests, and production URL are ready. Do not point it at the
+# current queue worker by default.
+#
+# [app_proxy]
+# url = "https://basenote-profile-queue-staging.wilson-af8.workers.dev/api/shopify/app-proxy"
+# subpath = "basenote-staging"
+# prefix = "apps"

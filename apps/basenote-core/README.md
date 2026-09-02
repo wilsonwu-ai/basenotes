@@ -1,0 +1,223 @@
+# Base Note Core
+
+**Status: unconnected staging-capable source. It is deliberately not linked to
+a Shopify app, deployed, or bound to a Cloudflare resource.**
+
+This package is the starting point for Base Note's subscription and queue
+platform. It contains no credentials, app registration, Shopify configuration,
+installation, deployment target, or database connection. Running it locally
+starts a loopback-only health server; it cannot call Shopify or mutate a
+subscription contract.
+
+## Why this exists
+
+The current storefront queue is coupled to Appstle. Base Note Core is intended
+to make a queue explicitly contract-scoped, so a customer with two subscriptions
+never has one contract selected implicitly. It also distinguishes a visibly
+pre-selected Fragrance of the Month (FOTM) default from a saved member override
+and deterministically falls back to FOTM when no override exists at the exact
+12:01 AM America/Chicago cutoff.
+
+The boundary is intentional:
+
+```text
+customer account / app proxy
+            |
+            v
+Base Note Core API + durable queue store
+            |
+            +-- hybrid bridge (approved Appstle server-to-server API)
+            |
+            +-- later: Base Note-owned Shopify subscription contracts
+```
+
+Shopify subscription-contract access is app-owner scoped. A Base Note app can
+only read and write contracts that Base Note created; it cannot use
+`write_own_subscription_contracts` to edit Appstle-owned contracts. The hybrid
+bridge therefore needs an Appstle-supported server-to-server integration that
+can update one exact contract line and read it back. A Flow or metafield signal
+can record intent, but is not proof that an Appstle shipment was changed. Do
+not route an Appstle contract through the future Base Note Shopify contract
+gateway.
+
+Relevant Shopify references:
+
+- https://shopify.dev/docs/apps/build/purchase-options/subscriptions/contracts/build-a-subscription-contract
+- https://shopify.dev/docs/api/usage/access-scopes
+
+## Local use
+
+Requirements: Node 20.10+ and npm.
+
+```sh
+cd apps/basenote-core
+cp .env.example .env
+npm install
+npm run check
+npm run dev
+curl http://127.0.0.1:3000/healthz
+```
+
+`npm run dev` binds only to `127.0.0.1`. In local mode, startup refuses to run
+if Shopify credentials or an Admin access token are present in the environment.
+Every Shopify-facing route returns a local-only response and no customer data is
+stored.
+
+## Design invariants already encoded here
+
+- Every queue slot has a required Shopify `SubscriptionContract` GID.
+- Every queued scent has an exact Shopify `ProductVariant` GID; there is no
+  title, handle, or URL fallback for new writes.
+- A queue operation may only act on the contract ID supplied by the authenticated
+  context; it must never select a customer's “first active” contract.
+- The included selection resolves to a saved member override or an explicit
+  published FOTM fallback; four `$18` add-ons remain separate.
+- A provider may mutate only a contract whose `appId` matches Base Note's future
+  app ID.
+
+The current source includes pure local-domain logic plus a reviewed,
+credential-free staging Worker adapter. Its customer route is still fail-closed
+unless a separately provisioned staging D1 binding, runtime-only App Proxy
+secret, exact disposable-shop domain, runtime test-variant allowlist, and a
+manually seeded disposable test binding are present. Its rendered App Proxy
+forms also require a short-lived, one-use D1 nonce bound to the exact signed
+customer/cycle/revision. It includes a testable App
+Proxy HMAC verifier, pure pricing policy, an in-memory queue state machine, a
+D1-shaped-but-unbound profile-queue repository/migration, future-month FOTM
+schedules with a staging-only authenticated embedded-Admin scheduler, bounded
+schedule-to-cycle provisioning, bounded staging-only cutoff lock logic, a
+server-rendered staging-only queue page, a durable historic-member
+manifest/approval lifecycle, and a Messaging Core for consent, event audit,
+and no-send delivery intents. It has no configured persistence, OAuth token
+exchange/session storage, webhook route, Appstle integration, Shopify Admin API
+call, recipient resolver, email sender, or billing attempt.
+
+The member-choice addition has no unauthenticated public staff write route. Its staging-only
+embedded Admin scheduler accepts a fresh Shopify Admin ID token only after
+server verification of HS256 signature, exact app audience, exact disposable
+shop issuer/destination, token freshness, and an opaque staging staff allowlist.
+Shopify App Bridge may reuse that still-valid token during its short lifetime,
+so the Worker verifies it on every request without treating its `jti` as a
+one-command nonce. Unsafe effects instead require durable command idempotency
+keys and schedule revisions. A legacy append-only token-digest ledger from the
+initial staging build remains inert and is never read or written. A theme FOTM
+setting may provide display context, but cannot configure a durable future-month
+schedule, authorize a member action, lock a cutoff, or prove a provider delivery
+change. The scheduler can draft/publish/retire future months and provision at
+most five exact open/unpublished staging cycles per request with compare-and-swap,
+append-only selection evidence, and no Shopify/Appstle/email call. The same
+provision idempotency key replays its durable original result and never starts
+another five-cycle fan-out. A retired
+month may be explicitly recovered to a new draft only when no cycle has
+received the old FOTM; otherwise staff can record immutable, non-PII
+no-mutation recovery evidence for manual review. An unknown-outcome pending
+provision may instead be terminalized as `NEEDS_ATTENTION` after 15 minutes;
+that one-way audit action never fans out or changes a schedule/cycle. Active
+pending recovery handles are listed per ship month, separately from the bounded
+recent-command history. It makes
+the published FOTM
+the visibly pre-selected included default; it never writes a member override.
+This is the core of [issue #35](https://github.com/wilsonwu-ai/basenotes/issues/35),
+and is connected only to the isolated development store and staging Worker.
+Production remains gated pending a disposable end-to-end proof and explicit
+cutover approval.
+
+## Repository layout
+
+```text
+src/
+  auth/app-proxy.ts                  Signed Shopify App Proxy verification
+  config.ts                         Local-only startup gate
+  index.ts                          Loopback health server
+  domain/ids.ts                     Strong Shopify GID validation
+  domain/queue.ts                   Contract-scoped queue + FOTM resolution
+  messaging/contracts.ts            PII-minimizing messaging data contracts
+  messaging/consent.ts              Consent/suppression audit ledger
+  messaging/events.ts               Idempotent customer-event audit ledger
+  messaging/outbox.ts               Explicit-eligibility, no-send outbox
+  pricing/pricing-policy.ts         Pure $15/$20 and exact-$18 policy logic
+  queue/in-memory-queue-service.ts  Revisioned queue/outbox state machine
+  profile-queue/contracts.ts        Included-member choice + maximum-four add-on contract
+  profile-queue/service.ts          Pure queue mutation/cutoff state machine
+  profile-queue/d1-repository.ts    Injected D1 persistence shape; no binding
+  profile-queue/fotm-schedule.ts    Per-month Central-time FOTM schedule model
+  profile-queue/d1-fotm-schedule-repository.ts D1 schedule/audit persistence shape
+  profile-queue/ui.ts               Static staging-only dropdown renderer
+  subscription-history/             Dry-run and durable approval-gated historic evidence
+  staging-runtime/d1.ts             Minimal D1 structural port, no runtime import
+  cloudflare-staging-worker/        Fail-closed staging Worker, HMAC/D1 gates, HTML form, tests
+  domain/queue.test.ts              Invariant tests
+  platform/subscription-gateway.ts  Provider boundary for Base Note-owned contracts
+migrations/0001_staging_runtime.sql Reviewed, unapplied D1 queue schema
+migrations/0002_staging_test_bindings.sql Reviewed, unapplied disposable-binding schema
+migrations/0003_member_fragrance_choice.sql Reviewed, unapplied member choice/schedule schema
+migrations/0004_durable_historical_backfill.sql
+                                   Immutable dry-run manifest and staging-only
+                                   historical backfill lifecycle
+migrations/0005_staging_admin_scheduler.sql Historical append-only token-use ledger; retained
+                                   inert after Shopify cached-token compatibility fix
+migrations/0006_staging_admin_scheduler_lifecycle.sql Reviewed, unapplied RETIRED lifecycle,
+                                   provision command/replay, and recovery-evidence schema
+scripts/verify-skeleton.mjs         Offline structural/safety verification
+shopify.app.example.toml            Deliberately unlinked future config template
+```
+
+## Required gates before any Shopify connection
+
+All of these must be complete before copying `shopify.app.example.toml` to
+`shopify.app.toml`, adding credentials, running `shopify app dev`, installing
+an app, or deploying an app version.
+
+1. Use the existing **Basenote Subscription Writer** Dev Dashboard app only after
+   confirming its owner, client ID, approved scopes, and intended production
+   relationship. Do not expose its client secret in this repository or chat.
+2. Obtain the relevant Shopify approval for protected Subscription APIs before
+   requesting or configuring those scopes.
+3. Decide the transition boundary in writing: keep Appstle contracts in Appstle
+   with a supported bridge, or create Base Note-owned contracts only for new
+   subscribers. Existing Appstle contracts cannot be silently taken over.
+4. Provision a production backend, encrypted session/token storage, durable
+   database, secret manager, audit log, backup/retention policy, and incident
+   owner. Do not store customer or payment data in browser local storage.
+5. Implement authenticated OAuth/session handling with Shopify's maintained
+   library, signed webhook verification, App Proxy verification, least-privilege
+   scopes, idempotency keys, rate-limit handling, and CSRF protection.
+6. Build pricing as an audited selling-plan/contract policy plus Shopify
+   Functions where appropriate. Verify `$15` first order, `$20` renewals, and
+   the exact `$18` add-on with disposable test customers. Theme text alone is
+   not enforcement.
+7. The current store uses legacy customer accounts, so add an approved signed
+   App Proxy/theme surface for the first release. Use a Customer Account
+   extension only after a separately approved account upgrade; do not expose
+   internal contract IDs or actions without authorization.
+8. Test one-contract, two-contract, paused, cancelled, retry, FOTM fallback,
+   failed webhook, duplicate request, and rollback cases in a development store.
+9. Obtain an explicit production-release approval with a migration/rollback plan
+   and customer communications. Keep Appstle installed until the migration is
+   validated.
+
+## Explicitly out of scope for this foundation
+
+- Registering, installing, deploying, or configuring a Shopify app
+- Creating Shopify Functions or Customer Account extensions
+- Modifying Appstle, Shopify subscriptions, pricing, discounts, customers, or
+  the published theme
+- Accessing Shopify credentials, payment methods, customer data, or the existing
+  Cloudflare Worker secrets
+
+The companion staging decision is documented in
+[`../../docs/owned-platform/email-delivery-decision.md`](../../docs/owned-platform/email-delivery-decision.md).
+It selects no provider account or live sender; it describes the proposed
+Cloudflare + Mailgun boundary and the gates required before a test integration.
+The local-only staging runtime slice is documented in
+[`../../docs/owned-platform/staging-runtime-slice.md`](../../docs/owned-platform/staging-runtime-slice.md).
+The separately staged, fail-closed Cloudflare Worker adapter is documented in
+[`../../docs/owned-platform/cloudflare-staging-worker.md`](../../docs/owned-platform/cloudflare-staging-worker.md).
+
+## Future commands (do not run yet)
+
+After the gates above are approved, a maintainer can link the existing approved
+Dev Dashboard app using its client ID, fill the template with real URLs, add a
+secure environment, and then use the Shopify CLI. This repository intentionally
+does **not** provide copy-paste deployment or installation commands so that local
+scaffolding cannot accidentally become a production change.
