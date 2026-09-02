@@ -1,0 +1,90 @@
+# REVIEW-ONLY STAGING TEMPLATE -- do not rename to wrangler.toml, do not deploy
+# directly, and do not add credentials to this repository.
+#
+# This file can only target a separately approved, empty staging account scope.
+# It intentionally has no `account_id`, route, custom domain, secret, sender,
+# Queue consumer, production resource, or deployment command.
+
+name = "basenote-profile-queue-staging"
+main = "src/cloudflare-staging-worker/worker.ts"
+compatibility_date = "2026-09-01"
+# The temporary staging endpoint is intentionally isolated at:
+# basenote-profile-queue-staging.wilson-af8.workers.dev
+# Do not deploy this template until the separate approval gates in the runbook
+# are complete.
+workers_dev = true
+
+# Retain staging diagnostics without persisting Shopify App Proxy signatures,
+# customer identifiers, or other query-string values. Sampling is deliberately
+# explicit so a failed bounded E2E write can be reconciled from its trace.
+[observability]
+enabled = true
+head_sampling_rate = 1
+redact_query_string = true
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+persist = true
+
+[observability.traces]
+enabled = true
+head_sampling_rate = 1
+persist = true
+
+[vars]
+# The Worker refuses customer routes unless this exact staging value is present.
+BASENOTE_RUNTIME_STAGE = "staging"
+STAGING_ALLOWED_HOSTS = "basenote-profile-queue-staging.wilson-af8.workers.dev,localhost"
+# Shopify can forward an Origin from the disposable storefront on a native form
+# POST. The embedded Admin scheduler fetches its protected same-origin API, so
+# the exact temporary Worker origin is also required. No wildcard is allowed.
+STAGING_ALLOWED_ORIGINS = "https://base-note-subscription-staging.myshopify.com,https://basenote-profile-queue-staging.wilson-af8.workers.dev,http://localhost:8787"
+# Exact disposable development-store domain only; never substitute a production
+# shop. This identifier is not a credential.
+STAGING_SHOP_DOMAIN = "base-note-subscription-staging.myshopify.com"
+# Exact disposable test variant GIDs only, comma-separated. No catalog/API
+# lookup occurs in the Worker; this placeholder deliberately enables nothing.
+STAGING_TEST_VARIANT_IDS = "REPLACE_WITH_ALLOWED_DISPOSABLE_TEST_VARIANT_GIDS"
+# The cron below remains inert unless this exact value is intentionally changed
+# to `true` in protected staging after migration 0003 and a disposable E2E
+# gate. It locks D1 queue records only; it never calls Shopify or Appstle.
+STAGING_CUTOFF_AUTOMATION_ENABLED = "false"
+
+# Public client ID for the staging-only embedded Admin scheduler shell. It is
+# not a secret, but this placeholder deliberately enables no authentication.
+SHOPIFY_ADMIN_CLIENT_ID = "REPLACE_WITH_APPROVED_STAGING_SHOPIFY_APP_CLIENT_ID"
+# Exact opaque Shopify Admin ID-token `sub` values for approved staging staff,
+# comma-separated. Do not use names or email addresses.
+STAGING_ADMIN_ALLOWED_STAFF_IDS = "REPLACE_WITH_APPROVED_STAGING_STAFF_SUBJECT_IDS"
+# Set SHOPIFY_ADMIN_CLIENT_SECRET only through the protected staging secret
+# manager / Wrangler secret mechanism. Never add it to [vars], .env.example,
+# git, a chat, or a browser bundle.
+
+# Configure Shopify App Proxy's target URL separately as:
+# https://basenote-profile-queue-staging.wilson-af8.workers.dev/api/shopify/app-proxy
+# Shopify forwards child `/profile-queue` requests to the Worker target child.
+# Configure storefront prefix `apps` and subpath `basenote-staging`, producing
+# the signed customer-facing path `/apps/basenote-staging/profile-queue`.
+# Do not add a route, production URL, or secret to this file.
+#
+# Separately, after issue #35's protected app-configuration approval, configure
+# the approved app as embedded for the exact disposable shop with App URL:
+# https://basenote-profile-queue-staging.wilson-af8.workers.dev/admin/fotm-scheduler
+# The scheduler has no App Proxy target and no public schedule writer. Do not
+# point this at the production shop or a production Worker route.
+
+[[d1_databases]]
+# Explicitly staging-only resource name. The ID must be supplied only in an
+# approved Cloudflare dashboard/secret-managed deployment context, never here.
+binding = "BASENOTE_STAGING_D1"
+database_name = "basenote-profile-queue-staging"
+database_id = "REPLACE_WITH_SEPARATELY_CREATED_STAGING_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+[triggers]
+# Every five minutes, an opt-in staging-only scan processes no more than ten
+# cycles (one scan, at most ten add-on reads/CAS writes). No production route
+# or trigger is defined.
+crons = ["*/5 * * * *"]
