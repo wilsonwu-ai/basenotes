@@ -140,20 +140,8 @@
           <span class="product-info__vendor">{{ product.vendor | default: 'Base Note Atelier' }}</span>
           <h1 class="product-info__title">{{ product.title }}</h1>
 
-          {% comment %} Rating {% endcomment %}
-          {%- if product.metafields.reviews.rating != blank -%}
-            <div class="product-info__rating">
-              <div class="product-rating-stars">
-                {%- assign rating = product.metafields.reviews.rating.value | round: 1 -%}
-                {%- for i in (1..5) -%}
-                  <svg viewBox="0 0 20 20" class="{% if i <= rating %}is-filled{% endif %}">
-                    <polygon points="10 1 12.5 7.5 20 7.5 14 12 16 19 10 15 4 19 6 12 0 7.5 7.5 7.5"/>
-                  </svg>
-                {%- endfor -%}
-              </div>
-              <span class="product-info__rating-text">{{ rating }} ({{ product.metafields.reviews.count.value | default: 0 }} reviews)</span>
-            </div>
-          {%- endif -%}
+          {% comment %} Judge.me rating and review count, with legacy metafield fallback {% endcomment %}
+          {% render 'product-review-badge', product: product, surface: 'product' %}
         </header>
 
         {% comment %} SUBSCRIPTION VIEW (5ml atomizer variant) {% endcomment %}

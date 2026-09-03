@@ -587,6 +587,65 @@ img {
   min-height: calc(100vh - var(--header-height));
 }
 
+/*
+ * Judge.me injects its own preview-badge styles. The merchant configuration
+ * currently hides that badge on product, collection, and index templates, so
+ * this scoped exception keeps the explicitly rendered product/card badge
+ * visible without changing the rest of the review app's presentation.
+ */
+.product-review-badge {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.product-review-badge .jdgm-preview-badge,
+.product-review-badge .jdgm-prev-badge:not([data-average-rating='0.00']) {
+  display: inline-flex !important;
+  align-items: center;
+  max-width: 100%;
+}
+
+.product-review-badge .jdgm-prev-badge__text {
+  visibility: visible !important;
+}
+
+.product-review-badge__fallback {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-light);
+}
+
+.product-review-badge__stars {
+  display: inline-flex;
+  gap: 0.1rem;
+}
+
+.product-review-badge__stars svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+}
+
+.product-review-badge__stars svg.is-filled {
+  fill: currentColor;
+}
+
+.product-review-badge__text {
+  font-size: 0.875rem;
+}
+
+.product-review-badge--card {
+  margin-top: 0.5rem;
+}
+
+.product-review-badge--product {
+  margin-top: 0.75rem;
+}
+
 /* Loading State */
 .loading {
   position: relative;
