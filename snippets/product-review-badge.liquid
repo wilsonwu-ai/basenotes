@@ -1,0 +1,38 @@
+{%- liquid
+  assign surface = surface | default: 'product'
+  assign judge_me_badge = product.metafields.judgeme.badge
+  assign legacy_rating = product.metafields.reviews.rating.value
+  assign legacy_count = product.metafields.reviews.count.value | default: 0
+  assign context_class = 'product-info__rating'
+  if surface == 'card'
+    assign context_class = 'product-card__rating'
+  endif
+-%}
+
+{%- if judge_me_badge != blank -%}
+  <div
+    class="product-review-badge product-review-badge--{{ surface }} {{ context_class }}"
+    data-product-review-badge
+    data-product-id="{{ product.id }}"
+  >
+    {{ judge_me_badge }}
+  </div>
+{%- elsif legacy_rating != blank -%}
+  {%- assign rating = legacy_rating | round: 1 -%}
+  <div class="product-review-badge product-review-badge--{{ surface }} {{ context_class }}">
+    <div
+      class="product-review-badge__fallback"
+      role="img"
+      aria-label="{{ rating }} out of 5 stars, {{ legacy_count }} reviews"
+    >
+      <span class="product-review-badge__stars" aria-hidden="true">
+        {%- for i in (1..5) -%}
+          <svg viewBox="0 0 20 20" class="{% if i <= rating %}is-filled{% endif %}">
+            <polygon points="10 1 12.5 7.5 20 7.5 14 12 16 19 10 15 4 19 6 12 0 7.5 7.5 7.5"/>
+          </svg>
+        {%- endfor -%}
+      </span>
+      <span class="product-review-badge__text">{{ rating }} ({{ legacy_count }} reviews)</span>
+    </div>
+  </div>
+{%- endif -%}
