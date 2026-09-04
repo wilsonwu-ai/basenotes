@@ -52,6 +52,26 @@
   if product.variants.size == 1 and product.selling_plan_groups.size > 0
     assign is_subscription_variant = true
   endif
+
+  # The add-on is a separate, non-discoverable Shopify product so Appstle can
+  # bill it as a second line item on the same monthly selling plan.
+  assign extra_vial_product = all_products['extra-5ml-vial-add-on']
+  assign extra_vial_variant = nil
+  assign extra_vial_plan = nil
+  assign extra_vial_first_order_price = nil
+  if extra_vial_product != blank and product.handle != 'extra-5ml-vial-add-on'
+    assign extra_vial_variant = extra_vial_product.selected_or_first_available_variant
+    # Appstle's Monthly Plan is currently 25% off on the first order. Keep the
+    # storefront copy aligned even when Liquid omits allocation.price.
+    assign extra_vial_first_order_price = extra_vial_variant.price | times: 75 | divided_by: 100
+    if extra_vial_product.selling_plan_groups.size > 0
+      assign extra_vial_plan = extra_vial_product.selling_plan_groups.first.selling_plans.first
+      assign extra_vial_allocation = extra_vial_variant.selling_plan_allocations | where: 'selling_plan_id', extra_vial_plan.id | first
+      if extra_vial_allocation and extra_vial_allocation.price > 0
+        assign extra_vial_first_order_price = extra_vial_allocation.price
+      endif
+    endif
+  endif
 -%}
 
 <section class="product-page">
@@ -195,6 +215,56 @@
               <span>Earn rewards on every order</span>
             </li>
           </ul>
+
+          {%- if section.settings.show_founding_proof -%}
+            {%- assign founding_goal = section.settings.founding_members_goal | default: 60 -%}
+            {%- assign founding_current = section.settings.founding_members_current | default: 21 -%}
+            {%- assign founding_percent = founding_current | times: 100.0 | divided_by: founding_goal -%}
+            <div class="product-founding-proof" role="region" aria-label="Founding member progress">
+              <div class="product-founding-proof__heading">
+                <span>FOUNDING MEMBERS · CLASS OF 2026</span>
+                <strong>{{ founding_current }} of {{ founding_goal }}</strong>
+              </div>
+              <p>Founding members keep the $20/month price for as long as they stay.</p>
+              <div class="product-founding-proof__track" role="progressbar" aria-label="Founding members" aria-valuenow="{{ founding_current }}" aria-valuemin="0" aria-valuemax="{{ founding_goal }}">
+                <span style="width: {{ founding_percent }}%;"></span>
+              </div>
+              <a href="/pages/find-your-scent">Join the founding class →</a>
+            </div>
+          {%- endif -%}
+
+          {%- if extra_vial_variant != blank and extra_vial_plan != blank and extra_vial_variant.available -%}
+            <div
+              class="subscription-add-on"
+              data-extra-vial-offer
+              data-extra-vial-variant="{{ extra_vial_variant.id }}"
+              data-extra-vial-selling-plan="{{ extra_vial_plan.id }}"
+              data-extra-vial-first-price="{{ extra_vial_first_order_price | default: extra_vial_variant.price }}"
+              data-extra-vial-recurring-price="{{ extra_vial_variant.price }}"
+            >
+              <label class="subscription-add-on__choice" for="extraVialToggle">
+                <input type="checkbox" id="extraVialToggle" name="extra_vial" value="1" data-extra-vial-toggle>
+                <span class="subscription-add-on__copy">
+                  <strong>Add a second 5ml vial to every shipment</strong>
+                  <span>First order {{ extra_vial_first_order_price | default: extra_vial_variant.price | money }} · then {{ extra_vial_variant.price | money }}/month</span>
+                </span>
+              </label>
+              <button type="button" class="subscription-add-on__compare" data-compare-price data-compare-product="Extra 5ml Vial Add-On" data-compare-price-value="{{ extra_vial_variant.price | money }}" data-compare-retail-value="{{ extra_vial_variant.compare_at_price | money }}">Why this price?</button>
+            </div>
+          {%- endif -%}
+
+          {%- if is_subscription_variant and product.handle != 'extra-5ml-vial-add-on' -%}
+            <button
+              type="button"
+              class="product-compare-link"
+              data-compare-price
+              data-compare-product="{{ product.title | escape }}"
+              data-compare-price-value="{{ settings.subscription_price | default: '$20' }} / month"
+              data-compare-retail-value="{% if product.compare_at_price > product.price %}{{ product.compare_at_price | money }}{% else %}Retail varies by fragrance and retailer{% endif %}"
+            >
+              Compare this scent’s price →
+            </button>
+          {%- endif -%}
         </div>
 
         {% comment %} ONE-TIME PURCHASE VIEW (Full bottle variant) — HIDDEN: subscription-only model {% endcomment %}
@@ -979,6 +1049,201 @@
     flex-shrink: 0;
   }
 
+  .product-founding-proof {
+    margin: 0 0 var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: rgba(201, 169, 98, 0.08);
+    border: 1px solid rgba(201, 169, 98, 0.35);
+    border-radius: var(--radius-sm);
+  }
+
+  .product-founding-proof__heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--color-primary);
+  }
+
+  .product-founding-proof__heading strong {
+    white-space: nowrap;
+    color: var(--color-secondary);
+  }
+
+  .product-founding-proof p {
+    margin: var(--spacing-xs) 0 var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    line-height: 1.45;
+    color: var(--color-text-light);
+  }
+
+  .product-founding-proof__track {
+    height: 6px;
+    overflow: hidden;
+    background: rgba(45, 70, 65, 0.12);
+    border-radius: var(--radius-full);
+  }
+
+  .product-founding-proof__track span {
+    display: block;
+    height: 100%;
+    min-width: 4px;
+    background: var(--color-secondary);
+    border-radius: inherit;
+  }
+
+  .product-founding-proof a {
+    display: inline-block;
+    margin-top: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .subscription-add-on {
+    margin: 0 0 var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+  }
+
+  .subscription-add-on__choice {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+  }
+
+  .subscription-add-on__choice input {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--color-secondary);
+    flex-shrink: 0;
+  }
+
+  .subscription-add-on__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+  }
+
+  .subscription-add-on__copy span {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+
+  .subscription-add-on__compare,
+  .product-compare-link {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-primary);
+    font: inherit;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .subscription-add-on__compare {
+    margin: var(--spacing-sm) 0 0 26px;
+  }
+
+  .subscription-add-on__compare:hover,
+  .product-compare-link:hover {
+    color: var(--color-secondary);
+  }
+
+  .product-compare-link {
+    display: block;
+    margin: calc(var(--spacing-md) * -1) 0 var(--spacing-lg);
+  }
+
+  .base-note-compare-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+    background: rgba(20, 27, 25, 0.58);
+  }
+
+  .base-note-compare-modal__dialog {
+    position: relative;
+    width: min(100%, 440px);
+    padding: var(--spacing-2xl);
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 18px 55px rgba(0, 0, 0, 0.25);
+  }
+
+  .base-note-compare-modal__close {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--color-background-secondary);
+    color: var(--color-text-light);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .base-note-compare-modal__eyebrow {
+    margin: 0 0 var(--spacing-xs);
+    color: var(--color-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  .base-note-compare-modal h2 {
+    margin: 0 0 var(--spacing-xs);
+    color: var(--color-primary);
+    font-size: var(--font-size-2xl);
+  }
+
+  .base-note-compare-modal__product {
+    margin: 0 0 var(--spacing-lg);
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+  }
+
+  .base-note-compare-modal__body {
+    margin: 0;
+    color: var(--color-text);
+    font-size: var(--font-size-base);
+    line-height: 1.65;
+  }
+
+  .base-note-compare-modal__done {
+    width: 100%;
+    margin-top: var(--spacing-xl);
+    padding: var(--spacing-md);
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: var(--color-primary);
+    color: white;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
   .subscription-box__form {
     margin: 0;
   }
@@ -1621,6 +1886,50 @@
     const productForm = document.querySelector('[data-product-form]');
     const sellingPlanSelector = document.getElementById('sellingPlanSelector');
     const appstleWidget = document.getElementById('appstle_subscription_widget');
+    const extraVialOffer = document.querySelector('[data-extra-vial-offer]');
+
+    // Jeff's compare-price request: one accessible, shared modal for PDP and card actions.
+    if (!window.BaseNoteComparePrice) {
+      window.BaseNoteComparePrice = true;
+      document.addEventListener('click', function(event) {
+        var button = event.target.closest('[data-compare-price]');
+        if (!button) return;
+        event.preventDefault();
+        event.stopPropagation();
+
+        var existingModal = document.getElementById('baseNoteComparePriceModal');
+        if (existingModal) existingModal.remove();
+
+        var modal = document.createElement('div');
+        modal.id = 'baseNoteComparePriceModal';
+        modal.className = 'base-note-compare-modal';
+        modal.innerHTML = '<div class="base-note-compare-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="baseNoteCompareTitle">' +
+          '<button type="button" class="base-note-compare-modal__close" data-compare-close aria-label="Close price comparison">×</button>' +
+          '<p class="base-note-compare-modal__eyebrow">PRICE TRANSPARENCY</p>' +
+          '<h2 id="baseNoteCompareTitle">Compare the price</h2>' +
+          '<p class="base-note-compare-modal__product"></p>' +
+          '<p class="base-note-compare-modal__body">The standard retail reference for this scent is <strong class="base-note-compare-modal__retail"></strong>. Base Note sends a wearable 5ml vial each month for <strong class="base-note-compare-modal__price"></strong>.</p>' +
+          '<button type="button" class="base-note-compare-modal__done" data-compare-close>Got it</button>' +
+          '</div>';
+        document.body.appendChild(modal);
+        modal.querySelector('.base-note-compare-modal__product').textContent = button.dataset.compareProduct || 'This fragrance';
+        modal.querySelector('.base-note-compare-modal__retail').textContent = button.dataset.compareRetailValue || 'the standard retail price';
+        modal.querySelector('.base-note-compare-modal__price').textContent = button.dataset.comparePriceValue || 'our subscriber price';
+
+        var closeModal = function() { modal.remove(); };
+        modal.querySelectorAll('[data-compare-close]').forEach(function(closeButton) {
+          closeButton.addEventListener('click', closeModal);
+        });
+        modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', function escapeCompare(event) {
+          if (event.key === 'Escape') {
+            closeModal();
+            document.removeEventListener('keydown', escapeCompare);
+          }
+        });
+        modal.querySelector('.base-note-compare-modal__done').focus();
+      });
+    }
 
     // ─── Helpers ───
     function isSubscriptionVariant(variant) {
@@ -1631,6 +1940,48 @@
 
     function formatMoney(cents) {
       return '$' + (cents / 100).toFixed(2).replace(/\.00$/, '');
+    }
+
+    function addExtraVialToCartIfSelected() {
+      if (!extraVialOffer) return Promise.resolve();
+      var toggle = extraVialOffer.querySelector('[data-extra-vial-toggle]');
+      if (!toggle || !toggle.checked) return Promise.resolve();
+
+      var variantId = parseInt(extraVialOffer.dataset.extraVialVariant, 10);
+      var sellingPlan = parseInt(extraVialOffer.dataset.extraVialSellingPlan, 10);
+      if (!variantId || !sellingPlan) return Promise.reject(new Error('extra_vial_not_configured'));
+
+      return fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: variantId, quantity: 1, selling_plan: sellingPlan })
+      })
+      .then(function(response) {
+        if (!response.ok) {
+          return response.json().then(function(err) {
+            throw new Error(err.description || err.message || 'Could not add the extra vial');
+          });
+        }
+        return response.json();
+      })
+      .then(function(data) {
+        return fetch('/cart.js').then(function(response) { return response.json(); }).then(function(cart) {
+          var applied = cart.items.some(function(item) {
+            return item.variant_id === variantId && item.selling_plan_allocation;
+          });
+          if (!applied) {
+            if (data.key) {
+              fetch('/cart/change.js', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: data.key, quantity: 0 })
+              }).catch(function() {});
+            }
+            throw new Error('extra_vial_selling_plan_not_applied');
+          }
+          return data;
+        });
+      });
     }
 
     function findVariantFromOptions() {
@@ -2102,6 +2453,9 @@
             });
         })
         .then(function(data) {
+          return addExtraVialToCartIfSelected().then(function() { return data; });
+        })
+        .then(function(data) {
           addToCartBtn.classList.remove('is-loading');
           addToCartBtn.classList.add('is-added');
           if (addToCartText) addToCartText.textContent = 'Added to Queue!';
@@ -2175,6 +2529,9 @@ function doAddToCart(variantId, sellingPlan, originalText) {
       });
   })
   .then(function() {
+    return addExtraVialToCartIfSelected();
+  })
+  .then(function() {
     if (addToCartBtn) {
       addToCartBtn.classList.remove('is-loading');
       addToCartBtn.classList.add('is-added');
@@ -2227,6 +2584,24 @@ function doAddToCart(variantId, sellingPlan, originalText) {
       "id": "show_related",
       "label": "Show related products",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_founding_proof",
+      "label": "Show founding member progress on product pages",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "founding_members_current",
+      "label": "Current founding members",
+      "default": 21
+    },
+    {
+      "type": "number",
+      "id": "founding_members_goal",
+      "label": "Founding member goal",
+      "default": 60
     }
   ],
   "blocks": [
