@@ -40,3 +40,17 @@ The pop-up/market-festival messages are operational context: customers should be
 - Deterministic tests cover the $51 bundle example, price-mismatch fail-closed behavior, add-on exclusion from base swap detection, idempotence, and verified rollback.
 - Baseline and branch Theme Check results must be recorded as a differential. Pre-existing theme offenses are not evidence that this change passes; this change must add zero new offenses.
 - Final browser and Shopify draft-theme QA remain required before merge or publication. Do not place a checkout/order during QA.
+
+
+## Pricing ladder (owner-stated, 2026-08-31 and 2026-09-01)
+
+| Tier | Base | Each add-on vial |
+|---|---|---|
+| One-time purchase | $20 | $18 |
+| First-time subscriber, first order only | $15 | $18 |
+| Standard or returning subscriber | $20 per month | $18 |
+
+- The add-on is $18 flat on every tier and every order. The earlier "$18 initially and recurring / $51" sentence was a derived paraphrase; $51 is only the first-time-subscriber-with-two-add-ons example, and a one-time buyer with one add-on pays $38.
+- The $15 rate is for completely new subscribers only. A member who cancelled and returns pays $20.
+- Maximum 4 add-ons per shipment; whether that means four paid add-ons plus the included fragrance or four vials total is still unresolved by the owner and is not enforced.
+- Remediation 2026-09-06: the founding-member panel now defaults off, renders no hard-coded count and no pricing promise, and fills from the live member-count endpoint; the thank-you and account surfaces exclude variant 48547911696602 when picking the subscription line.

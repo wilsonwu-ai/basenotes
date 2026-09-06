@@ -242,19 +242,50 @@
 
           {%- if section.settings.show_founding_proof -%}
             {%- assign founding_goal = section.settings.founding_members_goal | default: 60 | at_least: 1 -%}
-            {%- assign founding_current = section.settings.founding_members_current | default: 21 | at_least: 0 | at_most: founding_goal -%}
+            {%- assign founding_current = section.settings.founding_members_current | default: 0 | at_least: 0 | at_most: founding_goal -%}
             {%- assign founding_percent = founding_current | times: 100.0 | divided_by: founding_goal | at_least: 0 | at_most: 100 -%}
-            <div class="product-founding-proof" role="region" aria-label="Founding member progress">
+            {%- comment -%}
+              Fails closed. The panel stays hidden until a live member count arrives from the
+              basenote-media Worker (the same endpoint the homepage growth-goal band uses) or the
+              merchant enters a non-zero fallback. No hard-coded count and no pricing promise render.
+            {%- endcomment -%}
+            <div class="product-founding-proof" role="region" aria-label="Founding member progress"
+                 data-founding-proof data-endpoint="{{ section.settings.founding_endpoint | escape }}" data-goal="{{ founding_goal }}"
+                 {% if founding_current == 0 %}hidden{% endif %}>
               <div class="product-founding-proof__heading">
                 <span>FOUNDING MEMBERS · CLASS OF 2026</span>
-                <strong>{{ founding_current }} of {{ founding_goal }}</strong>
+                <strong><span data-founding-count>{{ founding_current }}</span> of {{ founding_goal }}</strong>
               </div>
-              <p>Founding members keep the $20/month price for as long as they stay.</p>
-              <div class="product-founding-proof__track" role="progressbar" aria-label="Founding members" aria-valuenow="{{ founding_current }}" aria-valuemin="0" aria-valuemax="{{ founding_goal }}">
-                <span style="width: {{ founding_percent }}%;"></span>
+              {%- if section.settings.founding_note != blank -%}
+                <p>{{ section.settings.founding_note | escape }}</p>
+              {%- endif -%}
+              <div class="product-founding-proof__track" role="progressbar" aria-label="Founding members" aria-valuenow="{{ founding_current }}" aria-valuemin="0" aria-valuemax="{{ founding_goal }}" data-founding-bar>
+                <span data-founding-fill style="width: {{ founding_percent }}%;"></span>
               </div>
               <a href="/pages/find-your-scent">Join the founding class →</a>
             </div>
+            <script>
+            (function () {
+              var el = document.querySelector('[data-founding-proof]');
+              if (!el || !window.fetch) return;
+              var goal = parseInt(el.getAttribute('data-goal'), 10) || 60;
+              function paint(a) {
+                if (typeof a !== 'number' || isNaN(a) || a < 1) return;
+                var c = el.querySelector('[data-founding-count]'); if (c) c.textContent = a;
+                var bar = el.querySelector('[data-founding-bar]'); if (bar) bar.setAttribute('aria-valuenow', a);
+                var f = el.querySelector('[data-founding-fill]'); if (f) f.style.width = Math.min(100, Math.round(a / goal * 100)) + '%';
+                el.hidden = false;
+              }
+              try { var cached = sessionStorage.getItem('bn_member_count'); if (cached) { var j = JSON.parse(cached); if (Date.now() - j.t < 600000) paint(j.active); } } catch (e) {}
+              var url = el.getAttribute('data-endpoint');
+              if (!url) return;
+              fetch(url, { mode: 'cors', credentials: 'omit' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+                if (!j || typeof j.active !== 'number') return;
+                try { sessionStorage.setItem('bn_member_count', JSON.stringify({ active: j.active, t: Date.now() })); } catch (e) {}
+                paint(j.active);
+              }).catch(function () {});
+            })();
+            </script>
           {%- endif -%}
 
           {%- if extra_vial_offer_valid -%}
@@ -2527,13 +2558,26 @@ function doAddToCart(variantId, sellingPlan, originalText) {
       "type": "checkbox",
       "id": "show_founding_proof",
       "label": "Show founding member progress on product pages",
-      "default": true
+      "default": false,
+      "info": "Off until the live member count is wired and the owner approves the copy."
+    },
+    {
+      "type": "text",
+      "id": "founding_endpoint",
+      "label": "Live member count endpoint",
+      "default": "https://basenote-media.wilson-af8.workers.dev/member-count",
+      "info": "Same endpoint as the homepage growth band. The panel stays hidden until it answers."
     },
     {
       "type": "number",
       "id": "founding_members_current",
-      "label": "Current founding members",
-      "default": 21
+      "label": "Fallback founding members (0 keeps the panel hidden until the live count loads)",
+      "default": 0
+    },
+    {
+      "type": "text",
+      "id": "founding_note",
+      "label": "Founding member note (optional, owner-approved wording only)"
     },
     {
       "type": "number",
