@@ -1,6 +1,6 @@
 # PRD: Latest Theme Recovery and Release Guardrail
 
-**Status:** Recovery candidate ready for QA
+**Status:** Published as theme 164045029594; independent postpublication smoke checks in progress
 **Severity:** SEV-1 storefront regression, with P0 commerce containment
 **Updated:** 2026-09-06
 **Owner:** Base Note engineering
@@ -62,20 +62,20 @@ Out of scope: PR #47; changing add-on prices or selling plans; Appstle contract 
 - [x] `git diff --check` passes locally.
 - [x] `sh scripts/check-theme-recovery-static.sh` proves the add-on metadata/UI guards and responsive invariants are present.
 - [x] `shopify theme check` matches the pulled canonical theme at 33 errors and 79 warnings across 38 files, with zero offense-signature differences and no new offense in a changed file.
-- [ ] Candidate remains unpublished during QA; PR #47 behavior and price-comparison UI are absent.
-- [ ] Desktop and mobile homepage show the latest hero, founding-member band, redesigned How It Works section, and up to eight featured fragrance cards.
-- [ ] A normal subscription PDP displays `Ships within 1-3 business days` and retains working variant, selling-plan, add-to-cart, and queue behavior.
+- [x] Candidate remains unpublished during QA; PR #47 behavior and price-comparison UI are absent.
+- [x] Desktop and mobile homepage show the latest hero, founding-member band, redesigned How It Works section, and eight featured fragrance cards.
+- [x] A normal subscription PDP displays `Ships within 1-3 business days`, retains its product form and selling plan, and adds the correct subscription line to an anonymous cart. Authenticated queue operations were not mutated in this release QA.
 - [ ] A product with Judge.me reviews shows its canonical rating/count on PDP and collection card; a product without reviews leaves the badge hidden.
 - [ ] `page.bestsellers` renders a selected collection, falls back to the `bestsellers` handle, and presents an accessible empty state if neither is populated.
-- [ ] `/products/extra-5ml-vial-add-on` emits `noindex, follow`, neutral meta/OG copy, no OG price or Product offer JSON-LD, no product form, no Appstle container, no sticky purchase CTA, and only the disabled subscriber-only notice.
-- [ ] A representative ordinary PDP still emits Product offer JSON-LD and a working product form.
-- [ ] A subscription cart has no legacy one-time add-on picker, and search for the internal helper exposes no quick-add control.
+- [x] `/products/extra-5ml-vial-add-on` emits `noindex, follow`, neutral meta/OG copy, no OG price or Product offer JSON-LD, no product form, no Appstle container, no sticky purchase CTA, and only the disabled subscriber-only notice.
+- [x] A representative ordinary PDP still emits Product offer JSON-LD and a working product form.
+- [x] A subscription cart has no legacy one-time add-on picker, and search for the internal helper exposes no quick-add control.
 - [x] Four executed base-line selection tests prove helper line ordering, helper-only carts, and ordinary one-time lines cannot replace the base subscription.
-- [ ] `/products/extra-5ml-vial-add-on.js` or the equivalent internal product JSON endpoint remains readable by the integration that needs it.
+- [x] `/products/extra-5ml-vial-add-on.js` remains readable; the backend product still reports available and requires_selling_plan=false, so the Admin/Appstle gate remains.
 - [x] With candidate CSS injected into a disposable browser session at true 320px and 390px viewports, document/body scroll widths equal their viewport widths and no right-overflowing element remains.
 - [x] The same injected-CSS check at 1440px has no right-overflowing element and retains the desktop header, CTA, and consent layouts.
-- [ ] Candidate-preview smoke tests pass for home, `/collections/fragrances`, `/pages/bestsellers`, representative ordinary PDP, guarded add-on PDP, cart, search, and customer account.
-- [ ] The vanilla guide preserves its authored SEO title and full description in the candidate HTML, and its canonical points to the public article URL.
+- [x] Candidate-preview smoke tests pass for home, `/collections/fragrances`, `/pages/bestsellers`, representative ordinary PDP, guarded add-on PDP, cart, both search queries, customer-account login, Journal, and vanilla article.
+- [x] The vanilla guide preserves its authored SEO title and full description in the candidate HTML, and its canonical points to the public article URL.
 - [ ] After publish, the same smoke suite passes on the public domain and Shopify reports the intended candidate ID as live.
 
 ## Release and rollback
@@ -110,6 +110,24 @@ Out of scope: PR #47; changing add-on prices or selling plans; Appstle contract 
 - That cart exposed an inherited one-time upsell contradicting the required recurring add-on behavior. The cart render call is now removed pending the correct dedicated plan. A read-only reachability audit also found helper entry points through search cards, account fragrance selectors and quiz catalog data; each source is now excluded.
 - Existing legacy helper lines are explicitly ignored when choosing a swappable base subscription. Four node tests execute the actual selection block with base/helper ordering, helper-only, and one-time fixtures.
 - Vanilla article metadata matches the authored SEO fields. Independent browser QA confirms its mobile comparison table has a functional horizontal scroll container (`overflow-x: auto`) while document width remains 390px.
+
+## Final preview verification
+
+- Candidate theme: `164045029594`, preview https://basenotescent.com/?preview_theme_id=164045029594. Theme code commit: `14fb05ab2213ed19f9e2760afcba1baa741e2474`. Final evidence is from the updated candidate, superseding the initial upload/harness findings above.
+- **26/26 route/viewport checks return HTTP 200 and identify the candidate theme**, with no page JavaScript errors, Liquid errors, detected broken images, or document-width overflow. Eleven routes are covered at 1440px and 390px; homepage, collection, ordinary PDP, and guarded helper PDP are also covered at 320px.
+- Mobile cookie preferences open without overflow; navigation opens visibly and closes fully. Homepage dimensions remain equal to viewport width with root overflow masking disabled at all three widths.
+- All 11 featured image elements across eight cards decode at each tested width. Secondary images retain absolute positioning; no card image remains blank in the final screenshots.
+- Final anonymous UI subscription addition yields one line at 1500 cents, comparison 2000 cents and subsequent allocation 2000 cents. The rendered cart has **zero legacy add-on controls**. Search for `extra` has zero helper quick-add controls.
+- `node --test scripts/test-theme-addon-containment.cjs`: **4/4 pass**. Static guard script and `git diff --check`: pass. Final Theme Check retains exactly the canonical 112 offense signatures (33 existing errors, 79 warnings).
+- Final prepublication merchant check at 2026-09-06 14:59Z (`/private/tmp/basenote-prepublish-merchant-BWNH31`) confirms `config/settings_data.json` and `sections/header-group.json` match the candidate byte-for-byte; homepage JSON differs only by the intended four-to-eight featured-card value.
+- Raw final browser report and screenshots: `/private/tmp/basenote-recovery-final-qa-20260906/`. Independent article browser evidence: `/private/tmp/basenote-article-browser-qa-20260906/`. Final lint evidence: `/private/tmp/basenote-recovery-lint-contained.json`, compared against `/private/tmp/basenote-live-recheck-lint.json`.
+- QA limits: anonymous account/login was checked; authenticated contract operations were not changed or exercised. The retailer-bestsellers template is available, and the existing public page passes smoke QA; no Admin page-template assignment or collection setup was changed. A positive-review fragrance fixture remains to be identified; the checked ordinary PDP with no rating correctly renders no review badge.
+
+## Publication record
+
+- The release operator published the recorded candidate `164045029594` after independent preview and merchant-drift verification. Immediate Shopify readback confirms it is live; primary rollback `158692901082` and retained secondary rollback `163971432666` remain unpublished and intact. No theme was deleted.
+- The public vanilla article now exposes its exact authored title and description. Public crawler and sitemap checks were repeated after publication by the content/release operator.
+- Independent postpublication route, desktop/mobile, navigation, and anonymous subscription-cart evidence is being recorded at `/private/tmp/basenote-release-verified-20260906/report.json`.
 
 ## Success signals
 
