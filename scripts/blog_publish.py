@@ -32,8 +32,9 @@ DEFAULT_AUTHOR = "Jeff Theefs"
 SEO_TITLE_MAX = 60
 SEO_DESCRIPTION_MAX = 160
 
-SEO_METAFIELDS = 'metafields(first: 2, keys: ["global.title_tag", "global.description_tag"]) { nodes { id namespace key type value } }'
-Q_FIND = f"query FindArticle($q: String!) {{ articles(first: 5, query: $q) {{ nodes {{ id handle title isPublished publishedAt updatedAt {SEO_METAFIELDS} image {{ url altText }} blog {{ id handle }} }} }} }}"
+SEO_METAFIELDS = ('titleSeo: metafield(namespace: "global", key: "title_tag") { id namespace key type value } '
+                  'descriptionSeo: metafield(namespace: "global", key: "description_tag") { id namespace key type value }')
+Q_FIND = f"query FindArticle($q: String!, $after: String) {{ articles(first: 100, after: $after, query: $q) {{ pageInfo {{ hasNextPage endCursor }} nodes {{ id handle title isPublished publishedAt updatedAt {SEO_METAFIELDS} image {{ url altText }} blog {{ id handle }} }} }} }}"
 Q_LIST = f"query ListArticles($after: String) {{ articles(first: 50, after: $after, sortKey: PUBLISHED_AT, reverse: true) {{ pageInfo {{ hasNextPage endCursor }} nodes {{ id handle title isPublished publishedAt updatedAt tags {SEO_METAFIELDS} image {{ url }} }} }} }}"
 M_CREATE = f"mutation CreateArticle($article: ArticleCreateInput!) {{ articleCreate(article: $article) {{ article {{ id handle title isPublished publishedAt {SEO_METAFIELDS} image {{ url altText }} }} userErrors {{ field message code }} }} }}"
 M_UPDATE = f"mutation UpdateArticle($id: ID!, $article: ArticleUpdateInput!) {{ articleUpdate(id: $id, article: $article) {{ article {{ id handle title isPublished publishedAt {SEO_METAFIELDS} image {{ url altText }} }} userErrors {{ field message code }} }} }}"
@@ -66,10 +67,21 @@ def save_ledger(l):
     LEDGER.write_text(json.dumps(l, indent=2, sort_keys=True) + "\n")
 
 def find_by_handle(handle):
-    nodes = gql(Q_FIND, {"q": f"handle:{handle}"})["articles"]["nodes"]
-    for n in nodes:
-        if n["handle"] == handle and n["blog"]["handle"] == BLOG_HANDLE: return n
-    return None
+    """Resolve an exact handle in the target blog, rejecting ambiguous search results."""
+    matches, after, seen_cursors = [], None, set()
+    while True:
+        result = gql(Q_FIND, {"q": f"handle:{handle}", "after": after})["articles"]
+        matches.extend(n for n in result["nodes"]
+                       if n["handle"] == handle and n["blog"]["handle"] == BLOG_HANDLE)
+        if len(matches) > 1:
+            raise RuntimeError(f"{handle}: duplicate exact handles in {BLOG_HANDLE}; cannot safely select an article")
+        page = result["pageInfo"]
+        if not page["hasNextPage"]:
+            return matches[0] if matches else None
+        after = page.get("endCursor")
+        if not after or after in seen_cursors:
+            raise RuntimeError(f"{handle}: incomplete article lookup; cannot safely resolve the handle")
+        seen_cursors.add(after)
 
 def derive_title(body):
     m = re.search(r"<h1[^>]*>(.*?)</h1>", body, re.S | re.I) or re.search(r"<h2[^>]*>(.*?)</h2>", body, re.S | re.I)
@@ -102,17 +114,17 @@ def seo_input(row):
     return seo or None
 
 def read_seo(article):
-    """Normalize Shopify's SEO metafield connection to ``title``/``description`` values."""
-    nodes = ((article or {}).get("metafields") or {}).get("nodes") or []
-    by_key = {m.get("key"): m.get("value") for m in nodes if m.get("namespace") == "global"}
-    return {"title": by_key.get("title_tag"), "description": by_key.get("description_tag")}
+    """Read explicit namespace/key aliases, independent of connection key formatting."""
+    article = article or {}
+    return {field: (article.get(alias) or {}).get("value")
+            for field, alias in (("title", "titleSeo"), ("description", "descriptionSeo"))}
 
 def seo_metafields(seo, existing=None):
     """Build Article metafield inputs, using IDs when a search-listing metafield already exists."""
     if not seo:
         return None
-    nodes = ((existing or {}).get("metafields") or {}).get("nodes") or []
-    existing_by_key = {m.get("key"): m for m in nodes if m.get("namespace") == "global"}
+    existing = existing or {}
+    existing_by_key = {"title_tag": existing.get("titleSeo"), "description_tag": existing.get("descriptionSeo")}
     result = []
     for field, key in (("title", "title_tag"), ("description", "description_tag")):
         if field not in seo:
@@ -210,7 +222,24 @@ def upsert(row, dry=False, validate_only=False):
         art["blogId"] = BLOG_GID
         res = gql(M_CREATE, {"article": art})["articleCreate"]
     if res["userErrors"]: raise RuntimeError(f"{row['handle']}: {res['userErrors']}")
-    a = res["article"]
+    # A successful mutation may omit freshly written metafields. Verify with a separate
+    # exact-handle read; never turn an uncertain mutation/readback into another create.
+    written = res.get("article") or {}
+    if not written.get("id"):
+        raise RuntimeError(f"{row['handle']}: mutation returned no article ID; inspect exact handle before retrying")
+    a = find_by_handle(row["handle"])
+    if not a or a["id"] != written["id"]:
+        raise RuntimeError(f"{row['handle']}: independent article readback missing or ID mismatch; no retry attempted")
+    validate_readback(row, a, preserve_live=bool(existing and existing["isPublished"] and row.get("publish_at")))
+    record_verified_article(row, a)
+    state = "LIVE" if a["isPublished"] else (f"SCHEDULED {row.get('publish_at')}" if row.get("publish_at") else "DRAFT")
+    print(f"OK {'updated' if existing else 'created'} {a['handle']} [{state}] {a['id']}")
+    return a
+
+def validate_readback(row, a, preserve_live=False):
+    """Check the independently retrieved resource before recording success."""
+    if not a or a["handle"] != row["handle"]:
+        raise RuntimeError(f"{row['handle']}: article readback missing or handle mismatch")
     returned_seo = read_seo(a)
     requested_seo = seo_input(row)
     if requested_seo:
@@ -218,15 +247,31 @@ def upsert(row, dry=False, validate_only=False):
                       for k, v in requested_seo.items() if returned_seo.get(k) != v}
         if mismatches:
             raise RuntimeError(f"{row['handle']}: SEO metafield readback mismatch: {mismatches}")
+    expected_published = bool(row.get("publish_now") or preserve_live)
+    if a["isPublished"] != expected_published:
+        raise RuntimeError(f"{row['handle']}: publication state readback mismatch")
+    if row.get("publish_at") and not preserve_live:
+        expected = datetime.datetime.fromisoformat(row["publish_at"].replace("Z", "+00:00"))
+        try:
+            actual = datetime.datetime.fromisoformat((a.get("publishedAt") or "").replace("Z", "+00:00"))
+        except ValueError as error:
+            raise RuntimeError(f"{row['handle']}: scheduled date readback missing or invalid") from error
+        if actual != expected:
+            raise RuntimeError(f"{row['handle']}: scheduled date readback mismatch")
+    if row.get("image_url"):
+        image = a.get("image") or {}
+        if not image.get("url") or image.get("altText") != (row.get("image_alt") or row.get("title") or a["title"]):
+            raise RuntimeError(f"{row['handle']}: image readback missing or alt text mismatch")
+
+def record_verified_article(row, a):
+    """Update one ledger row from an already validated, independent Admin read."""
+    returned_seo = read_seo(a)
     l = load_ledger()
     l["articles"][row["handle"]] = {"gid": a["id"], "title": a["title"], "is_published": a["isPublished"], "published_at": a.get("publishedAt"),
         "scheduled_for": None if a["isPublished"] else row.get("publish_at"), "image": (a.get("image") or {}).get("url"),
         "seo_title": returned_seo.get("title"), "seo_description": returned_seo.get("description"),
         "url": f"{SITE}/blogs/{BLOG_HANDLE}/{a['handle']}", "file": row["file"], "updated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')}
     save_ledger(l)
-    state = "LIVE" if a["isPublished"] else (f"SCHEDULED {row.get('publish_at')}" if row.get("publish_at") else "DRAFT")
-    print(f"OK {'updated' if existing else 'created'} {a['handle']} [{state}] {a['id']}")
-    return a
 
 def verify():
     l = load_ledger()

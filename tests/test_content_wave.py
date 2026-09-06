@@ -29,6 +29,19 @@ IMAGES = load_module("content_wave_gen_image", ROOT / "scripts" / "gen_image.py"
 
 
 class BlogPublisherSeoTests(unittest.TestCase):
+    def article(self, row=None, **changes):
+        row = row or json.loads(MANIFEST_PATH.read_text())[0]
+        article = {
+            "id": "gid://shopify/Article/1", "handle": row["handle"], "title": row["title"],
+            "isPublished": bool(row.get("publish_now")), "publishedAt": row.get("publish_at"),
+            "blog": {"handle": BLOG.BLOG_HANDLE},
+            "titleSeo": {"id": "gid://shopify/Metafield/11", "value": row["seo_title"]},
+            "descriptionSeo": {"id": "gid://shopify/Metafield/12", "value": row["seo_description"]},
+            "image": {"url": "https://cdn.shopify.com/hero.jpg", "altText": row["image_alt"]},
+        }
+        article.update(changes)
+        return article
+
     def test_seo_input_accepts_and_strips_valid_values(self):
         row = {"seo_title": "  A useful title  ", "seo_description": "  A useful description.  "}
         self.assertEqual(BLOG.seo_input(row), {"title": "A useful title", "description": "A useful description."})
@@ -46,7 +59,8 @@ class BlogPublisherSeoTests(unittest.TestCase):
     def test_article_queries_and_mutations_request_seo_metafield_readback(self):
         for query in (BLOG.Q_FIND, BLOG.Q_LIST, BLOG.M_CREATE, BLOG.M_UPDATE):
             with self.subTest(query=query[:30]):
-                self.assertIn('metafields(first: 2, keys: ["global.title_tag", "global.description_tag"])', query)
+                self.assertIn('titleSeo: metafield(namespace: "global", key: "title_tag")', query)
+                self.assertIn('descriptionSeo: metafield(namespace: "global", key: "description_tag")', query)
                 self.assertIn("id namespace key type value", query)
 
     def test_prepare_article_adds_shopify_seo_and_stays_draft(self):
@@ -65,56 +79,30 @@ class BlogPublisherSeoTests(unittest.TestCase):
 
     def test_upsert_persists_returned_seo_without_network(self):
         row = json.loads(MANIFEST_PATH.read_text())[0]
-        calls = []
-
-        def fake_gql(query, variables=None):
-            calls.append((query, variables))
-            article = variables["article"]
-            values = {m["key"]: m["value"] for m in article["metafields"]}
-            return {
-                "articleCreate": {
-                    "article": {
-                        "id": "gid://shopify/Article/1",
-                        "handle": article["handle"],
-                        "title": article["title"],
-                        "isPublished": False,
-                        "publishedAt": None,
-                        "metafields": {
-                            "nodes": [
-                                {"id": "gid://shopify/Metafield/1", "namespace": "global", "key": "title_tag", "type": "single_line_text_field", "value": values["title_tag"]},
-                                {"id": "gid://shopify/Metafield/2", "namespace": "global", "key": "description_tag", "type": "single_line_text_field", "value": values["description_tag"]},
-                            ]
-                        },
-                        "image": None,
-                    },
-                    "userErrors": [],
-                }
-            }
+        article = self.article(row)
+        # Regression: the write succeeded even though its immediate response lacked SEO.
+        response = {"articleCreate": {"article": {"id": article["id"]}, "userErrors": []}}
 
         original_ledger = BLOG.LEDGER
         try:
             with tempfile.TemporaryDirectory() as td:
                 BLOG.LEDGER = pathlib.Path(td) / "ledger.json"
-                with mock.patch.object(BLOG, "find_by_handle", return_value=None), mock.patch.object(BLOG, "gql", side_effect=fake_gql):
+                with mock.patch.object(BLOG, "find_by_handle", side_effect=[None, article]) as find, \
+                        mock.patch.object(BLOG, "gql", return_value=response) as gql:
                     with contextlib.redirect_stdout(io.StringIO()):
                         BLOG.upsert(row)
                 ledger_row = json.loads(BLOG.LEDGER.read_text())["articles"][row["handle"]]
                 self.assertEqual(ledger_row["seo_title"], row["seo_title"])
                 self.assertEqual(ledger_row["seo_description"], row["seo_description"])
-                self.assertEqual(calls[0][1]["article"]["metafields"][0]["value"], row["seo_title"])
+                self.assertEqual(gql.call_args.args[1]["article"]["metafields"][0]["value"], row["seo_title"])
+                self.assertEqual(find.call_count, 2)
+                gql.assert_called_once()
         finally:
             BLOG.LEDGER = original_ledger
 
     def test_existing_seo_metafields_are_updated_by_id(self):
         row = json.loads(MANIFEST_PATH.read_text())[0]
-        existing = {
-            "metafields": {
-                "nodes": [
-                    {"id": "gid://shopify/Metafield/11", "namespace": "global", "key": "title_tag", "value": "Old title"},
-                    {"id": "gid://shopify/Metafield/12", "namespace": "global", "key": "description_tag", "value": "Old description"},
-                ]
-            }
-        }
+        existing = self.article(row)
         article, _, _, _ = BLOG.prepare_article(row, existing=existing)
         self.assertEqual(
             article["metafields"],
@@ -126,23 +114,93 @@ class BlogPublisherSeoTests(unittest.TestCase):
 
     def test_upsert_fails_if_shopify_seo_readback_differs(self):
         row = json.loads(MANIFEST_PATH.read_text())[0]
-        response = {
-            "articleCreate": {
-                "article": {
-                    "id": "gid://shopify/Article/2",
-                    "handle": row["handle"],
-                    "title": row["title"],
-                    "isPublished": False,
-                    "publishedAt": None,
-                    "metafields": {"nodes": []},
-                    "image": None,
-                },
-                "userErrors": [],
-            }
-        }
-        with mock.patch.object(BLOG, "find_by_handle", return_value=None), mock.patch.object(BLOG, "gql", return_value=response):
+        article = self.article(row)
+        response = {"articleCreate": {"article": article, "userErrors": []}}
+        # Even a complete mutation response cannot stand in for a separate read.
+        readback = self.article(row, titleSeo=None)
+        with mock.patch.object(BLOG, "find_by_handle", side_effect=[None, readback]), \
+                mock.patch.object(BLOG, "gql", return_value=response) as gql, \
+                mock.patch.object(BLOG, "save_ledger") as save:
             with self.assertRaisesRegex(RuntimeError, "SEO metafield readback mismatch"):
                 BLOG.upsert(row)
+            gql.assert_called_once()
+            save.assert_not_called()
+
+    def test_aliases_ignore_connection_key_formatting(self):
+        article = self.article()
+        article["metafields"] = {"nodes": [
+            {"namespace": "global", "key": "global.title_tag", "value": "Misleading connection value"},
+        ]}
+        self.assertEqual(BLOG.read_seo(article)["title"], article["titleSeo"]["value"])
+        del article["titleSeo"]
+        self.assertIsNone(BLOG.read_seo(article)["title"])
+
+    def test_handle_lookup_reads_all_pages_and_filters_blog_and_handle(self):
+        article = self.article()
+        responses = [
+            {"articles": {"nodes": [self.article(handle="other"), self.article(blog={"handle": "other"})],
+                          "pageInfo": {"hasNextPage": True, "endCursor": "next"}}},
+            {"articles": {"nodes": [article], "pageInfo": {"hasNextPage": False, "endCursor": None}}},
+        ]
+        with mock.patch.object(BLOG, "gql", side_effect=responses) as gql:
+            self.assertEqual(BLOG.find_by_handle(article["handle"]), article)
+            self.assertEqual(gql.call_args.args[1]["after"], "next")
+
+    def test_duplicate_handle_prevents_any_mutation(self):
+        row = json.loads(MANIFEST_PATH.read_text())[0]
+        response = {"articles": {"nodes": [self.article(), self.article(id="gid://shopify/Article/2")],
+                                 "pageInfo": {"hasNextPage": False, "endCursor": None}}}
+        with mock.patch.object(BLOG, "gql", return_value=response) as gql:
+            with self.assertRaisesRegex(RuntimeError, "duplicate exact handles"):
+                BLOG.upsert(row)
+            gql.assert_called_once()
+            self.assertEqual(gql.call_args.args[0], BLOG.Q_FIND)
+
+    def test_incomplete_lookup_prevents_create(self):
+        row = json.loads(MANIFEST_PATH.read_text())[0]
+        response = {"articles": {"nodes": [], "pageInfo": {"hasNextPage": True, "endCursor": None}}}
+        with mock.patch.object(BLOG, "gql", return_value=response) as gql:
+            with self.assertRaisesRegex(RuntimeError, "incomplete article lookup"):
+                BLOG.upsert(row)
+            gql.assert_called_once()
+
+    def test_uncertain_create_is_not_retried(self):
+        row = json.loads(MANIFEST_PATH.read_text())[0]
+        with mock.patch.object(BLOG, "find_by_handle", return_value=None), \
+                mock.patch.object(BLOG, "gql", side_effect=TimeoutError("uncertain response")) as gql:
+            with self.assertRaises(TimeoutError):
+                BLOG.upsert(row)
+            gql.assert_called_once()
+
+    def test_independent_readback_must_match_written_id(self):
+        row = json.loads(MANIFEST_PATH.read_text())[0]
+        response = {"articleCreate": {"article": {"id": "gid://shopify/Article/2"}, "userErrors": []}}
+        with mock.patch.object(BLOG, "find_by_handle", side_effect=[None, self.article()]), \
+                mock.patch.object(BLOG, "gql", return_value=response) as gql, \
+                mock.patch.object(BLOG, "save_ledger") as save:
+            with self.assertRaisesRegex(RuntimeError, "ID mismatch"):
+                BLOG.upsert(row)
+            gql.assert_called_once()
+            save.assert_not_called()
+
+    def test_readback_rejects_wrong_state_schedule_and_missing_image(self):
+        row = json.loads(MANIFEST_PATH.read_text())[1]
+        for changes in ({"isPublished": True}, {"publishedAt": "2026-12-29T17:00:00Z"}, {"publishedAt": None}, {"image": None}):
+            with self.subTest(changes=changes), self.assertRaisesRegex(RuntimeError, "readback"):
+                BLOG.validate_readback(row, self.article(row, **changes))
+
+    def test_upsert_existing_live_article_does_not_reschedule_it(self):
+        row = json.loads(MANIFEST_PATH.read_text())[1]
+        article = self.article(row, isPublished=True, publishedAt="2026-09-06T14:34:01Z")
+        response = {"articleUpdate": {"article": {"id": article["id"]}, "userErrors": []}}
+        with mock.patch.object(BLOG, "find_by_handle", return_value=article), \
+                mock.patch.object(BLOG, "gql", return_value=response) as gql, \
+                mock.patch.object(BLOG, "record_verified_article"), contextlib.redirect_stdout(io.StringIO()):
+            BLOG.upsert(row)
+        self.assertEqual(gql.call_args.args[0], BLOG.M_UPDATE)
+        self.assertEqual(gql.call_args.args[1]["id"], article["id"])
+        self.assertNotIn("publishDate", gql.call_args.args[1]["article"])
+        self.assertNotIn("isPublished", gql.call_args.args[1]["article"])
 
     def test_validate_only_cli_is_credential_free_and_offline(self):
         result = subprocess.run(
@@ -210,7 +268,10 @@ class ContentAssetTests(unittest.TestCase):
         self.assertNotIn("publish_now", scheduled)
         for row in self.manifest:
             self.assertNotIn("draft", row)
-            self.assertNotIn("image_url", row)
+            self.assertEqual(
+                row["image_url"],
+                f"https://basenote-media.wilson-af8.workers.dev/img/{row['handle']}/hero.jpg",
+            )
             self.assertLessEqual(len(row["seo_title"]), 60)
             self.assertLessEqual(len(row["seo_description"]), 160)
             self.assertTrue((ROOT / row["file"]).is_file())
