@@ -42,7 +42,9 @@ The candidate starts from `origin/main`, then incorporates:
 - PR #44: eight homepage featured fragrances;
 - PR #45: 1-3 business-day PDP delivery copy;
 - a handle-scoped add-on guard: `noindex, follow`, neutral social metadata, no Product offer JSON-LD, no purchase form or sticky CTA, and a disabled subscriber-only notice with no price promise;
+- disable the legacy one-time cart upsell while the recurring add-on plan is unconfigured; exclude the helper from shared product cards, account selectors, quiz recommendations, and base-subscription swap identification;
 - component-scoped narrow-screen constraints for header, hero, featured/delivery CTAs, cookie banner, and cookie preferences modal.
+- scope placeholder image styles to placeholder cards so actual secondary product images retain absolute positioning; wrap narrow product vendor/concentration labels instead of clipping them.
 - respect authored article SEO titles and descriptions, including the reconciled vanilla guide, without replacing the title with the longer editorial heading or truncating the authored description.
 
 Out of scope: PR #47; changing add-on prices or selling plans; Appstle contract migration; disabling the add-on variant at the Shopify backend; blog publication; and deleting any Shopify theme.
@@ -67,6 +69,8 @@ Out of scope: PR #47; changing add-on prices or selling plans; Appstle contract 
 - [ ] `page.bestsellers` renders a selected collection, falls back to the `bestsellers` handle, and presents an accessible empty state if neither is populated.
 - [ ] `/products/extra-5ml-vial-add-on` emits `noindex, follow`, neutral meta/OG copy, no OG price or Product offer JSON-LD, no product form, no Appstle container, no sticky purchase CTA, and only the disabled subscriber-only notice.
 - [ ] A representative ordinary PDP still emits Product offer JSON-LD and a working product form.
+- [ ] A subscription cart has no legacy one-time add-on picker, and search for the internal helper exposes no quick-add control.
+- [x] Four executed base-line selection tests prove helper line ordering, helper-only carts, and ordinary one-time lines cannot replace the base subscription.
 - [ ] `/products/extra-5ml-vial-add-on.js` or the equivalent internal product JSON endpoint remains readable by the integration that needs it.
 - [x] With candidate CSS injected into a disposable browser session at true 320px and 390px viewports, document/body scroll widths equal their viewport widths and no right-overflowing element remains.
 - [x] The same injected-CSS check at 1440px has no right-overflowing element and retains the desktop header, CTA, and consent layouts.
@@ -77,7 +81,7 @@ Out of scope: PR #47; changing add-on prices or selling plans; Appstle contract 
 ## Release and rollback
 
 1. Treat current live `basenotes/main` (`158692901082`) as the known-good rollback theme. Keep it untouched while the integrated candidate is tested.
-2. Keep `Jeff fixes Sep 3 QA` (`163971432666`) and `Jeff requests Sep 4 QA` (`163992469722`) unpublished; neither is a rollback target.
+2. Preserve `Jeff fixes Sep 3 QA` (`163971432666`) as the retained secondary rollback/reference theme and keep `Jeff requests Sep 4 QA` (`163992469722`) unpublished. The primary rollback remains `158692901082`, which preserves the latest approved visual storefront.
 3. After review, push this branch to a new unpublished Shopify theme, record its ID, and complete the preview acceptance suite.
 4. Publish only the recorded candidate ID. Immediately verify the homepage, guarded add-on route, one ordinary PDP, cart, and subscription path.
 5. If checkout, subscription, navigation, responsive layout, or rendering regresses, immediately republish `158692901082`, capture the failing URL and timestamp, and continue diagnosis offline.
@@ -96,6 +100,16 @@ Out of scope: PR #47; changing add-on prices or selling plans; Appstle contract 
 - A fresh pull into `/private/tmp/basenote-live-recheck-BgNR23` matches the candidate's `config/settings_data.json` exactly. The homepage JSON differs only by the intended four-to-eight featured-card change. The collection JSON differs only by Shopify's generated comment header.
 - Fresh canonical and recovery Theme Check runs both report 33 errors and 79 warnings across 38 files. All 112 normalized file/check/severity/message signatures match; there are no new lint offenses. These inherited lint issues remain a separate maintenance task.
 - Static add-on/overflow/article-SEO guards and `git diff --check` pass. Browser verification uses isolated Playwright contexts with true 1440px, 390px, and 320px CSS viewports.
+
+## Candidate QA findings addressed
+
+- Created unpublished theme `164045029594` from code commit `7eed63468d765e074f067da589c0c1f8b76296d9`; PR: https://github.com/wilsonwu-ai/basenotes/pull/48. Subsequent containment fixes are tracked in the same PR and candidate.
+- An initial desktop collection request returned Shopify HTTP 500 directly after upload. Immediate independent candidate/live HTTP checks and the next desktop/mobile browser run returned 200; the initial failure remains in the raw QA log.
+- A timed promotional overlay intercepted the first cookie-dismissal harness attempt. The corrected harness closes that existing overlay before consent/menu interactions. Lazy-image screenshots must use instant `scrollIntoView` and await image decoding because CSS smooth scrolling defeated the initial rapid scrolling loop.
+- Subscription UI addition verified variant `47739099283674` with plan `26547585242`, one cart line totaling 1500 cents, first allocation 1500, comparison and second allocation 2000.
+- That cart exposed an inherited one-time upsell contradicting the required recurring add-on behavior. The cart render call is now removed pending the correct dedicated plan. A read-only reachability audit also found helper entry points through search cards, account fragrance selectors and quiz catalog data; each source is now excluded.
+- Existing legacy helper lines are explicitly ignored when choosing a swappable base subscription. Four node tests execute the actual selection block with base/helper ordering, helper-only, and one-time fixtures.
+- Vanilla article metadata matches the authored SEO fields. Independent browser QA confirms its mobile comparison table has a functional horizontal scroll container (`overflow-x: auto`) while document width remains 390px.
 
 ## Success signals
 

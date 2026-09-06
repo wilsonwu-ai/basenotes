@@ -1267,6 +1267,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // route where the one-per-customer and quantity protections simply do not apply — and it
         // would show the promo to people who never saw the ad. Drop any $0 product.
         products = products.filter(function (p) {
+          if (p.handle === 'extra-5ml-vial-add-on') return false;
           var v = (p.variants || [])[0];
           if (!v) return false;
           return parseFloat(v.price) > 0;

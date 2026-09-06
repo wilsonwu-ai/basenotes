@@ -74,5 +74,15 @@ require_literal 'white-space: normal;' sections/featured-collection.liquid
 require_literal 'assign seo_title = page_title | default: article.title' layout/theme.liquid
 require_literal "template.name == 'article' and page_description != blank" layout/theme.liquid
 require_literal '{{ page_description | strip_html | escape_once }}' layout/theme.liquid
+require_literal 'CART_ADDON_CONFIGURATION_GUARD' templates/cart.liquid
+if rg -q "render 'cart-addon-picker'" templates/cart.liquid; then
+  fail 'legacy one-time add-on picker must stay unrendered until recurring plan verification'
+fi
+require_literal '.featured-grid .product-card--placeholder .product-card__image {' sections/featured-collection.liquid
+require_literal 'overflow-wrap: anywhere;' snippets/product-card.liquid
+require_literal "product.handle == 'extra-5ml-vial-add-on'" snippets/product-card.liquid
+require_literal "if (p.handle === 'extra-5ml-vial-add-on') return false;" sections/scent-quiz.liquid
+selector_guard_count=$(rg -F -c "product.handle == 'extra-5ml-vial-add-on'" snippets/fragrance-selector.liquid)
+[ "$selector_guard_count" -eq 2 ] || fail 'both account selector passes must skip the internal helper'
 
 printf 'PASS: add-on route guard and responsive overflow invariants are present\n'

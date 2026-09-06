@@ -26,6 +26,7 @@
 {%- endcomment -%}
 {%- assign fs_family_blob = '' -%}
 {%- for product in fs_products limit: 20 -%}
+  {%- if product.handle == 'extra-5ml-vial-add-on' -%}{%- continue -%}{%- endif -%}
   {%- comment -%} Family source of truth = the Shopify taxonomy "Fragrance" attribute — the same
        data the collection page facet (filter.v.t.shopify.fragrance) filters on. Live QA (Jul 18)
        showed custom.fragrance_family resolves blank in this context, leaving only the ALL tab.
@@ -91,6 +92,7 @@
 
     <div class="fs-grid">
       {%- for product in fs_products limit: 20 -%}
+        {%- if product.handle == 'extra-5ml-vial-add-on' -%}{%- continue -%}{%- endif -%}
         {%- comment -%} Family derivation, taxonomy-first (matches the tab pre-pass above).
              card_ff_display = human label ("Fresh, Citrus"); card_ff_key = "|fresh|citrus|" for delimiter-safe JS match;
              card_ff_primary = first family for the queue event payload. {%- endcomment -%}

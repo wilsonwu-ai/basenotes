@@ -2182,7 +2182,7 @@
             .then(function(cart) {
               var existingSub = null;
               cart.items.forEach(function(item) {
-                if (item.selling_plan_allocation) {
+                if (item.selling_plan_allocation && item.handle !== 'extra-5ml-vial-add-on') {
                   existingSub = item;
                 }
               });
