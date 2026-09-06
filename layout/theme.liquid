@@ -36,7 +36,11 @@
     assign brand_description = 'Base Note is a monthly luxury fragrance subscription. For $20/month, members receive a 5ml travel atomizer of a designer or niche fragrance (Creed, Tom Ford, Parfums de Marly, Bond No. 9, Xerjoff). Free US shipping, cancel anytime.'
   -%}
   <meta name="description" content="{{ meta_description | truncate: 160, '' | escape }}">
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  {%- if template.name == 'product' and product.handle == 'extra-5ml-vial-add-on' -%}
+    <meta name="robots" content="noindex, nofollow">
+  {%- else -%}
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  {%- endif -%}
 
   {% render 'meta-tags' %}
 
@@ -192,6 +196,7 @@
   {% comment %} Load CSS with low priority for non-critical styles {% endcomment %}
   <link rel="stylesheet" href="{{ 'base.css' | asset_url }}" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="{{ 'component-variables.css' | asset_url }}" media="print" onload="this.media='all'">
+  {{ 'bn-compare-price.css' | asset_url | stylesheet_tag }}
   <noscript>
     {{ 'base.css' | asset_url | stylesheet_tag }}
     {{ 'component-variables.css' | asset_url | stylesheet_tag }}
@@ -207,6 +212,8 @@
   </script>
   <script src="{{ 'queue-scheduler.js' | asset_url }}" defer></script>
   <script src="{{ 'bn-appstle-swap.js' | asset_url }}" defer></script>
+  <script src="{{ 'bn-extra-vial-cart.js' | asset_url }}" defer></script>
+  <script src="{{ 'bn-compare-price.js' | asset_url }}" defer></script>
 </head>
 
 <body class="template-{{ template.name }}{% if template.suffix %} template-{{ template.name }}-{{ template.suffix }}{% endif %}">
@@ -235,6 +242,8 @@
       <div class="modal__body" id="quickViewContent"></div>
     </div>
   </div>
+
+  {% render 'compare-price-dialog' %}
 
   {% comment %} Defer JavaScript loading for better performance {% endcomment %}
   <script src="{{ 'theme.js' | asset_url }}" defer></script>

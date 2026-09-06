@@ -1,0 +1,32 @@
+{% doc %}
+  @description Renders the single storefront price-comparison dialog. Trigger buttons provide its product and price text through data attributes.
+{% enddoc %}
+
+<dialog
+  id="BaseNoteComparePriceDialog"
+  class="base-note-compare-dialog"
+  aria-modal="true"
+  aria-labelledby="BaseNoteComparePriceTitle"
+  aria-describedby="BaseNoteComparePriceDescription"
+  tabindex="-1"
+>
+  <div class="base-note-compare-dialog__panel">
+    <button
+      type="button"
+      class="base-note-compare-dialog__close"
+      data-compare-dialog-close
+      aria-label="Close price comparison"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <p class="base-note-compare-dialog__eyebrow">PRICE TRANSPARENCY</p>
+    <h2 id="BaseNoteComparePriceTitle" class="base-note-compare-dialog__title">Compare the price</h2>
+    <p class="base-note-compare-dialog__product" data-compare-dialog-product></p>
+    <p id="BaseNoteComparePriceDescription" class="base-note-compare-dialog__body">
+      <span data-compare-dialog-exact>The full-bottle retail reference is <strong data-compare-dialog-retail></strong>.</span>
+      <span data-compare-dialog-variable hidden>Full-bottle retail prices vary by fragrance and retailer.</span>
+      Base Note sends a wearable 5ml vial each month for <strong data-compare-dialog-price></strong>.
+    </p>
+    <button type="button" class="base-note-compare-dialog__done" data-compare-dialog-close>Got it</button>
+  </div>
+</dialog>

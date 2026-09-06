@@ -1,6 +1,6 @@
 # Jeff growth surfaces — founding proof, price comparison, and extra-vial add-on
 
-Date: 2026-09-04  
+Date: 2026-09-04
 Source: latest visible Jeff WhatsApp thread
 
 ## Context
@@ -14,24 +14,29 @@ The pop-up/market-festival messages are operational context: customers should be
 - Product pages show the founding-member progress proof near the subscription purchase control, with editable current-member and goal settings.
 - Product pages and product cards expose an accessible “Compare price” action for subscription scents, showing an exact retail reference when available and a transparent retailer-variation note otherwise.
 - The comparison action opens a keyboard-dismissible, focusable modal and does not navigate the shopper away from the current page.
-- A shopper can opt into a second 5ml vial on the same monthly subscription checkout.
-- The extra vial uses the Appstle Monthly Plan selling plan and is billed at $9 on the first order and $12/month thereafter, verified from the live Storefront product JSON.
-- If the selling plan cannot be applied, the add-on is rolled back and the shopper sees an actionable error; no one-time add-on is silently created.
+- When the merchant gate is enabled and live allocations are valid, a shopper can choose one or two extra 5ml vials on the same monthly subscription checkout.
+- Every extra vial is exactly $18 on the initial order and exactly $18 on every recurring order. The first-order 25% base-subscription promotion must not discount an add-on. Jeff's acceptance example is one $15 base subscription plus two $18 extras, totaling $51 before tax and shipping.
+- The add-on offer stays hidden unless the configured selling plan is recurring and every live selling-plan allocation proves the $18 initial and recurring prices. Price or plan ambiguity fails closed before any cart write.
+- Cart changes target an exact variant, selling plan, line key, quantity, and $18 allocation. A failed verification restores and verifies the pre-change extra-vial quantity before reporting an actionable error; retries converge on the selected quantity instead of adding duplicates.
+- The add-on SKU cannot be selected as the base subscription during swap detection, quick add, or its direct product page.
 - Existing single-subscription, swap, rotation, and quick-add behavior remains unchanged.
 
 ## Implementation
 
 - Shopify product: `Extra 5ml Vial Add-On` (`extra-5ml-vial-add-on`)
 - Variant: `48547911696602`
-- Appstle selling plan: `26547585242` (`Monthly Subscription`)
-- Appstle plan: `Monthly Plan` (`3355771098`)
-- Native Appstle “Add to Existing Subscription” was checked and is Enterprise+/Business Premium-only on the current account. The storefront implementation therefore adds the second line item with the same selling plan at checkout.
-- Updated `sections/main-product.liquid` with founding proof, add-on selection, compare-price modal, and cart-level selling-plan verification.
-- Updated `snippets/product-card.liquid` with compare-price actions for search, collection, and related-product surfaces.
+- Current Appstle selling plan: `26547585242` (`Monthly Subscription`) — **not approved for the add-on** because its live initial allocation is discounted.
+- Current Appstle plan group: `Monthly Plan` (`3355771098`)
+- Native Appstle “Add to Existing Subscription” was checked and is Enterprise+/Business Premium-only on the current account. This storefront scope can add a separately verified recurring line during the initial checkout; it does not claim to modify an existing subscription contract.
+- A separate Appstle recurring plan with a 0% first-order discount is required. After an operator verifies that plan's Storefront allocation is $18 initially and recurringly, they must enter its selling-plan ID and separately enable the section's `show_extra_vial_offer` gate. This code does not change Appstle configuration.
+- `sections/main-product.liquid` renders the founding proof, gated add-on quantity selector, and compare-price triggers. It excludes variant `48547911696602` from base-subscription swap detection and blocks its direct purchase surface.
+- `assets/bn-extra-vial-cart.js` owns exact price/plan verification, idempotent desired-quantity updates, and verified rollback.
+- The theme renders one native compare-price dialog with focus containment, Escape/backdrop controls, focus return, and listener cleanup for PDP, collection, search, and related-product triggers.
 
 ## QA evidence
 
-- PR #45 shipping copy was merged separately and verified as `Ships within 1–3 business days`.
-- The add-on product is active, available, and attached to the Appstle plan.
-- Storefront JSON reports first-order price `$9.00`, recurring price `$12.00`, and the expected selling-plan allocation.
-- Final browser QA is required on the draft theme before publishing this new code path; no checkout/order should be placed during QA.
+- WhatsApp source-of-truth: Jeff specified $18 flat for each additional bottle, including alongside a $15 base subscription (PK 54054, 55252, 55253, and 55341; August 23–September 1, 2026). No Jeff-authored $9/$12 instruction was found.
+- Read-only Storefront JSON observed September 5, 2026: variant `48547911696602` is $18 base/$20 compare-at, while selling plan `26547585242` allocates $13.50 initially and $18 recurringly because the 25% first-order promotion applies. That live configuration fails this ticket and therefore must not be enabled.
+- Deterministic tests cover the $51 bundle example, price-mismatch fail-closed behavior, add-on exclusion from base swap detection, idempotence, and verified rollback.
+- Baseline and branch Theme Check results must be recorded as a differential. Pre-existing theme offenses are not evidence that this change passes; this change must add zero new offenses.
+- Final browser and Shopify draft-theme QA remain required before merge or publication. Do not place a checkout/order during QA.
