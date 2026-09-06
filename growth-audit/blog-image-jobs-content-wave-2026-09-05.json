@@ -1,0 +1,20 @@
+[
+  {
+    "handle": "best-vanilla-colognes-men",
+    "prompt": "Premium editorial fragrance still life, five generic unbranded 5 ml clear-glass atomizers with varied pale-to-amber liquid tones, arranged on cream travertine with one split vanilla bean, curl of citrus peel, roasted chestnut, fresh aromatic herbs, and a restrained piece of dark wood, deep forest-green linen accent, warm controlled studio light, realistic glass and shadows, luxury magazine photography, 16:9 landscape, generous center-safe composition, no people, no hands, no logos, no labels, no typography, no replica designer bottles, no distorted caps",
+    "out": "growth-audit/ai-images/blog/best-vanilla-colognes-men/hero.jpg",
+    "aspect": "16:9",
+    "model": "fal-ai/nano-banana-2",
+    "resolution": "2K",
+    "fal_only": true
+  },
+  {
+    "handle": "best-cologne-for-the-gym",
+    "prompt": "Premium editorial still life for a consent-first gym fragrance guide, four generic unbranded 5 ml clear-glass atomizers beside a folded clean off-white gym towel, matte reusable water bottle, lemon peel, mint leaves, rosemary, and a subtle mineral stone, airy cream and deep forest-green palette, crisp directional morning light, realistic glass and fabric, restrained luxury magazine photography, 16:9 landscape, generous center-safe composition, no people, no bodies, no sweat, no logos, no labels, no typography, no replica designer bottles, no distorted caps",
+    "out": "growth-audit/ai-images/blog/best-cologne-for-the-gym/hero.jpg",
+    "aspect": "16:9",
+    "model": "fal-ai/nano-banana-2",
+    "resolution": "2K",
+    "fal_only": true
+  }
+]

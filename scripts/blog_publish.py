@@ -4,15 +4,19 @@
 Single post:
   python3 scripts/blog_publish.py --file growth-audit/blog-post-05-x.html --handle fragrance-notes-explained \
       --title "..." --summary "..." --tags "fragrance,guide" --image-url https://... --image-alt "..." \
-      [--publish-at 2026-08-20T12:00:00Z | --publish-now | --draft] [--dry-run]
+      [--seo-title "..." --seo-description "..."] \
+      [--publish-at 2026-08-20T12:00:00Z | --publish-now | --draft] [--dry-run | --validate-only]
 Manifest (batch):
-  python3 scripts/blog_publish.py --manifest growth-audit/blog-manifest.json [--only handle1,handle2] [--dry-run]
+  python3 scripts/blog_publish.py --manifest growth-audit/blog-manifest.json [--only handle1,handle2] [--dry-run | --validate-only]
 Utilities:
   --verify            fetch each ledger row's live URL / admin state and print
   --delete-handle H   delete an article (used for throwaway tests)
   --list              list all articles in the blog with state
 
 Ledger: growth-audit/blog-ledger.json (handle -> gid, state, publish_at, url, updated).
+Manifest rows can carry ``seo_title`` and ``seo_description``. Shopify stores article search-listing values in the
+``global.title_tag`` and ``global.description_tag`` metafields; returned values are stored in the ledger and compared by
+``--verify``. ``--validate-only`` builds and validates article payloads without credentials or network access.
 Non-ASCII in the body is converted to numeric HTML entities (Shopify accepts UTF-8, but the theme/editor pipeline has bitten us before).
 """
 import argparse, json, os, re, sys, pathlib, html, urllib.request, urllib.error, datetime
@@ -25,11 +29,15 @@ BLOG_HANDLE = "hub"
 SITE = "https://basenotescent.com"
 LEDGER = ROOT / "growth-audit" / "blog-ledger.json"
 DEFAULT_AUTHOR = "Jeff Theefs"
+SEO_TITLE_MAX = 60
+SEO_DESCRIPTION_MAX = 160
 
-Q_FIND = "query FindArticle($q: String!) { articles(first: 5, query: $q) { nodes { id handle title isPublished publishedAt updatedAt image { url altText } blog { id handle } } } }"
-Q_LIST = "query ListArticles($after: String) { articles(first: 50, after: $after, sortKey: PUBLISHED_AT, reverse: true) { pageInfo { hasNextPage endCursor } nodes { id handle title isPublished publishedAt updatedAt tags image { url } } } }"
-M_CREATE = "mutation CreateArticle($article: ArticleCreateInput!) { articleCreate(article: $article) { article { id handle title isPublished publishedAt image { url altText } } userErrors { field message code } } }"
-M_UPDATE = "mutation UpdateArticle($id: ID!, $article: ArticleUpdateInput!) { articleUpdate(id: $id, article: $article) { article { id handle title isPublished publishedAt image { url altText } } userErrors { field message code } } }"
+SEO_METAFIELDS = ('titleSeo: metafield(namespace: "global", key: "title_tag") { id namespace key type value } '
+                  'descriptionSeo: metafield(namespace: "global", key: "description_tag") { id namespace key type value }')
+Q_FIND = f"query FindArticle($q: String!, $after: String) {{ articles(first: 100, after: $after, query: $q) {{ pageInfo {{ hasNextPage endCursor }} nodes {{ id handle title isPublished publishedAt updatedAt {SEO_METAFIELDS} image {{ url altText }} blog {{ id handle }} }} }} }}"
+Q_LIST = f"query ListArticles($after: String) {{ articles(first: 50, after: $after, sortKey: PUBLISHED_AT, reverse: true) {{ pageInfo {{ hasNextPage endCursor }} nodes {{ id handle title isPublished publishedAt updatedAt tags {SEO_METAFIELDS} image {{ url }} }} }} }}"
+M_CREATE = f"mutation CreateArticle($article: ArticleCreateInput!) {{ articleCreate(article: $article) {{ article {{ id handle title isPublished publishedAt {SEO_METAFIELDS} image {{ url altText }} }} userErrors {{ field message code }} }} }}"
+M_UPDATE = f"mutation UpdateArticle($id: ID!, $article: ArticleUpdateInput!) {{ articleUpdate(id: $id, article: $article) {{ article {{ id handle title isPublished publishedAt {SEO_METAFIELDS} image {{ url altText }} }} userErrors {{ field message code }} }} }}"
 M_DELETE = "mutation DeleteArticle($id: ID!) { articleDelete(id: $id) { deletedArticleId userErrors { field message } } }"
 
 def token():
@@ -59,10 +67,21 @@ def save_ledger(l):
     LEDGER.write_text(json.dumps(l, indent=2, sort_keys=True) + "\n")
 
 def find_by_handle(handle):
-    nodes = gql(Q_FIND, {"q": f"handle:{handle}"})["articles"]["nodes"]
-    for n in nodes:
-        if n["handle"] == handle and n["blog"]["handle"] == BLOG_HANDLE: return n
-    return None
+    """Resolve an exact handle in the target blog, rejecting ambiguous search results."""
+    matches, after, seen_cursors = [], None, set()
+    while True:
+        result = gql(Q_FIND, {"q": f"handle:{handle}", "after": after})["articles"]
+        matches.extend(n for n in result["nodes"]
+                       if n["handle"] == handle and n["blog"]["handle"] == BLOG_HANDLE)
+        if len(matches) > 1:
+            raise RuntimeError(f"{handle}: duplicate exact handles in {BLOG_HANDLE}; cannot safely select an article")
+        page = result["pageInfo"]
+        if not page["hasNextPage"]:
+            return matches[0] if matches else None
+        after = page.get("endCursor")
+        if not after or after in seen_cursors:
+            raise RuntimeError(f"{handle}: incomplete article lookup; cannot safely resolve the handle")
+        seen_cursors.add(after)
 
 def derive_title(body):
     m = re.search(r"<h1[^>]*>(.*?)</h1>", body, re.S | re.I) or re.search(r"<h2[^>]*>(.*?)</h2>", body, re.S | re.I)
@@ -76,6 +95,46 @@ def derive_summary(body):
 
 def strip_h1(body):
     return re.sub(r"<h1[^>]*>.*?</h1>\s*", "", body, count=1, flags=re.S | re.I)
+
+def seo_input(row):
+    """Return Shopify's SEO input after fail-closed length/content validation."""
+    seo = {}
+    for source, target, limit in (
+        ("seo_title", "title", SEO_TITLE_MAX),
+        ("seo_description", "description", SEO_DESCRIPTION_MAX),
+    ):
+        if source not in row or row[source] is None:
+            continue
+        value = str(row[source]).strip()
+        if not value:
+            raise ValueError(f"{source} must not be blank when provided")
+        if len(value) > limit:
+            raise ValueError(f"{source} is {len(value)} characters; maximum is {limit}")
+        seo[target] = value
+    return seo or None
+
+def read_seo(article):
+    """Read explicit namespace/key aliases, independent of connection key formatting."""
+    article = article or {}
+    return {field: (article.get(alias) or {}).get("value")
+            for field, alias in (("title", "titleSeo"), ("description", "descriptionSeo"))}
+
+def seo_metafields(seo, existing=None):
+    """Build Article metafield inputs, using IDs when a search-listing metafield already exists."""
+    if not seo:
+        return None
+    existing = existing or {}
+    existing_by_key = {"title_tag": existing.get("titleSeo"), "description_tag": existing.get("descriptionSeo")}
+    result = []
+    for field, key in (("title", "title_tag"), ("description", "description_tag")):
+        if field not in seo:
+            continue
+        old = existing_by_key.get(key)
+        if old and old.get("id"):
+            result.append({"id": old["id"], "value": seo[field]})
+        else:
+            result.append({"namespace": "global", "key": key, "type": "single_line_text_field", "value": seo[field]})
+    return result
 
 FIG_TMPL = ('<figure class="article__figure" style="margin:1.75em 0;">'
             '<img src="{url}" alt="{alt}" loading="lazy" decoding="async" width="{w}" height="{h}" style="width:100%;height:auto;border-radius:12px;display:block;">'
@@ -112,8 +171,10 @@ def insert_figures(body, inline):
         return FIG_TMPL.format(url=f["url"], alt=html.escape(f.get("alt") or ""), w=f.get("w", 1536), h=f.get("h", 1024), cap=cap)
     return re.sub(r"<!--\s*img:([a-z0-9_-]+)\s*-->", rep, body, flags=re.I)
 
-def upsert(row, dry=False):
-    """row: {handle, file, title?, summary?, tags?, author?, image_url?, image_alt?, publish_at?|publish_now?|draft?}"""
+def prepare_article(row, existing=None):
+    """Build and validate one Shopify Article input without using credentials or the network."""
+    if not row.get("handle") or not row.get("file"):
+        raise ValueError("handle and file are required")
     body_raw = (ROOT / row["file"]).read_text(encoding="utf-8")
     body = to_entities(wrap_tables(insert_videos(insert_figures(strip_h1(body_raw), row.get("inline")), row.get("videos"))))
     if "<!--META" in body: body = body.split("<!--META")[0]
@@ -123,14 +184,33 @@ def upsert(row, dry=False):
     if isinstance(tags, str): tags = [t.strip() for t in tags.split(",") if t.strip()]
     art = {"title": title, "handle": row["handle"], "body": body, "summary": summary, "tags": tags,
            "author": {"name": row.get("author") or DEFAULT_AUTHOR}, "templateSuffix": row.get("template_suffix")}
+    seo = seo_input(row)
+    if seo: art["metafields"] = seo_metafields(seo, existing)
     if row.get("image_url"): art["image"] = {"url": row["image_url"], "altText": row.get("image_alt") or title}
     if row.get("publish_now"): art["isPublished"] = True
     elif row.get("publish_at"):
         art["isPublished"] = False; art["publishDate"] = row["publish_at"]
     else: art["isPublished"] = False
+    return art, body, title, summary
+
+def upsert(row, dry=False, validate_only=False):
+    """Upsert a row; ``validate_only`` performs a credential-free, offline payload check."""
+    art, body, title, summary = prepare_article(row)
+    if validate_only:
+        seo = seo_input(row) or {}
+        print(f"VALID {row['handle']}: title={len(title)}ch seo_title={len(seo.get('title', ''))}ch "
+              f"seo_description={len(seo.get('description', ''))}ch body={len(body)}ch summary={len(summary)}ch "
+              f"pub={'now' if art.get('isPublished') else art.get('publishDate', 'draft')}")
+        return art
     existing = find_by_handle(row["handle"])
+    if existing and seo_input(row):
+        art["metafields"] = seo_metafields(seo_input(row), existing)
     if dry:
-        print(f"DRY {'update' if existing else 'create'} {row['handle']}: title={title!r} pub={'now' if art.get('isPublished') else art.get('publishDate','draft')} img={'yes' if 'image' in art else 'no'} body={len(body)}ch summary={len(summary)}ch")
+        seo = seo_input(row) or {}
+        print(f"DRY {'update' if existing else 'create'} {row['handle']}: title={title!r} "
+              f"seo_title={len(seo.get('title', ''))}ch seo_description={len(seo.get('description', ''))}ch "
+              f"pub={'now' if art.get('isPublished') else art.get('publishDate','draft')} "
+              f"img={'yes' if 'image' in art else 'no'} body={len(body)}ch summary={len(summary)}ch")
         return None
     if existing:
         art_u = dict(art)
@@ -142,15 +222,56 @@ def upsert(row, dry=False):
         art["blogId"] = BLOG_GID
         res = gql(M_CREATE, {"article": art})["articleCreate"]
     if res["userErrors"]: raise RuntimeError(f"{row['handle']}: {res['userErrors']}")
-    a = res["article"]
-    l = load_ledger()
-    l["articles"][row["handle"]] = {"gid": a["id"], "title": a["title"], "is_published": a["isPublished"], "published_at": a.get("publishedAt"),
-        "scheduled_for": None if a["isPublished"] else row.get("publish_at"), "image": (a.get("image") or {}).get("url"),
-        "url": f"{SITE}/blogs/{BLOG_HANDLE}/{a['handle']}", "file": row["file"], "updated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')}
-    save_ledger(l)
+    # A successful mutation may omit freshly written metafields. Verify with a separate
+    # exact-handle read; never turn an uncertain mutation/readback into another create.
+    written = res.get("article") or {}
+    if not written.get("id"):
+        raise RuntimeError(f"{row['handle']}: mutation returned no article ID; inspect exact handle before retrying")
+    a = find_by_handle(row["handle"])
+    if not a or a["id"] != written["id"]:
+        raise RuntimeError(f"{row['handle']}: independent article readback missing or ID mismatch; no retry attempted")
+    validate_readback(row, a, preserve_live=bool(existing and existing["isPublished"] and row.get("publish_at")))
+    record_verified_article(row, a)
     state = "LIVE" if a["isPublished"] else (f"SCHEDULED {row.get('publish_at')}" if row.get("publish_at") else "DRAFT")
     print(f"OK {'updated' if existing else 'created'} {a['handle']} [{state}] {a['id']}")
     return a
+
+def validate_readback(row, a, preserve_live=False):
+    """Check the independently retrieved resource before recording success."""
+    if not a or a["handle"] != row["handle"]:
+        raise RuntimeError(f"{row['handle']}: article readback missing or handle mismatch")
+    returned_seo = read_seo(a)
+    requested_seo = seo_input(row)
+    if requested_seo:
+        mismatches = {k: {"requested": v, "returned": returned_seo.get(k)}
+                      for k, v in requested_seo.items() if returned_seo.get(k) != v}
+        if mismatches:
+            raise RuntimeError(f"{row['handle']}: SEO metafield readback mismatch: {mismatches}")
+    expected_published = bool(row.get("publish_now") or preserve_live)
+    if a["isPublished"] != expected_published:
+        raise RuntimeError(f"{row['handle']}: publication state readback mismatch")
+    if row.get("publish_at") and not preserve_live:
+        expected = datetime.datetime.fromisoformat(row["publish_at"].replace("Z", "+00:00"))
+        try:
+            actual = datetime.datetime.fromisoformat((a.get("publishedAt") or "").replace("Z", "+00:00"))
+        except ValueError as error:
+            raise RuntimeError(f"{row['handle']}: scheduled date readback missing or invalid") from error
+        if actual != expected:
+            raise RuntimeError(f"{row['handle']}: scheduled date readback mismatch")
+    if row.get("image_url"):
+        image = a.get("image") or {}
+        if not image.get("url") or image.get("altText") != (row.get("image_alt") or row.get("title") or a["title"]):
+            raise RuntimeError(f"{row['handle']}: image readback missing or alt text mismatch")
+
+def record_verified_article(row, a):
+    """Update one ledger row from an already validated, independent Admin read."""
+    returned_seo = read_seo(a)
+    l = load_ledger()
+    l["articles"][row["handle"]] = {"gid": a["id"], "title": a["title"], "is_published": a["isPublished"], "published_at": a.get("publishedAt"),
+        "scheduled_for": None if a["isPublished"] else row.get("publish_at"), "image": (a.get("image") or {}).get("url"),
+        "seo_title": returned_seo.get("title"), "seo_description": returned_seo.get("description"),
+        "url": f"{SITE}/blogs/{BLOG_HANDLE}/{a['handle']}", "file": row["file"], "updated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')}
+    save_ledger(l)
 
 def verify():
     l = load_ledger()
@@ -162,14 +283,26 @@ def verify():
             with urllib.request.urlopen(req, timeout=30) as resp: code = resp.status
         except urllib.error.HTTPError as e: code = e.code
         except Exception as e: code = str(e)[:30]
-        print(f"{h:60s} admin={'LIVE' if live and live['isPublished'] else ('exists' if live else 'MISSING'):7s} sched={r.get('scheduled_for') or '-':22s} http={code}")
+        expected = {k: r.get(f"seo_{k}") for k in ("title", "description")}
+        if not any(v is not None for v in expected.values()):
+            seo_state = "n/a"
+        elif not live:
+            seo_state = "missing"
+        else:
+            actual = read_seo(live)
+            seo_state = "ok" if all(v is None or actual.get(k) == v for k, v in expected.items()) else "DIFF"
+        print(f"{h:60s} admin={'LIVE' if live and live['isPublished'] else ('exists' if live else 'MISSING'):7s} "
+              f"sched={r.get('scheduled_for') or '-':22s} seo={seo_state:7s} http={code}")
 
 def list_all():
     after = None
     while True:
         d = gql(Q_LIST, {"after": after})["articles"]
         for n in d["nodes"]:
-            print(f"{'LIVE ' if n['isPublished'] else 'DRAFT'} {n.get('publishedAt') or '':22s} {n['handle']:60s} img={'y' if n.get('image') else 'n'} tags={n.get('tags')}")
+            seo = read_seo(n)
+            seo_state = "y" if seo.get("title") and seo.get("description") else ("partial" if any(seo.values()) else "n")
+            print(f"{'LIVE ' if n['isPublished'] else 'DRAFT'} {n.get('publishedAt') or '':22s} {n['handle']:60s} "
+                  f"img={'y' if n.get('image') else 'n'} seo={seo_state} tags={n.get('tags')}")
         if not d["pageInfo"]["hasNextPage"]: break
         after = d["pageInfo"]["endCursor"]
 
@@ -177,8 +310,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--file"); ap.add_argument("--handle"); ap.add_argument("--title"); ap.add_argument("--summary"); ap.add_argument("--tags")
     ap.add_argument("--author"); ap.add_argument("--image-url"); ap.add_argument("--image-alt")
+    ap.add_argument("--seo-title"); ap.add_argument("--seo-description")
     ap.add_argument("--publish-at"); ap.add_argument("--publish-now", action="store_true"); ap.add_argument("--draft", action="store_true")
-    ap.add_argument("--manifest"); ap.add_argument("--only"); ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--manifest"); ap.add_argument("--only")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--dry-run", action="store_true", help="read Shopify, but do not write")
+    mode.add_argument("--validate-only", action="store_true", help="validate payloads locally; no credentials or network")
     ap.add_argument("--verify", action="store_true"); ap.add_argument("--list", action="store_true"); ap.add_argument("--delete-handle")
     a = ap.parse_args()
     if a.list: return list_all()
@@ -195,10 +332,11 @@ def main():
     else:
         if not (a.file and a.handle): sys.exit("--file and --handle required")
         rows = [{"handle": a.handle, "file": a.file, "title": a.title, "summary": a.summary, "tags": a.tags, "author": a.author,
-                 "image_url": a.image_url, "image_alt": a.image_alt, "publish_at": a.publish_at, "publish_now": a.publish_now, "draft": a.draft}]
+                 "image_url": a.image_url, "image_alt": a.image_alt, "seo_title": a.seo_title,
+                 "seo_description": a.seo_description, "publish_at": a.publish_at, "publish_now": a.publish_now, "draft": a.draft}]
     fails = 0
     for r in rows:
-        try: upsert(r, dry=a.dry_run)
+        try: upsert(r, dry=a.dry_run, validate_only=a.validate_only)
         except Exception as e: fails += 1; print(f"FAIL {r.get('handle')}: {e}", file=sys.stderr)
     if fails: sys.exit(1)
 
