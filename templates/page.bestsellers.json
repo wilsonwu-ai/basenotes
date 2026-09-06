@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "main": {
+      "type": "bestsellers-page",
+      "settings": {
+        "eyebrow": "Retailer picks",
+        "heading": "Retailer Bestsellers",
+        "description": "The fragrances retailers and their customers are reaching for most.",
+        "products_to_show": 12
+      }
+    }
+  },
+  "order": ["main"]
+}

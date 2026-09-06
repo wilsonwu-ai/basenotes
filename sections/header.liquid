@@ -158,7 +158,7 @@
         </button>
       {%- endif -%}
 
-      <a href="{{ routes.account_url }}" class="header__action-btn" aria-label="Account">
+      <a href="{{ routes.account_url }}" class="header__action-btn header__account-btn" aria-label="Account">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
           <circle cx="12" cy="7" r="4"/>
@@ -664,10 +664,53 @@
 
   /* Ensure cart icon doesn't get cut off on mobile */
   @media (max-width: 768px) {
+    /* MOBILE_OVERFLOW_GUARD_START: keep every header child inside the real CSS viewport. */
+    .announcement-bar .container,
+    .announcement-bar__text,
+    .announcement-bar__text a {
+      min-width: 0;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
+    .header__inner {
+      gap: var(--spacing-sm);
+      min-width: 0;
+    }
+
+    .header__menu-toggle {
+      flex: 0 0 44px;
+    }
+
+    .header__logo {
+      display: flex;
+      flex: 1 1 auto;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .header__logo a,
+    .header__logo img {
+      max-width: 100%;
+    }
+
+    .header__logo-text {
+      display: block;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .header__actions {
       gap: 0;
       margin-right: 0;
-      flex-shrink: 0;
+      flex: 0 0 auto;
+    }
+
+    /* Account remains available in the mobile drawer; preserve room for search and cart. */
+    .header__account-btn {
+      display: none;
     }
 
     .header__action-btn {
@@ -685,6 +728,7 @@
       padding-left: 8px;
       padding-right: 8px;
     }
+    /* MOBILE_OVERFLOW_GUARD_END */
   }
 
   .header__account-indicator {

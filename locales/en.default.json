@@ -27,9 +27,17 @@
     "skip_to_content": "Skip to content",
     "close": "Close",
     "loading": "Loading...",
-    "refresh_page": "Choosing a selection results in a full page refresh."
+    "refresh_page": "Choosing a selection results in a full page refresh.",
+    "product_rating": "{{ rating }} out of 5 stars, {{ count }} reviews",
+    "product_rating_compact": "{{ rating }} ({{ count }} reviews)"
   },
   "products": {
+    "internal_addon": {
+      "eyebrow": "Subscriber add-on only",
+      "heading": "Temporarily unavailable from this page",
+      "body": "This item can only be added to an active Base Note subscription. Its subscription settings are being corrected, so standalone purchase is unavailable right now.",
+      "button": "Unavailable while configuration is updated"
+    },
     "product": {
       "add_to_cart": "Add to Queue",
       "added_to_cart": "Added to Queue",
@@ -42,6 +50,14 @@
       "vendor": "Brand",
       "type": "Type",
       "sku": "SKU"
+    }
+  },
+  "sections": {
+    "bestsellers": {
+      "view_all": "View all bestsellers",
+      "empty_heading": "Our bestsellers are being curated.",
+      "empty_body": "Check back soon for the fragrances our retailer community is reaching for most.",
+      "browse_all": "Browse all fragrances"
     }
   },
   "collections": {

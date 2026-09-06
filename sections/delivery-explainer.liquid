@@ -249,6 +249,16 @@
     .delivery-benefits {
       grid-template-columns: repeat(2, 1fr);
     }
+
+    /* The global large-button padding exceeded a 390px container for this long label. */
+    .delivery-section .btn {
+      max-width: 100%;
+      min-width: 0;
+      padding-inline: var(--spacing-lg);
+      overflow-wrap: anywhere;
+      text-align: center;
+      white-space: normal;
+    }
   }
 
   @media (max-width: 480px) {

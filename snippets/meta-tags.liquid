@@ -7,9 +7,14 @@
   assign og_title = page_title | default: shop.name
   assign og_description = page_description | default: shop.description | default: default_social_description
   assign og_type = 'website'
+  assign is_internal_addon_page = false
 
   if template.name == 'product'
     assign og_type = 'product'
+    if product.handle == 'extra-5ml-vial-add-on'
+      assign is_internal_addon_page = true
+      assign og_description = 'Subscriber-only Base Note add-on. Standalone purchase is unavailable while its subscription configuration is being updated.'
+    endif
   elsif template.name == 'article'
     assign og_type = 'article'
   endif
@@ -21,7 +26,7 @@
 <meta property="og:description" content="{{ og_description | escape }}">
 <meta property="og:url" content="{{ canonical_url }}">
 
-{%- if template.name == 'product' -%}
+{%- if template.name == 'product' and is_internal_addon_page == false -%}
   <meta property="og:price:amount" content="{{ product.price | money_without_currency }}">
   <meta property="og:price:currency" content="{{ cart.currency.iso_code }}">
   {%- if product.featured_image -%}
@@ -41,7 +46,7 @@
 <meta name="twitter:title" content="{{ og_title | escape }}">
 <meta name="twitter:description" content="{{ og_description | escape }}">
 
-{%- if template.name == 'product' -%}
+{%- if template.name == 'product' and is_internal_addon_page == false -%}
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
