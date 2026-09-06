@@ -4,7 +4,7 @@
 Usage:
   python3 scripts/gen_image.py --prompt "..." --out growth-audit/ai-images/blog/x/hero.jpg [--aspect 16:9] [--model fal-ai/nano-banana-2]
   python3 scripts/gen_image.py --video --image-url https://... --prompt "..." --out clip.mp4 [--model bytedance/seedance-2.0/image-to-video]
-  python3 scripts/gen_image.py --batch jobs.json   # [{prompt,out,aspect?,model?,video?,image_url?}]
+  python3 scripts/gen_image.py --batch jobs.json --fal-only  # or set ``fal_only: true`` per image job
 
 Reads FAL_KEY (or FAL_API_KEY) from env, then from .env in repo root.
 Writes a sidecar <out>.prompt.json with model, prompt, params, request_id, source url.
@@ -114,9 +114,13 @@ def gen_image_openai(prompt, out, aspect="16:9", max_kb=300, model="gpt-image-1"
     print(f"OK openai/{model} -> {out} ({out.stat().st_size//1024} KB)")
     return side
 
-def gen_image(prompt, out, aspect="16:9", model=None, resolution="2K", extra=None, max_kb=300):
+def gen_image(prompt, out, aspect="16:9", model=None, resolution="2K", extra=None, max_kb=300,
+              allow_openai_fallback=True):
     out = pathlib.Path(out)
-    if model == "openai": return gen_image_openai(prompt, out, aspect, max_kb)
+    if model == "openai":
+        if not allow_openai_fallback:
+            raise SystemExit("OpenAI image generation is disabled by --fal-only/--no-openai-fallback")
+        return gen_image_openai(prompt, out, aspect, max_kb)
     models = [model] if model else [IMG_DEFAULT] + IMG_FALLBACKS
     last = None
     for m in models:
@@ -143,7 +147,9 @@ def gen_image(prompt, out, aspect="16:9", model=None, resolution="2K", extra=Non
             last = f"{m}: {e} {body}"
             print(f"WARN {last}", file=sys.stderr)
             continue
-    # fal exhausted/locked → OpenAI fallback
+    if not allow_openai_fallback:
+        raise SystemExit(f"all FAL image models failed; OpenAI fallback disabled. last: {last}")
+    # fal exhausted/locked -> OpenAI fallback
     try:
         print(f"WARN fal unavailable ({str(last)[:80]}); falling back to OpenAI", file=sys.stderr)
         return gen_image_openai(prompt, out, aspect, max_kb)
@@ -185,15 +191,21 @@ def main():
     ap.add_argument("--model"); ap.add_argument("--resolution", default="2K"); ap.add_argument("--max-kb", type=int, default=300)
     ap.add_argument("--video", action="store_true"); ap.add_argument("--image-url"); ap.add_argument("--duration", type=int, default=5)
     ap.add_argument("--batch", help="json list of jobs"); ap.add_argument("--skip-existing", action="store_true")
+    ap.add_argument("--fal-only", "--no-openai-fallback", dest="fal_only", action="store_true",
+                    help="fail closed after FAL errors; never call the OpenAI Images API (image jobs only)")
     a = ap.parse_args()
     KEY = load_key()
-    jobs = json.loads(pathlib.Path(a.batch).read_text()) if a.batch else [{"prompt": a.prompt, "out": a.out, "aspect": a.aspect, "model": a.model, "video": a.video, "image_url": a.image_url, "duration": a.duration, "resolution": a.resolution}]
+    jobs = json.loads(pathlib.Path(a.batch).read_text()) if a.batch else [{"prompt": a.prompt, "out": a.out, "aspect": a.aspect, "model": a.model, "video": a.video, "image_url": a.image_url, "duration": a.duration, "resolution": a.resolution, "fal_only": a.fal_only}]
     fails = 0
     for j in jobs:
         if a.skip_existing and pathlib.Path(j["out"]).exists(): print(f"skip {j['out']}"); continue
         try:
             if j.get("video"): gen_video(j["prompt"], j["out"], j.get("image_url"), j.get("model"), j.get("duration", 5), j.get("aspect", "16:9"), (j.get("resolution") if j.get("resolution") in ("480p", "720p", "1080p") else "720p"))
-            else: gen_image(j["prompt"], j["out"], j.get("aspect", "16:9"), j.get("model"), j.get("resolution", a.resolution), j.get("extra"), a.max_kb)
+            else:
+                fal_only = a.fal_only or bool(j.get("fal_only", False))
+                gen_image(j["prompt"], j["out"], j.get("aspect", "16:9"), j.get("model"),
+                          j.get("resolution", a.resolution), j.get("extra"), a.max_kb,
+                          allow_openai_fallback=not fal_only)
         except (SystemExit, Exception) as e:
             fails += 1; print(f"FAIL {j.get('out')}: {e}", file=sys.stderr)
     if fails: sys.exit(1)
