@@ -1,6 +1,6 @@
 # PRD: Latest Theme Recovery and Release Guardrail
 
-**Status:** Published as theme 164045029594; independent postpublication smoke checks in progress
+**Status:** Published as theme 164045029594; independent postpublication smoke checks passed
 **Severity:** SEV-1 storefront regression, with P0 commerce containment
 **Updated:** 2026-09-06
 **Owner:** Base Note engineering
@@ -15,10 +15,10 @@ Keep the newest approved Base Note storefront as the only production lineage, re
 - Shopify showed `Jeff fixes Sep 3 QA` (theme `163971432666`) as live while the preserved newer `basenotes/main` theme (`158692901082`) was unpublished. This was a release-selection failure, not a homepage content edit.
 - A pulled-file comparison showed the QA theme matched the older theme-integration lineage, while `basenotes/main` retained the newer hero, founding-member placement, and redesigned How It Works experience.
 - Git also drifted: `origin/main` did not contain the later storefront snapshot on `origin/snapshot/live-theme-2026-08-31`, even though both share a common ancestor. Publishing from either lineage alone can therefore regress the other.
-- Emergency restoration is complete: as of 2026-09-06, Shopify reports `basenotes/main` (`158692901082`) as live and the two September QA themes as unpublished.
+- Emergency restoration had completed before this recovery resumed: `basenotes/main` (`158692901082`) was live and the two September QA themes were unpublished. The verified integrated release below now supersedes that emergency restoration.
 - The helper product `extra-5ml-vial-add-on` was public and indexable. Its product data exposed a standalone price and a different first-order selling-plan price while `requires_selling_plan` remained false. That made the standalone PDP misleading and potentially purchasable outside its intended subscriber flow.
 - A post-restore 390px screenshot clipped several right edges because macOS headless Chrome produced a 390px bitmap from a 500px CSS viewport. Correct CDP device emulation measured the named announcement, hero, and consent elements inside 390px. It did reveal one genuine overflow: the delivery-section CTA reached 405.5px because global large-button padding plus no-wrap text exceeded its container.
-- PR #47 is intentionally excluded. Its add-on assumptions conflict with the current commerce configuration, and its comparison UI has unresolved accessibility QA.
+- PR #47 is intentionally excluded. Its separate remediation passed eight tests and was pushed to that PR, but deployment still requires a dedicated $18-initial/$18-recurring plan and the exact configured plan ID.
 
 ## User requirements
 
@@ -76,7 +76,7 @@ Out of scope: PR #47; changing add-on prices or selling plans; Appstle contract 
 - [x] The same injected-CSS check at 1440px has no right-overflowing element and retains the desktop header, CTA, and consent layouts.
 - [x] Candidate-preview smoke tests pass for home, `/collections/fragrances`, `/pages/bestsellers`, representative ordinary PDP, guarded add-on PDP, cart, both search queries, customer-account login, Journal, and vanilla article.
 - [x] The vanilla guide preserves its authored SEO title and full description in the candidate HTML, and its canonical points to the public article URL.
-- [ ] After publish, the same smoke suite passes on the public domain and Shopify reports the intended candidate ID as live.
+- [x] After publish, all eleven public routes return 200 on the intended live theme; independent desktop/mobile image, navigation, and anonymous subscription-cart checks pass.
 
 ## Release and rollback
 
@@ -127,7 +127,12 @@ Out of scope: PR #47; changing add-on prices or selling plans; Appstle contract 
 
 - The release operator published the recorded candidate `164045029594` after independent preview and merchant-drift verification. Immediate Shopify readback confirms it is live; primary rollback `158692901082` and retained secondary rollback `163971432666` remain unpublished and intact. No theme was deleted.
 - The public vanilla article now exposes its exact authored title and description. Public crawler and sitemap checks were repeated after publication by the content/release operator.
-- Independent postpublication route, desktop/mobile, navigation, and anonymous subscription-cart evidence is being recorded at `/private/tmp/basenote-release-verified-20260906/report.json`.
+- Independent postpublication evidence at `/private/tmp/basenote-release-verified-20260906/report.json` confirms **11/11 routes return HTTP 200 with theme 164045029594 and role main**: home, fragrances collection, bestsellers, ordinary PDP, guarded add-on PDP, cart, account/login, two searches, Journal, and vanilla article. No Liquid error was detected.
+- Independent live browser checks at 1440px and 390px verify eight featured cards with all eight primary images loaded and visible, document widths matching their viewports, and working mobile navigation. A fresh anonymous UI subscription cart has one line totaling **$15**, a **$20** comparison and subsequent allocation, and zero legacy add-on controls. No checkout order was placed.
+- Final live vanilla browser/OAI-SearchBot requests return 200 with the authored title, full description, canonical, hero and Article JSON-LD. The vanilla route is in the sitemap; the gym route remains 404 and absent from the sitemap until its verified December 28 schedule. Article creation, image generation, and Media Worker deployment were not repeated.
+- Read-only `?view=bestsellers` rendering also confirms the included retailer template presents its labeled empty state when no collection is configured; no page-template assignment was changed. Its populated-collection state and a positive-rating review fixture remain unexercised because those live fixtures were unavailable.
+- Fresh Admin access-scope evidence confirms `write_products` and `read_customers` are absent. The product UNLISTED/configuration gate remains; the requested aggregate customer-queue report cannot retrieve its input. No customer information or private-message content is included in this repository.
+- Root worktree protection was verified after release: its tracked diff SHA-256 remained `0ac9fc9ade199d43057490acbe7502dd297a14cde81147edfeded310d37aea4e`, with 421 pre-existing untracked files. All implementation and release records stayed in the isolated worktrees.
 
 ## Success signals
 
