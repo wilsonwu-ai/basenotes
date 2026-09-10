@@ -11,6 +11,16 @@ const pdp = fs.readFileSync('sections/main-product.liquid', 'utf8');
 const newsletter = fs.readFileSync('sections/newsletter.liquid', 'utf8');
 const atelier = fs.readFileSync('sections/home-scent-atelier.liquid', 'utf8');
 const layout = fs.readFileSync('layout/theme.liquid', 'utf8');
+const quizSurfaces = [
+  'templates/customers/account.liquid',
+  'templates/article.liquid',
+  'templates/cart.liquid',
+  'sections/main-page-about.liquid',
+  'sections/growth-goal.liquid',
+  'sections/get-started.liquid',
+  'sections/faq-page.liquid',
+  'sections/hero.liquid'
+].map((file) => fs.readFileSync(file, 'utf8')).join('\n');
 
 test('live merchant imagery remains referenced', () => {
   assert.match(index, /shopify:\/\/shop_images\/case-forest-green\.png/);
@@ -75,4 +85,8 @@ test('newsletter keeps the original styling and promotes new scent drops', () =>
   assert.match(index, /"button_label": "Tell Me First"/);
   assert.equal(parsedIndex.sections.newsletter.disabled, undefined);
   assert.match(layout, /unless request\.page_type == 'index'/);
+});
+
+test('quiz is removed from customer-facing discovery surfaces', () => {
+  assert.doesNotMatch(quizSurfaces, /\/pages\/find-your-scent|Take the Scent Quiz|Find My Scent|fragrance quiz|from our quiz/i);
 });
