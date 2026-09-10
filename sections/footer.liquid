@@ -1,4 +1,31 @@
-<footer class="footer">
+{%- liquid
+  assign artifact_surface = false
+  if request.page_type == 'index' or request.page_type == 'product' or request.page_type == 'cart'
+    assign artifact_surface = true
+  endif
+-%}
+<footer class="footer{% if artifact_surface %} footer--artifact{% endif %}">
+  {%- if artifact_surface -%}
+    <div class="artifact-footer">
+      <div class="artifact-footer__lead">
+        <div>
+          <p class="artifact-footer__eyebrow">The scent list</p>
+          <h2>New scents keep landing.</h2>
+          <p>Get first access to every new vial drop.</p>
+        </div>
+        {%- form 'customer', class: 'artifact-footer__form' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter,artifact-footer">
+          <label class="visually-hidden" for="ArtifactFooterEmail-{{ section.id }}">Email address</label>
+          <input id="ArtifactFooterEmail-{{ section.id }}" type="email" name="contact[email]" placeholder="Email address" autocomplete="email" required>
+          <button type="submit">Join the list</button>
+        {%- endform -%}
+      </div>
+      <div class="artifact-footer__base">
+        <p>© {{ 'now' | date: '%Y' }} Base Note</p>
+        <nav aria-label="Footer"><a href="/collections/fragrances">Fragrances</a><a href="/pages/about-us">About</a><a href="{{ policies.privacy_policy.url }}">Privacy</a><a href="{{ policies.terms_of_service.url }}">Terms</a></nav>
+      </div>
+    </div>
+  {%- endif -%}
   {% comment %} Newsletter Section {% endcomment %}
   {%- if section.settings.newsletter_enabled -%}
   <div class="footer__newsletter">
@@ -562,6 +589,107 @@
   .footer__back-to-top svg {
     width: 24px;
     height: 24px;
+  }
+
+  .footer--artifact {
+    background: #22392b;
+    color: #f4efe3;
+  }
+
+  .footer--artifact > .footer__newsletter,
+  .footer--artifact > .footer__main,
+  .footer--artifact > .footer__bottom {
+    display: none;
+  }
+
+  .artifact-footer {
+    width: min(100% - 3rem, 72rem);
+    margin-inline: auto;
+    padding-block: 4rem 1.5rem;
+  }
+
+  .artifact-footer__lead {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.8fr);
+    gap: 4rem;
+    align-items: end;
+    padding-block-end: 3rem;
+    border-block-end: 0.0625rem solid rgb(244 239 227 / 22%);
+  }
+
+  .artifact-footer__eyebrow {
+    margin: 0 0 0.7rem;
+    color: #d5bc82;
+    font: 500 0.65rem/1.2 'Jost', sans-serif;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .artifact-footer h2 {
+    margin: 0;
+    color: #f4efe3;
+    font: 700 clamp(2rem, 4vw, 3.2rem)/1.05 'Playfair Display', serif;
+    letter-spacing: -0.025em;
+  }
+
+  .artifact-footer__lead > div > p:last-child {
+    margin: 0.7rem 0 0;
+    color: rgb(244 239 227 / 72%);
+    font: 1rem/1.5 'EB Garamond', serif;
+  }
+
+  .artifact-footer__form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    border-block-end: 0.0625rem solid #d5bc82;
+  }
+
+  .artifact-footer__form input,
+  .artifact-footer__form button {
+    min-height: 3rem;
+    border: 0;
+    color: #f4efe3;
+    background: transparent;
+    font: 500 0.7rem/1 'Jost', sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .artifact-footer__form input {
+    min-width: 0;
+    padding-inline: 0;
+  }
+
+  .artifact-footer__form input::placeholder {
+    color: rgb(244 239 227 / 55%);
+  }
+
+  .artifact-footer__form button {
+    padding-inline: 1rem 0;
+    color: #d5bc82;
+    cursor: pointer;
+  }
+
+  .artifact-footer__base {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-block-start: 1.4rem;
+    color: rgb(244 239 227 / 55%);
+    font: 500 0.62rem/1.4 'Jost', sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .artifact-footer__base p { margin: 0; }
+  .artifact-footer__base nav { display: flex; flex-wrap: wrap; gap: 1.4rem; }
+  .artifact-footer__base a { color: inherit; }
+
+  @media (max-width: 46rem) {
+    .artifact-footer { width: min(100% - 2rem, 72rem); padding-block-start: 3rem; }
+    .artifact-footer__lead { grid-template-columns: 1fr; gap: 2rem; }
+    .artifact-footer__form input { font-size: 1rem; }
+    .artifact-footer__base { align-items: flex-start; flex-direction: column-reverse; }
   }
 </style>
 

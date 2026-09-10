@@ -11,24 +11,9 @@
         "collection": "fragrances",
         "products_to_show": 8
       }
-    },
-    "scent-atelier": {
-      "type": "home-scent-atelier",
-      "settings": {
-        "eyebrow": "Your scent, your way",
-        "heading": "Turn the vial. Choose your scent.",
-        "description": "Explore a Base Note vial, choose any scent, then buy it once. Your first vial is $20 and each additional vial is $18.",
-        "collection": "fragrances"
-      }
-    },
-    "jeff-newsletter": {
-      "type": "jeff-newsletter",
-      "settings": {}
     }
   },
   "order": [
-    "jeff-storefront",
-    "scent-atelier",
-    "jeff-newsletter"
+    "jeff-storefront"
   ]
 }
