@@ -1,0 +1,299 @@
+<section class="buying-paths" id="ways-to-shop" aria-labelledby="BuyingPathsTitle-{{ section.id }}">
+  <div class="buying-paths__inner">
+    <header class="buying-paths__header">
+      <p class="buying-paths__eyebrow">{{ section.settings.eyebrow }}</p>
+      <h2 class="buying-paths__title" id="BuyingPathsTitle-{{ section.id }}">{{ section.settings.heading }}</h2>
+      <p class="buying-paths__intro">{{ section.settings.intro }}</p>
+    </header>
+
+    <div class="buying-paths__grid">
+      <article class="buying-path buying-path--primary">
+        <span class="buying-path__number" aria-hidden="true">01</span>
+        <p class="buying-path__kicker">{{ section.settings.once_kicker }}</p>
+        <h3 class="buying-path__title">{{ section.settings.once_heading }}</h3>
+        <p class="buying-path__copy">{{ section.settings.once_copy }}</p>
+        <ul class="buying-path__details" role="list">
+          <li>Authentic 5 ml fragrance</li>
+          <li>One-time purchase</li>
+          <li>No recurring charge</li>
+        </ul>
+        <a class="buying-path__button buying-path__button--primary" href="{{ section.settings.once_link | default: routes.all_products_collection_url }}">
+          {{ section.settings.once_button }}
+        </a>
+      </article>
+
+      <article class="buying-path">
+        <span class="buying-path__number" aria-hidden="true">02</span>
+        <p class="buying-path__kicker">{{ section.settings.rotation_kicker }}</p>
+        <h3 class="buying-path__title">{{ section.settings.rotation_heading }}</h3>
+        <p class="buying-path__copy">{{ section.settings.rotation_copy }}</p>
+        <ul class="buying-path__details" role="list">
+          <li>One 5 ml scent each month</li>
+          <li>Swap, pause, or cancel</li>
+          <li>No luxury-brand surcharges</li>
+        </ul>
+        <a class="buying-path__button" href="{{ section.settings.rotation_link | default: routes.all_products_collection_url }}">
+          {{ section.settings.rotation_button }}
+        </a>
+      </article>
+
+      <article class="buying-path">
+        <span class="buying-path__number" aria-hidden="true">03</span>
+        <p class="buying-path__kicker">{{ section.settings.bottle_kicker }}</p>
+        <h3 class="buying-path__title">{{ section.settings.bottle_heading }}</h3>
+        <p class="buying-path__copy">{{ section.settings.bottle_copy }}</p>
+        <ul class="buying-path__details" role="list">
+          <li>Authentic full-size sourcing</li>
+          <li>Your quote shown before you buy</li>
+          <li>Buy only when you know</li>
+        </ul>
+        <a class="buying-path__button" href="{% if section.settings.bottle_link != blank %}{{ section.settings.bottle_link }}{% else %}mailto:hello@basenotescent.com?subject=Full%20bottle%20request{% endif %}">
+          {{ section.settings.bottle_button }}
+        </a>
+      </article>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .buying-paths {
+    --buying-paths-ink: #0f1211;
+    --buying-paths-bone: #f3efe7;
+    --buying-paths-forest: #1f3a34;
+    --buying-paths-brass: #b99a5b;
+    --buying-paths-muted: #a9a39a;
+    padding-block: clamp(4rem, 9vw, 8rem);
+    color: var(--buying-paths-bone);
+    background: var(--buying-paths-ink);
+  }
+
+  .buying-paths__inner {
+    width: min(100% - 2rem, 88rem);
+    margin-inline: auto;
+  }
+
+  .buying-paths__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(16rem, 0.75fr);
+    gap: 2rem;
+    align-items: end;
+    padding-block-end: clamp(2rem, 5vw, 4rem);
+    border-block-end: 1px solid rgb(243 239 231 / 16%);
+  }
+
+  .buying-paths__eyebrow {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--buying-paths-brass);
+  }
+
+  .buying-paths__title {
+    margin: 0;
+    max-width: 13ch;
+    font-family: var(--font-heading);
+    font-size: clamp(2.5rem, 6vw, 5.75rem);
+    font-weight: 500;
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  .buying-paths__intro {
+    margin: 0;
+    max-width: 34rem;
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    line-height: 1.65;
+    color: var(--buying-paths-muted);
+  }
+
+  .buying-paths__grid {
+    display: grid;
+    grid-template-columns: 1.18fr 1fr 1fr;
+    border-block-end: 1px solid rgb(243 239 231 / 16%);
+  }
+
+  .buying-path {
+    display: flex;
+    min-width: 0;
+    min-height: 34rem;
+    flex-direction: column;
+    padding: clamp(1.5rem, 3vw, 2.75rem);
+    border-inline-start: 1px solid rgb(243 239 231 / 16%);
+  }
+
+  .buying-path:last-child {
+    border-inline-end: 1px solid rgb(243 239 231 / 16%);
+  }
+
+  .buying-path--primary {
+    color: var(--buying-paths-ink);
+    background: var(--buying-paths-bone);
+    border-color: var(--buying-paths-bone);
+  }
+
+  .buying-path__number {
+    margin-block-end: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: clamp(2rem, 4vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1;
+    color: var(--buying-paths-brass);
+  }
+
+  .buying-path__kicker {
+    margin: 3rem 0 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--buying-paths-brass);
+  }
+
+  .buying-path__title {
+    max-width: 14ch;
+    font-size: clamp(1.7rem, 3vw, 2.75rem);
+    line-height: 1;
+    letter-spacing: -0.025em;
+  }
+
+  .buying-path__copy {
+    margin-block: 1rem 1.5rem;
+    max-width: 31ch;
+    color: var(--buying-paths-muted);
+  }
+
+  .buying-path--primary .buying-path__copy {
+    color: #565b57;
+  }
+
+  .buying-path__details {
+    display: grid;
+    gap: 0.65rem;
+    margin: 0 0 2rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9rem;
+  }
+
+  .buying-path__details li {
+    display: flex;
+    gap: 0.65rem;
+    align-items: center;
+  }
+
+  .buying-path__details li::before {
+    width: 1.5rem;
+    height: 1px;
+    flex: 0 0 auto;
+    content: '';
+    background: var(--buying-paths-brass);
+  }
+
+  .buying-path__button {
+    display: inline-flex;
+    min-height: 3.25rem;
+    margin-block-start: auto;
+    padding: 0.85rem 1.25rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--buying-paths-brass);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--buying-paths-bone);
+    transition: color 180ms ease, background-color 180ms ease;
+  }
+
+  .buying-path__button:hover,
+  .buying-path__button:focus-visible {
+    color: var(--buying-paths-ink);
+    background: var(--buying-paths-brass);
+  }
+
+  .buying-path__button--primary {
+    color: var(--buying-paths-bone);
+    background: var(--buying-paths-forest);
+    border-color: var(--buying-paths-forest);
+  }
+
+  .buying-path__button--primary:hover,
+  .buying-path__button--primary:focus-visible {
+    color: var(--buying-paths-bone);
+    background: var(--buying-paths-ink);
+  }
+
+  .buying-path__button:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 3px;
+  }
+
+  @media screen and (max-width: 899px) {
+    .buying-paths__header {
+      grid-template-columns: 1fr;
+    }
+
+    .buying-paths__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .buying-path {
+      min-height: 0;
+      border-inline-end: 1px solid rgb(243 239 231 / 16%);
+      border-block-end: 1px solid rgb(243 239 231 / 16%);
+    }
+
+    .buying-path__number {
+      margin-block-end: 2.5rem;
+    }
+
+    .buying-path__kicker {
+      margin-block-start: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .buying-path__button {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Three ways to shop",
+  "tag": "section",
+  "class": "home-buying-paths-section",
+  "limit": 1,
+  "enabled_on": { "templates": ["index"] },
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Three ways to wear Base Note" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Start small. Stay curious. Go full size when you know." },
+    { "type": "textarea", "id": "intro", "label": "Introduction", "default": "Choose the way you want to shop today. A one-time vial comes first; Monthly Rotation and full bottles are there when you are ready." },
+    { "type": "header", "content": "One-time vial" },
+    { "type": "text", "id": "once_kicker", "label": "Label", "default": "Try once" },
+    { "type": "text", "id": "once_heading", "label": "Heading", "default": "Meet a scent on your skin." },
+    { "type": "textarea", "id": "once_copy", "label": "Copy", "default": "Choose an authentic 5 ml vial and wear it through real days before deciding what comes next." },
+    { "type": "text", "id": "once_button", "label": "Button label", "default": "Shop one-time vials" },
+    { "type": "url", "id": "once_link", "label": "Button link" },
+    { "type": "header", "content": "Monthly Rotation" },
+    { "type": "text", "id": "rotation_kicker", "label": "Label", "default": "Monthly Rotation · subscription" },
+    { "type": "text", "id": "rotation_heading", "label": "Heading", "default": "Keep discovery in motion." },
+    { "type": "textarea", "id": "rotation_copy", "label": "Copy", "default": "Monthly Rotation is our flexible subscription: one authentic 5 ml scent delivered each month for a flat price." },
+    { "type": "text", "id": "rotation_button", "label": "Button label", "default": "Explore Monthly Rotation" },
+    { "type": "url", "id": "rotation_link", "label": "Button link" },
+    { "type": "header", "content": "Full bottles" },
+    { "type": "text", "id": "bottle_kicker", "label": "Label", "default": "Go full size" },
+    { "type": "text", "id": "bottle_heading", "label": "Heading", "default": "Commit to the one you love." },
+    { "type": "textarea", "id": "bottle_copy", "label": "Copy", "default": "Found your signature? Buy the full bottle from Base Note for less than you would typically pay at retail." },
+    { "type": "text", "id": "bottle_button", "label": "Button label", "default": "Shop full bottles" },
+    { "type": "url", "id": "bottle_link", "label": "Button link" }
+  ],
+  "presets": [{ "name": "Three ways to shop" }]
+}
+{% endschema %}

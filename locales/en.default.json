@@ -32,6 +32,12 @@
     "product_rating_compact": "{{ rating }} ({{ count }} reviews)"
   },
   "products": {
+    "card": {
+      "one_time_available": "One-time purchase available",
+      "monthly_rotation": "Monthly Rotation subscription",
+      "choose_purchase": "Try this scent",
+      "start_rotation": "Start Monthly Rotation"
+    },
     "internal_addon": {
       "eyebrow": "Subscriber add-on only",
       "heading": "Temporarily unavailable from this page",
