@@ -203,8 +203,29 @@
     </div>
   </a>
 
+  {%- if product.available and product.selling_plan_groups.size > 0 and product.handle != 'extra-5ml-vial-add-on' -%}
+    <button
+      class="product-card__compare"
+      type="button"
+      data-compare-price
+      aria-haspopup="dialog"
+      aria-controls="BaseNoteComparePriceDialog"
+      data-compare-product="{{ product.title | escape }}"
+      data-compare-price-value="{{ settings.subscription_price | default: '$20' | append: ' / month' | escape }}"
+      data-compare-retail-mode="{% if current_variant.compare_at_price > current_variant.price %}exact{% else %}variable{% endif %}"
+      data-compare-retail-value="{% if current_variant.compare_at_price > current_variant.price %}{{ current_variant.compare_at_price | money | escape }}{% endif %}"
+    >
+      <span>Compare price</span>
+      <span aria-hidden="true">→</span>
+    </button>
+  {%- endif -%}
+
   {% comment %} Quick Add Button {% endcomment %}
-  {%- if show_quick_add and product.available and product.selling_plan_groups.size > 0 -%}
+  {%- if show_quick_add and product.handle == 'extra-5ml-vial-add-on' -%}
+    <div class="product-card__sold-out-btn" data-extra-vial-direct-purchase-blocked>
+      <span>Available only as an add-on</span>
+    </div>
+  {%- elsif show_quick_add and product.available and product.selling_plan_groups.size > 0 -%}
     <button
       class="product-card__add-btn"
       data-quick-add="{{ current_variant.id }}"
@@ -581,6 +602,28 @@
     letter-spacing: 0.05em;
     color: var(--color-text-muted);
     margin-top: 2px;
+  }
+
+  .product-card__compare {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: calc(100% - (var(--spacing-md) * 2));
+    margin: 0 var(--spacing-md) var(--spacing-sm);
+    padding: var(--spacing-sm) 0;
+    border: 0;
+    border-bottom: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-primary);
+    font: inherit;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .product-card__compare:hover {
+    color: var(--color-secondary);
   }
 
   /* Rating */
