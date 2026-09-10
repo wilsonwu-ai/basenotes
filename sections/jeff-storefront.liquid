@@ -1,0 +1,157 @@
+{%- liquid
+  assign featured_collection = collections[section.settings.collection]
+  assign featured_limit = section.settings.products_to_show | default: 8
+  assign banner_image = images['gLmqu.jpg']
+-%}
+
+<section class="jeff-storefront" data-jeff-storefront>
+  <div class="jeff-storefront__filters" aria-label="Shop fragrances">
+    <a class="is-active" href="{{ featured_collection.url | default: '/collections/fragrances' }}">All</a>
+    <a href="{{ featured_collection.url | default: '/collections/fragrances' }}?sort_by=best-selling">Bestsellers</a>
+    <a href="{{ featured_collection.url | default: '/collections/fragrances' }}?sort_by=created-descending">New drops</a>
+    <a href="/products/creed-aventus#productForm">Monthly Rotation</a>
+  </div>
+
+  <header class="jeff-storefront__hero container">
+    <div class="jeff-storefront__hero-copy">
+      <p class="jeff-storefront__eyebrow">Start with $20</p>
+      <h1>Find scents that work for you.</h1>
+      <p class="jeff-storefront__intro"><em>Real Creed, Tom Ford, Valentino, Xerjoff. Try any 5ml for $20.</em></p>
+      <a class="jeff-storefront__text-link" href="{{ featured_collection.url | default: '/collections/fragrances' }}">Shop fragrances and get your vial today</a>
+      <p class="jeff-storefront__price-rule">$20 for your first fragrance <span aria-hidden="true">·</span> $18 for each one after</p>
+      <div class="jeff-storefront__rating" aria-label="4.8 average rating from more than 1,240 orders">
+        <span aria-hidden="true">★★★★★</span>
+        <small>4.8 average rating · 1,240+ orders shipped</small>
+      </div>
+    </div>
+    <div class="jeff-storefront__banner">
+      {%- if banner_image != blank -%}
+        {{ banner_image | image_url: width: 1400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '480, 720, 960, 1200, 1400', sizes: '(max-width: 749px) 100vw, 50vw', alt: 'Base Note fragrance vials suspended against a warm cream background' }}
+      {%- else -%}
+        <img src="https://basenotescent.com/cdn/shop/files/gLmqu.jpg" width="1024" height="1024" alt="Base Note fragrance vials suspended against a warm cream background" fetchpriority="high">
+      {%- endif -%}
+    </div>
+  </header>
+
+  <div class="jeff-storefront__grid container" aria-label="Featured fragrances">
+    {%- for product in featured_collection.products limit: featured_limit -%}
+      {%- assign card_variant = product.selected_or_first_available_variant -%}
+      <article class="jeff-product-card">
+        <a class="jeff-product-card__image" href="{{ product.url }}">
+          {%- if product.featured_image != blank -%}
+            {{ product.featured_image | image_url: width: 720 | image_tag: loading: 'lazy', widths: '280, 420, 560, 720', sizes: '(max-width: 749px) 50vw, 25vw', alt: product.featured_image.alt | default: product.title }}
+          {%- else -%}
+            {% render 'vial-illustration', product: product %}
+          {%- endif -%}
+        </a>
+        <div class="jeff-product-card__body">
+          <a href="{{ product.url }}">
+            <h2>{{ product.title }}</h2>
+            <p>{{ product.vendor }} · {{ card_variant.title | default: '5ml' }}</p>
+          </a>
+          {%- if card_variant.available -%}
+            <form method="post" action="{{ routes.cart_add_url }}" class="jeff-product-card__form">
+              <input type="hidden" name="id" value="{{ card_variant.id }}">
+              <input type="hidden" name="quantity" value="1">
+              <button type="submit">Add 5ml · {{ card_variant.price | money }}</button>
+            </form>
+          {%- else -%}
+            <a class="jeff-product-card__sold" href="{{ product.url }}">View fragrance</a>
+          {%- endif -%}
+        </div>
+      </article>
+    {%- else -%}
+      <p class="jeff-storefront__empty">Choose a collection in the theme editor to show fragrances.</p>
+    {%- endfor -%}
+  </div>
+
+  <div class="jeff-storefront__all container">
+    <a href="{{ featured_collection.url | default: '/collections/fragrances' }}">Shop all fragrances</a>
+  </div>
+
+  <section class="jeff-storefront__steps" id="how-it-works">
+    <div class="container">
+      <p class="jeff-storefront__eyebrow">Choose what works for you</p>
+      <h2>Three simple ways to wear it.</h2>
+      <div class="jeff-storefront__step-grid">
+        <article>
+          <span>01</span>
+          <h3>Try one vial</h3>
+          <p>Choose any authentic 5ml fragrance for $20. A one-time purchase with no subscription.</p>
+          <a href="{{ featured_collection.url | default: '/collections/fragrances' }}">Shop 5ml vials</a>
+        </article>
+        <article>
+          <span>02</span>
+          <h3>Monthly Rotation</h3>
+          <p>A monthly fragrance subscription. Get one 5ml scent each month, then swap, pause, or cancel anytime.</p>
+          <a href="/products/creed-aventus#productForm">Explore Monthly Rotation</a>
+        </article>
+        <article>
+          <span>03</span>
+          <h3>Go full bottle</h3>
+          <p>Found the one? Buy a full bottle through Base Note for less than a regular retailer.</p>
+          <a href="#scent-atelier">Choose vial or bottle</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+</section>
+
+<style>
+  .template-index .announcement-bar { display:none; }
+  .template-index .header { background:#22392B; }
+  .template-index .header__inner { min-height:70px; padding:1rem 2rem; }
+  .template-index .header__logo-text { padding:.15rem .3rem; border:1px solid rgba(255,255,255,.24); font-family:var(--font-heading); font-size:1.15rem; font-weight:500; letter-spacing:.08em; text-transform:uppercase; }
+  .template-index .header__nav-list { gap:2.8rem; }
+  .template-index .header__nav-link { font-size:.8rem; font-weight:500; letter-spacing:.13em; text-transform:uppercase; }
+  .template-index .header__action-btn { width:38px; height:38px; }
+  .jeff-storefront { --js-green:#22392B; --js-deep:#1B2F22; --js-cream:#F4EFE3; --js-gold:#AC9159; --js-ink:#242320; background:var(--js-cream); color:var(--js-ink); }
+  .jeff-storefront__filters { min-height:60px; display:flex; align-items:center; justify-content:center; gap:2.8rem; padding:.75rem 1.5rem; background:var(--js-deep); color:#d7d7cd; text-transform:uppercase; letter-spacing:.14em; font-size:.8rem; }
+  .jeff-storefront__filters a { padding:.5rem 0; border-bottom:2px solid transparent; }
+  .jeff-storefront__filters a:hover,.jeff-storefront__filters a.is-active { color:#fff; border-color:var(--js-gold); }
+  .jeff-storefront__hero { min-height:620px; display:grid; grid-template-columns:minmax(0,.9fr) minmax(420px,1.1fr); align-items:stretch; padding:0; }
+  .jeff-storefront__hero-copy { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding:5rem clamp(2rem,5vw,5rem); text-align:left; }
+  .jeff-storefront__banner { min-height:620px; overflow:hidden; }
+  .jeff-storefront__banner img { width:100%; height:100%; object-fit:cover; }
+  .jeff-storefront__eyebrow { margin:0 0 1.25rem; color:var(--js-gold); font:600 .78rem/1.2 var(--font-body); letter-spacing:.2em; text-transform:uppercase; }
+  .jeff-storefront__hero h1 { max-width:600px; margin:0; font-size:clamp(3rem,5vw,5rem); line-height:.98; letter-spacing:-.035em; color:var(--js-ink); }
+  .jeff-storefront__intro { margin:1.6rem 0 .75rem; font-family:var(--font-editorial); font-size:clamp(1.05rem,1.8vw,1.35rem); color:#676158; }
+  .jeff-storefront__text-link { color:var(--js-green); border-bottom:1px solid var(--js-gold); padding-bottom:.15rem; font-size:.9rem; }
+  .jeff-storefront__price-rule { margin:4rem 0 1.1rem; font-size:.95rem; letter-spacing:.04em; }
+  .jeff-storefront__rating { display:flex; flex-direction:column; color:var(--js-gold); font-size:1.3rem; letter-spacing:.08em; }
+  .jeff-storefront__rating small { margin-top:.35rem; color:#6d685f; font:400 .8rem/1.4 var(--font-body); letter-spacing:.03em; }
+  .jeff-storefront__grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); padding:0; border-top:1px solid rgba(29,61,44,.28); border-left:1px solid rgba(29,61,44,.28); }
+  .jeff-product-card { min-width:0; border-right:1px solid rgba(29,61,44,.28); border-bottom:1px solid rgba(29,61,44,.28); background:rgba(255,255,255,.08); }
+  .jeff-product-card__image { display:block; aspect-ratio:4/3; padding:2rem; overflow:hidden; }
+  .jeff-product-card__image img { width:100%; height:100%; object-fit:contain; transition:transform .35s ease; }
+  .jeff-product-card:hover .jeff-product-card__image img { transform:scale(1.035); }
+  .jeff-product-card__body { padding:0 1.25rem 1.4rem; text-align:center; }
+  .jeff-product-card h2 { margin:0; font-size:1.25rem; font-weight:500; letter-spacing:-.01em; }
+  .jeff-product-card p { margin:.45rem 0 1rem; color:#726d64; font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; }
+  .jeff-product-card button,.jeff-product-card__sold { display:block; width:100%; min-height:46px; padding:.75rem 1rem; border:1px solid var(--js-green); background:var(--js-green); color:#fff; font:500 .76rem/1 var(--font-body); letter-spacing:.11em; text-transform:uppercase; cursor:pointer; }
+  .jeff-product-card button:hover { background:transparent; color:var(--js-green); }
+  .jeff-storefront__all { text-align:center; padding:2.5rem 1.5rem 6rem; }
+  .jeff-storefront__all a { display:inline-flex; min-height:48px; align-items:center; justify-content:center; padding:.8rem 1.5rem; border-bottom:1px solid var(--js-gold); color:var(--js-green); text-transform:uppercase; letter-spacing:.13em; font-size:.75rem; }
+  .jeff-storefront__steps { padding:6rem 0; background:var(--js-green); color:#fff; }
+  .jeff-storefront__steps h2 { max-width:700px; margin:0 0 3rem; color:#fff; font-size:clamp(2.6rem,5vw,4.4rem); font-weight:500; }
+  .jeff-storefront__step-grid { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid rgba(255,255,255,.28); border-left:1px solid rgba(255,255,255,.28); }
+  .jeff-storefront__step-grid article { min-height:330px; display:flex; flex-direction:column; padding:2rem; border-right:1px solid rgba(255,255,255,.28); border-bottom:1px solid rgba(255,255,255,.28); }
+  .jeff-storefront__step-grid span { color:var(--js-gold); font-size:.75rem; letter-spacing:.18em; }
+  .jeff-storefront__step-grid h3 { margin:auto 0 .75rem; color:#fff; font-size:2rem; font-weight:500; }
+  .jeff-storefront__step-grid p { color:#d8ddd8; font-size:.92rem; }
+  .jeff-storefront__step-grid a { width:max-content; margin-top:1rem; padding-bottom:.15rem; color:#fff; border-bottom:1px solid var(--js-gold); font-size:.74rem; letter-spacing:.12em; text-transform:uppercase; }
+  @media (max-width: 989px) { .jeff-storefront__grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .jeff-storefront__hero { grid-template-columns:1fr 1fr; min-height:540px; } .jeff-storefront__banner { min-height:540px; } }
+  @media (max-width: 749px) { .jeff-storefront__filters { justify-content:flex-start; gap:1.6rem; overflow-x:auto; } .jeff-storefront__hero { display:flex; flex-direction:column; min-height:auto; } .jeff-storefront__hero-copy { padding:3rem 1.5rem; } .jeff-storefront__banner { order:-1; min-height:auto; aspect-ratio:1; } .jeff-storefront__hero h1 { font-size:3.25rem; } .jeff-storefront__price-rule { margin-top:3.5rem; } .jeff-product-card__image { aspect-ratio:1; padding:1.2rem; } .jeff-product-card__body { padding:0 .75rem 1rem; } .jeff-product-card h2 { font-size:1.05rem; } .jeff-product-card button { font-size:.67rem; padding:.65rem .35rem; } .jeff-storefront__step-grid { grid-template-columns:1fr; } .jeff-storefront__step-grid article { min-height:280px; } }
+</style>
+
+{% schema %}
+{
+  "name": "Jeff storefront",
+  "settings": [
+    { "type": "collection", "id": "collection", "label": "Fragrance collection" },
+    { "type": "range", "id": "products_to_show", "label": "Products to show", "min": 4, "max": 12, "step": 4, "default": 8 }
+  ],
+  "presets": [{ "name": "Jeff storefront" }]
+}
+{% endschema %}
