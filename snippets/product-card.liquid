@@ -1,12 +1,17 @@
-{%- comment -%}
-  Product Card Component
-  Usage: {% render 'product-card', product: product, show_quick_add: true %}
+{% doc %}
+  Renders a fragrance product card without altering the product's media.
 
-  CAMPAIGN / NON-SUBSCRIPTION SKUs ARE SKIPPED ENTIRELY — see `skip_card` below.
-{%- endcomment -%}
+  @param {object} product - Shopify product to render.
+  @param {boolean} [show_quick_add] - Whether to show the subscription quick-add control.
+  @param {string} [purchase_context] - Use `one_time` for a PDP-linked one-time discovery card.
+
+  @example
+  {% render 'product-card', product: product, show_quick_add: false, purchase_context: 'one_time' %}
+{% enddoc %}
 
 {%- liquid
-  assign show_quick_add = show_quick_add | default: true
+  assign show_quick_add = show_quick_add | default: true, allow_false: true
+  assign purchase_context = purchase_context | default: 'subscription'
   assign current_variant = product.selected_or_first_available_variant
   assign featured_image = product.featured_image
   assign secondary_image = product.images[1]
@@ -230,10 +235,20 @@
       <div class="product-card__footer">
         <div class="product-card__pricing">
           <span class="product-card__price">
-            {{ settings.subscription_price | default: '$20' }}
+            {%- if purchase_context == 'one_time' -%}
+              {{ current_variant.price | money }}
+            {%- else -%}
+              {{ settings.subscription_price | default: '$20' }}
+            {%- endif -%}
           </span>
         </div>
-        <span class="product-card__plan-label">Monthly Subscription</span>
+        <span class="product-card__plan-label">
+          {%- if purchase_context == 'one_time' -%}
+            {{ 'products.card.one_time_available' | t }}
+          {%- else -%}
+            {{ 'products.card.monthly_rotation' | t }}
+          {%- endif -%}
+        </span>
 
         {% render 'product-review-badge', product: product, surface: 'card' %}
       </div>
@@ -241,7 +256,11 @@
   </a>
 
   {% comment %} Quick Add Button {% endcomment %}
-  {%- if show_quick_add and product.available and product.selling_plan_groups.size > 0 -%}
+  {%- if purchase_context == 'one_time' and product.available -%}
+    <a class="product-card__add-btn" href="{{ product.url }}">
+      <span>{{ 'products.card.choose_purchase' | t }}</span>
+    </a>
+  {%- elsif show_quick_add and product.available and product.selling_plan_groups.size > 0 -%}
     <button
       class="product-card__add-btn"
       data-quick-add="{{ current_variant.id }}"
@@ -252,7 +271,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M12 5v14M5 12h14"/>
       </svg>
-      <span>Start Your Subscription</span>
+      <span>{{ 'products.card.start_rotation' | t }}</span>
     </button>
   {%- elsif show_quick_add and product.available -%}
     {%- comment -%} Bug D guard: product not attached to the Appstle selling-plan group. Quick-add

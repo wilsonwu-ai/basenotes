@@ -1,0 +1,380 @@
+{%- liquid
+  assign scent_collection = section.settings.collection
+  assign featured_product = section.settings.featured_product
+  if featured_product == blank and scent_collection != blank
+    for scent_product in scent_collection.products
+      unless scent_product.handle == 'extra-5ml-vial-add-on'
+        assign featured_product = scent_product
+        break
+      endunless
+    endfor
+  endif
+  assign featured_variant = featured_product.selected_or_first_available_variant
+  assign add_on_product = all_products['extra-5ml-vial-add-on']
+  assign add_on_variant = add_on_product.selected_or_first_available_variant
+-%}
+
+{%- if featured_product != blank and featured_variant != blank -%}
+  <scent-atelier
+    class="scent-atelier"
+    id="scent-atelier"
+    data-add-on-id="{{ add_on_variant.id }}"
+    data-add-on-available="{{ add_on_variant.available }}"
+    data-add-on-price="{{ add_on_variant.price }}"
+    data-money-format="{{ shop.money_format | escape }}"
+  >
+    <div class="scent-atelier__layout">
+      <div
+        class="scent-atelier__stage"
+        data-atelier-stage
+        tabindex="0"
+        role="img"
+        aria-label="Interactive Base Note 5 millilitre fragrance vial. Drag or use the arrow keys to turn it."
+      >
+        <p class="scent-atelier__stage-mark">Base Note / Scent Object 01</p>
+        <div class="scent-atelier__halo" aria-hidden="true"></div>
+        <div class="scent-atelier__rig" data-atelier-rig aria-hidden="true">
+          <svg class="scent-atelier__vial" viewBox="0 0 360 680" focusable="false">
+            <defs>
+              <linearGradient id="VialGlass-{{ section.id }}" x1="0" x2="1">
+                <stop offset="0" stop-color="#d7ddd9" stop-opacity=".6"/>
+                <stop offset=".18" stop-color="#ffffff" stop-opacity=".92"/>
+                <stop offset=".5" stop-color="#b9c8c2" stop-opacity=".28"/>
+                <stop offset=".78" stop-color="#ffffff" stop-opacity=".75"/>
+                <stop offset="1" stop-color="#7d9189" stop-opacity=".5"/>
+              </linearGradient>
+              <linearGradient id="VialLiquid-{{ section.id }}" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" stop-color="#d0b070" stop-opacity=".62"/>
+                <stop offset="1" stop-color="#8c6a35" stop-opacity=".82"/>
+              </linearGradient>
+              <linearGradient id="VialCap-{{ section.id }}" x1="0" x2="1">
+                <stop offset="0" stop-color="#0b0d0c"/>
+                <stop offset=".48" stop-color="#45524d"/>
+                <stop offset=".58" stop-color="#101412"/>
+                <stop offset="1" stop-color="#020303"/>
+              </linearGradient>
+              <filter id="VialShadow-{{ section.id }}" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="14"/>
+              </filter>
+            </defs>
+            <ellipse cx="180" cy="630" rx="112" ry="25" fill="#0f1211" opacity=".2" filter="url(#VialShadow-{{ section.id }})"/>
+            <g class="scent-atelier__object">
+              <rect x="110" y="40" width="140" height="116" rx="24" fill="url(#VialCap-{{ section.id }})"/>
+              <path d="M126 65h108M126 87h108M126 109h108M126 131h108" stroke="#8d9b95" stroke-opacity=".35" stroke-width="3"/>
+              <rect x="125" y="142" width="110" height="52" rx="15" fill="#dfe6e2" opacity=".9"/>
+              <rect x="68" y="178" width="224" height="420" rx="91" fill="url(#VialGlass-{{ section.id }})" stroke="#f8fbfa" stroke-opacity=".9" stroke-width="4"/>
+              <path d="M82 365h196v136c0 49-40 88-88 88h-20c-49 0-88-39-88-88V365Z" fill="url(#VialLiquid-{{ section.id }})"/>
+              <path d="M96 223c-15 78-15 250 1 314" fill="none" stroke="#fff" stroke-linecap="round" stroke-opacity=".72" stroke-width="13"/>
+              <path d="M265 235c10 82 10 219-2 284" fill="none" stroke="#30433c" stroke-linecap="round" stroke-opacity=".18" stroke-width="8"/>
+              <rect x="91" y="285" width="178" height="178" rx="3" fill="#f3efe7"/>
+              <text x="180" y="330" text-anchor="middle" fill="#263b35" font-family="Georgia, serif" font-size="23" letter-spacing="4">BASE NOTE</text>
+              <line x1="131" x2="229" y1="349" y2="349" stroke="#b99a5b"/>
+              <text data-atelier-label x="180" y="384" text-anchor="middle" fill="#151917" font-family="Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="1.4">{{ featured_product.title | truncate: 22 | escape }}</text>
+              <text x="180" y="415" text-anchor="middle" fill="#59635f" font-family="Arial, sans-serif" font-size="11" letter-spacing="2.4">EAU DE PARFUM</text>
+              <text x="180" y="443" text-anchor="middle" fill="#59635f" font-family="Arial, sans-serif" font-size="12">5 ML / ~60 SPRAYS</text>
+            </g>
+          </svg>
+        </div>
+        <div class="scent-atelier__camera" aria-label="Vial view controls">
+          <button type="button" data-atelier-turn="-12" aria-label="Turn vial left">&larr;</button>
+          <span>Drag to inspect</span>
+          <button type="button" data-atelier-turn="12" aria-label="Turn vial right">&rarr;</button>
+        </div>
+      </div>
+
+      <div class="scent-atelier__panel">
+        <p class="scent-atelier__eyebrow">{{ section.settings.eyebrow }}</p>
+        <h2>{{ section.settings.heading }}</h2>
+        <p class="scent-atelier__intro">{{ section.settings.description }}</p>
+
+        <div class="scent-atelier__field">
+          <label for="AtelierScent-{{ section.id }}">1. Choose your scent</label>
+          <div class="scent-atelier__select-wrap">
+            <select id="AtelierScent-{{ section.id }}" data-atelier-product>
+              {%- if scent_collection != blank -%}
+                {%- for scent_product in scent_collection.products limit: 24 -%}
+                  {%- unless scent_product.handle == 'extra-5ml-vial-add-on' -%}
+                    {%- assign scent_variant = scent_product.selected_or_first_available_variant -%}
+                    {%- if scent_variant != blank -%}
+                      <option
+                        value="{{ scent_variant.id }}"
+                        data-title="{{ scent_product.title | escape }}"
+                        data-price="{{ scent_variant.price }}"
+                        data-url="{{ scent_product.url }}"
+                        {% if scent_product.id == featured_product.id %}selected{% endif %}
+                        {% unless scent_variant.available %}disabled{% endunless %}
+                      >{{ scent_product.title }}</option>
+                    {%- endif -%}
+                  {%- endunless -%}
+                {%- endfor -%}
+              {%- else -%}
+                <option value="{{ featured_variant.id }}" data-title="{{ featured_product.title | escape }}" data-price="{{ featured_variant.price }}" data-url="{{ featured_product.url }}">{{ featured_product.title }}</option>
+              {%- endif -%}
+            </select>
+            <span aria-hidden="true">&#8595;</span>
+          </div>
+        </div>
+
+        <fieldset class="scent-atelier__field scent-atelier__format">
+          <legend>2. Choose your size</legend>
+          <button type="button" class="is-selected" data-atelier-mode="vial" aria-pressed="true">
+            <span>5 ml vial</span>
+            <small data-atelier-vial-price>{{ featured_variant.price | money }} once</small>
+          </button>
+          <button type="button" data-atelier-mode="bottle" aria-pressed="false">
+            <span>Full bottle</span>
+            <small>Priced below regular retail</small>
+          </button>
+        </fieldset>
+
+        <div class="scent-atelier__summary">
+          <span data-atelier-summary-label>One-time 5 ml vial</span>
+          <strong data-atelier-summary-price>{{ featured_variant.price | money }}</strong>
+        </div>
+        <p class="scent-atelier__truth" data-atelier-truth>No subscription. No auto-renewal. Once your first vial is in the cart, additional 5 ml vials are {{ add_on_variant.price | money }} each.</p>
+
+        <button class="scent-atelier__cta" type="button" data-atelier-add>
+          Get your vial today — <span data-atelier-cta-price>{{ featured_variant.price | money }}</span>
+        </button>
+        <a class="scent-atelier__cta" href="{% if section.settings.bottle_link != blank %}{{ section.settings.bottle_link }}{% else %}mailto:hello@basenotescent.com?subject=Full%20bottle%20request{% endif %}" data-atelier-bottle data-custom-link="{% if section.settings.bottle_link != blank %}true{% else %}false{% endif %}" hidden>
+          Request this full bottle
+        </a>
+        <div class="scent-atelier__after-add" data-atelier-after hidden>
+          <button type="button" data-atelier-add-another>Add another scent — {{ add_on_variant.price | money }}</button>
+          <a href="/checkout">Checkout now</a>
+        </div>
+        <p class="scent-atelier__status" data-atelier-status role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </scent-atelier>
+
+  <script>
+    if (!customElements.get('scent-atelier')) {
+      customElements.define('scent-atelier', class extends HTMLElement {
+        connectedCallback() {
+          if (this.dataset.ready === 'true') return;
+          this.dataset.ready = 'true';
+
+          this.stage = this.querySelector('[data-atelier-stage]');
+          this.rig = this.querySelector('[data-atelier-rig]');
+          this.product = this.querySelector('[data-atelier-product]');
+          this.label = this.querySelector('[data-atelier-label]');
+          this.addButton = this.querySelector('[data-atelier-add]');
+          this.bottleButton = this.querySelector('[data-atelier-bottle]');
+          this.afterAdd = this.querySelector('[data-atelier-after]');
+          this.status = this.querySelector('[data-atelier-status]');
+          this.rotation = -8;
+          this.mode = 'vial';
+          this.hasFirstVial = false;
+          this.pointer = null;
+          this.addOnId = Number(this.dataset.addOnId || 0);
+          this.addOnAvailable = this.dataset.addOnAvailable === 'true';
+          this.addOnPrice = Number(this.dataset.addOnPrice || 0);
+
+          this.querySelectorAll('[data-atelier-mode]').forEach((button) => {
+            button.addEventListener('click', () => this.setMode(button.dataset.atelierMode));
+          });
+          this.querySelectorAll('[data-atelier-turn]').forEach((button) => {
+            button.addEventListener('click', () => this.turn(Number(button.dataset.atelierTurn)));
+          });
+          this.product.addEventListener('change', () => this.renderProduct());
+          this.addButton.addEventListener('click', () => this.addSelected());
+          this.querySelector('[data-atelier-add-another]').addEventListener('click', () => this.addSelected());
+
+          this.stage.addEventListener('pointerdown', (event) => {
+            this.pointer = { x: event.clientX, rotation: this.rotation };
+            this.stage.setPointerCapture(event.pointerId);
+            this.stage.classList.add('is-dragging');
+          });
+          this.stage.addEventListener('pointermove', (event) => {
+            if (!this.pointer) return;
+            this.rotation = Math.max(-34, Math.min(34, this.pointer.rotation + ((event.clientX - this.pointer.x) * .18)));
+            this.renderRotation();
+          });
+          const stopDrag = () => { this.pointer = null; this.stage.classList.remove('is-dragging'); };
+          this.stage.addEventListener('pointerup', stopDrag);
+          this.stage.addEventListener('pointercancel', stopDrag);
+          this.stage.addEventListener('keydown', (event) => {
+            if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+            event.preventDefault();
+            this.turn(event.key === 'ArrowLeft' ? -8 : 8);
+          });
+
+          this.readCart();
+          this.renderProduct();
+          this.renderRotation();
+        }
+
+        money(cents) {
+          return new Intl.NumberFormat(document.documentElement.lang || 'en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(cents / 100).replace('.00', '');
+        }
+
+        selectedOption() {
+          return this.product.options[this.product.selectedIndex];
+        }
+
+        async readCart() {
+          try {
+            const response = await fetch('/cart.js', { headers: { Accept: 'application/json' } });
+            if (!response.ok) return;
+            const cart = await response.json();
+            this.hasFirstVial = cart.items.some((item) => item.handle !== 'extra-5ml-vial-add-on');
+            this.renderProduct();
+          } catch (error) {
+            /* The selector remains a standard first-vial purchase if cart lookup is unavailable. */
+          }
+        }
+
+        renderRotation() {
+          this.rig.style.transform = `perspective(1000px) rotateX(-5deg) rotateY(${this.rotation}deg) rotateZ(${this.rotation * -.07}deg)`;
+        }
+
+        turn(amount) {
+          this.rotation = Math.max(-34, Math.min(34, this.rotation + amount));
+          this.renderRotation();
+        }
+
+        renderProduct() {
+          const option = this.selectedOption();
+          if (!option) return;
+          const title = option.dataset.title || option.textContent.trim();
+          const regularPrice = Number(option.dataset.price || 0);
+          const price = this.hasFirstVial && this.addOnAvailable ? this.addOnPrice : regularPrice;
+          this.label.textContent = title.replace(/\s+(EDP|Eau de Parfum|Parfum)$/i, '').slice(0, 20).toUpperCase();
+          if (this.bottleButton.dataset.customLink !== 'true') {
+            this.bottleButton.href = 'mailto:hello@basenotescent.com?subject=' + encodeURIComponent('Full bottle request: ' + title) + '&body=' + encodeURIComponent('I would like a below-retail quote for an authentic full bottle of ' + title + '.');
+          }
+          this.querySelector('[data-atelier-vial-price]').textContent = this.money(price) + (this.hasFirstVial ? ' additional' : ' once');
+          this.querySelector('[data-atelier-summary-price]').textContent = this.money(price);
+          this.querySelector('[data-atelier-summary-label]').textContent = this.hasFirstVial ? 'Additional 5 ml vial' : 'One-time 5 ml vial';
+          this.querySelector('[data-atelier-cta-price]').textContent = this.money(price);
+          this.addButton.firstChild.textContent = this.hasFirstVial ? 'Add this scent — ' : 'Get your vial today — ';
+        }
+
+        setMode(mode) {
+          this.mode = mode;
+          this.querySelectorAll('[data-atelier-mode]').forEach((button) => {
+            const selected = button.dataset.atelierMode === mode;
+            button.classList.toggle('is-selected', selected);
+            button.setAttribute('aria-pressed', String(selected));
+          });
+          const isVial = mode === 'vial';
+          this.addButton.hidden = !isVial;
+          this.bottleButton.hidden = isVial;
+          this.afterAdd.hidden = true;
+          this.querySelector('[data-atelier-summary-label]').textContent = isVial ? (this.hasFirstVial ? 'Additional 5 ml vial' : 'One-time 5 ml vial') : 'Authentic full bottle';
+          this.querySelector('[data-atelier-summary-price]').textContent = isVial ? this.querySelector('[data-atelier-cta-price]').textContent : 'Price shown by scent';
+          this.querySelector('[data-atelier-truth]').textContent = isVial ? 'No subscription. No auto-renewal. Once your first vial is in the cart, additional 5 ml vials are ' + this.money(this.addOnPrice) + ' each.' : 'Full-bottle availability and verified savings vary by scent. See the live price before you buy.';
+        }
+
+        async addSelected() {
+          if (this.addButton.disabled) return;
+          const option = this.selectedOption();
+          const useAddOn = this.hasFirstVial && this.addOnAvailable && this.addOnId;
+          const item = { id: useAddOn ? this.addOnId : Number(option.value), quantity: 1 };
+          if (useAddOn) item.properties = { 'Selected scent': option.dataset.title, '_Base Note source': 'Homepage scent atelier' };
+          this.addButton.disabled = true;
+          this.status.textContent = 'Adding ' + option.dataset.title + ' to your cart…';
+          try {
+            const response = await fetch('/cart/add.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+              body: JSON.stringify({ items: [item] })
+            });
+            if (!response.ok) throw new Error('Cart request failed');
+            this.hasFirstVial = true;
+            this.status.textContent = option.dataset.title + ' is in your cart. Add another scent for ' + this.money(this.addOnPrice) + ' or check out now.';
+            this.afterAdd.hidden = false;
+            this.renderProduct();
+            document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+          } catch (error) {
+            this.status.textContent = 'We could not update your cart. Open the scent page to finish your purchase.';
+            window.location.href = option.dataset.url;
+          } finally {
+            this.addButton.disabled = false;
+          }
+        }
+      });
+    }
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+  .scent-atelier { display: block; color: #101411; background: #e9e3d7; }
+  .scent-atelier__layout { display: grid; min-height: min(54rem, 92vh); grid-template-columns: minmax(0, 1.45fr) minmax(23rem, .72fr); }
+  .scent-atelier__stage { position: relative; min-width: 0; min-height: 42rem; overflow: hidden; background: radial-gradient(circle at 42% 38%, #f9f5ec 0 9%, #d8d0c1 46%, #bcb3a4 100%); cursor: grab; user-select: none; touch-action: pan-y; }
+  .scent-atelier__stage:focus-visible { outline: 3px solid #2d4641; outline-offset: -6px; }
+  .scent-atelier__stage.is-dragging { cursor: grabbing; }
+  .scent-atelier__stage-mark { position: absolute; z-index: 2; inset: 1.5rem auto auto 1.5rem; margin: 0; font: 700 .67rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .14em; text-transform: uppercase; color: #4d5c56; }
+  .scent-atelier__halo { position: absolute; inset: 18% 14%; border: 1px solid rgb(45 70 65 / 24%); border-radius: 50%; transform: rotate(-12deg); }
+  .scent-atelier__halo::before, .scent-atelier__halo::after { position: absolute; content: ''; border: 1px solid rgb(185 154 91 / 42%); border-radius: 50%; }
+  .scent-atelier__halo::before { inset: 7% -4%; }
+  .scent-atelier__halo::after { inset: -5% 10%; }
+  .scent-atelier__rig { position: absolute; inset: 3.5rem 3rem 4.5rem; display: grid; place-items: center; transform-style: preserve-3d; transition: transform 180ms ease-out; will-change: transform; }
+  .scent-atelier__vial { width: min(76%, 29rem); max-height: 92%; overflow: visible; filter: drop-shadow(0 2rem 1.5rem rgb(25 29 27 / 20%)); }
+  .scent-atelier__object { transform-origin: center; animation: scentAtelierFloat 6s ease-in-out infinite; }
+  .scent-atelier__camera { position: absolute; z-index: 2; right: 1.25rem; bottom: 1.25rem; left: 1.25rem; display: flex; align-items: center; justify-content: center; gap: .8rem; font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #4d5c56; }
+  .scent-atelier__camera button { width: 2.75rem; height: 2.75rem; border: 1px solid rgb(45 70 65 / 32%); border-radius: 50%; color: #2d4641; background: rgb(249 245 236 / 72%); }
+  .scent-atelier__camera button:hover, .scent-atelier__camera button:focus-visible { color: #f4efe6; background: #2d4641; outline: none; }
+  .scent-atelier__panel { display: flex; min-width: 0; padding: clamp(2rem, 5vw, 5rem); flex-direction: column; justify-content: center; background: #f7f3eb; border-inline-start: 1px solid rgb(16 20 17 / 14%); }
+  .scent-atelier__eyebrow { margin: 0 0 1.25rem; font-size: .7rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: #96783e; }
+  .scent-atelier__panel h2 { max-width: 10ch; margin: 0; font-family: var(--font-heading); font-size: clamp(2.5rem, 4.6vw, 5rem); font-weight: 500; line-height: .94; letter-spacing: -.035em; text-wrap: balance; }
+  .scent-atelier__intro { max-width: 33rem; margin: 1.25rem 0 2rem; color: #5b625f; line-height: 1.65; }
+  .scent-atelier__field { margin: 0 0 1.5rem; padding: 0; border: 0; }
+  .scent-atelier__field > label, .scent-atelier__field > legend { display: block; margin: 0 0 .65rem; padding: 0; font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .scent-atelier__select-wrap { position: relative; }
+  .scent-atelier__select-wrap select { width: 100%; min-height: 3.5rem; padding: .75rem 3rem .75rem 1rem; appearance: none; border: 1px solid #9d9b93; border-radius: 0; color: #101411; background: #fff; font: inherit; }
+  .scent-atelier__select-wrap span { position: absolute; top: 50%; right: 1rem; pointer-events: none; transform: translateY(-50%); }
+  .scent-atelier__select-wrap select:focus-visible { outline: 3px solid #2d4641; outline-offset: 2px; }
+  .scent-atelier__format { display: grid; grid-template-columns: 1fr 1fr; gap: .65rem; }
+  .scent-atelier__format legend { grid-column: 1 / -1; }
+  .scent-atelier__format button { min-height: 5rem; padding: .85rem; border: 1px solid #aaa79f; text-align: start; color: #101411; background: transparent; }
+  .scent-atelier__format button:hover, .scent-atelier__format button:focus-visible, .scent-atelier__format button.is-selected { border-color: #2d4641; box-shadow: inset 0 0 0 1px #2d4641; outline: none; background: #fff; }
+  .scent-atelier__format span, .scent-atelier__format small { display: block; }
+  .scent-atelier__format span { font-weight: 700; }
+  .scent-atelier__format small { margin-block-start: .3rem; color: #686d6a; }
+  .scent-atelier__summary { display: flex; margin-block: .35rem 1rem; padding-block: 1rem; align-items: baseline; justify-content: space-between; gap: 1rem; border-block: 1px solid rgb(16 20 17 / 15%); }
+  .scent-atelier__summary span { color: #5b625f; }
+  .scent-atelier__summary strong { font-family: var(--font-heading); font-size: 1.75rem; font-weight: 500; }
+  .scent-atelier__truth { min-height: 2.8em; margin: 0 0 1.25rem; font-size: .8rem; line-height: 1.55; color: #626965; }
+  .scent-atelier__cta { display: inline-flex; width: 100%; min-height: 3.75rem; padding: .9rem 1.2rem; align-items: center; justify-content: center; border: 1px solid #2d4641; color: #fff; background: #2d4641; font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-align: center; text-transform: uppercase; }
+  .scent-atelier__cta[hidden] { display: none; }
+  .scent-atelier__cta:hover, .scent-atelier__cta:focus-visible { color: #101411; background: #c7a65e; border-color: #c7a65e; outline: 3px solid #2d4641; outline-offset: 2px; }
+  .scent-atelier__cta:disabled { cursor: wait; opacity: .65; }
+  .scent-atelier__after-add { display: grid; grid-template-columns: 1fr 1fr; gap: .65rem; margin-block-start: .65rem; }
+  .scent-atelier__after-add[hidden] { display: none; }
+  .scent-atelier__after-add button, .scent-atelier__after-add a { min-height: 3.25rem; padding: .75rem; border: 1px solid #2d4641; color: #2d4641; background: transparent; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-align: center; text-transform: uppercase; }
+  .scent-atelier__after-add a { display: flex; align-items: center; justify-content: center; color: #fff; background: #101411; }
+  .scent-atelier__status { min-height: 1.5em; margin: .8rem 0 0; font-size: .8rem; color: #2d4641; }
+  @keyframes scentAtelierFloat { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-12px) rotate(1deg); } }
+  @media (max-width: 900px) {
+    .scent-atelier__layout { min-height: 0; grid-template-columns: 1fr; }
+    .scent-atelier__stage { min-height: min(38rem, 72vh); }
+    .scent-atelier__panel { padding: 3rem 1.25rem 4rem; border-block-start: 1px solid rgb(16 20 17 / 14%); border-inline-start: 0; }
+  }
+  @media (max-width: 480px) {
+    .scent-atelier__stage { min-height: 32rem; }
+    .scent-atelier__rig { inset: 3.5rem 1rem 4rem; }
+    .scent-atelier__format, .scent-atelier__after-add { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scent-atelier__rig { transition: none; }
+    .scent-atelier__object { animation: none; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Interactive scent atelier",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Try it your way" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Choose a scent. Turn the vial. Make it yours." },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "Explore the vial, choose a scent, and buy it once. No subscription required." },
+    { "type": "collection", "id": "collection", "label": "Scent collection" },
+    { "type": "product", "id": "featured_product", "label": "Initial scent" },
+    { "type": "url", "id": "bottle_link", "label": "Full-bottle link" }
+  ],
+  "presets": [{ "name": "Interactive scent atelier" }]
+}
+{% endschema %}

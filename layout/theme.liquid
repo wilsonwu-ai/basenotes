@@ -38,7 +38,7 @@
     elsif template.name == 'collection' and collection
       assign seo_title = collection.title | append: ' — Designer & Niche Fragrance Samples'
     elsif template.name == 'index'
-      assign seo_title = 'Luxury Fragrance Subscription — $20/Month Designer Samples'
+      assign seo_title = 'Luxury Fragrance Samples — One-Time Vials, Monthly Rotation & Full Bottles'
     elsif template.name == 'blog' and blog
       assign seo_title = blog.title | append: ' — Fragrance Guides & Reviews'
     elsif template.name == 'article' and article
@@ -56,9 +56,9 @@
   </title>
 
   {%- liquid
-    assign default_description = settings.default_meta_description | default: 'Discover luxury fragrances with Base Note. Get a new designer fragrance delivered monthly for just $20. Free shipping, cancel anytime.'
+    assign default_description = settings.default_meta_description | default: 'Try authentic luxury fragrance in a one-time 5 ml vial, join the Monthly Rotation subscription, or buy a full bottle for less than typical retail.'
     assign meta_description = page_description | default: shop.description | default: default_description
-    assign brand_description = 'Base Note is a monthly luxury fragrance subscription. For $20/month, members receive a 5ml travel atomizer of a designer or niche fragrance (Creed, Tom Ford, Parfums de Marly, Bond No. 9, Xerjoff). Free US shipping, cancel anytime.'
+    assign brand_description = 'Base Note offers authentic luxury fragrance as one-time 5 ml vials, a flexible Monthly Rotation subscription, and full bottles priced below typical retail.'
     assign is_internal_addon_page = false
     if template.name == 'product' and product.handle == 'extra-5ml-vial-add-on'
       assign is_internal_addon_page = true
@@ -326,7 +326,9 @@
     customers with prior orders, so cold ad traffic would see it every time.
   {% endcomment %}
   {%- unless template.suffix == 'giveaway' -%}
-    {% render 'promo-popup' %}
+    {%- unless request.page_type == 'index' -%}
+      {% render 'promo-popup' %}
+    {%- endunless -%}
   {%- endunless -%}
   {% render 'referral-capture' %}
 </body>
