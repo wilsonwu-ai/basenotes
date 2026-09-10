@@ -17,7 +17,7 @@
 
 {%- assign has_subscription = false -%}
 {%- for line_item in order.line_items -%}
-  {%- if line_item.selling_plan_allocation -%}
+  {%- if line_item.selling_plan_allocation and line_item.variant_id != 48547911696602 -%}
     {%- assign has_subscription = true -%}
     {%- assign sub_item = line_item -%}
     {%- break -%}

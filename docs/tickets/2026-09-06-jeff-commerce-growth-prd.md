@@ -24,9 +24,9 @@ The primary audiences are:
 
 These rules override stale ticket copy, hard-coded theme values, or inherited Appstle discounts:
 
-1. A customer's first base subscription vial is **$15**, then **$20 per month**.
-2. Every additional 5 ml vial is **$18 on the initial order and every recurring order**.
-3. Example acceptance cart: one first-month base vial plus two add-ons equals **$51 before tax and any applicable shipping**.
+1. Base subscription: **$15** on a completely new subscriber's first order, then **$20 per month**. The $15 rate is for new members only; a member who cancelled and returns pays **$20**.
+2. Every additional 5 ml vial is **$18**, flat, on every tier and on every order (first and recurring). A one-time purchase is **$20** per vial with **$18** add-ons.
+3. Worked examples (derived, not owner-stated acceptance criteria): a first-time subscriber with two add-ons pays $15 + $18 + $18 = $51 before tax and shipping; a one-time buyer with one add-on pays $20 + $18 = $38. Source: owner's messages of 2026-08-31 and 2026-09-01; the earlier "$18 on the initial order and every recurring order / $51" wording was a paraphrase and is superseded by this ladder.
 4. An add-on can never become the base subscription line or replace the customer's primary scent during swap/queue operations.
 5. Prices shown in UI must be derived from the selected variant and selling-plan allocations. A mismatch fails closed; it must never be replaced with a guessed fallback.
 6. The add-on helper product is not a standalone acquisition product. Until its dedicated zero-discount selling plan is live and verified, its standalone route and all add-on entry points remain disabled and non-indexable.

@@ -8,7 +8,7 @@
 {%- assign latest_shipped_sub_item = nil -%}
 {%- for order in customer.orders -%}
   {%- for line_item in order.line_items -%}
-    {%- if line_item.selling_plan_allocation -%}
+    {%- if line_item.selling_plan_allocation and line_item.variant_id != 48547911696602 -%}
       {%- assign is_subscriber = true -%}
       {%- unless latest_sub_order -%}
         {%- assign latest_sub_order = order -%}
@@ -731,7 +731,7 @@
       {%- if order.fulfillment_status == 'fulfilled' and past_count < 12 -%}
         {%- assign primary_line = order.line_items.first -%}
         {%- for line in order.line_items -%}
-          {%- if line.selling_plan_allocation -%}
+          {%- if line.selling_plan_allocation and line.variant_id != 48547911696602 -%}
             {%- assign primary_line = line -%}
             {%- break -%}
           {%- endif -%}
@@ -2064,7 +2064,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {%- for order in customer.orders reversed limit: 12 -%}
           {%- if order.fulfillment_status == 'fulfilled' -%}
             {%- for line in order.line_items -%}
-              {%- if line.selling_plan_allocation -%}
+              {%- if line.selling_plan_allocation and line.variant_id != 48547911696602 -%}
                 pastOrders.push({
                   shipMonth: {{ order.created_at | date: '%Y-%m' | json }},
                   title: {{ line.product.title | json }},
