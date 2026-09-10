@@ -42,7 +42,7 @@
     elsif template.name == 'blog' and blog
       assign seo_title = blog.title | append: ' — Fragrance Guides & Reviews'
     elsif template.name == 'article' and article
-      assign seo_title = article.title
+      assign seo_title = page_title | default: article.title
     endif
     if seo_title == blank
       assign seo_title = shop.name
@@ -59,6 +59,11 @@
     assign default_description = settings.default_meta_description | default: 'Discover luxury fragrances with Base Note. Get a new designer fragrance delivered monthly for just $20. Free shipping, cancel anytime.'
     assign meta_description = page_description | default: shop.description | default: default_description
     assign brand_description = 'Base Note is a monthly luxury fragrance subscription. For $20/month, members receive a 5ml travel atomizer of a designer or niche fragrance (Creed, Tom Ford, Parfums de Marly, Bond No. 9, Xerjoff). Free US shipping, cancel anytime.'
+    assign is_internal_addon_page = false
+    if template.name == 'product' and product.handle == 'extra-5ml-vial-add-on'
+      assign is_internal_addon_page = true
+      assign meta_description = 'Subscriber-only Base Note add-on. Standalone purchase is unavailable while its subscription configuration is being updated.'
+    endif
   -%}
   {%- comment -%}
     truncate: 160, '' cut mid-word and, on dolce-gabbana-light-blue, mid-HTML-entity (leaving a
@@ -70,7 +75,11 @@
     rest, which is exactly this case. (A replace-chain was tried first and did not match.)
     22 words lands ~155 chars, inside Google's display limit.
   {%- endcomment -%}
-  <meta name="description" content="{{ meta_description | strip_html | truncatewords: 22, '…' | escape_once }}">
+  {%- if template.name == 'article' and page_description != blank -%}
+    <meta name="description" content="{{ page_description | strip_html | escape_once }}">
+  {%- else -%}
+    <meta name="description" content="{{ meta_description | strip_html | truncatewords: 22, '…' | escape_once }}">
+  {%- endif -%}
   {%- comment -%}
     The giveaway landing page is reachable only by a direct link from a paid ad. Shopify's Unlisted
     product status already applies noindex, but this template emitted an explicit "index, follow"
@@ -83,7 +92,9 @@
     was taking sessions off the comparison post). noindex removes the duplicate; follow keeps the
     crawl paths so the articles they link to still receive the signal.
   {%- endcomment -%}
-  {%- if template.suffix == 'giveaway' -%}
+  {%- if is_internal_addon_page -%}
+    <meta name="robots" content="noindex, follow">
+  {%- elsif template.suffix == 'giveaway' -%}
     <meta name="robots" content="noindex, follow">
   {%- elsif current_tags -%}
     <meta name="robots" content="noindex, follow">

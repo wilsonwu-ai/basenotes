@@ -1,6 +1,10 @@
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
   assign featured_image = current_variant.featured_image | default: product.featured_image
+  assign is_internal_addon_product = false
+  if product.handle == 'extra-5ml-vial-add-on'
+    assign is_internal_addon_product = true
+  endif
 
   # Get seasons from metafield or tags
   assign seasons = product.metafields.fragrance.season.value | default: nil
@@ -151,22 +155,29 @@
             </p>
           {%- endif -%}
 
-          {% comment %} Rating {% endcomment %}
-          {%- if product.metafields.reviews.rating != blank -%}
-            <div class="product-info__rating">
-              <div class="product-rating-stars">
-                {%- assign rating = product.metafields.reviews.rating.value | round: 1 -%}
-                {%- for i in (1..5) -%}
-                  <svg viewBox="0 0 20 20" class="{% if i <= rating %}is-filled{% endif %}">
-                    <polygon points="10 1 12.5 7.5 20 7.5 14 12 16 19 10 15 4 19 6 12 0 7.5 7.5 7.5"/>
-                  </svg>
-                {%- endfor -%}
-              </div>
-              <span class="product-info__rating-text">{{ rating }} ({{ product.metafields.reviews.count.value | default: 0 }} reviews)</span>
-            </div>
-          {%- endif -%}
+          {% comment %} Judge.me rating and review count, with legacy metafield fallback {% endcomment %}
+          {% render 'product-review-badge', product: product, surface: 'product' %}
         </header>
 
+        {%- if is_internal_addon_product -%}
+          {%- comment -%} INTERNAL_ADDON_GUARD_COPY_START {%- endcomment -%}
+          <section
+            class="internal-addon-guard"
+            aria-labelledby="InternalAddonTitle-{{ section.id }}"
+            data-internal-addon-route-guard
+          >
+            <p class="internal-addon-guard__eyebrow">{{ 'products.internal_addon.eyebrow' | t }}</p>
+            <h2 class="internal-addon-guard__title" id="InternalAddonTitle-{{ section.id }}">
+              {{- 'products.internal_addon.heading' | t -}}
+            </h2>
+            <p class="internal-addon-guard__copy">{{ 'products.internal_addon.body' | t }}</p>
+            <button class="add-to-queue-btn internal-addon-guard__button" type="button" disabled>
+              <span>{{ 'products.internal_addon.button' | t }}</span>
+            </button>
+          </section>
+          {%- comment -%} INTERNAL_ADDON_GUARD_COPY_END {%- endcomment -%}
+        {%- else -%}
+        {%- comment -%} INTERNAL_ADDON_PURCHASE_UI_START: ordinary PDPs only {%- endcomment -%}
         {% comment %} SUBSCRIPTION VIEW (5ml atomizer variant) {% endcomment %}
         <div class="subscription-box" id="subscriptionView" {% unless is_subscription_variant %}style="display:none"{% endunless %}>
           <div class="subscription-box__header">
@@ -455,7 +466,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
           </svg>
-          Ships within 1-2 business days
+          Ships within 1-3 business days
         </p>
 
         {% comment %} Description {% endcomment %}
@@ -592,54 +603,60 @@
           {%- endfor -%}
         </div>
 
+        {%- comment -%} INTERNAL_ADDON_PURCHASE_UI_END {%- endcomment -%}
+        {%- endif -%}
+
 
       </div>
     </div>
 
-    {% comment %} Objection-handling FAQ — visible accordion + FAQPage JSON-LD for GEO / rich results {% endcomment %}
-    {% render 'product-faq', product: product %}
+    {%- unless is_internal_addon_product -%}
+      {% comment %} Objection-handling FAQ — visible accordion + FAQPage JSON-LD for GEO / rich results {% endcomment %}
+      {% render 'product-faq', product: product %}
 
-    {% comment %} Related Products {% endcomment %}
-    {%- if section.settings.show_related and product.collections.size > 0 -%}
-      {%- assign related_collection = product.collections.first -%}
-      {%- assign related_products = related_collection.products | where_exp: "item", "item.id != product.id" -%}
-      {%- if related_products.size > 0 -%}
-        <div class="related-products">
-          <div class="related-products__header">
-            <h2 class="related-products__title">You May Also Like</h2>
-            <a href="{{ related_collection.url }}" class="related-products__link">View All</a>
+      {% comment %} Related Products {% endcomment %}
+      {%- if section.settings.show_related and product.collections.size > 0 -%}
+        {%- assign related_collection = product.collections.first -%}
+        {%- assign related_products = related_collection.products | where_exp: "item", "item.id != product.id" -%}
+        {%- if related_products.size > 0 -%}
+          <div class="related-products">
+            <div class="related-products__header">
+              <h2 class="related-products__title">You May Also Like</h2>
+              <a href="{{ related_collection.url }}" class="related-products__link">View All</a>
+            </div>
+            <div class="related-products__grid">
+              {%- for related_product in related_products limit: 4 -%}
+                {% render 'product-card', product: related_product, show_quick_add: true %}
+              {%- endfor -%}
+            </div>
           </div>
-          <div class="related-products__grid">
-            {%- for related_product in related_products limit: 4 -%}
-              {% render 'product-card', product: related_product, show_quick_add: true %}
-            {%- endfor -%}
-          </div>
-        </div>
+        {%- endif -%}
       {%- endif -%}
-    {%- endif -%}
+    {%- endunless -%}
 
   </div>
 </section>
 
-{% comment %} Mobile sticky subscribe CTA — appears when main CTA scrolls out of viewport on <=768px viewports {% endcomment %}
-<div class="product-sticky-cta" id="productStickyCta" aria-hidden="true">
-  <div class="product-sticky-cta__inner">
-    <div class="product-sticky-cta__meta">
-      <span class="product-sticky-cta__name">{{ product.title | truncate: 26 }}</span>
-      <span class="product-sticky-cta__price">$20/month &middot; 5ml</span>
+{%- unless is_internal_addon_product -%}
+  {% comment %} Mobile sticky subscribe CTA — appears when main CTA scrolls out of viewport on <=768px viewports {% endcomment %}
+  <div class="product-sticky-cta" id="productStickyCta" aria-hidden="true">
+    <div class="product-sticky-cta__inner">
+      <div class="product-sticky-cta__meta">
+        <span class="product-sticky-cta__name">{{ product.title | truncate: 26 }}</span>
+        <span class="product-sticky-cta__price">$20/month &middot; 5ml</span>
+      </div>
+      <button type="button" class="product-sticky-cta__btn" id="productStickyCtaBtn">
+        Start Subscription
+      </button>
     </div>
-    <button type="button" class="product-sticky-cta__btn" id="productStickyCtaBtn">
-      Start Subscription
-    </button>
   </div>
-</div>
 
-<script>
-  (function() {
-    var mainBtn = document.getElementById('addToCartButton');
-    var stickyBar = document.getElementById('productStickyCta');
-    var stickyBtn = document.getElementById('productStickyCtaBtn');
-    if (!mainBtn || !stickyBar || !stickyBtn) return;
+  <script>
+    (function() {
+      var mainBtn = document.getElementById('addToCartButton');
+      var stickyBar = document.getElementById('productStickyCta');
+      var stickyBtn = document.getElementById('productStickyCtaBtn');
+      if (!mainBtn || !stickyBar || !stickyBtn) return;
 
     // Click the sticky bar -> scroll to + trigger the real form button.
     stickyBtn.addEventListener('click', function(e) {
@@ -677,8 +694,9 @@
         stickyBar.setAttribute('aria-hidden', 'true');
       }
     });
-  })();
-</script>
+    })();
+  </script>
+{%- endunless -%}
 
 <style>
   .product-sticky-cta {
@@ -957,6 +975,38 @@
   .product-info__rating-text {
     font-size: var(--font-size-sm);
     color: var(--color-text-light);
+  }
+
+  .internal-addon-guard {
+    margin-block-start: var(--spacing-lg);
+    padding: var(--spacing-xl);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-background-secondary);
+  }
+
+  .internal-addon-guard__eyebrow {
+    margin-block-end: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+  }
+
+  .internal-addon-guard__title {
+    margin-block-end: var(--spacing-md);
+    font-size: var(--font-size-xl);
+    color: var(--color-primary);
+  }
+
+  .internal-addon-guard__copy {
+    margin-block-end: var(--spacing-lg);
+    color: var(--color-text-light);
+  }
+
+  .internal-addon-guard__button {
+    cursor: not-allowed;
   }
 
   /* Subscription Box */
@@ -1672,6 +1722,7 @@
   }
 </style>
 
+{%- unless is_internal_addon_product -%}
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     // ─── Product Variants Data ───
@@ -2131,7 +2182,7 @@
             .then(function(cart) {
               var existingSub = null;
               cart.items.forEach(function(item) {
-                if (item.selling_plan_allocation) {
+                if (item.selling_plan_allocation && item.handle !== 'extra-5ml-vial-add-on') {
                   existingSub = item;
                 }
               });
@@ -2362,6 +2413,7 @@ function doAddToCart(variantId, sellingPlan, originalText) {
     });
   });
 </script>
+{%- endunless -%}
 
 {%- render 'review-scroll-assist' -%}
 

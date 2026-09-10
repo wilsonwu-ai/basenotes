@@ -202,10 +202,12 @@
                 </div>
               {%- endfor -%}
 
-              {%- comment -%} "Add another vial — $18" upsell (Jeff 2026-08-23). Subscription carts only. {%- endcomment -%}
-              {%- if has_subscription -%}
-                {% render 'cart-addon-picker', cart: cart, exclude_handle: 'mont-blanc-legend-eau-de-parfum-one-time' %}
-              {%- endif -%}
+              {%- comment -%}
+                CART_ADDON_CONFIGURATION_GUARD: Keep the legacy one-time picker
+                unrendered until the dedicated add-on selling plan has verified
+                equal initial and recurring allocations and its exact ID is configured.
+                The legacy picker cannot satisfy the recurring add-on requirement.
+              {%- endcomment -%}
 
               <div class="cart-items__footer">
                 <a href="/collections/all" class="cart-continue">

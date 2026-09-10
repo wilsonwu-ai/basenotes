@@ -101,6 +101,7 @@
 
   .cookie-consent__content {
     max-width: 1200px;
+    min-width: 0;
     margin: 0 auto;
     display: flex;
     align-items: center;
@@ -109,10 +110,12 @@
 
   .cookie-consent__message {
     flex: 1;
+    min-width: 0;
     font-size: var(--font-size-sm);
     color: var(--color-text-light);
     line-height: 1.6;
     margin: 0;
+    overflow-wrap: anywhere;
   }
 
   .cookie-consent__message a {
@@ -317,15 +320,62 @@
 
   /* Responsive */
   @media (max-width: 768px) {
+    /* MOBILE_OVERFLOW_GUARD_START: let consent copy and controls shrink inside the banner. */
+    .cookie-consent {
+      max-width: 100%;
+      padding: var(--spacing-md);
+    }
+
     .cookie-consent__content {
       flex-direction: column;
+      width: 100%;
+      max-width: 100%;
+      gap: var(--spacing-md);
       text-align: center;
     }
 
     .cookie-consent__actions {
-      flex-wrap: wrap;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: 100%;
+      min-width: 0;
     }
+
+    .cookie-consent__btn {
+      width: 100%;
+      min-width: 0;
+      padding-inline: var(--spacing-md);
+      white-space: normal;
+    }
+
+    .cookie-consent__manage-link {
+      grid-column: 1 / -1;
+      width: 100%;
+      min-width: 0;
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
+
+    .cookie-modal__content {
+      width: calc(100% - 2rem);
+      max-width: calc(100% - 2rem);
+      min-width: 0;
+      padding: var(--spacing-lg);
+    }
+
+    .cookie-modal__category-header > div {
+      min-width: 0;
+    }
+
+    .cookie-modal__category-desc {
+      overflow-wrap: anywhere;
+    }
+
+    .cookie-modal__actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    /* MOBILE_OVERFLOW_GUARD_END */
   }
 </style>
 

@@ -133,6 +133,8 @@
   .hero__content {
     position: relative;
     z-index: 1;
+    width: 100%;
+    min-width: 0;
     text-align: center;
     color: white;
     max-width: 800px;
@@ -157,12 +159,14 @@
   }
 
   .hero__title {
+    max-width: 100%;
     font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
     font-size: clamp(2.5rem, 5vw, 4rem);
     font-weight: 600;
     line-height: 1.1;
     margin-bottom: var(--spacing-lg);
     letter-spacing: -0.01em;
+    overflow-wrap: break-word;
   }
 
   .hero--minimal .hero__title {
@@ -180,6 +184,8 @@
 
   .hero__cta {
     display: flex;
+    width: 100%;
+    min-width: 0;
     flex-wrap: wrap;
     gap: var(--spacing-md);
     justify-content: center;
@@ -215,6 +221,7 @@
   }
 
   @media (max-width: 768px) {
+    /* MOBILE_OVERFLOW_GUARD_START: constrain intrinsic text/button widths, not the page. */
     .hero:not(.hero--minimal) {
       min-height: 85vh;
     }
@@ -223,19 +230,30 @@
       padding: calc(var(--header-height) + 1rem) var(--spacing-md) 2rem;
     }
 
+    .hero__content,
+    .hero--minimal .hero__content {
+      padding-inline: var(--spacing-md);
+    }
+
     .hero__cta {
       flex-direction: column;
       align-items: center;
     }
 
     .hero__cta .btn {
-      width: 100%;
+      width: min(100%, 300px);
       max-width: 300px;
+      min-width: 0;
+      padding-inline: var(--spacing-lg);
+      overflow-wrap: anywhere;
+      text-align: center;
+      white-space: normal;
     }
 
     .hero__price {
       font-size: 2rem;
     }
+    /* MOBILE_OVERFLOW_GUARD_END */
   }
 </style>
 

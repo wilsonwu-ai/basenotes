@@ -30,7 +30,7 @@
         {%- assign placeholder_notes = "Dark chocolate, Oud, Leather|Amber, Vanilla, Benzoin|Bulgarian Rose, Oud, Saffron|Bergamot, White Tea, Musk|Tonka Bean, Almond, Praline|Sandalwood, Cedarwood, Vetiver|Iris, Violet, Suede|Cedar, Birch, Smoke|Jasmine, Tuberose, Gardenia|Leather, Cardamom, Black Pepper" | split: "|" -%}
         {%- for i in (1..10) -%}
           {%- assign index = forloop.index0 -%}
-          <article class="product-card">
+          <article class="product-card product-card--placeholder">
             <a href="#" class="product-card__link">
               <div class="product-card__image">
                 {%- if forloop.index == 1 -%}
@@ -102,6 +102,15 @@
       grid-template-columns: repeat(2, 1fr);
       gap: var(--spacing-md);
     }
+
+    .featured-collection-section .btn {
+      max-width: 100%;
+      min-width: 0;
+      padding-inline: var(--spacing-lg);
+      overflow-wrap: anywhere;
+      text-align: center;
+      white-space: normal;
+    }
   }
 
   @media (max-width: 480px) {
@@ -130,7 +139,7 @@
     color: inherit;
   }
 
-  .featured-grid .product-card__image {
+  .featured-grid .product-card--placeholder .product-card__image {
     position: relative;
     aspect-ratio: 3 / 4;
     background: var(--color-background-secondary);

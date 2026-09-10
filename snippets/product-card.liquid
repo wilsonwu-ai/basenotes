@@ -35,6 +35,9 @@
   if product.template_suffix == 'giveaway'
     assign skip_card = true
   endif
+  if product.handle == 'extra-5ml-vial-add-on'
+    assign skip_card = true
+  endif
   if product.selling_plan_groups.size == 0 and current_variant.price == 0
     assign skip_card = true
   endif
@@ -232,20 +235,7 @@
         </div>
         <span class="product-card__plan-label">Monthly Subscription</span>
 
-        {% comment %} Rating Stars (placeholder) {% endcomment %}
-        {%- if product.metafields.reviews.rating != blank -%}
-          <div class="product-card__rating">
-            {%- assign rating = product.metafields.reviews.rating.value | round: 1 -%}
-            <div class="product-card__stars" style="--rating: {{ rating }};">
-              <svg viewBox="0 0 20 20"><polygon points="10 1 12.5 7.5 20 7.5 14 12 16 19 10 15 4 19 6 12 0 7.5 7.5 7.5"/></svg>
-              <svg viewBox="0 0 20 20"><polygon points="10 1 12.5 7.5 20 7.5 14 12 16 19 10 15 4 19 6 12 0 7.5 7.5 7.5"/></svg>
-              <svg viewBox="0 0 20 20"><polygon points="10 1 12.5 7.5 20 7.5 14 12 16 19 10 15 4 19 6 12 0 7.5 7.5 7.5"/></svg>
-              <svg viewBox="0 0 20 20"><polygon points="10 1 12.5 7.5 20 7.5 14 12 16 19 10 15 4 19 6 12 0 7.5 7.5 7.5"/></svg>
-              <svg viewBox="0 0 20 20"><polygon points="10 1 12.5 7.5 20 7.5 14 12 16 19 10 15 4 19 6 12 0 7.5 7.5 7.5"/></svg>
-            </div>
-            <span class="product-card__rating-count">({{ product.metafields.reviews.count.value | default: 0 }})</span>
-          </div>
-        {%- endif -%}
+        {% render 'product-review-badge', product: product, surface: 'card' %}
       </div>
     </div>
   </a>
@@ -557,9 +547,8 @@
     letter-spacing: 0.12em;
     color: var(--color-text-muted);
     margin-bottom: var(--spacing-xs);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
   .product-card__conc {
     font-weight: 500;
