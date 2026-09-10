@@ -38,7 +38,7 @@
     elsif template.name == 'collection' and collection
       assign seo_title = collection.title | append: ' — Designer & Niche Fragrance Samples'
     elsif template.name == 'index'
-      assign seo_title = 'Luxury Fragrance Samples — One-Time Vials, Monthly Rotation & Full Bottles'
+      assign seo_title = 'Base Note — Find Your Perfect Fragrance'
     elsif template.name == 'blog' and blog
       assign seo_title = blog.title | append: ' — Fragrance Guides & Reviews'
     elsif template.name == 'article' and article
@@ -58,6 +58,9 @@
   {%- liquid
     assign default_description = settings.default_meta_description | default: 'Try authentic luxury fragrance in a one-time 5 ml vial, join the Monthly Rotation subscription, or buy a full bottle for less than typical retail.'
     assign meta_description = page_description | default: shop.description | default: default_description
+    if template.name == 'index'
+      assign meta_description = 'Discover premium fragrances from Creed, Tom Ford, Valentino and Xerjoff. Try 5ml samples for $20 or shop full bottles and gift sets online.'
+    endif
     assign brand_description = 'Base Note offers authentic luxury fragrance as one-time 5 ml vials, a flexible Monthly Rotation subscription, and full bottles priced below typical retail.'
     assign is_internal_addon_page = false
     if template.name == 'product' and product.handle == 'extra-5ml-vial-add-on'
@@ -259,8 +262,8 @@
   </style>
 
   {% comment %} Load Google Fonts asynchronously to prevent render-blocking {% endcomment %}
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Lato:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet"></noscript>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
 
   {% comment %} Load CSS with low priority for non-critical styles {% endcomment %}
   <link rel="stylesheet" href="{{ 'base.css' | asset_url }}" media="print" onload="this.media='all'">
@@ -327,7 +330,6 @@
   {% endcomment %}
   {%- unless template.suffix == 'giveaway' -%}
     {%- unless request.page_type == 'index' -%}
-      {% render 'promo-popup' %}
     {%- endunless -%}
   {%- endunless -%}
   {% render 'referral-capture' %}

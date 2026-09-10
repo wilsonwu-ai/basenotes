@@ -222,6 +222,26 @@
           </ul>
         </div>
 
+        {%- if product.variants.size > 1 -%}
+          <div class="product-variants">
+            {%- for option in product.options_with_values -%}
+              <div class="variant-selector">
+                <span class="visually-hidden" id="option-label-{{ option.name | handle }}">Choose {{ option.name }}</span>
+                <div class="variant-tabs" role="group" aria-labelledby="option-label-{{ option.name | handle }}">
+                  {%- for value in option.values -%}
+                    <button type="button" class="variant-tab{% if option.selected_value == value %} is-selected{% endif %}" data-variant-tab data-value="{{ value | escape }}">{{ value }}</button>
+                  {%- endfor -%}
+                </div>
+                <select aria-hidden="true" tabindex="-1" id="option-{{ option.name | handle }}" data-option-index="{{ forloop.index0 }}" class="variant-select visually-hidden">
+                  {%- for value in option.values -%}
+                    <option value="{{ value }}"{% if option.selected_value == value %} selected{% endif %}>{{ value }}</option>
+                  {%- endfor -%}
+                </select>
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
         {% comment %} ONE-TIME 5 ML PURCHASE VIEW — default merchandising path {% endcomment %}
         <div class="purchase-box" id="purchaseView">
           <div class="purchase-box__header">
@@ -258,23 +278,6 @@
         {% comment %} SHARED FORM (used by both views) {% endcomment %}
         {%- form 'product', product, id: 'productForm', class: 'product-purchase-form', data-product-form: '', data-productid: product.id -%}
           <input type="hidden" name="id" value="{{ current_variant.id }}" id="variantId">
-
-          {%- if product.variants.size > 1 -%}
-            <div class="product-variants">
-              {%- for option in product.options_with_values -%}
-                <div class="variant-selector">
-                  <label for="option-{{ option.name | handle }}">{{ option.name }}</label>
-                  <select id="option-{{ option.name | handle }}" data-option-index="{{ forloop.index0 }}" class="variant-select">
-                    {%- for value in option.values -%}
-                      <option value="{{ value }}"{% if option.selected_value == value %} selected{% endif %}>
-                        {{ value }}
-                      </option>
-                    {%- endfor -%}
-                  </select>
-                </div>
-              {%- endfor -%}
-            </div>
-          {%- endif -%}
 
           {% comment %} Appstle Subscription Widget Container {% endcomment %}
           <div id="appstle_subscription_widget" data-product-id="{{ product.id }}" data-variant-id="{{ current_variant.id }}"></div>
@@ -411,11 +414,11 @@
             -%}
             <fieldset class="bn-ptype" id="bnPtype">
               <legend class="visually-hidden">Purchase options</legend>
-              <label class="bn-ptype__opt is-selected" data-ptype-opt>
+              <label class="bn-ptype__opt is-selected" data-ptype-opt data-ptype-onetime>
                 <input type="radio" name="bn_ptype" value="onetime" checked>
                 <span class="bn-ptype__text"><strong>One-time purchase</strong><small>{{ current_variant.price | money }} &middot; no subscription, no renewals</small></span>
               </label>
-              <label class="bn-ptype__opt" data-ptype-opt>
+              <label class="bn-ptype__opt" data-ptype-opt data-ptype-subscribe>
                 <input type="radio" name="bn_ptype" value="subscribe">
                 <span class="bn-ptype__text"><strong>Monthly Rotation <small>(subscription)</small></strong><small>{{ pt_first }} first month, then {{ pt_month }}/month &middot; swap, pause, or cancel anytime</small></span>
               </label>
@@ -1822,6 +1825,17 @@
       const hasSellPlans = document.getElementById('sellingPlanSelector') !== null || (appstleWidget && appstleWidget.innerHTML.trim() !== '');
       const isSub = (productVariants.length === 1 && hasSellPlans) || isSubscriptionVariant(variant);
 
+      // Full bottles are always one-time purchases. A selling plan must never be
+      // carried across when the shopper switches from 5ml to a bottle.
+      if (!isSub) {
+        const oneTimeRadio = document.querySelector('input[name="bn_ptype"][value="onetime"]');
+        if (oneTimeRadio) oneTimeRadio.checked = true;
+      }
+      const subscriptionChoice = document.querySelector('[data-ptype-subscribe]');
+      if (subscriptionChoice) subscriptionChoice.hidden = !isSub;
+      const oneTimeSummary = document.querySelector('[data-ptype-onetime] .bn-ptype__text small');
+      if (oneTimeSummary) oneTimeSummary.textContent = formatMoney(variant.price) + ' · no subscription, no renewals';
+
       // Preserve the shopper's explicit purchase mode when the variant changes.
       const selectedPurchaseType = document.querySelector('input[name="bn_ptype"]:checked');
       const isOnetimePurchase = !!(selectedPurchaseType && selectedPurchaseType.value === 'onetime');
@@ -1885,6 +1899,22 @@
     // ─── Bind Variant Selectors ───
     variantSelectors.forEach(function(select) {
       select.addEventListener('change', onVariantChange);
+    });
+
+    document.querySelectorAll('[data-variant-tab]').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        const selector = tab.closest('.variant-selector');
+        const select = selector && selector.querySelector('.variant-select');
+        if (!select) return;
+        select.value = tab.dataset.value;
+        selector.querySelectorAll('[data-variant-tab]').forEach(function(sibling) {
+          const selected = sibling === tab;
+          sibling.classList.toggle('is-selected', selected);
+          sibling.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        });
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      tab.setAttribute('aria-pressed', tab.classList.contains('is-selected') ? 'true' : 'false');
     });
 
     // ─── Gallery Thumbnails ───
@@ -2437,6 +2467,58 @@ function doAddToCart(variantId, sellingPlan, originalText) {
 {%- endunless -%}
 
 {%- render 'review-scroll-assist' -%}
+
+<style>
+  .template-product .announcement-bar { display:none; }
+  .template-product .header { background:#22392B; }
+  .template-product .header__inner { min-height:70px; padding:1rem 2rem; }
+  .template-product .header__logo-text { padding:.15rem .3rem; border:1px solid rgba(255,255,255,.24); font-family:var(--font-heading); font-size:1.15rem; font-weight:500; letter-spacing:.08em; text-transform:uppercase; }
+  .template-product .header__nav-link { font-size:.8rem; font-weight:500; letter-spacing:.13em; text-transform:uppercase; }
+  .product-page { --jp-green:#22392B; --jp-cream:#F4EFE3; --jp-gold:#AC9159; background:var(--jp-cream); padding:2rem 0 5rem; }
+  .product-page .container { max-width:1140px; }
+  .product-breadcrumb { margin-bottom:2rem; }
+  .product-breadcrumb ol { font-size:.8rem; }
+  .product-breadcrumb li:not(:last-child):not(:first-child),.product-breadcrumb li[aria-current="page"] { display:none; }
+  .product-breadcrumb li:first-child a { font-size:0; color:var(--jp-green); border-bottom:1px solid var(--jp-gold); }
+  .product-breadcrumb li:first-child a::after { content:'← All fragrances'; font-size:.82rem; }
+  .product-breadcrumb li:first-child::after { display:none; }
+  .product-layout { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:4rem; margin-bottom:4rem; }
+  .product-gallery { position:sticky; top:92px; }
+  .product-gallery__main { background:transparent; border:1px solid rgba(29,61,44,.22); border-radius:7px; }
+  .product-gallery__image { object-fit:contain; padding:2.75rem; }
+  .product-gallery__thumb { background:transparent; border-radius:2px; }
+  .product-info { max-width:520px; padding-top:1.2rem; }
+  .product-info__header { margin-bottom:1.25rem; }
+  .product-info__vendor { color:var(--jp-gold); letter-spacing:.16em; }
+  .product-info__title { margin:.45rem 0 .35rem; font-size:clamp(3rem,5vw,4.8rem); line-height:.94; font-weight:600; }
+  .product-info__conc { margin:.5rem 0; color:#6a655c; font-size:.78rem; }
+  .product-info__conc-badge { padding:0; border:0; background:transparent; }
+  .product-info__conc-note { display:block; margin-top:.35rem; }
+  .product-variants { margin:1.4rem 0 1.1rem; }
+  .variant-tabs { display:grid; grid-auto-flow:column; grid-auto-columns:1fr; max-width:420px; }
+  .variant-tab { min-height:44px; padding:.7rem 1rem; border:1px solid var(--jp-green); border-right:0; background:transparent; color:var(--jp-green); font:500 .74rem/1 var(--font-body); letter-spacing:.06em; text-transform:uppercase; cursor:pointer; }
+  .variant-tab:last-child { border-right:1px solid var(--jp-green); }
+  .variant-tab.is-selected { background:var(--jp-green); color:#fff; }
+  .purchase-box,.subscription-box { padding:0; margin:0 0 1rem; background:transparent; border:0; border-radius:0; }
+  .purchase-box__header { padding:0; }
+  .price-amount { color:#25231f; font-size:2rem; font-weight:600; }
+  .purchase-box__details { display:none; }
+  .product-purchase-form { margin-top:1rem; }
+  .bn-ptype { margin:0 0 1rem; gap:.6rem; }
+  .bn-ptype__opt { border:1px solid rgba(29,61,44,.25); border-radius:4px; background:rgba(255,255,255,.2); padding:.8rem 1rem; }
+  .bn-ptype__opt.is-selected { border-color:var(--jp-green); background:rgba(255,255,255,.55); }
+  .bn-ptype__opt input { accent-color:var(--jp-green); }
+  .bn-ptype__text strong { font-size:.82rem; }
+  .bn-ptype__text small { color:#6a655c; }
+  .add-to-queue-btn { min-height:54px; border-radius:0; background:var(--jp-green); letter-spacing:.1em; text-transform:uppercase; box-shadow:none; }
+  .add-to-queue-btn svg { display:none; }
+  .subscription-box__note { color:#6a655c; font-size:.76rem; }
+  .product-info__description { margin-top:2.2rem; padding-top:2rem; border-top:1px solid rgba(29,61,44,.22); font-family:var(--font-editorial); font-size:1.05rem; font-style:italic; color:#6a655c; }
+  .product-info__description h2 { display:none; }
+  .fragrance-notes,.fragrance-characteristics,.product-accordion { border-color:rgba(29,61,44,.18); }
+  .related-products { border-top-color:rgba(29,61,44,.2); }
+  @media (max-width:768px) { .product-page { padding-top:1rem; } .product-layout { grid-template-columns:1fr; gap:1.5rem; } .product-gallery { position:relative; top:auto; } .product-gallery__image { padding:1.5rem; } .product-info { padding-top:0; } .product-info__title { font-size:3.4rem; } .variant-tab { padding:.65rem .45rem; font-size:.68rem; } }
+</style>
 
 {% schema %}
 {
