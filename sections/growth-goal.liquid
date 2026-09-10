@@ -2,7 +2,7 @@
   Growth goal / Founding 60 band (Aug 2026).
   Shows live active-member count vs goal (fetched from the basenote-media Worker; falls back to the
   numbers in settings), a real deadline, and a refer-a-friend share block. Copy tokens available in
-  headline/body: {active} {goal} {remaining} {next} {deadline}. Server-renders the fallback so there is no
+  headline/body/honesty: {active} {goal} {remaining} {next} {deadline}. Server-renders the fallback so there is no
   layout shift; JS only swaps numbers in.
 {%- endcomment -%}
 {%- liquid
@@ -17,12 +17,13 @@
   assign pct = active | times: 100 | divided_by: goal
   assign headline = section.settings.headline | replace: '{active}', active | replace: '{goal}', goal | replace: '{remaining}', remaining | replace: '{next}', next | replace: '{deadline}', deadline_label
   assign body = section.settings.body | replace: '{active}', active | replace: '{goal}', goal | replace: '{remaining}', remaining | replace: '{next}', next | replace: '{deadline}', deadline_label
+  assign honesty = section.settings.honesty | replace: '{active}', active | replace: '{goal}', goal | replace: '{remaining}', remaining | replace: '{next}', next | replace: '{deadline}', deadline_label
 -%}
 <section class="growth-goal" id="growth-goal-{{ section.id }}" aria-labelledby="gg-title-{{ section.id }}"
   data-growth-goal data-endpoint="{{ section.settings.endpoint | escape }}" data-goal="{{ goal }}" data-active="{{ active }}"
   data-deadline="{{ section.settings.deadline_date | escape }}" data-deadline-label="{{ deadline_label | escape }}"
   data-hide-after="{{ section.settings.hide_after_deadline }}"
-  data-headline="{{ section.settings.headline | escape }}" data-body="{{ section.settings.body | escape }}">
+  data-headline="{{ section.settings.headline | escape }}" data-body="{{ section.settings.body | escape }}" data-honesty="{{ section.settings.honesty | escape }}">
   <div class="growth-goal__inner">
     <div class="growth-goal__copy">
       {%- if section.settings.eyebrow != blank -%}<p class="growth-goal__eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
@@ -34,7 +35,7 @@
       </div>
       <p class="growth-goal__meta"><span data-gg-count>{{ active }}</span> of {{ goal }} · <span data-gg-days>{{ section.settings.deadline_label }}</span></p>
       {%- endif -%}
-      {%- if section.settings.honesty != blank -%}<p class="growth-goal__honesty">{{ section.settings.honesty }}</p>{%- endif -%}
+      {%- if section.settings.honesty != blank -%}<p class="growth-goal__honesty" data-gg-honesty>{{ honesty }}</p>{%- endif -%}
     </div>
     <div class="growth-goal__actions">
       {%- if section.settings.cta_label != blank -%}
@@ -69,6 +70,7 @@
   var goal = parseInt(el.getAttribute('data-goal'), 10) || 60;
   var tmplH = el.getAttribute('data-headline') || '';
   var tmplB = el.getAttribute('data-body') || '';
+  var tmplO = el.getAttribute('data-honesty') || '';
   var deadlineLabel = el.getAttribute('data-deadline-label') || '';
   function fill(t, a) {
     var r = Math.max(goal - a, 0);
@@ -78,6 +80,7 @@
     if (typeof a !== 'number' || isNaN(a)) return;
     var t = el.querySelector('[data-gg-title]'); if (t && tmplH) t.textContent = fill(tmplH, a);
     var b = el.querySelector('[data-gg-body]'); if (b && tmplB) b.textContent = fill(tmplB, a);
+    var o = el.querySelector('[data-gg-honesty]'); if (o && tmplO) o.textContent = fill(tmplO, a);
     var c = el.querySelector('[data-gg-count]'); if (c) c.textContent = a;
     var bar = el.querySelector('[data-gg-bar]'); if (bar) bar.setAttribute('aria-valuenow', a);
     var f = el.querySelector('[data-gg-fill]'); if (f) f.style.width = Math.min(100, Math.round(a / goal * 100)) + '%';

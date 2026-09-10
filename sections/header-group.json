@@ -15,10 +15,12 @@
       "type": "header",
       "settings": {
         "announcement_enabled": true,
-        "announcement_text": "25% off for new subscribers | Free Shipping",
+        "announcement_text": "25% off for New Subscribers | Free Shipping",
         "announcement_link": "",
         "logo_width": 100,
         "menu": "main-menu",
+        "journal_label": "Journal",
+        "journal_url": "",
         "mega_menu_parent": "",
         "mega_menu_label": "New",
         "mega_menu_heading": "Summer Collection",

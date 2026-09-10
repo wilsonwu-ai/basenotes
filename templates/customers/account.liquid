@@ -231,6 +231,16 @@
         <div data-view="subscription" class="acct__view" style="display:none;">
 
           {%- if is_subscriber -%}
+          <div id="subscriptionContracts" class="subscription-contracts" aria-live="polite" aria-busy="true">
+            <p class="subscription-contracts__loading">Loading your active subscriptions…</p>
+          </div>
+
+          {%- comment -%}
+            This server-rendered card set is the compatibility fallback. It is
+            retained if the authenticated Appstle portal cannot be reached, and
+            is replaced only after the client has rendered every active contract.
+          {%- endcomment -%}
+          <div data-subscription-fallback>
           <!-- Featured card -->
           <div class="acct__welcome-banner">
             <div class="acct__welcome-content">
@@ -324,6 +334,7 @@
             <div class="sub-cancel">
               <button class="sub-cancel__link" id="subCancelBtn">Cancel subscription</button>
             </div>
+          </div>
           </div>
           {%- else -%}
           <div class="acct__card acct__card--cta">
@@ -542,6 +553,13 @@
   .sub-cancel { text-align: center; padding-top: 1rem; border-top: 1px solid #F0EDE8; }
   .sub-cancel__link { background: none; border: none; color: #999; font-size: 12px; cursor: pointer; font-family: inherit; text-decoration: underline; }
   .sub-cancel__link:hover { color: #c62828; }
+  .subscription-contracts { display: grid; gap: 16px; margin-bottom: 16px; }
+  .subscription-contracts__loading, .subscription-contracts__empty { margin: 0; padding: 12px 0; color: #8a918e; font-size: 14px; }
+  .subscription-contract__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .subscription-contract__title { margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.35rem; color: #2D4641; }
+  .subscription-contract__meta { margin: 4px 0 0; color: #8a918e; font-size: 13px; }
+  .subscription-contract__status { flex: 0 0 auto; padding: 4px 10px; border-radius: 999px; background: rgba(76,175,80,0.1); color: #3f7a4b; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .subscription-contract__portal { display: block; margin-top: 14px; color: #2D4641; font-size: 12px; font-weight: 700; text-decoration: underline; }
 
   /* ── Billing Countdown ── */
   .billing-countdown__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
@@ -770,10 +788,45 @@
 
   // ── Subscription action helper (pause / skip) — calls Appstle customer-portal API ──
   // Exposed on window so the click handlers below can call it.
-  window.bnSubscriptionAction = function(action) {
+  window.bnSubscriptionAction = function(action, requestedContractId, sourceButton) {
     var cpBase = '/apps/subscriptions/cp/api';
     var paymentBtn = document.getElementById('subUpdatePaymentBtn');
-    var contractId = paymentBtn && paymentBtn.dataset ? paymentBtn.dataset.contractId : '';
+    var savedContractId = paymentBtn && paymentBtn.dataset ? paymentBtn.dataset.contractId : '';
+    var savedContractStatus = paymentBtn && paymentBtn.dataset ? String(paymentBtn.dataset.contractStatus || '').toUpperCase() : '';
+    // A contract ID supplied by a rendered active-contract card is authoritative
+    // for that action. The legacy fallback is retained only for the old single
+    // subscription card and never reuses a known terminal contract.
+    var contractId = requestedContractId || ((savedContractStatus === '' || savedContractStatus === 'ACTIVE') ? savedContractId : '');
+
+    // Dynamic active-contract cards pass their own button here. Keep that
+    // exact control disabled for the request lifetime so a fast double-click
+    // cannot send duplicate Appstle mutations or payment-update emails. The
+    // legacy single-card button continues to use its established UI below.
+    var sourceButtonOriginalHtml = '';
+    function beginSourceButtonRequest(label) {
+      if (!sourceButton) return true;
+      if (sourceButton.disabled || sourceButton.dataset.bnRequestPending === 'true') return false;
+      sourceButtonOriginalHtml = sourceButton.innerHTML;
+      sourceButton.disabled = true;
+      sourceButton.dataset.bnRequestPending = 'true';
+      sourceButton.setAttribute('aria-busy', 'true');
+      sourceButton.textContent = label || 'Working…';
+      return true;
+    }
+    function restoreSourceButton() {
+      if (!sourceButton || sourceButton.dataset.bnRequestPending !== 'true') return;
+      sourceButton.innerHTML = sourceButtonOriginalHtml;
+      sourceButton.disabled = false;
+      sourceButton.removeAttribute('aria-busy');
+      delete sourceButton.dataset.bnRequestPending;
+    }
+    function completeSourceButton(label) {
+      if (!sourceButton) return;
+      sourceButton.textContent = label;
+      sourceButton.disabled = true;
+      sourceButton.removeAttribute('aria-busy');
+      sourceButton.dataset.bnRequestPending = 'complete';
+    }
 
     function showError(msg) { alert(msg || 'Something went wrong. Please email hello@basenotescent.com and we’ll sort it out.'); }
     function showOk(msg) { alert(msg); try { location.reload(); } catch(e){} }
@@ -814,15 +867,17 @@
         .then(function(contracts){
           var active = null;
           for (var i = 0; i < (contracts||[]).length; i++) {
-            if (contracts[i].status === 'ACTIVE') { active = contracts[i]; break; }
+            if (String(contracts[i].status || '').toUpperCase() === 'ACTIVE') { active = contracts[i]; break; }
           }
-          if (!active) active = (contracts||[])[0];
           if (!active) return Promise.reject('no-active');
           var id = active.subscriptionContractId || active.contractId || active.id;
           if (!id) return Promise.reject('no-id');
           cb(id);
         })
-        .catch(function(){ showError('We couldn’t load your subscription. Please refresh the page or email hello@basenotescent.com.'); });
+        .catch(function(){
+          restoreSourceButton();
+          showError('We couldn’t load your subscription. Please refresh the page or email hello@basenotescent.com.');
+        });
     }
 
     if (action === 'pause') {
@@ -830,6 +885,7 @@
       if (rawCycles === null) return; // user cancelled
       var cycles = parseInt(rawCycles, 10);
       if (!cycles || cycles < 1 || cycles > 3) { showError('Please enter 1, 2, or 3.'); return; }
+      if (!beginSourceButtonRequest('Saving…')) return;
       ensureContractId(function(id){
         var url = cpBase + '/subscription-contracts-update-status'
           + '?contractId=' + encodeURIComponent(id)
@@ -843,13 +899,18 @@
               return r.text().then(function(t){ throw new Error(t || ('HTTP ' + r.status)); });
             }
           })
-          .catch(function(err){ console.error('[bn-subscription] pause failed', err); showError('We couldn’t pause your subscription right now. Please email hello@basenotescent.com.'); });
+          .catch(function(err){
+            console.error('[bn-subscription] pause failed', err);
+            restoreSourceButton();
+            showError('We couldn’t pause your subscription right now. Please email hello@basenotescent.com.');
+          });
       });
       return;
     }
 
     if (action === 'skip') {
       if (!confirm('Skip next month’s shipment? You won’t be charged for next month, and shipments resume automatically the month after.')) return;
+      if (!beginSourceButtonRequest('Saving…')) return;
       ensureContractId(function(id){
         var url = cpBase + '/subscription-billing-attempts/skip-upcoming-order'
           + '?subscriptionContractId=' + encodeURIComponent(id);
@@ -877,15 +938,20 @@
               return r.text().then(function(t){ throw new Error(t || ('HTTP ' + r.status)); });
             }
           })
-          .catch(function(err){ console.error('[bn-subscription] skip failed', err); showError('We couldn’t skip next month right now. Please email hello@basenotescent.com.'); });
+          .catch(function(err){
+            console.error('[bn-subscription] skip failed', err);
+            restoreSourceButton();
+            showError('We couldn’t skip next month right now. Please email hello@basenotescent.com.');
+          });
       });
       return;
     }
 
     if (action === 'update-payment') {
-      var btn = document.getElementById('subUpdatePaymentBtn');
+      if (!beginSourceButtonRequest('Sending…')) return;
+      var btn = sourceButton || document.getElementById('subUpdatePaymentBtn');
       var originalHtml = btn ? btn.innerHTML : '';
-      if (btn) {
+      if (btn && !sourceButton) {
         btn.disabled = true;
         btn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="31.4" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" dur="0.8s" from="0 12 12" to="360 12 12" repeatCount="indefinite"/></circle></svg> Sending…';
       }
@@ -894,7 +960,9 @@
         fetch(url, { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: '{}' })
           .then(function(r){
             if (!r.ok) throw new Error('HTTP ' + r.status);
-            if (btn) {
+            if (sourceButton) {
+              completeSourceButton('Email sent!');
+            } else if (btn) {
               btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" width="20" height="20"><polyline points="20 6 9 17 4 12"/></svg> Email sent!';
               btn.style.borderColor = '#4CAF50';
               btn.style.background = 'rgba(76,175,80,0.04)';
@@ -903,7 +971,8 @@
           })
           .catch(function(err){
             console.error('[bn-subscription] update-payment failed', err);
-            if (btn) { btn.innerHTML = originalHtml; btn.disabled = false; }
+            if (sourceButton) restoreSourceButton();
+            else if (btn) { btn.innerHTML = originalHtml; btn.disabled = false; }
             showError('We couldn’t send the update email right now. Please try again or email hello@basenotescent.com.');
           });
       });
@@ -972,6 +1041,18 @@
       if (paymentBtn) {
         e.preventDefault();
         bnSubscriptionAction('update-payment');
+      }
+      // Active-contract cards are hydrated from the authenticated Appstle
+      // customer portal response. Pass that exact contract ID through to the
+      // existing scoped portal endpoints instead of silently acting on the
+      // first subscription in the account.
+      var contractActionBtn = e.target.closest && e.target.closest('[data-bn-contract-action]');
+      if (contractActionBtn) {
+        e.preventDefault();
+        var contractAction = contractActionBtn.getAttribute('data-bn-contract-action');
+        var contractId = contractActionBtn.getAttribute('data-contract-id');
+        if (contractActionBtn.disabled || contractActionBtn.dataset.bnRequestPending === 'true') return;
+        if (contractAction && contractId) bnSubscriptionAction(contractAction, contractId, contractActionBtn);
       }
     }, false);
 
@@ -1256,16 +1337,25 @@
 
     // ── Handle fragrance selection from the modal (no reload; BQ.on('change') will re-render) ──
     document.addEventListener('fragrance:selected', function(e){
+      if (e.__bnQueueHandled) return;
       var frag = e.detail || {};
       if (!window.BasenoteQueue) { showToast('Queue module not loaded — please refresh.', 'error'); return; }
+      if (!frag.variantId) {
+        showToast('This fragrance is not currently available as a subscription. Please choose another scent.', 'error');
+        return;
+      }
       var targetMonth = window.__bqPendingTargetMonth || window.BasenoteQueue.firstVisibleMonth();
       window.BasenoteQueue.setSlot(targetMonth, {
         productId: frag.id,
+        variantId: frag.variantId,
         title: frag.title,
         url: frag.handle ? ('/products/' + frag.handle) : '#',
         image: frag.image,
         family: frag.family
       });
+      // The legacy account script also observes this event. Mark the event so
+      // it cannot write a second, handle-only next-shipment selection.
+      e.__bnQueueHandled = true;
       window.__bqPendingTargetMonth = null;
       showToast('✓ ' + (frag.title || 'Fragrance') + ' queued for ' + window.BasenoteQueue.monthLabel(targetMonth, { withYear: true }));
       if (b) { b.style.background = '#16a34a'; b.textContent = '[ROUTER DIAG] Added ' + (frag.title || 'fragrance') + ' to ' + targetMonth + '.'; }
@@ -1542,7 +1632,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!data || !data.fragrance) return;
     if (!window.BasenoteAppstleSwap) return;
     var handle = data.fragrance.handle;
-    if (!handle) return;
+    var variantId = data.fragrance.variantId;
+    if (!variantId && !handle) return;
 
     var prevBadgeText = nsStatusBadge ? nsStatusBadge.textContent : '';
     var prevBadgeClass = nsStatusBadge ? nsStatusBadge.className : '';
@@ -1551,7 +1642,9 @@ document.addEventListener('DOMContentLoaded', function() {
       nsStatusBadge.className = 'ns-status-badge ns-auto';
     }
 
-    window.BasenoteAppstleSwap.swap({ handle: handle }).then(function (res) {
+    // Prefer the concrete subscription-eligible variant emitted by the selector.
+    // `handle` remains only as a compatibility fallback for older local selections.
+    window.BasenoteAppstleSwap.swap({ variantId: variantId, handle: handle }).then(function (res) {
       if (!nsStatusBadge) return;
       if (res && res.ok) {
         nsStatusBadge.textContent = 'Confirmed';
@@ -1667,7 +1760,8 @@ document.addEventListener('DOMContentLoaded', function() {
           title: nextItem.title || nextItem.name,
           image: nextItem.image || nextItem.featured_image,
           family: nextItem.vendor || nextItem.family || '',
-          handle: nextItem.handle || ''
+          handle: nextItem.handle || '',
+          variantId: nextItem.variantId || null
         },
         autoSelected: true,
         source: 'queue',
@@ -1818,6 +1912,137 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderBillingCountdown();
 
+  // ── Active subscription contracts ──────────────────────────────────────
+  // The Appstle endpoint is session-scoped to the logged-in customer. Render
+  // every active result it returns; do not expose IDs or contract data outside
+  // this account page, and do not fall back to a cancelled historical contract.
+  function getContractId(contract) {
+    return contract && (contract.subscriptionContractId || contract.contractId || contract.id) || '';
+  }
+
+  function getContractLines(contract) {
+    if (!contract) return [];
+    var direct = contract.lines || contract.lineItems;
+    if (Array.isArray(direct) && direct.length) return direct;
+    if (contract.contractDetailsJSON) {
+      try {
+        var parsed = typeof contract.contractDetailsJSON === 'string'
+          ? JSON.parse(contract.contractDetailsJSON)
+          : contract.contractDetailsJSON;
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) {}
+    }
+    return [];
+  }
+
+  function getContractLineTitle(line) {
+    if (!line) return '';
+    return line.productTitle || line.title || line.productName || line.name || line.variantTitle || '';
+  }
+
+  function getContractNextDate(contract) {
+    return contract && (contract.nextOrderDate || contract.nextOrderDateLocal
+      || contract.nextBillingDate || contract.nextBillingDateLocal
+      || contract.billingDate || contract.nextDeliveryDate) || null;
+  }
+
+  function formatContractDate(value) {
+    var date = value ? new Date(value) : null;
+    return date && isValidDate(date)
+      ? date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+      : 'Not available';
+  }
+
+  function contractDetailRow(label, value) {
+    var row = document.createElement('div');
+    row.className = 'sub-details__row';
+    var labelEl = document.createElement('span');
+    labelEl.className = 'sub-details__label';
+    labelEl.textContent = label;
+    var valueEl = document.createElement('span');
+    valueEl.className = 'sub-details__value';
+    valueEl.textContent = value || 'Not available';
+    row.appendChild(labelEl);
+    row.appendChild(valueEl);
+    return row;
+  }
+
+  function contractActionButton(label, action, contractId) {
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'sub-action-btn';
+    button.textContent = label;
+    button.setAttribute('data-bn-contract-action', action);
+    button.setAttribute('data-contract-id', contractId);
+    return button;
+  }
+
+  function renderActiveSubscriptionContracts(contracts) {
+    var target = document.getElementById('subscriptionContracts');
+    if (!target) return;
+    var fallback = document.querySelector('[data-subscription-fallback]');
+    target.setAttribute('aria-busy', 'false');
+    target.innerHTML = '';
+
+    // Successful authenticated responses replace the order-history fallback:
+    // a former subscriber must never be shown a fabricated active contract.
+    if (fallback) fallback.hidden = true;
+
+    if (!contracts.length) {
+      var empty = document.createElement('p');
+      empty.className = 'subscription-contracts__empty';
+      empty.textContent = 'You do not have an active subscription at this time.';
+      target.appendChild(empty);
+      return;
+    }
+
+    contracts.forEach(function(contract, index) {
+      var contractId = getContractId(contract);
+      if (!contractId) return;
+      var card = document.createElement('section');
+      card.className = 'acct__card subscription-contract';
+
+      var header = document.createElement('div');
+      header.className = 'subscription-contract__header';
+      var headingGroup = document.createElement('div');
+      var title = document.createElement('h3');
+      title.className = 'subscription-contract__title';
+      title.textContent = 'Subscription ' + (index + 1);
+      var meta = document.createElement('p');
+      meta.className = 'subscription-contract__meta';
+      var lineTitles = getContractLines(contract).map(getContractLineTitle).filter(Boolean);
+      meta.textContent = lineTitles.length ? lineTitles.join(', ') : 'Subscription details';
+      headingGroup.appendChild(title);
+      headingGroup.appendChild(meta);
+      var status = document.createElement('span');
+      status.className = 'subscription-contract__status';
+      status.textContent = 'Active';
+      header.appendChild(headingGroup);
+      header.appendChild(status);
+      card.appendChild(header);
+
+      var details = document.createElement('div');
+      details.className = 'sub-details';
+      details.appendChild(contractDetailRow('Fragrance', lineTitles.join(', ') || 'Subscription fragrance'));
+      details.appendChild(contractDetailRow('Next Billing', formatContractDate(getContractNextDate(contract))));
+      card.appendChild(details);
+
+      var actions = document.createElement('div');
+      actions.className = 'sub-actions';
+      actions.appendChild(contractActionButton('Update Payment', 'update-payment', contractId));
+      actions.appendChild(contractActionButton('Skip Next Month', 'skip', contractId));
+      actions.appendChild(contractActionButton('Pause Subscription', 'pause', contractId));
+      card.appendChild(actions);
+
+      var portal = document.createElement('a');
+      portal.className = 'subscription-contract__portal';
+      portal.href = serverSubData.portalUrl || '/apps/subscriptions';
+      portal.textContent = 'Manage or cancel this subscription in the subscription portal';
+      card.appendChild(portal);
+      target.appendChild(card);
+    });
+  }
+
   /* ── Appstle API Integration ── */
   // Fetch real subscription data from Appstle's customer portal API (app proxy)
   // This overrides the Shopify order-history fallback with live Appstle data
@@ -1834,14 +2059,18 @@ document.addEventListener('DOMContentLoaded', function() {
       })
       .then(function(r) { return r.ok ? r.json() : Promise.reject('no-contracts'); })
       .then(function(contracts) {
-        if (!contracts || !contracts.length) return;
+        var allContracts = Array.isArray(contracts) ? contracts : [];
+        var activeContracts = allContracts.filter(function(contract) {
+          return String(contract && contract.status || '').toUpperCase() === 'ACTIVE' && !!getContractId(contract);
+        });
 
-        // Find the first ACTIVE contract
-        var active = null;
-        for (var i = 0; i < contracts.length; i++) {
-          if (contracts[i].status === 'ACTIVE') { active = contracts[i]; break; }
-        }
-        if (!active) active = contracts[0];
+        // Render every active contract first. The existing dashboard/queue has
+        // one legacy summary surface, so it continues to use the first active
+        // contract only for that summary; the subscription profile itself no
+        // longer silently discards the remaining active contracts.
+        renderActiveSubscriptionContracts(activeContracts);
+        if (!activeContracts.length) return;
+        var active = activeContracts[0];
 
         // ── Update billing date from Appstle ──
         // Prioritize nextOrderDate to match Appstle widget display
@@ -1883,7 +2112,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // ── Store contract ID for payment update button ──
         // Uses Shopify's subscriptionContractId (not Appstle's internal id)
         var paymentBtn = document.getElementById('subUpdatePaymentBtn');
-        var bestContractId = active.subscriptionContractId || active.contractId || active.id;
+        var bestContractId = getContractId(active);
         if (paymentBtn && bestContractId) {
           paymentBtn.dataset.contractId = bestContractId;
           // PRD-Jul24: `active` above falls back to contracts[0] with NO status filter, so
@@ -1895,7 +2124,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // ── Update next shipment product from Appstle ──
-        var lines = active.lines || active.lineItems || [];
+        var lines = getContractLines(active);
         // Seed the Appstle-swap module so it doesn't have to refetch when the
         // user changes their next-shipment pick. Source-of-truth for what the
         // next renewal will actually ship.
@@ -1963,6 +2192,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Listen for fragrance selection
   document.addEventListener('fragrance:selected', function(e) {
+    if (e.__bnQueueHandled) return;
     var frag = e.detail;
 
     // PRD-01 fix (Apr 23): if user opened the selector from an empty queue slot,
@@ -1971,11 +2201,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (pendingMonth && window.BasenoteQueue) {
       window.BasenoteQueue.setSlot(pendingMonth, {
         productId: frag.id,
+        variantId: frag.variantId,
         title: frag.title,
         url: frag.handle ? ('/products/' + frag.handle) : '#',
         image: frag.image,
         family: frag.family
       });
+      e.__bnQueueHandled = true;
       window.__bqPendingTargetMonth = null;
       // No redirect needed — user stays on account page; queue re-renders via BQ.on('change')
       return;
@@ -1984,6 +2216,7 @@ document.addEventListener('DOMContentLoaded', function() {
     saveNextShipment({
       fragrance: {
         id: frag.id,
+        variantId: frag.variantId,
         handle: frag.handle,
         title: frag.title,
         image: frag.image,

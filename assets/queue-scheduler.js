@@ -164,20 +164,42 @@
     return parts[parts.length - 1] || null;
   }
 
+  function exactVariantId(value) {
+    // Shopify storefront variant IDs are decimal IDs. Keep the canonical string
+    // representation so Appstle receives the same concrete subscription variant
+    // that was rendered by Liquid, rather than a product/handle approximation.
+    var id = value == null ? '' : String(value).trim();
+    return /^\d+$/.test(id) ? id : null;
+  }
+
   function syncFirstSlotToAppstle(month, product) {
     // The very next renewal is bound to Appstle. Months 2+ stay local until
     // they become month 1 (handled on next render or via setShippedThrough).
     if (month !== firstVisibleMonth()) return;
     if (!window.BasenoteAppstleSwap || typeof window.BasenoteAppstleSwap.swap !== 'function') return;
     var input = {};
-    if (product && product.variantId) input.variantId = product.variantId;
-    if (product && product.url) input.handle = handleFromUrl(product.url);
+    var variantId = product && exactVariantId(product.variantId);
+    if (variantId) {
+      // New queue rows always use this exact subscription-eligible variant.
+      input.variantId = variantId;
+    } else if (product && product.url) {
+      // Legacy queue rows did not persist a variant ID. Keep their existing
+      // handle fallback so they remain readable/manageable after this upgrade.
+      input.handle = handleFromUrl(product.url);
+    }
     if (!input.variantId && !input.handle) return;
     try { window.BasenoteAppstleSwap.swap(input); } catch (e) {}
   }
 
   function setSlot(month, product) {
     if (!month || !product || !product.productId) return load();
+    var variantId = exactVariantId(product.variantId);
+    if (!variantId) {
+      // Do not create a new ambiguous queue row. Product handles can resolve to
+      // a different (for example, one-time) variant after a catalog change.
+      try { console.warn('[queue] rejected a queue entry without an exact subscription variant ID'); } catch (e) {}
+      return load();
+    }
     var queue = load();
     var existingIdx = queue.findIndex(function (e) { return e.shipMonth === month; });
     var isReplace = existingIdx >= 0;
@@ -189,7 +211,7 @@
       url: product.url,
       image: product.image,
       family: product.family,
-      variantId: product.variantId,
+      variantId: variantId,
       addedAt: new Date().toISOString(),
       locked: false
     };
