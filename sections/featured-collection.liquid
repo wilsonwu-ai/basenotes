@@ -7,13 +7,13 @@
   endif
 -%}
 
-<section class="section section--cream featured-vials" id="collection" aria-labelledby="FeaturedVialsTitle-{{ section.id }}">
+<section class="section section--cream" id="collection">
   <div class="container">
     <div class="section__header">
       {%- if section.settings.eyebrow != blank -%}
         <span class="section__eyebrow">{{ section.settings.eyebrow }}</span>
       {%- endif -%}
-      <h2 class="section__title" id="FeaturedVialsTitle-{{ section.id }}">{{ section.settings.heading }}</h2>
+      <h2 class="section__title">{{ section.settings.heading }}</h2>
       {%- if section.settings.description != blank -%}
         <p class="section__description">{{ section.settings.description }}</p>
       {%- endif -%}
@@ -22,7 +22,7 @@
     <div class="featured-grid">
       {%- if collection != blank -%}
         {%- for product in collection.products limit: products_to_show -%}
-          {% render 'product-card', product: product, show_quick_add: false, purchase_context: 'one_time' %}
+          {% render 'product-card', product: product %}
         {%- endfor -%}
       {%- else -%}
         {% comment %} Placeholder products for preview {% endcomment %}
@@ -89,35 +89,6 @@
     gap: var(--spacing-lg);
     max-width: 1200px;
     margin: 0 auto;
-  }
-
-  .featured-vials {
-    padding-block: clamp(4rem, 8vw, 7rem);
-  }
-
-  .featured-vials .section__header {
-    max-width: 58rem;
-    margin-inline: auto;
-    margin-block-end: clamp(2rem, 5vw, 4rem);
-  }
-
-  .featured-vials .section__title {
-    font-size: clamp(2.5rem, 5vw, 5rem);
-    font-weight: 500;
-    line-height: 0.98;
-    letter-spacing: -0.035em;
-    text-wrap: balance;
-  }
-
-  .featured-vials .section__description {
-    max-width: 42rem;
-    margin-inline: auto;
-    font-size: clamp(1rem, 1.5vw, 1.2rem);
-  }
-
-  .featured-vials .product-card__add-btn {
-    min-height: 3.25rem;
-    text-decoration: none;
   }
 
   @media (max-width: 992px) {

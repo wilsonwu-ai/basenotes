@@ -13,20 +13,22 @@ const atelier = fs.readFileSync('sections/home-scent-atelier.liquid', 'utf8');
 const layout = fs.readFileSync('layout/theme.liquid', 'utf8');
 
 test('live merchant imagery remains referenced', () => {
-  assert.match(index, /shopify:\/\/shop_images\/gLmqu\.jpg/);
+  assert.match(index, /shopify:\/\/shop_images\/case-forest-green\.png/);
   assert.match(index, /Screenshot_2026-05-14_at_4\.47\.07_PM\.png/);
   assert.match(index, /Screenshot_2026-05-14_at_4\.31\.57_PM\.png/);
 });
 
-test('homepage order leads with one-time product discovery', () => {
+test('homepage restores the original visual composition and leads with one-time discovery', () => {
   const orderStart = index.indexOf('"order"');
   const order = index.slice(orderStart);
-  assert.ok(order.indexOf('"home-scent-atelier"') < order.indexOf('"home-buying-paths"'));
-  assert.ok(order.indexOf('"home-buying-paths"') < order.indexOf('"featured-collection"'));
+  assert.equal(order.includes('"home-scent-atelier"'), false);
+  assert.equal(order.includes('"home-buying-paths"'), false);
   assert.ok(order.indexOf('"featured-collection"') < order.indexOf('"delivery-explainer"'));
   assert.equal(parsedIndex.sections['growth-goal'].disabled, true);
-  assert.equal(parsedIndex.sections['how-it-works'].disabled, true);
-  assert.match(hero, /hero__proof/);
+  assert.equal(parsedIndex.sections['how-it-works'].disabled, undefined);
+  assert.match(hero, /hero__overlay/);
+  assert.match(hero, /Cormorant Garamond/);
+  assert.match(index, /\$20 for your first fragrance\. \$18 for every one after/);
 });
 
 test('three offers are distinct and Monthly Rotation is defined', () => {
@@ -67,9 +69,10 @@ test('PDP defaults one-time while subscription remains cart verified', () => {
   assert.match(pdp, /Start Monthly Rotation — ' \+ SUBSCRIPTION_FIRST_PRICE \+ ' today/);
 });
 
-test('newsletter is visibly labeled and distinct from paid subscription', () => {
-  assert.match(newsletter, /class="newsletter__label"/);
-  assert.match(newsletter, /aria-describedby="NewsletterNote-/);
+test('newsletter keeps the original styling and promotes new scent drops', () => {
+  assert.match(newsletter, /class="visually-hidden">Email address/);
+  assert.match(newsletter, /class="section section--dark newsletter-section"/);
   assert.match(index, /"button_label": "Tell Me First"/);
+  assert.equal(parsedIndex.sections.newsletter.disabled, undefined);
   assert.match(layout, /unless request\.page_type == 'index'/);
 });
