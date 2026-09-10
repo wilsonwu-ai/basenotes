@@ -2,156 +2,145 @@
   assign featured_collection = collections[section.settings.collection]
   assign featured_limit = section.settings.products_to_show | default: 8
   assign banner_image = images['gLmqu.jpg']
+  assign add_on_product = all_products['extra-5ml-vial-add-on']
+  assign add_on_variant = add_on_product.selected_or_first_available_variant
 -%}
 
-<section class="jeff-storefront" data-jeff-storefront>
-  <div class="jeff-storefront__filters" aria-label="Shop fragrances">
-    <a class="is-active" href="{{ featured_collection.url | default: '/collections/fragrances' }}">All</a>
-    <a href="{{ featured_collection.url | default: '/collections/fragrances' }}?sort_by=best-selling">Bestsellers</a>
-    <a href="{{ featured_collection.url | default: '/collections/fragrances' }}?sort_by=created-descending">New drops</a>
-    <a href="/products/creed-aventus#productForm">Monthly Rotation</a>
-  </div>
+<artifact-storefront class="artifact-home" data-add-on-id="{{ add_on_variant.id }}" data-add-on-price="{{ add_on_variant.price }}" data-add-on-available="{{ add_on_variant.available }}">
+  <nav class="artifact-home__filters" aria-label="Shop fragrances by wearer">
+    <a class="artifact-home__filter artifact-home__filter--active" href="{{ featured_collection.url | default: '/collections/fragrances' }}">All</a>
+    <a class="artifact-home__filter" href="{{ featured_collection.url | default: '/collections/fragrances' }}?filter.p.tag=him">For him</a>
+    <a class="artifact-home__filter" href="{{ featured_collection.url | default: '/collections/fragrances' }}?filter.p.tag=her">For her</a>
+    <a class="artifact-home__filter" href="{{ featured_collection.url | default: '/collections/fragrances' }}?filter.p.tag=unisex">Unisex</a>
+  </nav>
 
-  <header class="jeff-storefront__hero container">
-    <div class="jeff-storefront__hero-copy">
-      <p class="jeff-storefront__eyebrow">Start with $20</p>
-      <h1>Find scents that work for you.</h1>
-      <p class="jeff-storefront__intro"><em>Real Creed, Tom Ford, Valentino, Xerjoff. Try any 5ml for $20.</em></p>
-      <a class="jeff-storefront__text-link" href="{{ featured_collection.url | default: '/collections/fragrances' }}">Shop fragrances and get your vial today</a>
-      <p class="jeff-storefront__price-rule">$20 for your first fragrance <span aria-hidden="true">·</span> $18 for each one after</p>
-      <div class="jeff-storefront__rating" aria-label="4.8 average rating from more than 1,240 orders">
-        <span aria-hidden="true">★★★★★</span>
-        <small>4.8 average rating · 1,240+ orders shipped</small>
-      </div>
-    </div>
-    <div class="jeff-storefront__banner">
-      {%- if banner_image != blank -%}
-        {{ banner_image | image_url: width: 1400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '480, 720, 960, 1200, 1400', sizes: '(max-width: 749px) 100vw, 50vw', alt: 'Base Note fragrance vials suspended against a warm cream background' }}
-      {%- else -%}
-        <img src="https://basenotescent.com/cdn/shop/files/gLmqu.jpg" width="1024" height="1024" alt="Base Note fragrance vials suspended against a warm cream background" fetchpriority="high">
-      {%- endif -%}
-    </div>
-  </header>
-
-  <div class="jeff-storefront__grid container" aria-label="Featured fragrances">
-    {%- for product in featured_collection.products limit: featured_limit -%}
-      {%- assign card_variant = product.selected_or_first_available_variant -%}
-      <article class="jeff-product-card">
-        <a class="jeff-product-card__image" href="{{ product.url }}">
-          {%- if product.featured_image != blank -%}
-            {{ product.featured_image | image_url: width: 720 | image_tag: loading: 'lazy', widths: '280, 420, 560, 720', sizes: '(max-width: 749px) 50vw, 25vw', alt: product.featured_image.alt | default: product.title }}
-          {%- else -%}
-            {% render 'vial-illustration', product: product %}
-          {%- endif -%}
-        </a>
-        <div class="jeff-product-card__body">
-          <a href="{{ product.url }}">
-            <h2>{{ product.title }}</h2>
-            <p>{{ product.vendor }} · {{ card_variant.title | default: '5ml' }}</p>
-          </a>
-          {%- if card_variant.available -%}
-            <form method="post" action="{{ routes.cart_add_url }}" class="jeff-product-card__form">
-              <input type="hidden" name="id" value="{{ card_variant.id }}">
-              <input type="hidden" name="quantity" value="1">
-              <button type="submit">Add 5ml · {{ card_variant.price | money }}</button>
-            </form>
-          {%- else -%}
-            <a class="jeff-product-card__sold" href="{{ product.url }}">View fragrance</a>
-          {%- endif -%}
-        </div>
-      </article>
-    {%- else -%}
-      <p class="jeff-storefront__empty">Choose a collection in the theme editor to show fragrances.</p>
-    {%- endfor -%}
-  </div>
-
-  <div class="jeff-storefront__all container">
-    <a href="{{ featured_collection.url | default: '/collections/fragrances' }}">Shop all fragrances</a>
-  </div>
-
-  <section class="jeff-storefront__steps" id="how-it-works">
-    <div class="container">
-      <p class="jeff-storefront__eyebrow">Choose what works for you</p>
-      <h2>Three simple ways to wear it.</h2>
-      <div class="jeff-storefront__step-grid">
-        <article>
-          <span>01</span>
-          <h3>Try one vial</h3>
-          <p>Choose any authentic 5ml fragrance for $20. A one-time purchase with no subscription.</p>
-          <a href="{{ featured_collection.url | default: '/collections/fragrances' }}">Shop 5ml vials</a>
-        </article>
-        <article>
-          <span>02</span>
-          <h3>Monthly Rotation</h3>
-          <p>A monthly fragrance subscription. Get one 5ml scent each month, then swap, pause, or cancel anytime.</p>
-          <a href="/products/creed-aventus#productForm">Explore Monthly Rotation</a>
-        </article>
-        <article>
-          <span>03</span>
-          <h3>Go full bottle</h3>
-          <p>Found the one? Buy a full bottle through Base Note for less than a regular retailer.</p>
-          <a href="#scent-atelier">Choose vial or bottle</a>
-        </article>
-      </div>
+  <section class="artifact-home__hero" aria-labelledby="ArtifactHomeTitle-{{ section.id }}">
+    <p class="artifact-home__eyebrow">Start with $20</p>
+    <h1 id="ArtifactHomeTitle-{{ section.id }}">Find scents that work for you.</h1>
+    <p class="artifact-home__intro"><em>Real Creed, Tom Ford, Valentino, Xerjoff. Try any 5ml for $20.</em></p>
+    <a class="artifact-home__learn" href="#how-it-works">New to decants? Here’s how this works</a>
+    <div class="artifact-home__proof">
+      <p>$20 for your first fragrance <span aria-hidden="true">·</span> $18 for each one after</p>
+      <span class="artifact-home__stars" aria-hidden="true">★★★★★</span>
+      <small>4.8 average rating · 1,240+ orders shipped</small>
     </div>
   </section>
 
-</section>
+  <section class="artifact-home__catalog" aria-label="Featured fragrances">
+    <div class="artifact-home__grid">
+      {%- for product in featured_collection.products limit: featured_limit -%}
+        {%- assign card_variant = product.selected_or_first_available_variant -%}
+        <article class="artifact-card" aria-labelledby="ArtifactCardTitle-{{ product.id }}">
+          <a class="artifact-card__image" href="{{ product.url }}" aria-labelledby="ArtifactCardTitle-{{ product.id }}">
+            {% render 'vial-illustration', product: product %}
+          </a>
+          <div class="artifact-card__body">
+            <h2 id="ArtifactCardTitle-{{ product.id }}"><a href="{{ product.url }}">{{ product.title }}</a></h2>
+            <p>{{ product.vendor }} <span aria-hidden="true">·</span> {{ card_variant.title | default: '5ml' }}</p>
+            {%- if card_variant.available -%}
+              <form class="artifact-card__form" method="post" action="{{ routes.cart_add_url }}" data-artifact-add data-title="{{ product.title | escape }}">
+                <input type="hidden" name="id" value="{{ card_variant.id }}">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" aria-label="Add a 5ml vial of {{ product.title | escape }} to cart">Add to cart <span aria-hidden="true">·</span> <span data-artifact-price>{{ card_variant.price | money }}</span></button>
+              </form>
+            {%- else -%}
+              <a class="artifact-card__view" href="{{ product.url }}">View fragrance</a>
+            {%- endif -%}
+          </div>
+        </article>
+      {%- endfor -%}
+    </div>
+  </section>
 
-<style>
-  .template-index .announcement-bar { display:none; }
-  .template-index .header { background:#22392B; }
-  .template-index .header__inner { min-height:70px; padding:1rem 2rem; }
-  .template-index .header__logo-text { padding:.15rem .3rem; border:1px solid rgba(255,255,255,.24); font-family:var(--font-heading); font-size:1.15rem; font-weight:500; letter-spacing:.08em; text-transform:uppercase; }
-  .template-index .header__nav-list { gap:2.8rem; }
-  .template-index .header__nav-link { font-size:.8rem; font-weight:500; letter-spacing:.13em; text-transform:uppercase; }
-  .template-index .header__action-btn { width:38px; height:38px; }
-  .jeff-storefront { --js-green:#22392B; --js-deep:#1B2F22; --js-cream:#F4EFE3; --js-gold:#AC9159; --js-ink:#242320; background:var(--js-cream); color:var(--js-ink); }
-  .jeff-storefront__filters { min-height:60px; display:flex; align-items:center; justify-content:center; gap:2.8rem; padding:.75rem 1.5rem; background:var(--js-deep); color:#d7d7cd; text-transform:uppercase; letter-spacing:.14em; font-size:.8rem; }
-  .jeff-storefront__filters a { padding:.5rem 0; border-bottom:2px solid transparent; }
-  .jeff-storefront__filters a:hover,.jeff-storefront__filters a.is-active { color:#fff; border-color:var(--js-gold); }
-  .jeff-storefront__hero { min-height:620px; display:grid; grid-template-columns:minmax(0,.9fr) minmax(420px,1.1fr); align-items:stretch; padding:0; }
-  .jeff-storefront__hero-copy { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding:5rem clamp(2rem,5vw,5rem); text-align:left; }
-  .jeff-storefront__banner { min-height:620px; overflow:hidden; }
-  .jeff-storefront__banner img { width:100%; height:100%; object-fit:cover; }
-  .jeff-storefront__eyebrow { margin:0 0 1.25rem; color:var(--js-gold); font:600 .78rem/1.2 var(--font-body); letter-spacing:.2em; text-transform:uppercase; }
-  .jeff-storefront__hero h1 { max-width:600px; margin:0; font-size:clamp(3rem,5vw,5rem); line-height:.98; letter-spacing:-.035em; color:var(--js-ink); }
-  .jeff-storefront__intro { margin:1.6rem 0 .75rem; font-family:var(--font-editorial); font-size:clamp(1.05rem,1.8vw,1.35rem); color:#676158; }
-  .jeff-storefront__text-link { color:var(--js-green); border-bottom:1px solid var(--js-gold); padding-bottom:.15rem; font-size:.9rem; }
-  .jeff-storefront__price-rule { margin:4rem 0 1.1rem; font-size:.95rem; letter-spacing:.04em; }
-  .jeff-storefront__rating { display:flex; flex-direction:column; color:var(--js-gold); font-size:1.3rem; letter-spacing:.08em; }
-  .jeff-storefront__rating small { margin-top:.35rem; color:#6d685f; font:400 .8rem/1.4 var(--font-body); letter-spacing:.03em; }
-  .jeff-storefront__grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); padding:0; border-top:1px solid rgba(29,61,44,.28); border-left:1px solid rgba(29,61,44,.28); }
-  .jeff-product-card { min-width:0; border-right:1px solid rgba(29,61,44,.28); border-bottom:1px solid rgba(29,61,44,.28); background:rgba(255,255,255,.08); }
-  .jeff-product-card__image { display:block; aspect-ratio:4/3; padding:2rem; overflow:hidden; }
-  .jeff-product-card__image img { width:100%; height:100%; object-fit:contain; transition:transform .35s ease; }
-  .jeff-product-card:hover .jeff-product-card__image img { transform:scale(1.035); }
-  .jeff-product-card__body { padding:0 1.25rem 1.4rem; text-align:center; }
-  .jeff-product-card h2 { margin:0; font-size:1.25rem; font-weight:500; letter-spacing:-.01em; }
-  .jeff-product-card p { margin:.45rem 0 1rem; color:#726d64; font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; }
-  .jeff-product-card button,.jeff-product-card__sold { display:block; width:100%; min-height:46px; padding:.75rem 1rem; border:1px solid var(--js-green); background:var(--js-green); color:#fff; font:500 .76rem/1 var(--font-body); letter-spacing:.11em; text-transform:uppercase; cursor:pointer; }
-  .jeff-product-card button:hover { background:transparent; color:var(--js-green); }
-  .jeff-storefront__all { text-align:center; padding:2.5rem 1.5rem 6rem; }
-  .jeff-storefront__all a { display:inline-flex; min-height:48px; align-items:center; justify-content:center; padding:.8rem 1.5rem; border-bottom:1px solid var(--js-gold); color:var(--js-green); text-transform:uppercase; letter-spacing:.13em; font-size:.75rem; }
-  .jeff-storefront__steps { padding:6rem 0; background:var(--js-green); color:#fff; }
-  .jeff-storefront__steps h2 { max-width:700px; margin:0 0 3rem; color:#fff; font-size:clamp(2.6rem,5vw,4.4rem); font-weight:500; }
-  .jeff-storefront__step-grid { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid rgba(255,255,255,.28); border-left:1px solid rgba(255,255,255,.28); }
-  .jeff-storefront__step-grid article { min-height:330px; display:flex; flex-direction:column; padding:2rem; border-right:1px solid rgba(255,255,255,.28); border-bottom:1px solid rgba(255,255,255,.28); }
-  .jeff-storefront__step-grid span { color:var(--js-gold); font-size:.75rem; letter-spacing:.18em; }
-  .jeff-storefront__step-grid h3 { margin:auto 0 .75rem; color:#fff; font-size:2rem; font-weight:500; }
-  .jeff-storefront__step-grid p { color:#d8ddd8; font-size:.92rem; }
-  .jeff-storefront__step-grid a { width:max-content; margin-top:1rem; padding-bottom:.15rem; color:#fff; border-bottom:1px solid var(--js-gold); font-size:.74rem; letter-spacing:.12em; text-transform:uppercase; }
-  @media (max-width: 989px) { .jeff-storefront__grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .jeff-storefront__hero { grid-template-columns:1fr 1fr; min-height:540px; } .jeff-storefront__banner { min-height:540px; } }
-  @media (max-width: 749px) { .jeff-storefront__filters { justify-content:flex-start; gap:1.6rem; overflow-x:auto; } .jeff-storefront__hero { display:flex; flex-direction:column; min-height:auto; } .jeff-storefront__hero-copy { padding:3rem 1.5rem; } .jeff-storefront__banner { order:-1; min-height:auto; aspect-ratio:1; } .jeff-storefront__hero h1 { font-size:3.25rem; } .jeff-storefront__price-rule { margin-top:3.5rem; } .jeff-product-card__image { aspect-ratio:1; padding:1.2rem; } .jeff-product-card__body { padding:0 .75rem 1rem; } .jeff-product-card h2 { font-size:1.05rem; } .jeff-product-card button { font-size:.67rem; padding:.65rem .35rem; } .jeff-storefront__step-grid { grid-template-columns:1fr; } .jeff-storefront__step-grid article { min-height:280px; } }
-</style>
+  <section class="artifact-home__banner" aria-label="Explore Base Note fragrance vials">
+    <div class="artifact-home__banner-media" data-artifact-banner>
+      {%- if banner_image != blank -%}
+        {{ banner_image | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '480, 760, 1100, 1400, 1800', sizes: '100vw', alt: 'Base Note fragrance vials suspended against a warm cream background' }}
+      {%- else -%}
+        <img src="https://basenotescent.com/cdn/shop/files/gLmqu.jpg" width="1024" height="1024" alt="Base Note fragrance vials suspended against a warm cream background" loading="lazy">
+      {%- endif -%}
+    </div>
+    <div class="artifact-home__banner-copy">
+      <p class="artifact-home__eyebrow">Your next signature scent</p>
+      <h2>Try the vial. Then decide.</h2>
+      <p>Wear it through real days before choosing another vial, Monthly Rotation, or the full bottle.</p>
+      <a href="{{ featured_collection.url | default: '/collections/fragrances' }}">Shop all fragrances</a>
+    </div>
+  </section>
+
+  <section class="artifact-home__paths" id="how-it-works" aria-labelledby="ArtifactPathsTitle-{{ section.id }}">
+    <p class="artifact-home__eyebrow">Choose what works for you</p>
+    <h2 id="ArtifactPathsTitle-{{ section.id }}" class="visually-hidden">Three ways to shop Base Note</h2>
+    <div class="artifact-home__path-grid">
+      <article><span>01</span><h3>Buy one vial</h3><p>Your first authentic 5ml is $20. Each additional vial in the same cart is $18. No subscription.</p></article>
+      <article><span>02</span><h3>Monthly Rotation</h3><p>Our flexible fragrance subscription: one 5ml scent each month. Swap, pause, or cancel anytime.</p></article>
+      <article><span>03</span><h3>Choose the bottle</h3><p>When you find the one, choose the full bottle for less than regular retail.</p></article>
+    </div>
+  </section>
+  <p class="artifact-home__status" data-artifact-status role="status" aria-live="polite"></p>
+</artifact-storefront>
+
+{% stylesheet %}
+  .artifact-home { --artifact-green:#22392b; --artifact-green-dark:#1b2f22; --artifact-cream:#f4efe3; --artifact-gold:#ac9159; --artifact-ink:#242320; --artifact-muted:#5c574d; --artifact-line:rgb(34 57 43 / 18%); display:block; color:var(--artifact-ink); background:var(--artifact-cream); }
+  .artifact-home__filters { display:flex; min-height:3.75rem; align-items:center; justify-content:center; gap:2.75rem; padding-inline:1.5rem; color:rgb(244 239 227 / 64%); background:var(--artifact-green-dark); font:500 .75rem/1 'Jost',sans-serif; letter-spacing:.13em; text-transform:uppercase; }
+  .artifact-home__filter { padding-block:.75rem .55rem; border-block-end:.125rem solid transparent; transition:color 160ms ease,border-color 160ms ease; }
+  .artifact-home__filter:hover,.artifact-home__filter:focus-visible,.artifact-home__filter--active { color:var(--artifact-cream); border-color:var(--artifact-gold); }
+  .artifact-home__hero { width:min(100% - 3rem,48rem); min-height:34rem; margin-inline:auto; padding-block:4.75rem 2.5rem; text-align:center; }
+  .artifact-home__eyebrow { margin:0 0 1.35rem; color:var(--artifact-gold); font:500 .75rem/1.2 'Jost',sans-serif; letter-spacing:.2em; text-transform:uppercase; }
+  .artifact-home__hero h1 { max-width:14ch; margin:0 auto; font:700 clamp(2.75rem,5vw,4.65rem)/1.06 'Playfair Display',serif; letter-spacing:-.035em; text-wrap:balance; }
+  .artifact-home__intro { margin:1.35rem auto 1.25rem; color:var(--artifact-muted); font:italic 1.18rem/1.5 'EB Garamond',serif; }
+  .artifact-home__learn { display:inline-block; padding-block-end:.16rem; border-block-end:.0625rem solid var(--artifact-gold); color:var(--artifact-green); font:.84rem/1.4 'Jost',sans-serif; }
+  .artifact-home__proof { margin-block-start:7.25rem; font:.9rem/1.5 'Jost',sans-serif; }
+  .artifact-home__stars { display:block; margin-block:.95rem .25rem; color:var(--artifact-gold); font-size:1.25rem; letter-spacing:.12em; }
+  .artifact-home__proof small { color:var(--artifact-muted); font-size:.75rem; }
+  .artifact-home__catalog { width:min(100% - 3rem,73rem); margin-inline:auto; padding-block-end:4.5rem; }
+  .artifact-home__grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border-block-start:.0625rem solid var(--artifact-line); border-inline-start:.0625rem solid var(--artifact-line); }
+  .artifact-card { min-width:0; padding:1.7rem 1.15rem 1.35rem; border-inline-end:.0625rem solid var(--artifact-line); border-block-end:.0625rem solid var(--artifact-line); text-align:center; }
+  .artifact-card__image { display:grid; width:min(100%,9rem); aspect-ratio:1; margin-inline:auto; place-items:center; overflow:hidden; }
+  .artifact-card__image img,.artifact-card__image svg { width:auto; height:82%; object-fit:contain; transition:transform 220ms ease; }
+  .artifact-card:hover .artifact-card__image img,.artifact-card:hover .artifact-card__image svg { transform:scale(1.035); }
+  .artifact-card__body h2 { min-height:2.4em; margin:.65rem 0 0; font:500 1rem/1.2 'EB Garamond',serif; }
+  .artifact-card__body p { min-height:1.5em; margin:.35rem 0 .75rem; color:var(--artifact-muted); font:400 .66rem/1.4 'Jost',sans-serif; letter-spacing:.09em; text-transform:uppercase; }
+  .artifact-card__form button,.artifact-card__view { display:flex; width:100%; min-height:2.75rem; align-items:center; justify-content:center; padding:.7rem .45rem; border:.0625rem solid var(--artifact-green); color:var(--artifact-green); background:transparent; font:500 .66rem/1 'Jost',sans-serif; letter-spacing:.09em; text-transform:uppercase; cursor:pointer; transition:color 160ms ease,background 160ms ease; }
+  .artifact-card__form button:hover,.artifact-card__form button:focus-visible,.artifact-card__view:hover,.artifact-card__view:focus-visible { color:var(--artifact-cream); background:var(--artifact-green); }
+  .artifact-home__banner { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(20rem,.65fr); width:min(100% - 3rem,73rem); min-height:31rem; margin:0 auto 4.5rem; overflow:hidden; background:var(--artifact-green); }
+  .artifact-home__banner-media { min-width:0; overflow:hidden; perspective:62.5rem; }
+  .artifact-home__banner-media img { width:100%; height:100%; object-fit:cover; transform:scale(1.04); transition:transform 220ms ease-out; }
+  .artifact-home__banner-copy { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding:clamp(2rem,5vw,4.25rem); color:var(--artifact-cream); }
+  .artifact-home__banner-copy h2 { margin:0; color:inherit; font:500 clamp(2.4rem,4vw,4rem)/1 'Playfair Display',serif; letter-spacing:-.03em; }
+  .artifact-home__banner-copy p:not(.artifact-home__eyebrow) { margin:1.25rem 0 2rem; color:rgb(244 239 227 / 78%); font:1rem/1.6 'EB Garamond',serif; }
+  .artifact-home__banner-copy a { padding-block-end:.25rem; border-block-end:.0625rem solid var(--artifact-gold); font:500 .72rem/1.3 'Jost',sans-serif; letter-spacing:.12em; text-transform:uppercase; }
+  .artifact-home__paths { padding:4rem max(1.5rem,calc((100% - 73rem)/2)); color:var(--artifact-cream); background:var(--artifact-green-dark); }
+  .artifact-home__path-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-block-start:.0625rem solid rgb(244 239 227 / 22%); border-inline-start:.0625rem solid rgb(244 239 227 / 22%); }
+  .artifact-home__path-grid article { min-height:14rem; padding:1.75rem; border-inline-end:.0625rem solid rgb(244 239 227 / 22%); border-block-end:.0625rem solid rgb(244 239 227 / 22%); }
+  .artifact-home__path-grid span { color:var(--artifact-gold); font:500 .67rem/1 'Jost',sans-serif; letter-spacing:.16em; }
+  .artifact-home__path-grid h3 { margin:3.5rem 0 .55rem; color:inherit; font:500 1.55rem/1.1 'Playfair Display',serif; }
+  .artifact-home__path-grid p { margin:0; color:rgb(244 239 227 / 76%); font:.9rem/1.55 'EB Garamond',serif; }
+  .artifact-home__status { position:fixed; z-index:5; inset:auto 1rem 1rem auto; max-width:22rem; margin:0; padding:.75rem 1rem; color:var(--artifact-cream); background:var(--artifact-green); font:.8rem/1.4 'Jost',sans-serif; opacity:0; pointer-events:none; transition:opacity 180ms ease; }
+  .artifact-home__status--visible { opacity:1; }
+  @media (max-width:61.99rem) { .artifact-home__grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .artifact-home__banner { grid-template-columns:1fr 1fr; } }
+  @media (max-width:46.87rem) { .artifact-home__filters { justify-content:flex-start; gap:1.6rem; overflow-x:auto; } .artifact-home__filter { min-height:2.75rem; } .artifact-home__hero { min-height:30rem; padding-block-start:3.5rem; } .artifact-home__hero h1 { font-size:2.7rem; } .artifact-home__proof { margin-block-start:5rem; } .artifact-home__catalog,.artifact-home__banner { width:100%; } .artifact-card { padding:1.2rem .6rem 1rem; } .artifact-card__image { width:min(100%,7rem); } .artifact-card__body h2 { font-size:.92rem; } .artifact-card__form button { min-height:2.75rem; font-size:.58rem; } .artifact-home__banner { grid-template-columns:1fr; margin-block-end:0; } .artifact-home__banner-media { aspect-ratio:1.35; } .artifact-home__banner-copy { min-height:20rem; } .artifact-home__path-grid { grid-template-columns:1fr; } .artifact-home__path-grid article { min-height:12rem; } }
+  @media (prefers-reduced-motion:reduce) { .artifact-card__image img,.artifact-home__banner-media img,.artifact-home__status { transition:none; } }
+{% endstylesheet %}
+
+{% javascript %}
+  if (!customElements.get('artifact-storefront')) {
+    customElements.define('artifact-storefront', class extends HTMLElement {
+      connectedCallback() {
+        this.status = this.querySelector('[data-artifact-status]'); this.hasFirst = false; this.forms = [...this.querySelectorAll('[data-artifact-add]')];
+        this.forms.forEach((form) => form.addEventListener('submit', (event) => this.add(event, form))); this.readCart();
+        const banner = this.querySelector('[data-artifact-banner]'); const image = banner?.querySelector('img');
+        if (banner && image && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          banner.addEventListener('pointermove', (event) => { const rect=banner.getBoundingClientRect(); const x=((event.clientX-rect.left)/rect.width-.5)*-1.6; const y=((event.clientY-rect.top)/rect.height-.5)*-1.1; image.style.transform=`scale(1.06) translate(${x}%, ${y}%)`; });
+          banner.addEventListener('pointerleave', () => { image.style.transform='scale(1.04)'; });
+        }
+      }
+      async readCart() { try { const cart=await (await fetch('/cart.js',{headers:{Accept:'application/json'}})).json(); this.hasFirst=cart.items.some((item)=>item.handle!=='extra-5ml-vial-add-on'); if(this.hasFirst&&this.dataset.addOnAvailable==='true'){ const price=new Intl.NumberFormat(document.documentElement.lang||'en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(Number(this.dataset.addOnPrice)/100); this.querySelectorAll('[data-artifact-price]').forEach((node)=>{node.textContent=price;}); } } catch(error) {} }
+      async add(event,form) { event.preventDefault(); const button=form.querySelector('button'); const regularId=Number(form.elements.id.value); const useAddOn=this.hasFirst&&this.dataset.addOnAvailable==='true'&&Number(this.dataset.addOnId); const item={id:useAddOn?Number(this.dataset.addOnId):regularId,quantity:1}; if(useAddOn)item.properties={'Selected scent':form.dataset.title,'_Base Note source':'Homepage grid'}; button.disabled=true; try { const response=await fetch('/cart/add.js',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({items:[item]})}); if(!response.ok)throw new Error('add failed'); this.hasFirst=true; await this.readCart(); this.status.textContent=`${form.dataset.title} is in your cart.`; this.status.classList.add('artifact-home__status--visible'); setTimeout(()=>this.status.classList.remove('artifact-home__status--visible'),2600); document.dispatchEvent(new CustomEvent('cart:refresh',{bubbles:true})); } catch(error){form.submit();} finally{button.disabled=false;} }
+    });
+  }
+{% endjavascript %}
 
 {% schema %}
-{
-  "name": "Jeff storefront",
-  "settings": [
-    { "type": "collection", "id": "collection", "label": "Fragrance collection" },
-    { "type": "range", "id": "products_to_show", "label": "Products to show", "min": 4, "max": 12, "step": 4, "default": 8 }
-  ],
-  "presets": [{ "name": "Jeff storefront" }]
-}
+{"name":"Artifact storefront","settings":[{"type":"collection","id":"collection","label":"Fragrance collection"},{"type":"range","id":"products_to_show","label":"Products to show","min":4,"max":12,"step":4,"default":8}],"presets":[{"name":"Artifact storefront"}]}
 {% endschema %}

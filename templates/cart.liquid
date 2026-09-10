@@ -1,1070 +1,163 @@
 {%- layout 'theme' -%}
+{% comment %} CART_ADDON_CONFIGURATION_GUARD: the internal $18 helper is never exposed as a standalone cart upsell. {% endcomment %}
+{%- liquid
+  assign has_subscription = false
+  assign has_onetime = false
+  assign has_bottle = false
+  assign cart_savings = 0
+  for item in cart.items
+    assign item_title_down = item.variant.title | downcase
+    if item.selling_plan_allocation
+      assign has_subscription = true
+    else
+      assign has_onetime = true
+    endif
+    if item_title_down contains '100ml' or item_title_down contains '100 ml' or item_title_down contains '3.3' or item_title_down contains 'full bottle'
+      assign has_bottle = true
+    endif
+    if item.variant.compare_at_price > item.final_price
+      assign compare_line = item.variant.compare_at_price | times: item.quantity
+      assign line_savings = compare_line | minus: item.final_line_price
+      assign cart_savings = cart_savings | plus: line_savings
+    endif
+  endfor
+-%}
 
-{%- comment -%}
-  Base Note — Subscription Cart Page
-  Every purchase = subscription enrollment. Cart displays plan selector,
-  subscription disclosure, and FTC-compliant terms checkbox.
-{%- endcomment -%}
-
-{%- assign monthly_price = settings.sub_plan_monthly_price | default: '$20' -%}
-{%- assign monthly_per_mo = settings.sub_plan_monthly_per_month | default: '$20/mo' -%}
-
-<section class="cart-section">
-  <div class="container">
-
+<artifact-cart class="artifact-cart" data-has-subscription="{{ has_subscription }}">
+  <div class="artifact-cart__shell">
+    <a class="artifact-cart__back" href="/collections/fragrances">← Continue shopping</a>
     {%- if cart.item_count > 0 -%}
-
-      {%- comment -%}
-        Cart-state detection.
-
-        NEVER infer "one-time" from the ABSENCE of a selling plan. Appstle has twice stripped
-        selling plans at /cart/add.js store-wide (incident Jul 16-17 2026). In that state a real
-        $20/mo subscription line is indistinguishable from a plain product line, and inferring
-        "one-time" from the absence would silently drop the ROSCA consent gate on an actual
-        recurring purchase. So the one-time branch requires a POSITIVE identification instead.
-
-        has_plan_line      — POSITIVE test: at least one line carries a real selling plan.
-        has_onetime_line   — at least one line WITHOUT a plan (giveaway or add-on). Gates every
-                             FREE-shipping claim: the free-shipping discount is
-                             subscription-purchase-type and Shopify skips it when any one-time
-                             line shares the order (verified at checkout 2026-08-23).
-        has_giveaway       — at least one giveaway line, identified by the underscore-prefixed
-                             line property the giveaway section sends with /cart/add.js
-                             (sections/product-giveaway.liquid: properties[_bn_offer]).
-        has_addon_line     — a plan-less line that is NOT the giveaway (the $18 add-on path).
-        sub_first_total    — what the plan lines cost today (first-month discount applied).
-        sub_recurring_total— what the plan lines renew at (base variant price).
-      {%- endcomment -%}
-      {%- assign has_plan_line = false -%}
-      {%- assign has_giveaway = false -%}
-      {%- assign has_onetime_line = false -%}
-      {%- assign has_addon_line = false -%}
-      {%- assign sub_first_total = 0 -%}
-      {%- assign sub_recurring_total = 0 -%}
-      {%- for item in cart.items -%}
-        {%- if item.selling_plan_allocation -%}
-          {%- assign has_plan_line = true -%}
-          {%- assign sub_first_total = sub_first_total | plus: item.final_line_price -%}
-          {%- comment -%} Renewal price is the BASE variant price — the first-month
-              discount is a first-order-only selling-plan adjustment. {%- endcomment -%}
-          {%- assign line_recurring = item.variant.price | times: item.quantity -%}
-          {%- assign sub_recurring_total = sub_recurring_total | plus: line_recurring -%}
-        {%- else -%}
-          {%- assign has_onetime_line = true -%}
-          {%- if item.properties['_bn_offer'] != 'free-5ml' -%}
-            {%- assign has_addon_line = true -%}
-          {%- endif -%}
-        {%- endif -%}
-        {%- if item.properties['_bn_offer'] == 'free-5ml' -%}
-          {%- assign has_giveaway = true -%}
-        {%- endif -%}
-      {%- endfor -%}
-
-      {%- comment -%}
-        has_subscription is now simply "a line with a selling plan exists" (2026-08-23,
-        Jeff's one-time purchase option). The old fail-safe defaulted this to TRUE for
-        any non-giveaway cart, because a plan-less line used to mean a subscription add
-        whose plan was stripped (the Appstle fetch-wrapper bug). That failure mode is
-        closed at add time: subscription adds are cart-verified and rolled back if the
-        plan did not attach (bnCartPlanApplied), so a plan-less line in the cart today
-        is an intentional one-time item. A one-time cart gets "Your Cart", no recurring
-        disclosure, and an enabled checkout.
-      {%- endcomment -%}
-      {%- assign has_subscription = has_plan_line -%}
-
-      <div class="cart-header">
-        <a class="cart-header__back" href="/collections/fragrances">← Continue shopping</a>
-        {%- if has_subscription -%}
-          <h1 class="cart-header__title">Your Subscription</h1>
-          <p class="cart-header__subtitle">Review your next fragrance before checkout</p>
-        {%- else -%}
-          <h1 class="cart-header__title">Your Cart</h1>
-          <p class="cart-header__subtitle">Review your order before checkout</p>
-        {%- endif -%}
-      </div>
-
-      <form action="{{ routes.cart_url }}" method="post" class="cart-form">
-        <div class="cart-layout">
-
-          {%- comment -%} === LEFT COLUMN: Cart Items + Plan Selector + Perks === {%- endcomment -%}
-          <div class="cart-main">
-
-            {%- comment -%} Cart Items — "Your Next Fragrance" {%- endcomment -%}
-            <div class="cart-items">
-              <div class="cart-items__header">
-                <h2 class="cart-items__section-title">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-                    <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-                  </svg>
-                  {% if has_subscription %}Your Next Fragrance{% else %}Your Order{% endif %}
-                </h2>
-                {%- if has_subscription and has_giveaway -%}
-                  {%- comment -%} Mixed cart: the $0 giveaway bottle is NOT part of the subscription shipment. {%- endcomment -%}
-                  <p class="cart-items__section-subtitle">Your subscription fragrance ships with your next subscription order. Your free 5ml ships separately.</p>
-                {%- elsif has_subscription -%}
-                  <p class="cart-items__section-subtitle">This fragrance ships with your next subscription order</p>
-                {%- else -%}
-                  <p class="cart-items__section-subtitle">One-time order. No subscription, no recurring charge.</p>
-                {%- endif -%}
-              </div>
-              {%- comment -%} The 25th-of-month cadence is the subscription fulfilment cycle only {%- endcomment -%}
-              {%- if has_subscription -%}
-                {%- comment -%} Ship-date line removed 2026-08-17 (Jeff): the 25th-of-month estimate was wrong for new subscriptions. {%- endcomment -%}
-                {%- if has_giveaway -%}
-                  {%- comment -%} The 25th-of-month cadence is the subscription cycle. It must never describe the giveaway line. {%- endcomment -%}
-                  <p class="cart-section__ship-date">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
-                      <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-                    </svg>
-                    Your free 5ml ships separately, within 2 business days.
-                  </p>
-                {%- endif -%}
-              {%- endif -%}
+      <h1>Your Cart</h1>
+      <form action="{{ routes.cart_url }}" method="post" class="artifact-cart__form">
+        <div class="artifact-cart__layout">
+          <div class="artifact-cart__main">
+            <div class="artifact-cart__items">
               {%- for item in cart.items -%}
-                {%- comment -%} Per-line offer identification — see the detection block at the top of this template. {%- endcomment -%}
-                {%- assign item_is_giveaway = false -%}
-                {%- if item.properties['_bn_offer'] == 'free-5ml' -%}
-                  {%- assign item_is_giveaway = true -%}
-                {%- endif -%}
-                <div class="cart-item" data-item-key="{{ item.key }}">
-                  <div class="cart-item__image">
-                    {%- if item.image -%}
-                      <a href="{{ item.url }}">
-                        <img src="{{ item.image | image_url: width: 300 }}" alt="{{ item.title }}" loading="lazy">
-                      </a>
-                    {%- else -%}
-                      <div class="cart-item__placeholder">
-                        <svg viewBox="0 0 80 120" fill="none" stroke="currentColor" stroke-width="1.5">
-                          <rect x="20" y="30" width="40" height="80" rx="4"/>
-                          <rect x="30" y="10" width="20" height="20"/>
-                          <rect x="35" y="0" width="10" height="10" rx="2"/>
-                        </svg>
-                      </div>
-                    {%- endif -%}
+                {%- liquid
+                  assign title_down = item.variant.title | downcase
+                  assign item_is_bottle = false
+                  if title_down contains '100ml' or title_down contains '100 ml' or title_down contains '3.3' or title_down contains 'full bottle'
+                    assign item_is_bottle = true
+                  endif
+                  assign item_plan = item.variant.selling_plan_allocations.first.selling_plan
+                -%}
+                <article class="artifact-cart__item" data-cart-key="{{ item.key }}" data-plan-id="{{ item_plan.id }}" data-bottle="{{ item_is_bottle }}">
+                  <div class="artifact-cart__image">
+                    {%- if item.image -%}{{ item.image | image_url: width: 180 | image_tag: loading: 'lazy', width: 90, height: 110, alt: item.product.title }}{%- else -%}{% render 'vial-illustration', product: item.product %}{%- endif -%}
                   </div>
-
-                  <div class="cart-item__details">
-                    <div class="cart-item__meta">
-                      {%- if item.selling_plan_allocation -%}
-                        <span class="cart-item__badge">MONTHLY ROTATION · SUBSCRIPTION</span>
-                      {%- elsif item.variant.title contains '100ml' or item.variant.title contains '3.3' -%}
-                        <span class="cart-item__badge">ONE-TIME · FULL BOTTLE</span>
-                      {%- else -%}
-                        <span class="cart-item__badge">ONE-TIME · 5ML VIAL</span>
-                      {%- endif -%}
-                      <h3 class="cart-item__title">
-                        <a href="{{ item.url }}">{{ item.product.title }}</a>
-                      </h3>
-                      {%- if item.variant.title != 'Default Title' -%}
-                        <p class="cart-item__variant">{{ item.variant.title }}</p>
-                      {%- endif -%}
-                      {%- comment -%}
-                        Subscription lines and the giveaway line are both 5ml vials. The giveaway
-                        campaign's entire proposition IS the 5ml size, so this must render for it.
-                        60 sprays is the store-wide figure (PDP, FAQ, subscription landing, the
-                        giveaway page itself).
-                      {%- endcomment -%}
-                      {%- if item.selling_plan_allocation or item_is_giveaway or item.variant.title contains '5ml' or item.variant.title contains '5 ml' -%}
-                        <p class="cart-item__size">5ml Atomizer (~60 sprays)</p>
-                      {%- endif -%}
-
-                      {%- if item.selling_plan_allocation -%}
-                        <p class="cart-item__selling-plan">{{ item.selling_plan_allocation.selling_plan.name }}</p>
-                      {%- endif -%}
-
-                      {%- if item.product.metafields.custom.scent_notes -%}
-                        <p class="cart-item__notes">
-                          <span class="cart-item__notes-label">Notes:</span>
-                          {{ item.product.metafields.custom.scent_notes }}
-                        </p>
-                      {%- endif -%}
-
-                      {%- if item.product.price > 0 -%}
-                        <p class="cart-item__retail-value">
-                          {{ item.product.price | money }} retail value
-                        </p>
-                      {%- endif -%}
-                    </div>
-
-                    <div class="cart-item__actions">
-                      <div class="cart-item__quantity" aria-label="Quantity for {{ item.product.title | escape }}">
-                        <button type="button" data-cart-qty="{{ item.quantity | minus: 1 }}" data-cart-key="{{ item.key }}" aria-label="Decrease quantity">−</button>
-                        <span aria-live="polite">{{ item.quantity }}</span>
-                        <button type="button" data-cart-qty="{{ item.quantity | plus: 1 }}" data-cart-key="{{ item.key }}" aria-label="Increase quantity">+</button>
-                      </div>
-                      <strong class="cart-item__line-price">{{ item.final_line_price | money }}</strong>
-                      {%- if item.selling_plan_allocation -%}
-                        <a href="/collections/all" class="cart-item__swap">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                            <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
-                          </svg>
-                          Swap Fragrance
-                        </a>
-                      {%- endif -%}
-                      <button type="button" class="cart-item__remove" data-remove-item="{{ item.key }}">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                          <polyline points="3 6 5 6 21 6"/>
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                        </svg>
-                        Remove
-                      </button>
-                    </div>
+                  <div class="artifact-cart__details">
+                    <h2>{{ item.product.title }}</h2>
+                    <p>{%- if item_is_bottle -%}Full bottle · 3.3oz{%- else -%}5ml atomizer{%- endif -%}</p>
+                    {%- if item.selling_plan_allocation -%}<p class="artifact-cart__plan">{{ item.selling_plan_allocation.selling_plan.name }} subscription</p>{%- endif -%}
+                    <button type="button" class="artifact-cart__remove" data-cart-remove aria-label="Remove {{ item.product.title | escape }} from cart">Remove</button>
                   </div>
-                </div>
+                  <div class="artifact-cart__quantity" aria-label="Quantity for {{ item.product.title | escape }}">
+                    <button type="button" data-cart-quantity="{{ item.quantity | minus: 1 }}" aria-label="Decrease quantity">−</button>
+                    <span aria-live="polite">{{ item.quantity }}</span>
+                    <button type="button" data-cart-quantity="{{ item.quantity | plus: 1 }}" aria-label="Increase quantity">+</button>
+                  </div>
+                  <strong class="artifact-cart__line-price">{{ item.final_line_price | money }}</strong>
+                </article>
               {%- endfor -%}
-
-              {%- comment -%}
-                CART_ADDON_CONFIGURATION_GUARD: Keep the legacy one-time picker
-                unrendered until the dedicated add-on selling plan has verified
-                equal initial and recurring allocations and its exact ID is configured.
-                The legacy picker cannot satisfy the recurring add-on requirement.
-              {%- endcomment -%}
-
-              <div class="cart-items__footer">
-                <a href="/collections/all" class="cart-continue">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-                    <line x1="19" y1="12" x2="5" y2="12"/>
-                    <polyline points="12 19 5 12 12 5"/>
-                  </svg>
-                  Continue Browsing
-                </a>
-              </div>
             </div>
 
-            {%- comment -%} Rotation List — fragrances queued for future months {%- endcomment -%}
-            <div class="rotation-list" id="rotationList" style="display:none;">
-              <div class="rotation-list__header">
-                <h3 class="rotation-list__title">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-                    <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
-                  </svg>
-                  My Rotation — Upcoming Months
-                </h3>
-                <p class="rotation-list__subtitle">These fragrances will be auto-selected for your future shipments</p>
-              </div>
-              <div class="rotation-list__items" id="rotationListItems">
-                <!-- Populated by JavaScript from localStorage -->
-              </div>
-            </div>
+            <fieldset class="artifact-cart__order-mode">
+              <legend>How would you like to order?</legend>
+              <label class="artifact-cart__mode{% unless has_subscription %} artifact-cart__mode--active{% endunless %}">
+                <input type="radio" name="artifact_order_mode" value="onetime" {% unless has_subscription %}checked{% endunless %}>
+                <span><strong>One-time purchase</strong><small>$20 for the first 5ml and $18 for each additional vial. No subscription, no renewals.</small></span>
+              </label>
+              <label class="artifact-cart__mode{% if has_subscription %} artifact-cart__mode--active{% endif %}">
+                <input type="radio" name="artifact_order_mode" value="subscription" {% if has_subscription %}checked{% endif %}>
+                <span><strong>Subscribe &amp; save <em>Best value</em></strong><small>$15 for your first 5ml shipment, then $20/month. Monthly Rotation is a subscription; skip, swap, or cancel anytime.</small></span>
+              </label>
+              <a href="/pages/subscription-terms">What does the subscription actually include?</a>
+            </fieldset>
+          </div>
 
-            {%- comment -%} Seasonal Recommendations {%- endcomment -%}
-            {%- assign current_month = 'now' | date: '%m' | plus: 0 -%}
-            {%- if current_month >= 3 and current_month <= 5 -%}
-              {%- assign current_season = 'spring' -%}
-              {%- assign season_label = 'Spring' -%}
-              {%- assign season_months = 'Mar - May' -%}
-            {%- elsif current_month >= 6 and current_month <= 8 -%}
-              {%- assign current_season = 'summer' -%}
-              {%- assign season_label = 'Summer' -%}
-              {%- assign season_months = 'Jun - Aug' -%}
-            {%- elsif current_month >= 9 and current_month <= 11 -%}
-              {%- assign current_season = 'fall' -%}
-              {%- assign season_label = 'Fall' -%}
-              {%- assign season_months = 'Sep - Nov' -%}
+          <aside class="artifact-cart__summary" aria-labelledby="ArtifactSummaryTitle">
+            <h2 id="ArtifactSummaryTitle">Order summary</h2>
+            <dl class="artifact-cart__summary-lines">
+              {%- for item in cart.items -%}<div><dt>{{ item.product.title | truncate: 28 }}</dt><dd>{{ item.final_line_price | money }}</dd></div>{%- endfor -%}
+              <div><dt>Shipping</dt><dd>{% if has_subscription and has_onetime == false %}Free{% else %}Calculated at checkout{% endif %}</dd></div>
+            </dl>
+            <div class="artifact-cart__total"><span>Total due today</span><strong>{{ cart.total_price | money }}</strong></div>
+            {%- if cart_savings > 0 -%}<div class="artifact-cart__savings"><span>You’re saving</span><strong>{{ cart_savings | money }}</strong></div>{%- endif -%}
+            {%- if has_subscription -%}
+              <p class="artifact-cart__disclosure">Monthly Rotation renews automatically at the price and cadence shown until cancelled.</p>
+              <label class="artifact-cart__consent"><input type="checkbox" data-cart-consent> <span>I agree to the recurring subscription and <a href="/pages/subscription-terms" target="_blank">subscription terms</a>.</span></label>
             {%- else -%}
-              {%- assign current_season = 'winter' -%}
-              {%- assign season_label = 'Winter' -%}
-              {%- assign season_months = 'Dec - Feb' -%}
+              <p class="artifact-cart__disclosure">One-time purchase. No subscription, no recurring charges.</p>
             {%- endif -%}
-
-            <div class="cart-seasonal">
-              <h3 class="cart-seasonal__heading">{{ season_label }} Picks ({{ season_months }})</h3>
-              <div class="cart-seasonal__grid">
-                {%- assign season_tag = 'season:' | append: current_season -%}
-                {%- assign seasonal_count = 0 -%}
-                {%- for product in collections.all.products limit: 20 -%}
-                  {%- if product.tags contains season_tag and seasonal_count < 3 -%}
-                    {%- assign in_cart = false -%}
-                    {%- for item in cart.items -%}
-                      {%- if item.product.id == product.id -%}
-                        {%- assign in_cart = true -%}
-                        {%- break -%}
-                      {%- endif -%}
-                    {%- endfor -%}
-                    {%- unless in_cart -%}
-                      <a href="{{ product.url }}" class="cart-seasonal__item">
-                        {%- if product.featured_image -%}
-                          <img src="{{ product.featured_image | image_url: width: 80 }}" alt="{{ product.title }}" loading="lazy">
-                        {%- endif -%}
-                        <span>{{ product.title | truncate: 25 }}</span>
-                      </a>
-                      {%- assign seasonal_count = seasonal_count | plus: 1 -%}
-                    {%- endunless -%}
-                  {%- endif -%}
-                {%- endfor -%}
-              </div>
-              <a href="/collections/all" class="cart-seasonal__view-all">View All Fragrances &rarr;</a>
-            </div>
-
-            {%- comment -%} Subscription Plan {%- endcomment -%}
-            {%- if has_subscription -%}
-              <div class="plan-selector">
-                <div class="plan-option is-selected" data-plan="monthly">
-                  <span class="plan-option__name">Monthly Subscription</span>
-                  <span class="plan-option__price">{{ monthly_per_mo }}</span>
-                  <span class="plan-option__detail">Billed monthly. Cancel anytime.</span>
-                </div>
-              </div>
-            {%- endif -%}
-
-            {%- comment -%} Perks — all three are subscription-only benefits, incl. "free shipping, always" {%- endcomment -%}
-            {%- if has_subscription -%}
-            <div class="cart-perks">
-              <h3 class="cart-perks__heading">What's Included</h3>
-              <div class="cart-perks__grid">
-                <div class="cart-perk">
-                  <div class="cart-perk__icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
-                      <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-                    </svg>
-                  </div>
-                  <div>
-                    {%- comment -%} Scoped to the subscription when a giveaway line is present — it pays its own flat shipping. {%- endcomment -%}
-                    {%- if has_giveaway -%}
-                      <strong>Free shipping on every subscription order</strong>
-                      <p>Your subscription orders ship free to the US & Canada</p>
-                    {%- else -%}
-                      <strong>Free shipping, always</strong>
-                      <p>Every order ships free to the US & Canada</p>
-                    {%- endif -%}
-                  </div>
-                </div>
-                <div class="cart-perk">
-                  <div class="cart-perk__icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
-                      <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <strong>Swap, skip, or cancel anytime</strong>
-                    <p>Full flexibility from your account dashboard</p>
-                  </div>
-                </div>
-                <div class="cart-perk">
-                  <div class="cart-perk__icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <strong>Free travel case</strong>
-                    <p>Included with your subscription</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {%- endif -%}
-
-          </div>
-
-          {%- comment -%} === RIGHT COLUMN: Order Summary === {%- endcomment -%}
-          <div class="cart-sidebar">
-            <div class="cart-summary__card">
-              <h2 class="cart-summary__title">Order Summary</h2>
-
-              {%- comment -%}
-                Order lines. Subscription branch keeps the "Included / Monthly Plan / Shipping FREE"
-                framing. Non-subscription branch MUST show real line prices and must not promise
-                free shipping — the rate comes from the shipping profile and is charged at checkout.
-              {%- endcomment -%}
-              {%- if has_subscription -%}
-
-                {%- comment -%}
-                  PER-LINE, not cart-wide. A mixed cart is the funnel's own designed path (claim
-                  the free bottle, then subscribe), so "Included" must be keyed on the line's own
-                  selling plan. Printing "Included" against a $0 giveaway line under a "Then
-                  $X/month" heading frames the free bottle as part of the recurring charge.
-                {%- endcomment -%}
-                {%- for item in cart.items -%}
-                  <div class="cart-summary__row">
-                    {%- if item.selling_plan_allocation -%}
-                      <span>{{ item.product.title }} (5ml)</span>
-                      <span class="text-gold">Included</span>
-                    {%- else -%}
-                      <span>{{ item.product.title }}{% if item.quantity > 1 %} &times; {{ item.quantity }}{% endif %}</span>
-                      <span>{{ item.final_line_price | money }}</span>
-                    {%- endif -%}
-                  </div>
-                {%- endfor -%}
-
-                <div class="cart-summary__row">
-                  <span data-summary-plan-label>Monthly Plan</span>
-                  {%- comment -%} Subscription lines only — one-time add-ons print their own
-                      prices above and must not inflate the recurring plan figure. {%- endcomment -%}
-                  <span data-summary-plan-price>{{ sub_first_total | money }}</span>
-                </div>
-
-                <div class="cart-summary__row cart-summary__row--light">
-                  <span>Shipping</span>
-                  {%- if has_onetime_line -%}
-                    {%- comment -%}
-                      FREE only for a PURE subscription cart. The free-shipping discount is
-                      subscription-purchase-type: Shopify skips it whenever ANY one-time line
-                      (giveaway or add-on) shares the order, and the profile rate applies
-                      ($4.99 under $50, free at $50+). Asserting FREE on a mixed cart
-                      contradicts checkout.
-                    {%- endcomment -%}
-                    <span>Calculated at checkout</span>
-                  {%- else -%}
-                    <span class="text-success">FREE</span>
-                  {%- endif -%}
-                </div>
-
-              {%- else -%}
-
-                {%- for item in cart.items -%}
-                  <div class="cart-summary__row">
-                    <span>{{ item.product.title }}{% if item.quantity > 1 %} &times; {{ item.quantity }}{% endif %}</span>
-                    <span>{{ item.final_line_price | money }}</span>
-                  </div>
-                {%- endfor -%}
-
-                <div class="cart-summary__row cart-summary__row--light">
-                  <span>Shipping</span>
-                  <span>Calculated at checkout</span>
-                </div>
-
-              {%- endif -%}
-
-              {%- if cart.cart_level_discount_applications.size > 0 -%}
-                {%- for discount in cart.cart_level_discount_applications -%}
-                  <div class="cart-summary__row cart-summary__row--discount">
-                    <span>{{ discount.title }}</span>
-                    <span>-{{ discount.total_allocated_amount | money }}</span>
-                  </div>
-                {%- endfor -%}
-              {%- endif -%}
-
-              <div class="cart-summary__divider"></div>
-
-              {%- if has_subscription -%}
-
-                <div class="cart-summary__row cart-summary__row--total">
-                  <span>{% if has_onetime_line %}Due Today (before shipping){% else %}Due Today{% endif %}</span>
-                  <span data-summary-total>{{ cart.total_price | money }}</span>
-                </div>
-
-                <p class="cart-summary__renewal" data-summary-renewal>
-                  {%- comment -%} sub_recurring_total, NOT cart.total_price: the cart total is the
-                      first-month price and may include one-time items — both understate or
-                      overstate the real renewal charge. {%- endcomment -%}
-                  Then {{ sub_recurring_total | money }}/month. Cancel anytime.
-                  {%- if has_giveaway %} Your free 5ml is a one-time item and is not part of the recurring charge.{% endif -%}
-                  {%- if has_addon_line %} Add-on fragrances are charged once and are not part of the recurring charge.{% endif -%}
-                  {%- comment -%} "on this order", not "once": a mixed checkout stamps the
-                      order's shipping rate onto the recurring contract (Shopify voids the
-                      subscription free-shipping discount when a one-time line shares the
-                      order — verified at checkout 2026-08-23). Until that is confirmed
-                      fixed, the copy must not promise a one-off charge. {%- endcomment -%}
-                  {%- if has_onetime_line %} Shipping is charged on this order.{% endif -%}
-                </p>
-
-              {%- else -%}
-
-                <div class="cart-summary__row cart-summary__row--total">
-                  <span>Subtotal</span>
-                  <span data-summary-total>{{ cart.total_price | money }}</span>
-                </div>
-
-                <p class="cart-summary__renewal">
-                  Shipping and taxes calculated at checkout. One-time purchase. No subscription and no recurring charge.
-                </p>
-
-              {%- endif -%}
-
-              {%- comment -%} Promo Code {%- endcomment -%}
-              <div class="cart-promo">
-                <button type="button" class="cart-promo__toggle" data-promo-toggle>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
-                  </svg>
-                  Have a promo code?
-                  <svg class="cart-promo__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                    <polyline points="6 9 12 15 18 9"/>
-                  </svg>
-                </button>
-                <div class="cart-promo__form" style="display:none;">
-                  <input type="text" id="promoCodeInput" class="cart-promo__input" placeholder="Enter code">
-                  <button type="button" class="btn btn--small" id="applyPromoBtn">Apply</button>
-                </div>
-                <div class="cart-promo__message" id="promoMessage" style="display:none;"></div>
-              </div>
-
-              {%- comment -%} Pricing Clarity (PRD-03) — shows $20/mo + first-month discount + post-checkout queue reassurance {%- endcomment -%}
-              {%- if has_subscription -%}
-                {% render 'subscription-pricing-summary', surface: 'cart' %}
-              {%- endif -%}
-
-              {%- comment -%}
-                Subscription Disclosure (FTC / ROSCA). Subscription carts only: on a one-time cart
-                this box asserts a recurring charge that will never happen, and its checkbox is what
-                blocks a non-subscription buyer from ever reaching checkout.
-              {%- endcomment -%}
-              {%- if has_subscription -%}
-              <div class="cart-disclosure">
-                <div class="cart-disclosure__icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                  </svg>
-                </div>
-                <div class="cart-disclosure__content">
-                  <h4 class="cart-disclosure__heading">Subscription Terms</h4>
-                  <p class="cart-disclosure__text" data-disclosure-text>
-                    {{ settings.sub_disclosure_text | default: 'By proceeding, you agree to a recurring subscription. Your subscription will auto-renew until cancelled. You can cancel, skip, or swap anytime from your account dashboard.' }}
-                  </p>
-                  {%- if settings.sub_disclosure_checkbox_required != false -%}
-                    <label class="cart-disclosure__checkbox">
-                      <input type="checkbox" id="termsCheckbox" required>
-                      <span>I understand this is a recurring subscription and agree to the <a href="/pages/terms" target="_blank">Terms of Service</a> and <a href="/pages/privacy" target="_blank">Privacy Policy</a>.</span>
-                    </label>
-                  {%- endif -%}
-                  <p class="cart-disclosure__cancellation">
-                    Subscriptions renew monthly from your first purchase date. You will be notified 7 days before renewal. Cancellations on the renewal date take effect the following month.
-                  </p>
-                </div>
-              </div>
-              {%- endif -%}
-
-              {%- comment -%}
-                Checkout Button. The disabled condition is deliberately the SAME expression that
-                gates the disclosure block above, so the button is only ever disabled when a
-                checkbox actually exists to un-disable it. Provable giveaway-only carts have no
-                checkbox and so must not start disabled — that would be an unreachable checkout.
-                Every other cart, including the plan-less fail-safe case, keeps the gate.
-              {%- endcomment -%}
-              <button
-                type="submit"
-                name="checkout"
-                id="checkoutBtn"
-                class="btn btn--primary btn--full btn--large cart-checkout-btn"
-                {% if has_subscription and settings.sub_disclosure_checkbox_required != false %}disabled{% endif %}
-              >
-                PROCEED TO CHECKOUT
-              </button>
-
-              {%- comment -%} Trust Badges {%- endcomment -%}
-              <div class="cart-trust">
-                <div class="cart-trust__item">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                  </svg>
-                  <span>Secure Checkout</span>
-                </div>
-                <div class="cart-trust__item">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                  </svg>
-                  <span>Satisfaction Guarantee</span>
-                </div>
-                {%- comment -%}
-                  Badge only when literally true for THIS order: a pure subscription cart
-                  ships free. Any one-time line (giveaway or add-on) voids the free-shipping
-                  discount for the whole order, so the badge would contradict the Shipping
-                  line in the summary.
-                {%- endcomment -%}
-                {%- if has_plan_line and has_onetime_line == false -%}
-                  <div class="cart-trust__item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-                      <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-                    </svg>
-                    <span>Free Shipping</span>
-                  </div>
-                {%- endif -%}
-              </div>
-            </div>
-          </div>
-
+            <button class="artifact-cart__checkout" type="submit" name="checkout" data-cart-checkout {% if has_subscription %}disabled{% endif %}>Continue to payment</button>
+          </aside>
         </div>
       </form>
-
     {%- else -%}
-
-      {%- comment -%} Empty Cart {%- endcomment -%}
-      <div class="cart-empty">
-        <div class="cart-empty__icon">
-          <svg viewBox="0 0 80 120" fill="none" stroke="currentColor" stroke-width="1.5">
-            <rect x="20" y="30" width="40" height="80" rx="4"/>
-            <rect x="30" y="10" width="20" height="20"/>
-            <rect x="35" y="0" width="10" height="10" rx="2"/>
-            <text x="40" y="78" text-anchor="middle" font-size="12" fill="currentColor" stroke="none">?</text>
-          </svg>
-        </div>
-        <h2 class="cart-empty__title">Your Cart is Empty</h2>
-        <p class="cart-empty__text">Start your fragrance journey with Base Note. Discover luxury scents curated just for you.</p>
-        <div class="cart-empty__actions">
-          <a href="/collections/all" class="btn btn--primary btn--large">Browse Fragrances</a>
-          <a href="/collections/fragrances" class="btn btn--outline btn--large">Shop One-Time Vials</a>
-        </div>
-
-        <div class="cart-empty__featured">
-          <h3>Popular This Month</h3>
-          <div class="cart-empty__products">
-            {%- for product in collections['all'].products limit: 3 -%}
-              <a href="{{ product.url }}" class="featured-product-mini">
-                <div class="featured-product-mini__image">
-                  {%- if product.featured_image -%}
-                    <img src="{{ product.featured_image | image_url: width: 200 }}" alt="{{ product.title }}" loading="lazy">
-                  {%- endif -%}
-                </div>
-                <h4 class="featured-product-mini__title">{{ product.title }}</h4>
-                <span class="featured-product-mini__price">{{ product.price | money }}</span>
-              </a>
-            {%- endfor -%}
-          </div>
-        </div>
-      </div>
-
+      <div class="artifact-cart__empty"><h1>Your Cart</h1><p>Your next scent is waiting.</p><a href="/collections/fragrances">Shop fragrances</a></div>
     {%- endif -%}
   </div>
-</section>
+  <p class="artifact-cart__status" data-cart-status role="status" aria-live="polite"></p>
+</artifact-cart>
 
 <style>
-  .cart-section {
-    padding: calc(var(--header-height, 110px) + 3rem) 0 4rem;
-    min-height: 100vh;
-    background: var(--color-background, #FAF8F5);
-  }
-
-  /* Header */
-  .cart-header { text-align: center; margin-bottom: 2.5rem; }
-  .cart-header__title { font-size: 2.5rem; font-family: var(--font-heading, 'Cormorant Garamond', serif); margin: 0 0 0.25rem; color: var(--color-primary, #2D4641); }
-  .cart-header__subtitle { color: #666; font-size: 1rem; margin: 0; }
-
-  /* Layout */
-  .cart-layout { display: grid; grid-template-columns: 1fr 420px; gap: 2.5rem; align-items: start; }
-  .cart-main { display: flex; flex-direction: column; gap: 1.5rem; }
-
-  /* Cart Items */
-  .cart-items { background: #fff; border: 1px solid var(--color-border, #E8E6E3); border-radius: 10px; overflow: hidden; }
-  .cart-item { display: grid; grid-template-columns: 120px 1fr; gap: 1.25rem; padding: 1.5rem; border-bottom: 1px solid var(--color-border, #E8E6E3); }
-  .cart-item:last-of-type { border-bottom: none; }
-  .cart-item__image { aspect-ratio: 3/4; background: #f5f5f5; border-radius: 8px; overflow: hidden; }
-  .cart-item__image img { width: 100%; height: 100%; object-fit: cover; }
-  .cart-item__placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #ccc; }
-  .cart-item__placeholder svg { width: 50%; height: auto; }
-  .cart-item__details { display: flex; flex-direction: column; justify-content: space-between; }
-  .cart-item__badge {
-    display: inline-block; padding: 3px 10px; background: var(--color-primary, #2D4641); color: #fff;
-    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; border-radius: 999px; margin-bottom: 0.5rem;
-  }
-  .cart-item__title { font-size: 1.25rem; font-family: var(--font-heading, 'Cormorant Garamond', serif); margin: 0 0 0.25rem; }
-  .cart-item__title a { color: inherit; text-decoration: none; }
-  .cart-item__variant, .cart-item__size { font-size: 0.85rem; color: #666; margin: 0.125rem 0; }
-  .cart-item__selling-plan { font-size: 0.8rem; color: var(--color-secondary, #C9A962); font-weight: 600; margin: 0.25rem 0; }
-  .cart-item__notes { font-size: 0.8rem; color: #999; margin: 0.25rem 0; }
-  .cart-item__notes-label { font-weight: 600; color: #666; }
-  .cart-item__retail-value { font-size: 0.8rem; color: #999; font-style: italic; margin: 0.25rem 0; }
-  .cart-item__actions { margin-top: 0.75rem; }
-  .cart-item__remove { display: inline-flex; align-items: center; gap: 0.25rem; background: none; border: none; font-size: 0.85rem; color: #999; cursor: pointer; padding: 0.25rem 0; transition: color 0.2s; }
-  .cart-item__remove:hover { color: #c0392b; }
-  .cart-items__footer { padding: 1rem 1.5rem; background: #fafafa; border-top: 1px solid var(--color-border, #E8E6E3); }
-  .cart-continue { display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.875rem; color: #666; text-decoration: none; transition: color 0.2s; }
-  .cart-continue:hover { color: var(--color-secondary, #C9A962); }
-
-  /* Plan Selector */
-  .plan-selector { background: #fff; border: 1px solid var(--color-border, #E8E6E3); border-radius: 10px; padding: 1.5rem; }
-  .plan-selector__heading { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 1.25rem; color: var(--color-primary, #2D4641); }
-  .plan-selector__options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
-  .plan-option {
-    position: relative; display: flex; flex-direction: column; align-items: center; text-align: center;
-    padding: 1.5rem 1rem; border: 2px solid var(--color-border, #E8E6E3); border-radius: 10px;
-    cursor: pointer; transition: all 0.2s; background: #fff;
-  }
-  .plan-option input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
-  .plan-option.is-selected {
-    border-color: var(--color-secondary, #C9A962);
-    background: linear-gradient(135deg, rgba(201,169,98,0.08) 0%, rgba(201,169,98,0.02) 100%);
-    box-shadow: 0 0 0 1px var(--color-secondary, #C9A962);
-  }
-  .plan-option:hover { border-color: var(--color-secondary, #C9A962); }
-  .plan-option__badge {
-    position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-    background: var(--color-secondary, #C9A962); color: #fff; padding: 2px 12px;
-    font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
-    border-radius: 999px; white-space: nowrap;
-  }
-  .plan-option__badge--gold { background: #d4af37; }
-  .plan-option__name { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-primary, #2D4641); margin-bottom: 0.5rem; }
-  .plan-option__price { font-size: 1.5rem; font-weight: 700; color: var(--color-primary, #2D4641); margin-bottom: 0.25rem; font-family: var(--font-heading, 'Cormorant Garamond', serif); }
-  .plan-option__detail { font-size: 0.75rem; color: #999; }
-
-  /* Perks */
-  .cart-perks { background: #fff; border: 1px solid var(--color-border, #E8E6E3); border-radius: 10px; padding: 1.5rem; }
-  .cart-perks__heading { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 1.25rem; color: var(--color-primary, #2D4641); }
-  .cart-perks__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
-  .cart-perk { display: flex; gap: 1rem; align-items: flex-start; }
-  .cart-perk__icon { flex-shrink: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(201,169,98,0.1); border-radius: 10px; color: var(--color-secondary, #C9A962); }
-  .cart-perk strong { display: block; font-size: 0.875rem; color: var(--color-primary, #2D4641); margin-bottom: 0.125rem; }
-  .cart-perk p { font-size: 0.8rem; color: #999; margin: 0; }
-
-  /* Sidebar */
-  .cart-sidebar { position: sticky; top: calc(var(--header-height, 110px) + 1rem); }
-  .cart-summary__card { background: #fff; border: 1px solid var(--color-border, #E8E6E3); border-radius: 10px; padding: 1.5rem; }
-  .cart-summary__title { font-size: 1.25rem; margin: 0 0 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--color-border, #E8E6E3); color: var(--color-primary, #2D4641); }
-  .cart-summary__row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.625rem; font-size: 0.9rem; }
-  .cart-summary__row--light { color: #999; font-size: 0.85rem; }
-  .cart-summary__row--discount { color: #27ae60; }
-  .cart-summary__row--total { font-size: 1.25rem; font-weight: 700; margin-top: 0.75rem; }
-  .cart-summary__divider { height: 1px; background: var(--color-border, #E8E6E3); margin: 0.75rem 0; }
-  .cart-summary__renewal { font-size: 0.8rem; color: #999; margin: 0.5rem 0 1.25rem; }
-  .text-gold { color: var(--color-secondary, #C9A962); font-weight: 600; }
-  .text-success { color: #27ae60; font-weight: 600; }
-
-  /* Promo Code */
-  .cart-promo { margin-bottom: 1.25rem; }
-  .cart-promo__toggle { display: flex; align-items: center; gap: 0.5rem; width: 100%; background: none; border: none; font-size: 0.85rem; color: #666; cursor: pointer; padding: 0.5rem 0; }
-  .cart-promo__toggle svg { flex-shrink: 0; }
-  .cart-promo__chevron { margin-left: auto; transition: transform 0.2s; }
-  .cart-promo__toggle.is-active .cart-promo__chevron { transform: rotate(180deg); }
-  .cart-promo__form { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-  .cart-promo__input { flex: 1; padding: 0.5rem 0.75rem; border: 1px solid var(--color-border, #E8E6E3); border-radius: 6px; font-size: 0.85rem; }
-  .cart-promo__message { margin-top: 0.5rem; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.8rem; }
-  .cart-promo__message--success { background: rgba(39,174,96,0.1); color: #27ae60; border: 1px solid #27ae60; }
-  .cart-promo__message--error { background: rgba(192,57,43,0.1); color: #c0392b; border: 1px solid #c0392b; }
-  .cart-promo__message--info { background: rgba(201,169,98,0.1); color: var(--color-secondary, #C9A962); border: 1px solid var(--color-secondary, #C9A962); }
-
-  /* Subscription Disclosure */
-  .cart-disclosure {
-    display: flex; gap: 0.75rem; padding: 1rem; margin-bottom: 1.25rem;
-    background: rgba(243,156,18,0.08); border: 1px solid rgba(243,156,18,0.3);
-    border-radius: 8px;
-  }
-  .cart-disclosure__icon { flex-shrink: 0; color: #f39c12; margin-top: 2px; }
-  .cart-disclosure__heading { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-primary, #2D4641); margin: 0 0 0.375rem; }
-  .cart-disclosure__text { font-size: 0.8rem; color: #666; margin: 0 0 0.75rem; line-height: 1.5; }
-  .cart-disclosure__checkbox { display: flex; gap: 0.5rem; align-items: flex-start; font-size: 0.8rem; color: var(--color-primary, #2D4641); cursor: pointer; line-height: 1.4; }
-  .cart-disclosure__checkbox input { margin-top: 3px; accent-color: var(--color-secondary, #C9A962); flex-shrink: 0; }
-  .cart-disclosure__checkbox a { color: var(--color-secondary, #C9A962); }
-  .cart-disclosure__cancellation {
-    font-size: 12px;
-    color: var(--color-text-light, #666);
-    margin-top: 8px;
-    line-height: 1.4;
-  }
-
-  /* Seasonal Recommendations */
-  .cart-seasonal {
-    margin: var(--spacing-md, 24px) 0;
-    padding: var(--spacing-md, 24px);
-    background: var(--color-background-alt, #f9f9f7);
-    border-radius: var(--radius-md, 8px);
-  }
-  .cart-seasonal__heading {
-    font-size: var(--font-size-sm, 13px);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: var(--spacing-sm, 12px);
-  }
-  .cart-seasonal__grid {
-    display: flex;
-    gap: var(--spacing-sm, 12px);
-    overflow-x: auto;
-  }
-  .cart-seasonal__item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    text-decoration: none;
-    color: inherit;
-    font-size: 12px;
-    min-width: 80px;
-  }
-  .cart-seasonal__item img {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: var(--radius-sm, 4px);
-  }
-  .cart-seasonal__view-all {
-    display: block;
-    text-align: center;
-    margin-top: var(--spacing-sm, 12px);
-    font-size: var(--font-size-sm, 13px);
-    color: var(--color-secondary, #d4af37);
-    text-decoration: none;
-  }
-  .cart-section__ship-date {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: var(--font-size-sm, 13px);
-    color: var(--color-text-light, #666);
-    margin: var(--spacing-xs, 8px) 0;
-    padding: 0 1.5rem;
-  }
-
-  /* Checkout Button */
-  .cart-checkout-btn { font-size: 1rem; padding: 1rem; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s; }
-  .cart-checkout-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  /* Trust */
-  .cart-trust { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--color-border, #E8E6E3); }
-  .cart-trust__item { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.25rem; color: #999; }
-  .cart-trust__item svg { color: var(--color-secondary, #C9A962); }
-  .cart-trust__item span { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
-
-  /* Empty Cart */
-  .cart-empty { text-align: center; padding: 4rem 1rem; max-width: 600px; margin: 0 auto; padding-top: calc(var(--header-height, 110px) + 4rem); }
-  .cart-empty__icon { width: 120px; height: 150px; margin: 0 auto 2rem; color: #ccc; opacity: 0.5; }
-  .cart-empty__icon svg { width: 100%; height: 100%; }
-  .cart-empty__title { font-size: 2rem; font-family: var(--font-heading, 'Cormorant Garamond', serif); margin-bottom: 0.75rem; }
-  .cart-empty__text { color: #666; font-size: 1.05rem; margin-bottom: 2rem; }
-  .cart-empty__actions { display: flex; gap: 0.75rem; justify-content: center; margin-bottom: 4rem; }
-  .cart-empty__featured { margin-top: 4rem; padding-top: 2.5rem; border-top: 1px solid var(--color-border, #E8E6E3); }
-  .cart-empty__featured h3 { font-size: 1.25rem; margin-bottom: 1.5rem; }
-  .cart-empty__products { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-  .featured-product-mini { text-decoration: none; color: inherit; }
-  .featured-product-mini__image { aspect-ratio: 1; background: #f5f5f5; border-radius: 10px; margin-bottom: 0.75rem; overflow: hidden; }
-  .featured-product-mini__image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-  .featured-product-mini:hover .featured-product-mini__image img { transform: scale(1.05); }
-  .featured-product-mini__title { font-size: 0.85rem; margin-bottom: 0.25rem; }
-  .featured-product-mini__price { font-weight: 600; color: var(--color-secondary, #C9A962); }
-
-  /* Cart Items Header */
-  .cart-items__header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--color-border, #E8E6E3); }
-  .cart-items__section-title { display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 0.25rem; color: var(--color-primary, #2D4641); }
-  .cart-items__section-title svg { color: var(--color-secondary, #C9A962); }
-  .cart-items__section-subtitle { font-size: 0.8rem; color: #999; margin: 0; }
-
-  /* Swap Link */
-  .cart-item__swap { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.85rem; color: var(--color-secondary, #C9A962); text-decoration: none; font-weight: 600; transition: opacity 0.2s; margin-right: 1rem; }
-  .cart-item__swap:hover { opacity: 0.7; }
-
-  /* Rotation List */
-  .rotation-list { background: #fff; border: 1px solid var(--color-border, #E8E6E3); border-radius: 10px; overflow: hidden; }
-  .rotation-list__header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--color-border, #E8E6E3); }
-  .rotation-list__title { display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 0.25rem; color: var(--color-primary, #2D4641); }
-  .rotation-list__title svg { color: var(--color-secondary, #C9A962); }
-  .rotation-list__subtitle { font-size: 0.8rem; color: #999; margin: 0; }
-  .rotation-list__items { padding: 0; }
-  .rotation-item { display: grid; grid-template-columns: 80px 1fr auto; gap: 1rem; padding: 1rem 1.5rem; border-bottom: 1px solid var(--color-border, #E8E6E3); align-items: center; }
-  .rotation-item:last-child { border-bottom: none; }
-  .rotation-item__image { width: 80px; height: 80px; border-radius: 8px; overflow: hidden; background: #f5f5f5; }
-  .rotation-item__image img { width: 100%; height: 100%; object-fit: cover; }
-  .rotation-item__info h4 { font-size: 1rem; font-family: var(--font-heading, 'Cormorant Garamond', serif); margin: 0 0 0.25rem; }
-  .rotation-item__info p { font-size: 0.8rem; color: #999; margin: 0; }
-  .rotation-item__month { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-secondary, #C9A962); background: rgba(201,169,98,0.1); padding: 4px 10px; border-radius: 999px; }
-  .rotation-item__remove { background: none; border: none; color: #999; cursor: pointer; padding: 0.25rem; transition: color 0.2s; }
-  .rotation-item__remove:hover { color: #c0392b; }
-  .rotation-list__empty { padding: 2rem 1.5rem; text-align: center; color: #999; font-size: 0.9rem; }
-
-  /* Responsive */
-  @media (max-width: 992px) {
-    .cart-layout { grid-template-columns: 1fr; }
-    .cart-sidebar { position: static; }
-    .plan-selector__options { grid-template-columns: 1fr; }
-    .cart-perks__grid { grid-template-columns: 1fr; }
-  }
-  @media (max-width: 768px) {
-    .cart-item { grid-template-columns: 100px 1fr; padding: 1.25rem; }
-    .cart-header__title { font-size: 2rem; }
-    .cart-trust { grid-template-columns: 1fr; gap: 0.5rem; }
-    .cart-trust__item { flex-direction: row; justify-content: center; }
-    .cart-empty__actions { flex-direction: column; }
-    .cart-empty__products { grid-template-columns: 1fr; max-width: 250px; margin: 0 auto; }
-  }
-  @media (max-width: 576px) {
-    .cart-item { grid-template-columns: 80px 1fr; padding: 1rem; }
-  }
-
-  /* Jeff's Claude cart: restrained, one-time first, and checkout-focused. */
-  .template-cart .announcement-bar { display:none; }
-  .template-cart .header { background:#22392B; }
-  .template-cart .header__inner { min-height:70px; padding:1rem 2rem; }
-  .template-cart .header__logo-text { padding:.15rem .3rem; border:1px solid rgba(255,255,255,.24); font-family:var(--font-heading); font-size:1.15rem; font-weight:500; letter-spacing:.08em; text-transform:uppercase; }
-  .cart-section { --jc-green:#22392B; --jc-cream:#F4EFE3; --jc-gold:#AC9159; min-height:70vh; background:var(--jc-cream); padding:2rem 0 5rem; }
-  .cart-section>.container { max-width:1120px; }
-  .cart-header { margin-bottom:1.5rem; }
-  .cart-header__back { display:inline-block; margin-bottom:1rem; color:var(--jc-green); border-bottom:1px solid var(--jc-gold); font-size:.8rem; }
-  .cart-header__title { margin:0; font-size:3.4rem; line-height:1; }
-  .cart-header__subtitle,.cart-items__header,.cart-seasonal,.rotation-list,.cart-perks { display:none!important; }
-  .cart-layout { grid-template-columns:minmax(0,1.35fr) minmax(310px,.8fr); gap:3rem; align-items:start; }
-  .cart-items,.cart-summary__card { background:transparent; border:0; border-radius:0; box-shadow:none; }
-  .cart-item { display:grid; grid-template-columns:72px minmax(0,1fr); gap:1.2rem; padding:1.4rem 0; border-bottom:1px solid rgba(29,61,44,.2); }
-  .cart-item__image { width:72px; height:88px; background:transparent; }
-  .cart-item__image img { width:100%; height:100%; object-fit:contain; }
-  .cart-item__details { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:1rem; align-items:center; }
-  .cart-item__badge { display:block; margin-bottom:.35rem; padding:0; background:transparent; color:#746f65; font-size:.63rem; letter-spacing:.12em; }
-  .cart-item__title { margin:0; font-size:1.25rem; font-weight:500; }
-  .cart-item__variant,.cart-item__size,.cart-item__retail-value { margin:.2rem 0; color:#746f65; font-size:.73rem; text-transform:uppercase; letter-spacing:.06em; }
-  .cart-item__retail-value,.cart-item__selling-plan { display:none; }
-  .cart-item__actions { display:grid; grid-template-columns:auto auto; gap:.8rem 1.3rem; align-items:center; margin:0; }
-  .cart-item__quantity { display:grid; grid-template-columns:38px 34px 38px; align-items:center; border:1px solid rgba(29,61,44,.22); text-align:center; }
-  .cart-item__quantity button { min-height:42px; border:0; background:transparent; color:var(--jc-green); font-size:1.15rem; cursor:pointer; }
-  .cart-item__line-price { min-width:72px; text-align:right; font-size:1rem; }
-  .cart-item__remove,.cart-item__swap { justify-self:start; color:#68635b; font-size:.7rem; text-decoration:underline; }
-  .cart-item__remove svg,.cart-item__swap svg { display:none; }
-  .cart-items__footer { padding:1.2rem 0 0; }
-  .cart-continue { color:var(--jc-green); font-size:.78rem; }
-  .cart-sidebar { position:sticky; top:92px; }
-  .cart-summary__card { padding:1.6rem; border:1px solid rgba(29,61,44,.2); background:rgba(255,255,255,.72); }
-  .cart-summary__title { font-family:var(--font-body); font-size:.76rem; letter-spacing:.14em; text-transform:uppercase; }
-  .cart-summary__row { font-size:.82rem; }
-  .cart-summary__row--total { font-size:1.05rem; }
-  .cart-summary__renewal { color:#68635b; font-size:.76rem; }
-  .cart-promo { border-color:rgba(29,61,44,.18); }
-  .cart-checkout__button { min-height:54px; border-radius:0; background:var(--jc-green); letter-spacing:.1em; text-transform:uppercase; }
-  @media (max-width:992px) { .cart-layout { grid-template-columns:1fr; } .cart-sidebar { position:static; } }
-  @media (max-width:600px) { .cart-header__title { font-size:2.8rem; } .cart-item { grid-template-columns:60px 1fr; } .cart-item__image { width:60px; height:76px; } .cart-item__details { grid-template-columns:1fr; } .cart-item__actions { grid-template-columns:auto 1fr; } .cart-item__line-price { text-align:left; } }
+  .artifact-cart { --ac-green:#22392b; --ac-cream:#f4efe3; --ac-gold:#ac9159; --ac-ink:#242320; --ac-muted:#5c574d; --ac-line:rgb(34 57 43 / 18%); display:block; min-height:72dvh; color:var(--ac-ink); background:var(--ac-cream); }
+  .artifact-cart__shell { width:min(100% - 3rem,68rem); margin-inline:auto; padding-block:2rem 5rem; }
+  .artifact-cart__back { display:inline-block; padding-block-end:.18rem; border-block-end:.0625rem solid var(--ac-gold); color:var(--ac-green); font:.75rem/1.3 'Jost',sans-serif; }
+  .artifact-cart h1 { margin:1.4rem 0 2rem; font:700 clamp(2.5rem,5vw,3.5rem)/1 'Playfair Display',serif; }
+  .artifact-cart__layout { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(19rem,.8fr); gap:3.5rem; align-items:start; }
+  .artifact-cart__item { display:grid; grid-template-columns:5rem minmax(0,1fr) auto auto; gap:1.2rem; align-items:center; min-height:9rem; padding-block:1.2rem; border-block-end:.0625rem solid var(--ac-line); }
+  .artifact-cart__image { display:grid; width:5rem; height:6.5rem; place-items:center; }
+  .artifact-cart__image img,.artifact-cart__image svg { max-width:100%; max-height:100%; object-fit:contain; }
+  .artifact-cart__details h2 { margin:0; font:500 1.2rem/1.2 'EB Garamond',serif; }
+  .artifact-cart__details p { margin:.35rem 0 0; color:var(--ac-muted); font:.68rem/1.4 'Jost',sans-serif; letter-spacing:.08em; text-transform:uppercase; }
+  .artifact-cart__details .artifact-cart__plan { color:var(--ac-gold); }
+  .artifact-cart__remove { margin-block-start:.55rem; padding:0 0 .12rem; border:0; border-block-end:.0625rem solid var(--ac-muted); color:var(--ac-muted); background:transparent; font:.7rem/1.2 'Jost',sans-serif; cursor:pointer; }
+  .artifact-cart__quantity { display:grid; grid-template-columns:2.5rem 2.5rem 2.5rem; align-items:center; border:.0625rem solid var(--ac-line); text-align:center; }
+  .artifact-cart__quantity button,.artifact-cart__quantity span { display:grid; width:2.5rem; height:2.7rem; place-items:center; border:0; color:var(--ac-ink); background:transparent; font:.8rem/1 'Jost',sans-serif; }
+  .artifact-cart__quantity button { cursor:pointer; }
+  .artifact-cart__line-price { min-width:4.8rem; text-align:end; font:500 .95rem/1 'Jost',sans-serif; }
+  .artifact-cart__order-mode { margin-block-start:2rem; padding:1.6rem; border:.0625rem solid var(--ac-gold); }
+  .artifact-cart__order-mode legend { padding:0 .25rem; font:600 .8rem/1.2 'Jost',sans-serif; letter-spacing:.06em; text-transform:uppercase; }
+  .artifact-cart__mode { display:flex; gap:.9rem; padding:1rem; border:.0625rem solid var(--ac-line); cursor:pointer; }
+  .artifact-cart__mode + .artifact-cart__mode { margin-block-start:.75rem; }
+  .artifact-cart__mode--active { border-color:var(--ac-green); background:rgb(255 255 255 / 58%); }
+  .artifact-cart__mode input { width:1rem; height:1rem; margin-block-start:.2rem; accent-color:var(--ac-green); }
+  .artifact-cart__mode span,.artifact-cart__mode strong,.artifact-cart__mode small { display:block; }
+  .artifact-cart__mode strong { font:600 .82rem/1.4 'Jost',sans-serif; }
+  .artifact-cart__mode strong em { margin-inline-start:.45rem; padding:.22rem .4rem; color:var(--ac-green); background:var(--ac-gold); font:500 .58rem/1 'Jost',sans-serif; font-style:normal; }
+  .artifact-cart__mode small { margin-block-start:.35rem; color:var(--ac-muted); font:.78rem/1.5 'Jost',sans-serif; }
+  .artifact-cart__order-mode>a { display:inline-block; margin:1rem 0 0 2rem; padding-block-end:.15rem; border-block-end:.0625rem solid var(--ac-gold); color:var(--ac-green); font:.72rem/1.3 'Jost',sans-serif; }
+  .artifact-cart__summary { position:sticky; inset-block-start:6rem; padding:1.7rem; border:.0625rem solid var(--ac-line); background:rgb(255 255 255 / 72%); }
+  .artifact-cart__summary h2 { margin:0 0 1rem; padding-block-end:1rem; border-block-end:.0625rem solid var(--ac-line); font:600 .78rem/1.2 'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; }
+  .artifact-cart__summary-lines { margin:0; }
+  .artifact-cart__summary-lines div,.artifact-cart__total,.artifact-cart__savings { display:flex; justify-content:space-between; gap:1rem; padding-block:.55rem; font:.78rem/1.35 'Jost',sans-serif; }
+  .artifact-cart__summary-lines dt { color:var(--ac-muted); }
+  .artifact-cart__summary-lines dd { margin:0; text-align:end; }
+  .artifact-cart__total { margin-block-start:.6rem; padding-block:1.15rem; border-block:.0625rem solid var(--ac-line); font-size:1rem; }
+  .artifact-cart__savings { color:var(--ac-green); }
+  .artifact-cart__disclosure { margin:1rem 0; color:var(--ac-muted); font:.72rem/1.5 'Jost',sans-serif; }
+  .artifact-cart__consent { display:flex; gap:.6rem; margin-block:1rem; color:var(--ac-muted); font:.68rem/1.45 'Jost',sans-serif; }
+  .artifact-cart__consent input { margin-block-start:.15rem; accent-color:var(--ac-green); }
+  .artifact-cart__consent a { text-decoration:underline; }
+  .artifact-cart__checkout { width:100%; min-height:3.6rem; border:.0625rem solid var(--ac-green); color:var(--ac-cream); background:var(--ac-green); font:500 .78rem/1 'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
+  .artifact-cart__checkout[disabled] { cursor:not-allowed; opacity:.48; }
+  .artifact-cart__empty { padding-block:5rem 8rem; text-align:center; }
+  .artifact-cart__empty a { display:inline-flex; min-height:3.4rem; align-items:center; padding-inline:1.4rem; color:var(--ac-cream); background:var(--ac-green); font:.75rem/1 'Jost',sans-serif; text-transform:uppercase; }
+  .artifact-cart__status { position:fixed; z-index:5; inset:auto 1rem 1rem auto; margin:0; padding:.75rem 1rem; color:var(--ac-cream); background:var(--ac-green); font:.75rem/1.4 'Jost',sans-serif; opacity:0; pointer-events:none; transition:opacity 180ms ease; }
+  .artifact-cart__status--visible { opacity:1; }
+  @media(max-width:52rem){.artifact-cart__layout{grid-template-columns:1fr}.artifact-cart__summary{position:static}.artifact-cart__item{grid-template-columns:4.5rem minmax(0,1fr) auto}.artifact-cart__line-price{grid-column:2;text-align:start}.artifact-cart__quantity{grid-column:3;grid-row:1 / span 2}}
+  @media(max-width:35rem){.artifact-cart__shell{width:min(100% - 2rem,68rem)}.artifact-cart__item{gap:.7rem}.artifact-cart__quantity{grid-template-columns:2.2rem 2.2rem 2.2rem}.artifact-cart__quantity button,.artifact-cart__quantity span{width:2.2rem}.artifact-cart__order-mode{padding:1rem}.artifact-cart__mode{padding:.85rem}}
+  @media(prefers-reduced-motion:reduce){.artifact-cart__status{transition:none}}
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  'use strict';
-
-  // Monthly-only plan (no plan selector needed)
-  localStorage.setItem('basenote_selected_plan', 'monthly');
-
-  // Terms checkbox gates checkout
-  var termsCheckbox = document.getElementById('termsCheckbox');
-  var checkoutBtn = document.getElementById('checkoutBtn');
-
-  if (termsCheckbox && checkoutBtn) {
-    termsCheckbox.addEventListener('change', function() {
-      checkoutBtn.disabled = !termsCheckbox.checked;
+  if (!customElements.get('artifact-cart')) {
+    customElements.define('artifact-cart', class extends HTMLElement {
+      connectedCallback(){this.status=this.querySelector('[data-cart-status]');this.querySelectorAll('[data-cart-quantity]').forEach((button)=>button.addEventListener('click',()=>this.change(button.closest('[data-cart-key]'),Number(button.dataset.cartQuantity))));this.querySelectorAll('[data-cart-remove]').forEach((button)=>button.addEventListener('click',()=>this.change(button.closest('[data-cart-key]'),0)));this.querySelectorAll('input[name="artifact_order_mode"]').forEach((radio)=>radio.addEventListener('change',()=>this.setMode(radio.value)));this.querySelector('[data-cart-consent]')?.addEventListener('change',(event)=>{this.querySelector('[data-cart-checkout]').disabled=!event.currentTarget.checked;});}
+      show(message){this.status.textContent=message;this.status.classList.add('artifact-cart__status--visible');}
+      async change(item,quantity){this.show('Updating your cart…');const response=await fetch('/cart/change.js',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({id:item.dataset.cartKey,quantity})});if(response.ok)location.reload();else this.show('We could not update your cart. Please try again.');}
+      async setMode(mode){this.show('Updating how you order…');const items=[...this.querySelectorAll('[data-cart-key]')];try{for(const item of items){if(item.dataset.bottle==='true'||!item.dataset.planId)continue;const body={id:item.dataset.cartKey,quantity:Number(item.querySelector('.artifact-cart__quantity span').textContent),selling_plan:mode==='subscription'?Number(item.dataset.planId):null};const response=await fetch('/cart/change.js',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error('mode change failed');}location.reload();}catch(error){this.show('This order option could not be applied. Your cart was not changed.');}}
     });
   }
-
-  // Remove item
-  document.querySelectorAll('[data-remove-item]').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var key = this.dataset.removeItem;
-      fetch('/cart/change.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: key, quantity: 0 })
-      }).then(function() { window.location.reload(); });
-    });
-  });
-
-  document.querySelectorAll('[data-cart-qty]').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var quantity = Math.max(0, parseInt(this.dataset.cartQty, 10) || 0);
-      this.disabled = true;
-      fetch('/cart/change.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: this.dataset.cartKey, quantity: quantity })
-      }).then(function(response) {
-        if (!response.ok) throw new Error('Cart update failed');
-        window.location.reload();
-      }).catch(function() { window.location.reload(); });
-    });
-  });
-
-  // Rotation List
-  (function() {
-    var QUEUE_KEY = 'basenotes_queue';
-    var rotationList = document.getElementById('rotationList');
-    var rotationItems = document.getElementById('rotationListItems');
-    if (!rotationList || !rotationItems) return;
-
-    function getQueue() {
-      try { return JSON.parse(localStorage.getItem(QUEUE_KEY)) || []; }
-      catch(e) { return []; }
-    }
-
-    function saveQueue(queue) {
-      localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
-    }
-
-    function renderRotation() {
-      var queue = getQueue();
-      if (queue.length === 0) {
-        rotationList.style.display = 'none';
-        return;
-      }
-
-      rotationList.style.display = '';
-      var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-      var now = new Date();
-
-      var html = '';
-      queue.forEach(function(item, index) {
-        var futureMonth = new Date(now.getFullYear(), now.getMonth() + index + 1, 1);
-        var monthLabel = months[futureMonth.getMonth()] + ' ' + futureMonth.getFullYear();
-
-        html += '<div class="rotation-item" data-rotation-index="' + index + '">' +
-          '<div class="rotation-item__image">' +
-            (item.image ? '<img src="' + item.image + '" alt="' + item.title + '" loading="lazy">' : '') +
-          '</div>' +
-          '<div class="rotation-item__info">' +
-            '<h4><a href="' + item.url + '" style="color:inherit;text-decoration:none;">' + item.title + '</a></h4>' +
-            '<span class="rotation-item__month">' + monthLabel + '</span>' +
-          '</div>' +
-          '<button type="button" class="rotation-item__remove" data-remove-rotation="' + index + '" aria-label="Remove from rotation">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
-          '</button>' +
-        '</div>';
-      });
-
-      rotationItems.innerHTML = html;
-
-      // Bind remove buttons
-      rotationItems.querySelectorAll('[data-remove-rotation]').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var idx = parseInt(this.dataset.removeRotation);
-          var q = getQueue();
-          q.splice(idx, 1);
-          saveQueue(q);
-          renderRotation();
-        });
-      });
-    }
-
-    renderRotation();
-  })();
-
-  // Promo code toggle
-  var promoToggle = document.querySelector('[data-promo-toggle]');
-  if (promoToggle) {
-    promoToggle.addEventListener('click', function() {
-      this.classList.toggle('is-active');
-      var form = this.nextElementSibling;
-      form.style.display = form.style.display === 'none' ? 'flex' : 'none';
-    });
-  }
-
-  // Promo code apply
-  var promoInput = document.getElementById('promoCodeInput');
-  var applyBtn = document.getElementById('applyPromoBtn');
-  var promoMsg = document.getElementById('promoMessage');
-
-  if (applyBtn && promoInput) {
-    applyBtn.addEventListener('click', applyPromo);
-    promoInput.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') { e.preventDefault(); applyPromo(); }
-    });
-
-    // Restore stored code
-    var stored = localStorage.getItem('basenote_discount_code');
-    if (stored) {
-      promoInput.value = stored;
-      showPromo('Code "' + stored + '" will be applied at checkout', 'info');
-      addDiscountInput(stored);
-      if (promoToggle) { promoToggle.classList.add('is-active'); promoToggle.nextElementSibling.style.display = 'flex'; }
-    }
-  }
-
-  function applyPromo() {
-    var code = promoInput.value.trim().toUpperCase();
-    if (!code) { showPromo('Please enter a promo code', 'error'); return; }
-    localStorage.setItem('basenote_discount_code', code);
-    showPromo('Code "' + code + '" will be applied at checkout!', 'success');
-    addDiscountInput(code);
-  }
-
-  function showPromo(msg, type) {
-    if (promoMsg) { promoMsg.textContent = msg; promoMsg.className = 'cart-promo__message cart-promo__message--' + type; promoMsg.style.display = 'block'; }
-  }
-
-  function addDiscountInput(code) {
-    var form = document.querySelector('.cart-form');
-    if (!form) return;
-    var input = form.querySelector('input[name="discount"]');
-    if (!input) { input = document.createElement('input'); input.type = 'hidden'; input.name = 'discount'; form.appendChild(input); }
-    input.value = code;
-  }
-});
 </script>

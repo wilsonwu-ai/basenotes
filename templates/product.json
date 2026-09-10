@@ -11,34 +11,6 @@
   "sections": {
     "main-product": {
       "type": "main-product",
-      "blocks": {
-        "accordion-1": {
-          "type": "accordion",
-          "settings": {
-            "heading": "Shipping & Returns",
-            "content": "<p><strong>Love it or swap next month.</strong> Try a fragrance for 30 days. Don't love it? Skip, swap, or cancel next month's shipment anytime before your renewal date — takes 15 seconds in your account. Subscriptions ship free every month.</p>"
-          }
-        },
-        "accordion-2": {
-          "type": "accordion",
-          "settings": {
-            "heading": "Size Guide",
-            "content": "<p>Each atomizer contains 5ml of fragrance, approximately 60 sprays.</p>"
-          }
-        },
-        "accordion-3": {
-          "type": "accordion",
-          "settings": {
-            "heading": "Subscription Benefits",
-            "content": "<p>As a subscriber, you get access to our full collection of exclusive fragrances. Swap, skip, or cancel anytime.</p>"
-          }
-        }
-      },
-      "block_order": [
-        "accordion-1",
-        "accordion-2",
-        "accordion-3"
-      ],
       "settings": {
         "show_related": false
       }

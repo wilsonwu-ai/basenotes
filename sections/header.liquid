@@ -3,6 +3,11 @@
   if template.name == 'index'
     assign transparent_header = section.settings.transparent_on_homepage
   endif
+  assign artifact_surface = false
+  if template.name == 'index' or template.name == 'product' or template.name == 'cart'
+    assign artifact_surface = true
+    assign transparent_header = false
+  endif
 -%}
 
 {% comment %} Announcement Bar {% endcomment %}
@@ -17,7 +22,7 @@
   This is deliberately keyed on the template suffix, not on the announcement
   text, so editing the announcement copy later cannot silently re-break it.
 {%- endcomment -%}
-{%- unless template.suffix == 'giveaway' -%}
+{%- unless template.suffix == 'giveaway' or artifact_surface -%}
 {%- if section.settings.announcement_enabled and section.settings.announcement_text != blank -%}
 <div class="announcement-bar">
   <div class="container">
@@ -41,7 +46,7 @@
 {%- endif -%}
 {%- endunless -%}
 
-<header class="header{% if transparent_header %} is-transparent{% endif %}{% if section.settings.sticky_header %} is-sticky{% endif %}" data-header>
+<header class="header{% if artifact_surface %} header--artifact{% endif %}{% if transparent_header %} is-transparent{% endif %}{% if section.settings.sticky_header %} is-sticky{% endif %}" data-header>
   <div class="header__inner container">
     {% comment %} Mobile Menu Toggle {% endcomment %}
     <button class="header__menu-toggle" data-mobile-toggle aria-label="Open menu">
@@ -73,6 +78,11 @@
     {% comment %} Main Navigation with Mega Menu {% endcomment %}
     <nav class="header__nav" role="navigation">
       <ul class="header__nav-list">
+        {%- if artifact_surface -%}
+          <li class="header__nav-item"><a href="/collections/fragrances" class="header__nav-link">Fragrances</a></li>
+          <li class="header__nav-item"><a href="/collections/fragrances?sort_by=best-selling" class="header__nav-link">Box sets</a></li>
+          <li class="header__nav-item"><a href="/products/creed-aventus#monthly-rotation" class="header__nav-link">Subscribe</a></li>
+        {%- else -%}
         {%- for link in section.settings.menu.links -%}
           <li class="header__nav-item{% if link.links.size > 0 %} has-dropdown{% endif %}">
             <a href="{{ link.url }}" class="header__nav-link{% if link.active %} is-active{% endif %}">
@@ -130,6 +140,7 @@
             {%- endif -%}
           </li>
         {%- endfor -%}
+        {%- endif -%}
         {%- comment -%} Journal link (blog discoverability) — hidden automatically if the menu already links to a blog {%- endcomment -%}
         {%- liquid
           assign menu_has_blog = false
@@ -139,7 +150,7 @@
             endif
           endfor
         -%}
-        {%- if section.settings.journal_label != blank and menu_has_blog == false -%}
+        {%- if artifact_surface == false and section.settings.journal_label != blank and menu_has_blog == false -%}
           <li class="header__nav-item">
             <a href="{{ section.settings.journal_url | default: '/blogs/hub' }}" class="header__nav-link{% if request.page_type == 'blog' or request.page_type == 'article' %} is-active{% endif %}">{{ section.settings.journal_label }}</a>
           </li>
@@ -260,6 +271,11 @@
   </div>
 
   <ul class="mobile-nav__list">
+    {%- if artifact_surface -%}
+      <li class="mobile-nav__item"><a href="/collections/fragrances" class="mobile-nav__link">Fragrances</a></li>
+      <li class="mobile-nav__item"><a href="/collections/fragrances?sort_by=best-selling" class="mobile-nav__link">Box sets</a></li>
+      <li class="mobile-nav__item"><a href="/products/creed-aventus#monthly-rotation" class="mobile-nav__link">Subscribe</a></li>
+    {%- else -%}
     {%- for link in section.settings.menu.links -%}
       <li class="mobile-nav__item{% if link.links.size > 0 %} has-children{% endif %}">
         {%- if link.links.size > 0 -%}
@@ -286,7 +302,8 @@
         {%- endif -%}
       </li>
     {%- endfor -%}
-    {%- if section.settings.journal_label != blank and menu_has_blog == false -%}
+    {%- endif -%}
+    {%- if artifact_surface == false and section.settings.journal_label != blank and menu_has_blog == false -%}
       <li class="mobile-nav__item">
         <a href="{{ section.settings.journal_url | default: '/blogs/hub' }}" class="mobile-nav__link">{{ section.settings.journal_label }}</a>
       </li>
@@ -1146,6 +1163,61 @@
 
     .search-overlay__form {
       flex-direction: column;
+    }
+  }
+
+  .header--artifact {
+    background: #22392b;
+    color: #f4efe3;
+  }
+
+  .header--artifact .header__inner {
+    width: 100%;
+    max-width: none;
+    min-height: 4.5rem;
+    padding: 0.85rem 2.5rem;
+  }
+
+  .header--artifact .header__logo-link,
+  .header--artifact .header__logo-text,
+  .header--artifact .header__nav-link,
+  .header--artifact .header__action {
+    color: #f4efe3;
+  }
+
+  .header--artifact .header__logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.45rem;
+    letter-spacing: 0.025em;
+  }
+
+  .header--artifact .header__nav-list {
+    gap: clamp(1.8rem, 4vw, 3.5rem);
+  }
+
+  .header--artifact .header__nav-link {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+
+  .header--artifact .header__nav-link::after {
+    background: #ac9159;
+  }
+
+  .header--artifact .header__action:hover,
+  .header--artifact .header__action:focus-visible,
+  .header--artifact .header__nav-link:hover,
+  .header--artifact .header__nav-link:focus-visible {
+    color: #d5bc82;
+  }
+
+  @media (max-width: 768px) {
+    .header--artifact .header__inner {
+      min-height: 4rem;
+      padding-inline: 1rem;
     }
   }
 </style>
