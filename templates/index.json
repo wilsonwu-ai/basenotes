@@ -12,54 +12,17 @@
     "hero": {
       "type": "hero",
       "settings": {
-        "image": "shopify://shop_images/gLmqu.jpg",
+        "image": "shopify://shop_images/case-forest-green.png",
         "image_url": "",
         "video": "",
-        "eyebrow": "Authentic luxury fragrance · 5 ml",
-        "heading": "Try the scent. Then decide.",
-        "description": "Shop an authentic 5 ml vial once — no subscription required. Love it? Keep discovery going with Monthly Rotation or move up to a full bottle.",
+        "eyebrow": "Simple pricing",
+        "heading": "$20 for your first fragrance. $18 for every one after.",
+        "description": "Creed, Tom Ford, Valentino, Xerjoff — no surcharges, no exceptions. Buy once with no subscription required.",
         "button_label": "Shop One-Time Vials",
         "button_link": "shopify://collections/fragrances",
         "secondary_button_label": "Get New-Drop Alerts",
         "secondary_button_link": "#newsletter",
-        "show_scroll_indicator": true,
-        "proof_one": "Authentic fragrance",
-        "proof_two": "5 ml · about 60 sprays",
-        "proof_three": "One-time or monthly"
-      }
-    },
-    "home-scent-atelier": {
-      "type": "home-scent-atelier",
-      "settings": {
-        "eyebrow": "Your vial, in motion",
-        "heading": "Choose a scent. Turn the vial. Make it yours.",
-        "description": "Drag the vial to explore it, choose a fragrance, and buy 5 ml once. Your first vial is $20; every additional vial in the same cart is $18.",
-        "collection": "fragrances",
-        "featured_product": "mont-blanc-legend-eau-de-parfum",
-        "bottle_link": ""
-      }
-    },
-    "home-buying-paths": {
-      "type": "home-buying-paths",
-      "settings": {
-        "eyebrow": "Three ways to wear Base Note",
-        "heading": "Start small. Stay curious. Go full size when you know.",
-        "intro": "Choose the way you want to shop today. A one-time vial comes first; Monthly Rotation and full bottles are there when you are ready.",
-        "once_kicker": "Try once",
-        "once_heading": "Meet a scent on your skin.",
-        "once_copy": "Choose an authentic 5 ml vial and wear it through real days before deciding what comes next.",
-        "once_button": "Shop one-time vials",
-        "once_link": "shopify://collections/fragrances",
-        "rotation_kicker": "Monthly Rotation · subscription",
-        "rotation_heading": "Keep discovery in motion.",
-        "rotation_copy": "Monthly Rotation is our flexible subscription: one authentic 5 ml scent delivered each month for a flat price.",
-        "rotation_button": "Explore Monthly Rotation",
-        "rotation_link": "shopify://pages/subscription",
-        "bottle_kicker": "Go full size",
-        "bottle_heading": "Commit to the one you love.",
-        "bottle_copy": "Found your signature? Tell us the bottle you want. We confirm an authentic, below-retail offer before you buy.",
-        "bottle_button": "Request a full bottle",
-        "bottle_link": ""
+        "show_scroll_indicator": true
       }
     },
     "growth-goal": {
@@ -87,38 +50,37 @@
     },
     "how-it-works": {
       "type": "how-it-works",
-      "disabled": true,
       "blocks": {
         "step-1": {
           "type": "step",
           "settings": {
             "icon": "bag",
-            "title": "Subscribe & Order",
-            "text": "Choose your fragrance — your 5ml vial ships right away."
+            "title": "Choose a Scent",
+            "text": "Pick any authentic fragrance from the collection."
           }
         },
         "step-2": {
           "type": "step",
           "settings": {
             "icon": "profile",
-            "title": "Log Into Your Account",
-            "text": "Log into your profile and visit your queue to pick your next fragrance."
+            "title": "Try 5 ml Once",
+            "text": "Your first one-time vial is $20, with no recurring charge."
           }
         },
         "step-3": {
           "type": "step",
           "settings": {
             "icon": "rotate",
-            "title": "Build Your Rotation",
-            "text": "Hand-pick up to 5 months of fragrances yourself, or let our experts curate one for you."
+            "title": "Add Another for $18",
+            "text": "Once your first vial is in the cart, each additional scent is $18."
           }
         },
         "step-4": {
           "type": "step",
           "settings": {
             "icon": "spark",
-            "title": "Keep the Compliments Coming",
-            "text": "Wear something unforgettable every month."
+            "title": "Choose What Comes Next",
+            "text": "Buy once, join Monthly Rotation, or ask us to source the full bottle."
           }
         }
       },
@@ -129,10 +91,10 @@
         "step-4"
       ],
       "settings": {
-        "eyebrow": "How the Subscription Works",
-        "heading": "Effortless, from day one.",
-        "subheading": "No guesswork. No surcharges. Just a fragrance rotation that's entirely yours.",
-        "button_label": "View Fragrances",
+        "eyebrow": "How It Works",
+        "heading": "Start with one vial.",
+        "subheading": "Try it on your skin first. Monthly Rotation is available when you want a subscription.",
+        "button_label": "Shop One-Time Vials",
         "button_link": "shopify://collections/fragrances",
         "bg_color": "#f7f4ee",
         "accent_color": "#2f4b3c"
@@ -140,7 +102,6 @@
     },
     "17768546331d8577f5": {
       "type": "_blocks",
-      "disabled": true,
       "blocks": {
         "ai_gen_block_a81385d_E7zgtD": {
           "type": "ai_gen_block_a81385d",
@@ -242,25 +203,24 @@
         "benefit-4"
       ],
       "settings": {
-        "eyebrow": "Why start with 5 ml",
-        "heading": "Wear it before you commit to it.",
-        "description": "Skin chemistry changes everything. A 5 ml vial gives you enough time to wear an authentic fragrance through workdays, nights out, and everything between.",
+        "eyebrow": "The Base Note Experience",
+        "heading": "Full luxury. Start pocket size.",
+        "description": "Wear an authentic fragrance through real days before choosing Monthly Rotation or a full bottle.",
         "full_bottle_image": "shopify://shop_images/Screenshot_2026-05-14_at_4.47.07_PM.png",
         "full_bottle_title": "The Full Bottle",
-        "full_bottle_subtitle": "A bigger commitment",
-        "full_bottle_price": "Buy when you know",
+        "full_bottle_subtitle": "Full size · sourced on request",
+        "full_bottle_price": "Below retail",
         "atomizer_image": "shopify://shop_images/Screenshot_2026-05-14_at_4.31.57_PM.png",
-        "atomizer_title": "Your 5 ml trial",
-        "atomizer_subtitle": "About 60 sprays · one-time available",
-        "atomizer_price": "Try it first",
-        "atomizer_badge": "Start here",
+        "atomizer_title": "Your One-Time Vial",
+        "atomizer_subtitle": "5ml · about 60 sprays",
+        "atomizer_price": "$20 first · $18 more",
+        "atomizer_badge": "Start Here",
         "button_label": "Shop One-Time Vials",
         "button_link": "/collections/fragrances"
       }
     },
     "1775503735ef6a96df": {
       "type": "_blocks",
-      "disabled": true,
       "blocks": {
         "ai_gen_block_9faa96e_EXAHBD": {
           "type": "ai_gen_block_9faa96e",
@@ -315,7 +275,6 @@
     },
     "1775502539958abd4e": {
       "type": "_blocks",
-      "disabled": true,
       "blocks": {
         "ai_gen_block_e4e9960_nkVW7N": {
           "type": "ai_gen_block_e4e9960",
@@ -409,9 +368,9 @@
     "featured-collection": {
       "type": "featured-collection",
       "settings": {
-        "eyebrow": "One-time purchase · no commitment",
-        "heading": "Start with one vial.",
-        "description": "Pick a scent and wear it on your skin before you commit to a rotation or a full bottle.",
+        "eyebrow": "Presence Without Noise",
+        "heading": "Try a Scent Once",
+        "description": "Choose a 5 ml vial. No subscription required.",
         "collection": "fragrances",
         "products_to_show": 8,
         "show_view_all": true
@@ -528,8 +487,8 @@
         "testimonial-3"
       ],
       "settings": {
-        "eyebrow": "Worn in the real world",
-        "heading": "What fragrance lovers say"
+        "eyebrow": "Command the Room. Say Nothing.",
+        "heading": "What Our Members Say"
       }
     },
     "social-proof-locations": {
@@ -574,10 +533,9 @@
     "newsletter": {
       "type": "newsletter",
       "settings": {
-        "heading": "New scents keep landing.",
-        "description": "Get first notice when the next designer and niche fragrances drop — plus thoughtful guides for finding what works on your skin.",
-        "field_label": "Email address",
-        "placeholder": "you@example.com",
+        "heading": "New Scents Keep Landing",
+        "description": "Get first notice when designer and niche fragrances drop.",
+        "placeholder": "Enter your email",
         "button_label": "Tell Me First",
         "privacy_note": "We respect your privacy. Unsubscribe at any time."
       }
@@ -585,18 +543,16 @@
   },
   "order": [
     "hero",
-    "home-scent-atelier",
-    "home-buying-paths",
     "featured-collection",
-    "delivery-explainer",
-    "testimonials",
-    "newsletter",
-    "growth-goal",
     "how-it-works",
+    "delivery-explainer",
+    "growth-goal",
     "17768546331d8577f5",
     "1775503735ef6a96df",
     "1775502539958abd4e",
     "subscription-plans",
-    "social-proof-locations"
+    "testimonials",
+    "social-proof-locations",
+    "newsletter"
   ]
 }

@@ -38,7 +38,7 @@
     </div>
     <div class="growth-goal__actions">
       {%- if section.settings.cta_label != blank -%}
-        <a class="growth-goal__cta" href="{{ section.settings.cta_link | default: '/pages/find-your-scent' }}">{{ section.settings.cta_label }}</a>
+        <a class="growth-goal__cta" href="{{ section.settings.cta_link | default: '/collections/fragrances' }}">{{ section.settings.cta_label }}</a>
       {%- endif -%}
       {%- render 'referral-share', heading: section.settings.referral_heading, blurb: section.settings.referral_blurb, share_text: section.settings.share_text, code: section.settings.referral_code, compact: true -%}
     </div>

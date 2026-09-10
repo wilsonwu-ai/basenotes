@@ -11,8 +11,8 @@
     {% comment %} Dual Path Cards {% endcomment %}
     <div class="get-started__paths">
 
-      {% comment %} Path A: Discovery / Quiz {% endcomment %}
-      <a href="{{ section.settings.discovery_link | default: '/pages/find-your-scent' }}" class="path-card path-card--discovery">
+      {% comment %} Path A: One-time discovery {% endcomment %}
+      <a href="{{ section.settings.discovery_link | default: '/collections/fragrances' }}" class="path-card path-card--discovery">
         <div class="path-card__icon">
           <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
             <circle cx="32" cy="32" r="28"/>
@@ -23,24 +23,24 @@
           </svg>
         </div>
         <div class="path-card__content">
-          <h2 class="path-card__title">{{ section.settings.discovery_title | default: 'Help Me Discover' }}</h2>
-          <p class="path-card__description">{{ section.settings.discovery_description | default: "Not sure where to start? Take our quick quiz and we'll recommend the perfect fragrance based on your preferences." }}</p>
+          <h2 class="path-card__title">{{ section.settings.discovery_title | default: 'Try One Scent' }}</h2>
+          <p class="path-card__description">{{ section.settings.discovery_description | default: "Browse the collection and choose an authentic 5 ml vial with no subscription required." }}</p>
           <ul class="path-card__features">
             <li>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              2-minute fragrance quiz
+              One-time purchase
             </li>
             <li>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              Personalized recommendations
+              Any fragrance, no surcharge
             </li>
             <li>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              Discover your scent profile
+              About 60 sprays
             </li>
           </ul>
           <span class="path-card__cta">
-            Take the Quiz
+            Browse Fragrances
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </span>
         </div>
@@ -332,19 +332,19 @@
     },
     {
       "type": "header",
-      "content": "Discovery Path"
+      "content": "One-Time Path"
     },
     {
       "type": "text",
       "id": "discovery_title",
       "label": "Title",
-      "default": "Help Me Discover"
+      "default": "Try One Scent"
     },
     {
       "type": "textarea",
       "id": "discovery_description",
       "label": "Description",
-      "default": "Not sure where to start? Take our quick quiz and we'll recommend the perfect fragrance based on your preferences."
+      "default": "Browse the collection and choose an authentic 5 ml vial with no subscription required."
     },
     {
       "type": "url",

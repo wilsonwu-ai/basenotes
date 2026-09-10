@@ -14,11 +14,11 @@
             <img
               src="{{ section.settings.full_bottle_image | image_url: width: 400 }}"
               alt="Full size fragrance bottle"
-              width="{{ section.settings.full_bottle_image.width }}"
-              height="{{ section.settings.full_bottle_image.height }}"
+              width="400"
+              height="400"
             >
           {%- else -%}
-            <img src="{{ 'fullbottle-product.jpg' | asset_url }}" alt="Full size fragrance bottle" width="1792" height="2368">
+            <img src="{{ 'fullbottle-product.jpg' | asset_url }}" alt="Full size fragrance bottle" width="400" height="400">
           {%- endif -%}
         </div>
         <h3 class="delivery-item__title">{{ section.settings.full_bottle_title }}</h3>
@@ -42,11 +42,11 @@
             <img
               src="{{ section.settings.atomizer_image | image_url: width: 400 }}"
               alt="Base Note 5ml atomizer"
-              width="{{ section.settings.atomizer_image.width }}"
-              height="{{ section.settings.atomizer_image.height }}"
+              width="400"
+              height="400"
             >
           {%- else -%}
-            <img src="{{ 'atomizer-product.jpg' | asset_url }}" alt="Base Note 5ml atomizer" width="1792" height="2368">
+            <img src="{{ 'atomizer-product.jpg' | asset_url }}" alt="Base Note 5ml atomizer" width="400" height="400">
           {%- endif -%}
           <div class="delivery-item__badge">
             <span class="badge badge--gold">{{ section.settings.atomizer_badge }}</span>

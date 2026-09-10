@@ -1,33 +1,29 @@
-<section class="section section--dark newsletter-section" id="newsletter" aria-labelledby="NewsletterTitle-{{ section.id }}">
+<section class="section section--dark newsletter-section">
   <div class="container">
     <div class="newsletter">
-      <p class="newsletter__eyebrow">New scent drops</p>
-      <h2 class="newsletter__title" id="NewsletterTitle-{{ section.id }}">{{ section.settings.heading }}</h2>
+      <h2 class="newsletter__title">{{ section.settings.heading }}</h2>
       <p class="newsletter__description">{{ section.settings.description }}</p>
 
       {%- form 'customer', class: 'newsletter__form', id: 'newsletter-form' -%}
         <input type="hidden" name="contact[tags]" value="newsletter">
-        <div class="newsletter__field">
-          <label for="newsletter-email" class="newsletter__label">{{ section.settings.field_label }}</label>
-          <input
-            type="email"
-            name="contact[email]"
-            id="newsletter-email"
-            class="newsletter__input"
-            placeholder="{{ section.settings.placeholder }}"
-            required
-            aria-required="true"
-            autocomplete="email"
-            aria-describedby="NewsletterNote-{{ section.id }}"
-          >
-        </div>
-        <button type="submit" class="btn btn--gold newsletter__button">
+        <label for="newsletter-email" class="visually-hidden">Email address</label>
+        <input
+          type="email"
+          name="contact[email]"
+          id="newsletter-email"
+          class="newsletter__input"
+          placeholder="{{ section.settings.placeholder }}"
+          required
+          autocomplete="email"
+          aria-label="Email address for newsletter"
+        >
+        <button type="submit" class="btn btn--gold">
           {{ section.settings.button_label }}
         </button>
       {%- endform -%}
 
       {%- if form.posted_successfully? -%}
-        <div class="newsletter__message newsletter__message--success" role="status" aria-live="polite">
+        <div class="newsletter__message newsletter__message--success">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
@@ -36,7 +32,7 @@
       {%- endif -%}
 
       {%- if form.errors -%}
-        <div class="newsletter__message newsletter__message--error" role="alert">
+        <div class="newsletter__message newsletter__message--error">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"/>
             <line x1="12" y1="8" x2="12" y2="12"/>
@@ -47,7 +43,7 @@
       {%- endif -%}
 
       {%- if section.settings.privacy_note != blank -%}
-        <p class="newsletter__note" id="NewsletterNote-{{ section.id }}">
+        <p class="newsletter__note">
           {{ section.settings.privacy_note }}
         </p>
       {%- endif -%}
@@ -57,34 +53,18 @@
 
 <style>
   .newsletter-section {
-    padding: clamp(4rem, 9vw, 8rem) 0;
-    background: #1f3a34;
+    padding: var(--spacing-4xl) 0;
   }
 
   .newsletter {
-    max-width: 760px;
+    max-width: 600px;
     margin: 0 auto;
     text-align: center;
   }
 
   .newsletter__title {
-    max-width: 14ch;
-    margin-inline: auto;
-    font-size: clamp(2.75rem, 6vw, 5.5rem);
-    font-weight: 500;
-    line-height: 0.96;
-    letter-spacing: -0.035em;
+    font-size: var(--font-size-3xl);
     margin-bottom: var(--spacing-md);
-    text-wrap: balance;
-  }
-
-  .newsletter__eyebrow {
-    margin-block-end: var(--spacing-lg);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #d8bd82;
   }
 
   .newsletter__description {
@@ -94,26 +74,10 @@
   }
 
   .newsletter__form {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    display: flex;
     gap: var(--spacing-sm);
-    max-width: 620px;
+    max-width: 500px;
     margin: 0 auto;
-    align-items: end;
-    text-align: start;
-  }
-
-  .newsletter__field {
-    min-width: 0;
-  }
-
-  .newsletter__label {
-    display: block;
-    margin-block-end: var(--spacing-sm);
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
   }
 
   .newsletter__input {
@@ -124,20 +88,13 @@
     color: var(--color-text);
     background: white;
     border: 2px solid transparent;
-    width: 100%;
-    min-height: 54px;
-    border-radius: 0;
+    border-radius: var(--radius-sm);
     transition: border-color 0.2s;
   }
 
-  .newsletter__input:focus-visible {
-    outline: 3px solid #d8bd82;
-    outline-offset: 3px;
-  }
-
-  .newsletter__button {
-    min-height: 54px;
-    border-radius: 0;
+  .newsletter__input:focus {
+    outline: none;
+    border-color: var(--color-secondary);
   }
 
   .newsletter__input::placeholder {
@@ -179,7 +136,7 @@
 
   @media (max-width: 576px) {
     .newsletter__form {
-      grid-template-columns: 1fr;
+      flex-direction: column;
     }
 
     .newsletter__form .btn {
@@ -205,12 +162,6 @@
       "id": "description",
       "label": "Description",
       "default": "Be the first to discover new arrivals, exclusive offers, and insider access to the world of luxury fragrance."
-    },
-    {
-      "type": "text",
-      "id": "field_label",
-      "label": "Email field label",
-      "default": "Email address"
     },
     {
       "type": "text",
