@@ -39,8 +39,15 @@
 <article class="scent-card{% if compact %} scent-card--reference{% endif %}" data-scent-card data-gender="{{ gender }}" data-tags="{{ tags_down | escape }}" data-name="{{ product.title | escape }}" aria-labelledby="ScentCard-{{ section_id }}-{{ product.id }}">
   {%- if compact -%}
   <a class="scent-card__media" href="{{ product.url }}" aria-label="{{ 'fragrance_reference.explore' | t: fragrance: product.title | escape }}">
-    {%- if product.featured_image -%}
-      {{ product.featured_image | image_url: width: 240 | image_tag: loading: 'lazy', widths: '120, 180, 240', sizes: '66px', class: 'scent-card__reference-image', alt: product.featured_image.alt | default: product.title, data-card-image: '' }}
+    {%- liquid
+      # Products with a listed full bottle open on the 5ml photo so the size switch shows the right bottle; all other cards keep the product photo.
+      assign card_image = product.featured_image
+      if bottle != blank and vial.featured_image
+        assign card_image = vial.featured_image
+      endif
+    -%}
+    {%- if card_image -%}
+      {{ card_image | image_url: width: 240 | image_tag: loading: 'lazy', widths: '120, 180, 240', sizes: '66px', class: 'scent-card__reference-image', alt: card_image.alt | default: product.title, data-card-image: '' }}
     {%- else -%}
       <span class="scent-card__vial">{% render 'vial-illustration', product: product %}</span>
     {%- endif -%}
