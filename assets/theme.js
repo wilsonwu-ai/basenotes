@@ -51,6 +51,11 @@
 
     if (!toggle || !nav) return;
 
+    // The current header owns its navigation, focus handling and dedicated overlay.
+    // Binding this legacy controller too leaves #overlay active after header Escape
+    // closes the nav before this controller's key handler can observe it as open.
+    if (nav.id === 'BaseNoteMobileNavigation') return;
+
     function openNav() {
       nav.classList.add('is-active');
       overlay?.classList.add('is-active');

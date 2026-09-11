@@ -45,6 +45,8 @@
                   src="{{ item.image | image_url: width: 200 }}"
                   alt="{{ item.title }}"
                   loading="lazy"
+                  width="{{ item.image.width }}"
+                  height="{{ item.image.height }}"
                 >
               {%- else -%}
                 <div class="cart-drawer-item__placeholder">

@@ -1,0 +1,79 @@
+{% doc %}
+  Renders a non-modal, closeable confirmation for enhanced fragrance card adds.
+  Announcements remain outside the hidden panel so repeated adds are announced.
+
+  @example
+  {% render 'cart-feedback' %}
+{% enddoc %}
+
+<cart-feedback
+  data-added="{{ 'cart.feedback.added' | t | escape }}"
+  data-error="{{ 'cart.feedback.error' | t | escape }}"
+  data-adding="{{ 'cart.feedback.adding' | t | escape }}"
+  data-loading="{{ 'cart.feedback.loading' | t | escape }}"
+  data-fallback-error="{{ 'cart.feedback.fallback_error' | t | escape }}"
+  data-quantity="{{ 'cart.feedback.quantity' | t: quantity: '__quantity__' | escape }}"
+  data-announcement="{{ 'cart.feedback.announcement' | t: fragrance: '__fragrance__', quantity: '__quantity__' | escape }}"
+>
+  <div class="cart-feedback__panel" data-cart-feedback-panel popover="manual" role="region" aria-label="{{ 'cart.feedback.label' | t | escape }}" hidden>
+    <span class="cart-feedback__icon" aria-hidden="true" data-cart-feedback-icon>✓</span>
+    <div class="cart-feedback__content">
+      <p class="cart-feedback__heading" data-cart-feedback-heading></p>
+      <p class="cart-feedback__message" data-cart-feedback-message></p>
+      <p class="cart-feedback__quantity" data-cart-feedback-quantity></p>
+      <a class="cart-feedback__link" href="{{ routes.cart_url }}">{{ 'cart.feedback.view_cart' | t }} <span aria-hidden="true">→</span></a>
+    </div>
+    <button class="cart-feedback__close" type="button" data-cart-feedback-close aria-label="{{ 'cart.feedback.close' | t | escape }}"><span aria-hidden="true">×</span></button>
+  </div>
+  <p class="cart-feedback__announcement" data-cart-feedback-announcement role="status" aria-live="polite" aria-atomic="true"></p>
+</cart-feedback>
+
+{% stylesheet %}
+  .cart-feedback__panel {
+    --feedback-ivory: #f4efe3;
+    --feedback-green: #22392b;
+    --feedback-muted: #5c574d;
+    --feedback-border: #ac9159;
+    --feedback-shadow: 0 .5rem 2rem rgb(34 57 43 / 16%);
+    --feedback-font: 'Jost', sans-serif;
+    --feedback-gap: .75rem;
+    --feedback-inset: 1rem;
+    --feedback-target: 2.75rem;
+    --feedback-duration: 160ms;
+    position: fixed;
+    inset: auto;
+    inset-block-start: max(calc(var(--header-height, 5rem) + var(--feedback-inset)), env(safe-area-inset-top));
+    inset-inline-end: max(var(--feedback-inset), env(safe-area-inset-right));
+    z-index: 1100;
+    display: grid;
+    grid-template-columns: 1.25rem minmax(0, 1fr) var(--feedback-target);
+    gap: var(--feedback-gap);
+    box-sizing: border-box;
+    width: min(25rem, calc(100% - 2 * var(--feedback-inset)));
+    max-height: calc(100dvh - var(--header-height, 5rem) - 2 * var(--feedback-inset));
+    margin: 0;
+    padding: var(--feedback-inset);
+    overflow: auto;
+    border: 1px solid var(--feedback-border);
+    border-inline-start: .25rem solid var(--feedback-green);
+    color: var(--feedback-green);
+    background: var(--feedback-ivory);
+    box-shadow: var(--feedback-shadow);
+    font: 400 .9375rem/1.5 var(--feedback-font);
+    overflow-wrap: anywhere;
+  }
+  .cart-feedback__panel[hidden] { display: none; }
+  .cart-feedback__panel[data-state="error"] { border-inline-start-color: var(--feedback-border); }
+  .cart-feedback__panel[data-open] { animation: cart-feedback-enter var(--feedback-duration) ease-out; }
+  .cart-feedback__content { min-width: 0; }
+  .cart-feedback__icon { padding-block-start: .1rem; font-size: 1.125rem; }
+  .cart-feedback__heading { margin: 0 0 .25rem; font-weight: 600; }
+  .cart-feedback__message { margin: 0; }
+  .cart-feedback__quantity { margin: .375rem 0 0; color: var(--feedback-muted); font-size: .8125rem; }
+  .cart-feedback__link { display: inline-flex; align-items: center; gap: var(--feedback-gap); min-height: var(--feedback-target); margin-block-start: .25rem; color: var(--feedback-green); font-weight: 500; text-decoration: underline; text-underline-offset: .2em; }
+  .cart-feedback__close { display: grid; place-items: center; width: var(--feedback-target); height: var(--feedback-target); margin: -.5rem -.5rem 0 0; padding: 0; border: 0; color: var(--feedback-green); background: transparent; font: 400 1.75rem/1 var(--feedback-font); cursor: pointer; }
+  .cart-feedback__link:focus-visible,.cart-feedback__close:focus-visible { outline: 2px solid var(--feedback-green); outline-offset: 3px; }
+  .cart-feedback__announcement { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+  @keyframes cart-feedback-enter { from { opacity: 0; transform: translateY(-.375rem); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { .cart-feedback__panel[data-open] { animation: none; } }
+{% endstylesheet %}

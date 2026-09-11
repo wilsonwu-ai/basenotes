@@ -1,0 +1,123 @@
+/* Base Note's editorial storefront. Shared by the studio, fragrance edit and routes. */
+.scent-home,.fragrance-catalog,.scent-route{--scent-cream:#f4efe3;--scent-green:#22392b;--scent-ink:#24372b;--scent-gold:#ac9159;--scent-muted:#62675d;--scent-line:#d9d4c8;background:var(--scent-cream);color:var(--scent-ink);font:400 1rem/1.6 'Jost',sans-serif}
+.scent-home *,.fragrance-catalog *,.scent-route *{box-sizing:border-box}
+.scent-home [hidden],.fragrance-catalog [hidden],.scent-route [hidden]{display:none!important}
+/* The sticky header occupies document flow; another header-sized offset leaves a blank band. */
+.template-index #MainContent,.template-collection #MainContent,.template-page-monthly-rotation #MainContent,.template-page-full-bottles #MainContent{padding-top:0}
+.scent-home h1,.scent-home h2,.scent-home h3,.fragrance-catalog h1,.fragrance-catalog h2,.scent-route h1,.scent-route h2{color:inherit;letter-spacing:-.035em}
+.scent-home a,.fragrance-catalog a,.scent-route a{color:inherit}
+.scent-home :focus-visible,.fragrance-catalog :focus-visible,.scent-route :focus-visible{outline:2px solid var(--scent-green);outline-offset:5px}
+.scent-eyebrow{margin:0 0 1.25rem;font:500 .72rem/1.5 'Jost',sans-serif;letter-spacing:.18em;text-transform:uppercase}
+.scent-button{display:inline-flex;gap:2rem;min-height:3.5rem;align-items:center;justify-content:space-between;padding:.9rem 1.5rem;border:1px solid var(--scent-green);background:var(--scent-green);color:var(--scent-cream)!important;font:500 .78rem/1.4 'Jost',sans-serif;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;transition:background .18s ease,box-shadow .18s ease}
+.scent-button:hover{background:#314e3b;box-shadow:0 3px 0 #ac9159}
+.scent-button--light{background:var(--scent-cream);border-color:var(--scent-cream);color:var(--scent-green)!important}
+.scent-button--light:hover{background:#fffaf0}
+.scent-home__hero{display:grid;grid-template-columns:.9fr 1.1fr;align-items:center;gap:4rem;max-width:1280px;margin:auto;padding:3.5rem 2.5rem 4.5rem}
+.scent-home__intro{padding:1.25rem 0}
+.scent-home h1{margin:0 0 1.65rem;font:500 clamp(3.5rem,5.4vw,5.25rem)/1.02 'Playfair Display',Georgia,serif}
+.scent-home h1 em,.scent-campaign h2 em{font-family:'EB Garamond',Georgia,serif;font-weight:400;color:#657253}
+.scent-home__lede{max-width:26rem;margin:0 0 1.8rem;color:var(--scent-muted);font-size:1rem;line-height:1.75}
+.scent-home__price{margin:1rem 0 0;font-size:.76rem;color:var(--scent-muted)}
+.scent-home__small-note{display:flex;align-items:center;gap:1.4rem;border-top:1px solid var(--scent-line);margin-top:2.5rem;padding-top:1.2rem;font-size:.7rem;line-height:1.5}
+.scent-home__small-note span{flex-shrink:0;letter-spacing:.07em;text-transform:uppercase}
+.scent-home__small-note p{margin:0;color:var(--scent-muted)}
+.scent-home__studio{min-width:0}
+.scent-ways{padding:3.5rem max(2.5rem,calc((100vw - 1200px)/2));border-top:1px solid var(--scent-line);border-bottom:1px solid var(--scent-line);background:#ebe6d9}
+.scent-section-label{display:flex;align-items:baseline;justify-content:space-between;gap:2rem;margin-bottom:2rem}
+.scent-section-label h2,.scent-edit h2,.scent-explainer h2{margin:0;font:500 clamp(2rem,3.1vw,2.8rem)/1.12 'Playfair Display',Georgia,serif}
+.scent-section-label .scent-eyebrow{margin:0}
+.scent-ways__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.scent-way{display:flex;flex-direction:column;align-items:flex-start;padding:0 2rem;border-left:1px solid #c7c3b5}
+.scent-way:first-child{border-left:0;padding-left:0}
+.scent-way:last-child{padding-right:0}
+.scent-way__number{margin-bottom:1.2rem;font-size:.67rem;text-transform:uppercase;letter-spacing:.12em;color:var(--scent-muted)}
+.scent-way--first .scent-way__number{color:var(--scent-green);font-weight:600}
+.scent-way h3{margin:0 0 1rem;font:500 1.9rem/1.1 'Playfair Display',Georgia,serif}
+.scent-way p{margin:0 0 .85rem;font-size:.9rem;line-height:1.7}
+.scent-way .scent-way__fine{font-size:.76rem;color:var(--scent-muted)}
+.scent-way a{display:flex;gap:1rem;align-items:center;min-height:44px;margin-top:auto;border-bottom:1px solid var(--scent-gold);font-size:.78rem;font-weight:500}
+.scent-edit{max-width:1280px;margin:auto;padding:5rem 2.5rem}
+.scent-edit__heading{display:flex;align-items:end;justify-content:space-between;gap:2rem;margin-bottom:2.25rem}
+.scent-edit__heading>a{padding:.8rem 0;border-bottom:1px solid var(--scent-gold);font-size:.8rem}
+.scent-edit .scent-eyebrow{margin-bottom:1rem}
+.scent-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2.5rem 1.75rem}
+scent-catalog{display:block}
+scent-catalog.scent-grid{display:grid}
+.scent-card{min-width:0;text-align:center}
+.scent-card__media{position:relative;display:flex;align-items:center;justify-content:center;height:205px;margin-bottom:1.4rem;background:#ebe7dc;overflow:hidden}
+.scent-card__vial{height:162px;width:115px;display:block;transition:transform .25s ease}
+.scent-card__vial svg{width:100%;height:100%}
+.scent-card__media:hover .scent-card__vial{transform:translateY(-5px) rotate(-4deg)}
+.scent-card__original{position:absolute;right:.7rem;bottom:.65rem;display:grid;width:62px;gap:.35rem;justify-items:center}
+.scent-card__original img{width:48px;height:62px;object-fit:contain;mix-blend-mode:multiply}
+.scent-card__original>span{font-size:.48rem;line-height:1.3;color:var(--scent-muted)}
+.scent-card__brand{margin:0 0 .5rem;text-transform:uppercase;letter-spacing:.13em;font-size:.67rem;font-weight:500;min-height:1rem}
+.scent-card h2{margin:0;font:500 1.45rem/1.2 'EB Garamond',Georgia,serif;min-height:1.7rem}
+.scent-card h2 a:hover{text-decoration:underline;text-underline-offset:4px}
+.scent-card__format{margin:.55rem 0 1rem;color:var(--scent-muted);font-size:.75rem}
+.scent-card button{display:block;width:100%;min-height:44px;padding:.7rem .5rem;border:1px solid var(--scent-green);background:transparent;color:var(--scent-green);font:500 .72rem/1.4 'Jost',sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:background .18s,color .18s}
+.scent-card button:hover:not(:disabled){background:var(--scent-green);color:var(--scent-cream)}
+.scent-card button:disabled{cursor:default;opacity:.55}
+.scent-feedback{grid-column:1/-1;margin:0;min-height:1.5em;font-size:.85rem}
+.scent-feedback:not(:empty){padding:1rem 1.25rem;background:#e6e4d5;border-left:3px solid var(--scent-green)}
+.scent-feedback a{text-decoration:underline;margin-left:.8rem;white-space:nowrap}
+.scent-campaign{display:grid;grid-template-columns:1.1fr .9fr;background:var(--scent-green);color:var(--scent-cream)}
+.scent-campaign__image{min-width:0;min-height:540px;overflow:hidden}
+.scent-campaign__image img{width:100%;height:100%;object-fit:cover;display:block}
+.scent-campaign__copy{align-self:center;padding:4rem clamp(2rem,5vw,5rem)}
+.scent-campaign h2{margin:0 0 1.75rem;font:500 clamp(2.8rem,4.1vw,4.5rem)/1.08 'Playfair Display',Georgia,serif}
+.scent-campaign h2 em{color:#c6b687}
+.scent-campaign__copy>p:not(.scent-eyebrow){max-width:26rem;margin-bottom:2rem;color:#d3d4c7;font-size:.95rem;line-height:1.8}
+.scent-campaign :focus-visible{outline-color:#f4efe3}
+.scent-explainer{display:grid;grid-template-columns:.8fr 1.2fr;gap:5rem;max-width:1280px;margin:auto;padding:5rem 2.5rem}
+.scent-explainer>div>a{display:inline-block;margin-top:1.8rem;font-size:.8rem;text-decoration:underline;text-underline-offset:5px}
+.scent-explainer details{border-bottom:1px solid var(--scent-line)}
+.scent-explainer summary{padding:1.3rem 2rem 1.3rem 0;cursor:pointer;font-size:.92rem}
+.scent-explainer details p{margin:0 0 1.4rem;color:var(--scent-muted);font-size:.87rem;line-height:1.8}
+.fragrance-catalog__tabs{display:flex;justify-content:center;gap:2.5rem;min-height:52px;align-items:stretch;border-top:1px solid #ffffff22;background:var(--scent-green);color:var(--scent-cream)}
+.fragrance-catalog__tabs button{position:relative;border:0;border-bottom:2px solid transparent;background:transparent;color:inherit;padding:.8rem .4rem;font:400 .68rem/1.4 'Jost',sans-serif;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;opacity:.75}
+.fragrance-catalog__tabs button.is-active{border-bottom-color:#c3a86d;opacity:1}
+.fragrance-catalog__tabs :focus-visible{outline-color:var(--scent-cream);outline-offset:-4px}
+.fragrance-catalog__hero{max-width:850px;margin:auto;padding:4.75rem 1.5rem 3rem;text-align:center}
+.fragrance-catalog__hero h1{margin:0 auto 1.1rem;max-width:720px;font:600 clamp(2.7rem,4.6vw,4rem)/1.08 'Playfair Display',Georgia,serif}
+.fragrance-catalog__hero .scent-eyebrow{margin-bottom:1.4rem;font-size:.66rem}
+.fragrance-catalog__intro{margin:0 0 1rem;font:italic 1.35rem/1.5 'EB Garamond',Georgia,serif;color:#6b705f}
+.fragrance-catalog__hero>a{font-size:.72rem;display:inline-block;border-bottom:1px solid var(--scent-gold);padding-bottom:.25rem}
+.fragrance-catalog__pricing{margin:2.7rem 0 .65rem;font:500 .95rem/1.7 'Jost',sans-serif}
+.fragrance-catalog__pricing span{display:inline-block;margin:0 .7rem;color:var(--scent-gold)}
+.fragrance-catalog__trust{margin:0;font-size:.72rem;color:var(--scent-muted)}
+.fragrance-catalog__body{max-width:1216px;margin:auto;padding:0 2.5rem 4rem}
+.fragrance-catalog__toolbar{display:flex;align-items:end;justify-content:space-between;gap:1rem;padding:0 0 1.25rem;margin-bottom:1.5rem;border-bottom:1px solid var(--scent-line)}
+.fragrance-catalog__toolbar label{display:grid;gap:.5rem;max-width:320px;width:100%;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em}
+.fragrance-catalog__toolbar input{width:100%;min-height:44px;border:1px solid #bcbdae;background:transparent;border-radius:0;padding:.6rem .8rem;color:inherit;font:400 .9rem 'Jost',sans-serif}
+.fragrance-catalog__toolbar p{margin:0 0 .6rem;font-size:.72rem;white-space:nowrap;color:var(--scent-muted)}
+.fragrance-catalog__empty{padding:4rem 0;text-align:center}
+.fragrance-catalog__empty h2{font:500 2.2rem 'EB Garamond',Georgia,serif}
+.fragrance-catalog__format{max-width:48rem;margin:2.5rem auto 0;text-align:center;color:var(--scent-muted);font-size:.72rem;line-height:1.8}
+.fragrance-catalog__description{max-width:45rem;margin:3rem auto 0;font-size:.9rem}
+.scent-pagination{padding:2rem;text-align:center}.scent-pagination a,.scent-pagination .current{padding:1rem}
+.no-js .fragrance-catalog__tabs,.no-js .fragrance-catalog__toolbar{display:none}
+.scent-route{padding:4.5rem 2.5rem 5rem}
+.scent-route__intro{max-width:760px;margin:0 auto 3rem;text-align:center}
+.scent-route h1{margin:0 0 1.5rem;font:500 clamp(2.8rem,5vw,4.5rem)/1.08 'Playfair Display',Georgia,serif}
+.scent-route__intro>p:not(.scent-eyebrow){max-width:38rem;margin:1rem auto;color:var(--scent-muted)}
+.scent-route__intro .scent-button{margin-top:1rem}
+.scent-route__content{max-width:900px;margin:auto}
+.scent-route__steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin:3rem 0}
+.scent-route__steps h2{font:500 1.6rem 'Playfair Display',Georgia,serif}
+.scent-route__steps p{font-size:.87rem;color:var(--scent-muted)}
+.scent-route .scent-grid{margin-top:2rem}
+.scent-route__form{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;padding:2rem;background:#ebe6d9}
+.scent-route__form label{display:grid;gap:.5rem;font-size:.8rem}
+.scent-route__form input,.scent-route__form textarea{width:100%;min-height:48px;padding:.7rem;border:1px solid #a9afa0;background:var(--scent-cream);font:400 1rem 'Jost',sans-serif;color:inherit;border-radius:0}
+.scent-route__form textarea{min-height:120px;resize:vertical}
+.scent-route__wide{grid-column:1/-1}
+.scent-route__form p{margin:0;font-size:.8rem}
+@media(min-width:1440px){.scent-home__hero{padding-block:4.5rem 5rem;gap:5rem}}
+@media(max-width:1000px){.scent-home__hero{gap:2rem;padding-inline:1.5rem}.scent-home h1{font-size:clamp(3rem,5.8vw,4.5rem)}.scent-home__small-note{display:none}.scent-ways{padding-inline:1.5rem}.scent-way{padding-inline:1.25rem}.scent-way h3{font-size:1.65rem}.scent-section-label{display:block}.scent-section-label .scent-eyebrow{margin-bottom:1rem}.scent-card__original{right:.25rem;width:52px}.scent-grid{gap:2rem 1rem}.scent-edit,.fragrance-catalog__body{padding-inline:1.5rem}.scent-explainer{gap:3rem}.scent-campaign__image{min-height:450px}}
+@media(max-width:749px){.scent-home__hero{grid-template-columns:1fr;gap:2rem;padding:2.5rem 1rem 3rem}.scent-home__intro{padding:0 .5rem}.scent-home h1{font-size:clamp(3.3rem,11vw,4.5rem);line-height:1.03}.scent-home__lede{max-width:32rem;font-size:.95rem}.scent-home__price{font-size:.73rem}.scent-home__studio{max-width:580px;width:100%;margin:auto}.scent-ways{padding:2.5rem 1.5rem}.scent-ways__grid{grid-template-columns:1fr;gap:1.75rem}.scent-way{border:0;border-top:1px solid #c7c3b5;padding:1.75rem 0 0}.scent-way:first-child{border:0;padding-top:0}.scent-way__number{margin-bottom:.7rem}.scent-way h3{font-size:1.9rem}.scent-way a{margin-top:.25rem}.scent-section-label{margin-bottom:2rem}.scent-edit{padding:3rem 1rem}.scent-edit__heading{align-items:start;flex-direction:column;gap:.65rem;padding-inline:.5rem}.scent-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem .8rem}.scent-card__media{height:190px;margin-bottom:1.15rem}.scent-card__vial{height:152px;width:92px;transform:translateX(-8px)}.scent-card__original{right:.3rem;bottom:.5rem;width:42px}.scent-card__original img{width:34px;height:46px}.scent-card__original>span{font-size:.43rem}.scent-card__brand{font-size:.6rem;letter-spacing:.07em;min-height:1.8rem}.scent-card h2{font-size:1.3rem;min-height:3.1rem}.scent-card button{font-size:.66rem;letter-spacing:.06em;min-height:46px}.scent-card__format{font-size:.7rem}.scent-campaign{grid-template-columns:1fr}.scent-campaign__image{min-height:0;aspect-ratio:1.25}.scent-campaign__copy{padding:2.75rem 1.5rem 3.5rem}.scent-campaign h2{font-size:3.5rem}.scent-explainer{grid-template-columns:1fr;gap:1.5rem;padding:3rem 1.5rem}.scent-explainer h2 br{display:none}.scent-explainer>div>a{margin-top:1rem}.fragrance-catalog__tabs{gap:1.1rem}.fragrance-catalog__hero{padding:3rem 1.25rem 2.5rem}.fragrance-catalog__hero h1{font-size:2.8rem}.fragrance-catalog__intro{font-size:1.2rem}.fragrance-catalog__pricing{max-width:290px;margin:2rem auto .7rem;font-size:.85rem}.fragrance-catalog__pricing span{margin:0 .4rem}.fragrance-catalog__trust{font-size:.68rem}.fragrance-catalog__body{padding:0 1rem 3rem}.fragrance-catalog__toolbar label{max-width:230px}.fragrance-catalog__toolbar input{font-size:1rem}.fragrance-catalog__toolbar p{font-size:.65rem}.scent-route{padding:3rem 1.25rem}.scent-route__steps,.scent-route__form{grid-template-columns:1fr}.scent-route__steps{gap:1rem}.scent-route__form{padding:1.25rem}}
+/* Keep the interactive vial visible after the mobile introduction. */
+@media(max-width:749px){.scent-home__hero{gap:1.5rem;padding-block:1.5rem 3rem}.scent-home__intro .scent-eyebrow{margin-bottom:.85rem;font-size:.66rem}.scent-home h1{font-size:clamp(2.25rem,9.65vw,2.65rem);line-height:1.1;margin-bottom:1rem}.scent-home h1 br:last-of-type{display:none}.scent-home__lede{margin-bottom:1.2rem;font-size:.91rem;line-height:1.65}.scent-home__intro .scent-button{min-height:3rem;padding-block:.8rem}.scent-home__price{margin-top:.65rem}}
+/* Preserve all of Jeff's square image on small screens, including the top-row caps. */
+@media(max-width:749px){.scent-campaign__image{aspect-ratio:1}}
+@media(prefers-reduced-motion:reduce){.scent-home *,.fragrance-catalog *,.scent-route *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}

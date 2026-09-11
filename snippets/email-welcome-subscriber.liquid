@@ -31,7 +31,11 @@
           <!-- Header -->
           <tr>
             <td style="padding:28px 32px;border-bottom:1px solid #EDE8DC;text-align:center;">
-              <img src="{{ 'logo.svg' | asset_url | prepend: 'https:' }}" alt="Base Note" width="120" style="display:block;margin:0 auto;">
+              {%- if settings.logo != blank -%}
+                <img src="{{ settings.logo | image_url: width: 240 | prepend: 'https:' }}" alt="Base Note" width="120" height="{{ 120 | divided_by: settings.logo.aspect_ratio | round }}" style="display:block;margin:0 auto;">
+              {%- else -%}
+                <span style="font-family:Georgia,'Times New Roman',serif;font-size:24px;color:#2D4641;">Base Note</span>
+              {%- endif -%}
             </td>
           </tr>
 

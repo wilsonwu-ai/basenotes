@@ -11,6 +11,8 @@
             src="{{ settings.logo | image_url: width: 200 }}"
             alt="{{ shop.name }}"
             class="auth-login__logo-img"
+            width="{{ settings.logo.width }}"
+            height="{{ settings.logo.height }}"
           >
         {%- else -%}
           <span class="auth-login__brand-name">{{ shop.name }}</span>

@@ -1,0 +1,132 @@
+{% doc %}
+  Interactive glass atomizer with a lazy-loaded local WebGL renderer, fragrance
+  selection, and progressive image/product-link fallback.
+
+  @param {object[]} products - Shopify collection products for the scent selector.
+  @param {string} section_id - Unique parent section identifier.
+
+  @example
+  {% render 'vial-studio', products: collection.products, section_id: section.id %}
+{% enddoc %}
+{%- liquid
+  assign studio_uid = section_id | default: 'home'
+  assign studio_count = 0
+  assign studio_first_product = blank
+  assign studio_first_variant = blank
+  assign studio_image = images['gLmqu.jpg']
+-%}
+{%- capture studio_options -%}
+  {%- for studio_product in products -%}
+    {%- liquid
+      if studio_product.handle contains 'extra-5ml' or studio_product.handle contains 'add-on' or studio_product.handle contains 'subscription'
+        continue
+      endif
+      assign studio_variant = blank
+      for candidate_variant in studio_product.variants
+        assign variant_label = candidate_variant.title | downcase | remove: ' '
+        if variant_label contains '5ml'
+          assign studio_variant = candidate_variant
+          if candidate_variant.available
+            break
+          endif
+        endif
+      endfor
+      if studio_variant == blank
+        continue
+      endif
+      assign studio_count = studio_count | plus: 1
+      if studio_first_product == blank
+        assign studio_first_product = studio_product
+        assign studio_first_variant = studio_variant
+      endif
+    -%}
+    <option value="{{ studio_variant.id }}">{{ studio_product.title | escape }}{% unless studio_variant.available %} — {{ 'vial_studio.sold_out' | t }}{% endunless %}</option>
+    {%- if studio_count >= 50 -%}{%- break -%}{%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+{%- if studio_first_product != blank -%}
+  {{ 'basenote-vial-studio.css' | asset_url | stylesheet_tag }}
+  <vial-studio
+    class="vial-studio"
+    data-renderer-url="{{ 'basenote-vial-studio.bundle.js' | asset_url }}"
+    data-currency="{{ cart.currency.iso_code | default: shop.currency }}"
+    aria-label="{{ 'vial_studio.name' | t | escape }}"
+  >
+    <div class="vial-studio__stage">
+      {%- if studio_image != blank -%}
+        {{ studio_image | image_url: width: 900 | image_tag: class: 'vial-studio__fallback', widths: '450, 650, 900', sizes: '(max-width: 749px) 100vw, 50vw', loading: 'eager', fetchpriority: 'high', alt: studio_image.alt }}
+      {%- else -%}
+        <img class="vial-studio__fallback" src="https://basenotescent.com/cdn/shop/files/gLmqu.jpg?width=900" width="900" height="900" alt="{{ 'vial_studio.fallback_alt' | t | escape }}" fetchpriority="high">
+      {%- endif -%}
+      <canvas class="vial-studio__canvas" data-studio-canvas width="600" height="480" tabindex="-1" role="img" aria-label="{{ 'vial_studio.canvas' | t | escape }}" aria-describedby="VialStudioInstructions-{{ studio_uid }}"></canvas>
+      <p class="vial-studio__corner vial-studio__corner--left">{{ 'vial_studio.format' | t }}</p>
+      <p class="vial-studio__corner vial-studio__corner--right">360°</p>
+      <p class="vial-studio__hint" data-studio-hint>{{ 'vial_studio.loading' | t }}</p>
+      <p class="vial-studio__sr" id="VialStudioInstructions-{{ studio_uid }}">{{ 'vial_studio.canvas' | t }}</p>
+      <div class="vial-studio__tilt">
+        <button class="vial-studio__camera-button" type="button" data-studio-action="up" aria-label="{{ 'vial_studio.tilt_up' | t | escape }}" disabled><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="m5 12 5-5 5 5"/></svg></button>
+        <button class="vial-studio__camera-button" type="button" data-studio-action="down" aria-label="{{ 'vial_studio.tilt_down' | t | escape }}" disabled><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="m5 8 5 5 5-5"/></svg></button>
+      </div>
+      <div class="vial-studio__zoom">
+        <button class="vial-studio__camera-button" type="button" data-studio-action="zoom-in" aria-label="{{ 'vial_studio.zoom_in' | t | escape }}" disabled><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 10h12M10 4v12"/></svg></button>
+        <button class="vial-studio__camera-button" type="button" data-studio-action="zoom-out" aria-label="{{ 'vial_studio.zoom_out' | t | escape }}" disabled><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 10h12"/></svg></button>
+      </div>
+    </div>
+    <div class="vial-studio__controls" data-studio-controls hidden>
+      <button class="vial-studio__camera-button" type="button" data-studio-action="reverse" disabled>{{ 'vial_studio.reverse' | t }}</button>
+      <button class="vial-studio__camera-button" type="button" data-studio-action="detail" disabled>{{ 'vial_studio.detail' | t }}</button>
+      <button class="vial-studio__camera-button" type="button" data-studio-action="open" aria-pressed="false" disabled>{{ 'vial_studio.open' | t }}</button>
+      <button class="vial-studio__camera-button" type="button" data-studio-action="reset" disabled>{{ 'vial_studio.reset' | t }}</button>
+    </div>
+    <div class="vial-studio__selection">
+      <div class="vial-studio__selector" data-studio-selector hidden>
+        <label class="vial-studio__label" for="VialStudioScent-{{ studio_uid }}">{{ 'vial_studio.choose' | t }}</label>
+        <select class="vial-studio__select" id="VialStudioScent-{{ studio_uid }}" data-studio-select>{{ studio_options }}</select>
+      </div>
+      <div class="vial-studio__price-wrap">
+        <span class="vial-studio__price" data-studio-price>{{ studio_first_variant.price | money_without_trailing_zeros }}</span>
+        <span class="vial-studio__price-note" data-studio-price-note>{{ 'vial_studio.onetime' | t }}</span>
+      </div>
+    </div>
+    <span class="vial-studio__sr" data-studio-product-name>{{ studio_first_product.title | escape }}</span>
+    <div class="vial-studio__purchase">
+      <button class="vial-studio__add" type="button" data-studio-add{% unless studio_first_variant.available %} disabled{% endunless %}>{{ 'vial_studio.add' | t }} — {{ studio_first_variant.price | money_without_trailing_zeros }}</button>
+      <a class="vial-studio__details" data-studio-details href="{{ studio_first_product.url }}">{{ 'vial_studio.details' | t }}</a>
+    </div>
+    <div class="vial-studio__message">
+      <p class="vial-studio__status" data-studio-status role="status" aria-live="polite"></p>
+      <a class="vial-studio__cart-link" data-studio-cart-link href="{{ routes.cart_url }}" hidden>{{ 'vial_studio.cart' | t }} →</a>
+    </div>
+    <noscript><p><a href="{{ routes.collections_url }}/fragrances">{{ 'vial_studio.noscript' | t }}</a></p><style>.vial-studio__add,.vial-studio__zoom,.vial-studio__hint{display:none}</style></noscript>
+    <script type="application/json" data-studio-copy>{"drag":{{ 'vial_studio.drag' | t | json }},"fallback":{{ 'vial_studio.fallback' | t | json }},"canvas":{{ 'vial_studio.canvas' | t | json }},"open":{{ 'vial_studio.open' | t | json }},"close":{{ 'vial_studio.close' | t | json }},"add":{{ 'vial_studio.add' | t | json }},"adding":{{ 'vial_studio.adding' | t | json }},"added":{{ 'vial_studio.added' | t | json }},"soldOut":{{ 'vial_studio.sold_out' | t | json }},"error":{{ 'vial_studio.error' | t | json }},"onetime":{{ 'vial_studio.onetime' | t | json }},"additional":{{ 'vial_studio.additional' | t | json }}}</script>
+    <script type="application/json" data-studio-products>[
+      {%- assign studio_count = 0 -%}
+      {%- for studio_product in products -%}
+        {%- liquid
+          if studio_product.handle contains 'extra-5ml' or studio_product.handle contains 'add-on' or studio_product.handle contains 'subscription'
+            continue
+          endif
+          assign studio_variant = blank
+          for candidate_variant in studio_product.variants
+            assign variant_label = candidate_variant.title | downcase | remove: ' '
+            if variant_label contains '5ml'
+              assign studio_variant = candidate_variant
+              if candidate_variant.available
+                break
+              endif
+            endif
+          endfor
+          if studio_variant == blank
+            continue
+          endif
+          assign studio_concentration = studio_product.metafields.custom.concentration.value | default: ''
+        -%}
+        {%- if studio_count > 0 -%},{%- endif -%}
+        {"id":{{ studio_product.id | json }},"title":{{ studio_product.title | json | replace: '</', '<\/' }},"vendor":{{ studio_product.vendor | json | replace: '</', '<\/' }},"handle":{{ studio_product.handle | json }},"url":{{ studio_product.url | json }},"variantId":{{ studio_variant.id | json }},"price":{{ studio_variant.price | json }},"available":{{ studio_variant.available | json }},"concentration":{{ studio_concentration | json | replace: '</', '<\/' }}}
+        {%- assign studio_count = studio_count | plus: 1 -%}
+        {%- if studio_count >= 50 -%}{%- break -%}{%- endif -%}
+      {%- endfor -%}
+    ]</script>
+  </vial-studio>
+  <script src="{{ 'basenote-vial-studio-loader.js' | asset_url }}" type="module"></script>
+{%- endif -%}

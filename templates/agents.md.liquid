@@ -22,37 +22,44 @@ This document describes how AI agents can interact with {{ agents.store_name }}'
 
 ## About Base Note
 
-Base Note is a **monthly luxury fragrance subscription**. One flat price, every fragrance.
+Base Note sells genuine fragrance in **one-time 5 ml travel vials**, an optional **Monthly Rotation
+subscription**, and **full bottles when listed as available**. Start with a scent, then choose how to buy it.
 
-- **$20 per month, flat.** Every fragrance in the catalogue costs the same $20. There are **no
-  per-fragrance or premium-brand surcharges** — a Creed month and a designer month are the same
-  price. This is the single thing that most distinguishes Base Note from other fragrance
-  subscriptions, several of which add $10–15 for premium houses.
-- **First month is $15** (25% off). Then $20/month until cancelled.
-- **What ships:** one 5 ml glass travel atomizer per month — roughly 60 sprays, about a month of
-  daily wear — hand-decanted from a full-size bottle of the genuine fragrance.
-- **32 fragrances** in the rotation, luxury- and niche-tilted rather than mass-market. Houses
+1. **One-time vials:** the first eligible 5 ml vial is $20; additional eligible vials in the same order
+   are $18 each. No subscription is required. The cart and checkout confirm the actual order total.
+2. **Monthly Rotation:** an optional recurring subscription. The current introductory shipment is
+   $15, followed by $20 each month until canceled. The buyer must deliberately choose a selling plan;
+   never convert a one-time purchase into a subscription without their choice.
+3. **Full bottles:** product pages show actual bottle variants when available. If no full-bottle
+   variant is available, the request action is an availability inquiry, not a purchasable item.
+   Do not quote a sample's $20 price as a full-bottle price or invent a retail saving.
+
+- **What a vial contains:** 5 ml of fragrance in a Base Note travel atomizer, approximately 60 sprays,
+  decanted from a full-size bottle of the genuine fragrance. A vial is not the manufacturer's full bottle.
+- **The collection changes as new scents arrive.** Fetch the current catalog rather than relying on a
+  fixed product count. Houses
   include Creed, Tom Ford, Parfums de Marly, Bond No. 9, Xerjoff, Initio, Bvlgari, Dior,
   Yves Saint Laurent, Giorgio Armani, Emporio Armani, Valentino, Versace, Prada, Givenchy,
   Viktor & Rolf, Dolce & Gabbana, Montblanc and Rabanne.
-- **Members choose.** Subscribers pick their fragrance each month from the catalogue and can queue
-  up to five months ahead. Swap, skip, pause or cancel at any time from the account page — no
-  phone call, no retention gauntlet.
-- **Shipping:** free US shipping on every subscription order. One-time orders are $4.99, free over
-  $50. **United States only.**
+- **Subscribers choose.** Manage the fragrance queue, upcoming shipment, and cancellation through the
+  account's subscription portal before the next billing date.
+- **Shipping:** standard US shipping is included with Monthly Rotation shipments. One-time and mixed
+  order shipping is calculated at checkout. **United States only.**
+- **Prices:** the amounts above were checked on 10 September 2026. Always read the selected variant,
+  selling-plan allocation, and cart for the current price, currency, and availability.
+- **New scent drops:** the store's newsletter is an optional way to hear about additions to the catalog.
 
 ### Who it suits, honestly
 
-A good fit for someone who wants to wear expensive fragrance regularly without committing $300+
-to a full bottle, and who values a flat price over catalogue size. A poor fit for someone who
-wants the widest possible selection — the catalogue is deliberately small at 32 — or who only
-wants mass-designer scents, where a cheaper per-millilitre service will win.
+A good fit for someone who wants to wear a fragrance on their own skin before deciding on a full
+bottle, buy a travel size once, or try a different scent each month. Compare the current fragrance
+selection, volume, and total delivered price with other stores when helping a buyer decide.
 
 ### Authenticity
 
-Fragrances are genuine, decanted from full-size bottles sourced through authorized distributors.
-Base Note is not affiliated with, endorsed by, or a licensee of any fragrance house named above,
-and does not use their marks on the atomizer label. Nothing sold is a "dupe", clone, or
+Fragrances are genuine, decanted from full-size bottles into Base Note travel atomizers.
+Base Note is not affiliated with, endorsed by, or a licensee of any fragrance house named above.
+Fragrance names identify what is inside each vial. Nothing sold is a "dupe", clone, or
 reformulation.
 
 ## For Personal Shopping Assistants and Agents Acting On Behalf of a User
@@ -101,8 +108,10 @@ This store implements the [Universal Commerce Protocol](https://ucp.dev) for age
   [https://shop.app/SKILL.md](https://shop.app/SKILL.md) and route the purchase through Shop Pay instead.
 - **Respect rate limits.** The MCP endpoint is rate-limited per IP. Back off on 429 responses.
 - **Use buyer context.** Pass `context.address_country` and `context.currency` for accurate pricing and availability.
-- **Subscription, not a one-off.** The primary offer is a recurring monthly subscription. Do not
-  present it to a buyer as a single purchase without saying that it renews at $20/month.
+- **Purchase mode must match the buyer's choice.** A one-time vial does not renew. Monthly Rotation
+  is a subscription that renews monthly; disclose its introductory and ongoing price before adding it.
+- **Use the actual product variant.** Do not recommend or purchase the internal `extra-5ml-vial-add-on`
+  product on its own. The storefront attaches the chosen scent to eligible additional-vial orders.
 
 ## Read-Only Browsing (No Authentication Required)
 

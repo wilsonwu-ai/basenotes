@@ -1,0 +1,43 @@
+{%- liquid
+  assign scent_collection = section.settings.collection | default: collections.fragrances
+  assign campaign_image = section.settings.campaign_image | default: images['gLmqu.jpg']
+  assign first_product = scent_collection.products | first
+  assign first_variant = first_product.variants | first
+  assign first_plan = first_variant.selling_plan_allocations | first
+  assign renewal_price = first_plan.price_adjustments.last.price | default: first_variant.price
+-%}
+{{ 'scent-storefront.css' | asset_url | stylesheet_tag }}
+<div class="scent-home">
+  <section class="scent-home__hero" aria-labelledby="ScentHomeTitle">
+    <div class="scent-home__intro">
+      <p class="scent-eyebrow">Exceptional fragrance. Your way.</p>
+      <h1 id="ScentHomeTitle">A little vial.<br>A whole new <br><em>feeling.</em></h1>
+      <p class="scent-home__lede">Discover the fragrance you want to live in. Try authentic designer and niche scents in a 5ml spray vial, without committing to a full bottle.</p>
+      <a class="scent-button" href="{{ scent_collection.url | default: '/collections/fragrances' }}">Find your first vial <span aria-hidden="true">↗</span></a>
+      <p class="scent-home__price">From {{ first_variant.price | money }}. One-time purchase. Yours to explore.</p>
+      <div class="scent-home__small-note"><span>01 / Explore the vial</span><p>Turn it around. Lift the cap. Find your fragrance.</p></div>
+    </div>
+    <div class="scent-home__studio">{% render 'vial-studio', products: scent_collection.products, section_id: section.id %}</div>
+  </section>
+  <section class="scent-ways" id="ways-to-shop" aria-labelledby="ScentWaysTitle">
+    <div class="scent-section-label"><p class="scent-eyebrow">Three ways to make it yours</p><h2 id="ScentWaysTitle">Start small. Follow your nose.</h2></div>
+    <div class="scent-ways__grid">
+      <article class="scent-way scent-way--first"><span class="scent-way__number">01 — Start here</span><h3>A one-time vial.</h3><p>Pick a scent and wear it your way. Your first 5ml vial is $20; each additional vial in the same cart is $18.</p><p class="scent-way__fine">No subscription. No recurring charges.</p><a href="{{ scent_collection.url | default: '/collections/fragrances' }}">Shop one-time vials <span aria-hidden="true">↗</span></a></article>
+      <article class="scent-way" id="monthly-rotation"><span class="scent-way__number">02 — Keep discovering</span><h3>Monthly Rotation.</h3><p>A new scent, on your schedule. Our monthly fragrance subscription delivers one 5ml vial at a time.</p><p class="scent-way__fine">{% if first_plan %}{{ first_plan.price | money }} first shipment, then {{ renewal_price | money }}/month.{% endif %} Swap, pause, or cancel.</p><a href="/pages/monthly-rotation">Explore Monthly Rotation <span aria-hidden="true">↗</span></a></article>
+      <article class="scent-way" id="full-bottles"><span class="scent-way__number">03 — Found the one?</span><h3>The full bottle.</h3><p>Ready for more of a scent you love? Explore available bottles or ask us for a price on your favorite fragrance.</p><p class="scent-way__fine">Sizes, availability, and prices confirmed per fragrance.</p><a href="/pages/full-bottles">Find your full bottle <span aria-hidden="true">↗</span></a></article>
+    </div>
+  </section>
+  <section class="scent-edit" aria-labelledby="ScentEditTitle">
+    <div class="scent-edit__heading"><div><p class="scent-eyebrow">The fragrance edit</p><h2 id="ScentEditTitle">Find a new favorite.</h2></div><a href="{{ scent_collection.url | default: '/collections/fragrances' }}">Explore all fragrances <span aria-hidden="true">↗</span></a></div>
+    <scent-catalog class="scent-grid" data-source="Homepage edit">{%- for product in scent_collection.products limit: 4 -%}{% render 'studio-fragrance-card', product: product, section_id: section.id %}{%- endfor -%}<p class="scent-feedback" data-scent-status role="status" aria-live="polite"></p></scent-catalog>
+  </section>
+  <section class="scent-campaign" aria-labelledby="ScentCampaignTitle">
+    <div class="scent-campaign__image">{%- if campaign_image -%}{{ campaign_image | image_url: width: 1600 | image_tag: loading: 'lazy', widths: '480, 760, 1100, 1600', sizes: '(min-width: 800px) 60vw, 100vw', alt: 'Base Note clear glass fragrance vials with silver spray caps and labeled scents' }}{%- endif -%}</div>
+    <div class="scent-campaign__copy"><p class="scent-eyebrow">Big names. Small bottles.</p><h2 id="ScentCampaignTitle">Wear it.<br>Love it.<br><em>Make it yours.</em></h2><p>Real fragrance, decanted from the original bottle into a labeled glass atomizer. About 60 sprays to discover how a scent feels on your skin.</p><a class="scent-button scent-button--light" href="{{ scent_collection.url | default: '/collections/fragrances' }}">Get your vial today <span aria-hidden="true">↗</span></a></div>
+  </section>
+  <section class="scent-explainer" id="how-it-works" aria-labelledby="ScentExplainTitle"><div><p class="scent-eyebrow">A little clarity</p><h2 id="ScentExplainTitle">Your first vial,<br>explained.</h2><a href="/pages/faq">More questions? Visit our FAQ ↗</a></div><div class="scent-explainer__questions"><details><summary>What exactly is a fragrance decant?</summary><p>It is authentic fragrance transferred from an original full-size bottle into a smaller atomizer. Your Base Note vial contains 5ml and arrives labeled with your selected fragrance.</p></details><details><summary>Do I have to subscribe?</summary><p>No. Shop one-time vials whenever you like. Monthly Rotation is a separate, optional subscription, with recurring terms shown before you order.</p></details><details><summary>How does the $18 additional vial work?</summary><p>Your first one-time 5ml vial in a cart is $20. Add another scent and each additional vial is $18. Removing your first vial may change the price of the remaining vial. Your cart shows the total before checkout.</p></details><details><summary>Can I buy a full bottle?</summary><p>Yes, when a full-bottle size is available for your fragrance. If it is not listed, send a bottle enquiry and we will confirm the size, price, and availability before you order.</p></details></div></section>
+</div>
+<script src="{{ 'scent-storefront.js' | asset_url }}" defer></script>
+{% schema %}
+{"name":"Scent studio homepage","settings":[{"type":"collection","id":"collection","label":"Fragrance collection"},{"type":"image_picker","id":"campaign_image","label":"Jeff's campaign image"}],"presets":[{"name":"Scent studio homepage"}]}
+{% endschema %}

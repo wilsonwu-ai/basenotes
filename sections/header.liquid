@@ -4,7 +4,7 @@
     assign transparent_header = section.settings.transparent_on_homepage
   endif
   assign artifact_surface = false
-  if template.name == 'index' or template.name == 'product' or template.name == 'cart'
+  if template.name == 'index' or template.name == 'product' or template.name == 'cart' or template.name == 'collection' or template.name == 'page' or template.name == 'blog' or template.name == 'article'
     assign artifact_surface = true
     assign transparent_header = false
   endif
@@ -49,12 +49,8 @@
 <header class="header{% if artifact_surface %} header--artifact{% endif %}{% if transparent_header %} is-transparent{% endif %}{% if section.settings.sticky_header %} is-sticky{% endif %}" data-header>
   <div class="header__inner container">
     {% comment %} Mobile Menu Toggle {% endcomment %}
-    <button class="header__menu-toggle" data-mobile-toggle aria-label="Open menu">
-      <span class="header__hamburger">
-        <span></span>
-        <span></span>
-        <span></span>
-      </span>
+    <button class="header__menu-toggle" data-mobile-toggle aria-label="Open menu" aria-controls="BaseNoteMobileNavigation" aria-expanded="false">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f4efe3" stroke-width="1.5" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
     </button>
 
     {% comment %} Logo {% endcomment %}
@@ -80,8 +76,8 @@
       <ul class="header__nav-list">
         {%- if artifact_surface -%}
           <li class="header__nav-item"><a href="/collections/fragrances" class="header__nav-link">Fragrances</a></li>
-          <li class="header__nav-item"><a href="/collections/fragrances?sort_by=best-selling" class="header__nav-link">Box sets</a></li>
-          <li class="header__nav-item"><a href="/products/creed-aventus#monthly-rotation" class="header__nav-link">Subscribe</a></li>
+          <li class="header__nav-item"><a href="/pages/monthly-rotation" class="header__nav-link">Monthly Rotation</a></li>
+          <li class="header__nav-item"><a href="/pages/full-bottles" class="header__nav-link">Full bottles</a></li>
         {%- else -%}
         {%- for link in section.settings.menu.links -%}
           <li class="header__nav-item{% if link.links.size > 0 %} has-dropdown{% endif %}">
@@ -126,6 +122,8 @@
                         <img
                           src="{{ section.settings.mega_menu_image | image_url: width: 400 }}"
                           alt="{{ section.settings.mega_menu_heading }}"
+                          width="400"
+                          height="{{ 400 | divided_by: section.settings.mega_menu_image.aspect_ratio | round }}"
                           loading="lazy"
                         >
                         <div class="header__dropdown-featured-content">
@@ -161,7 +159,7 @@
     {% comment %} Header Actions {% endcomment %}
     <div class="header__actions">
       {%- if section.settings.show_search -%}
-        <button class="header__action-btn" data-search-toggle aria-label="Search">
+        <button class="header__action-btn" data-search-toggle aria-label="Search" aria-controls="BaseNoteSearch" aria-expanded="false">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <circle cx="11" cy="11" r="8"/>
             <path d="m21 21-4.3-4.3"/>
@@ -179,7 +177,7 @@
         {%- endif -%}
       </a>
 
-      <button class="header__action-btn header__cart-btn" data-cart-open aria-label="Cart">
+      {% if artifact_surface %}<a href="{{ routes.cart_url }}" class="header__action-btn header__cart-btn" aria-label="Cart">{% else %}<button class="header__action-btn header__cart-btn" data-cart-open aria-label="Cart">{% endif %}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
           <path d="M3 6h18"/>
@@ -188,13 +186,13 @@
         <span class="header__cart-count{% if cart.item_count == 0 %} is-hidden{% endif %}" data-cart-count>
           {{ cart.item_count }}
         </span>
-      </button>
+      {% if artifact_surface %}</a>{% else %}</button>{% endif %}
     </div>
   </div>
 </header>
 
 {% comment %} Search Overlay {% endcomment %}
-<div class="search-overlay" data-search-overlay>
+<div class="search-overlay" id="BaseNoteSearch" data-search-overlay role="dialog" aria-label="Search fragrances" aria-modal="true">
   <div class="search-overlay__inner">
     <button class="search-overlay__close" data-search-close aria-label="Close search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -227,8 +225,8 @@
     <div class="search-overlay__suggestions">
       <p class="search-overlay__suggestions-title">Popular Searches</p>
       <div class="search-overlay__suggestions-list">
-        <a href="{{ routes.search_url }}?q=subscription" class="search-overlay__suggestion">Subscription</a>
-        <a href="{{ routes.search_url }}?q=discovery" class="search-overlay__suggestion">Discovery Set</a>
+        <a href="{{ routes.search_url }}?q=Creed" class="search-overlay__suggestion">Creed</a>
+        <a href="{{ routes.search_url }}?q=Tom+Ford" class="search-overlay__suggestion">Tom Ford</a>
         <a href="{{ routes.search_url }}?q=woody" class="search-overlay__suggestion">Woody</a>
         <a href="{{ routes.search_url }}?q=floral" class="search-overlay__suggestion">Floral</a>
         <a href="{{ routes.search_url }}?q=fresh" class="search-overlay__suggestion">Fresh</a>
@@ -239,11 +237,11 @@
 
 {% comment %} Mobile Navigation {% endcomment %}
 <div class="mobile-nav-overlay" data-mobile-overlay></div>
-<nav class="mobile-nav" data-mobile-nav>
+<nav class="mobile-nav" id="BaseNoteMobileNavigation" data-mobile-nav aria-label="Mobile navigation" aria-hidden="true" inert>
   <div class="mobile-nav__header">
     <div class="mobile-nav__logo">
       {%- if section.settings.logo != blank -%}
-        <img src="{{ section.settings.logo | image_url: width: 150 }}" alt="{{ shop.name }}" width="120">
+        <img src="{{ section.settings.logo | image_url: width: 150 }}" alt="{{ shop.name }}" width="120" height="{{ 120 | divided_by: section.settings.logo.aspect_ratio | round }}">
       {%- else -%}
         <span>{{ shop.name }}</span>
       {%- endif -%}
@@ -273,8 +271,8 @@
   <ul class="mobile-nav__list">
     {%- if artifact_surface -%}
       <li class="mobile-nav__item"><a href="/collections/fragrances" class="mobile-nav__link">Fragrances</a></li>
-      <li class="mobile-nav__item"><a href="/collections/fragrances?sort_by=best-selling" class="mobile-nav__link">Box sets</a></li>
-      <li class="mobile-nav__item"><a href="/products/creed-aventus#monthly-rotation" class="mobile-nav__link">Subscribe</a></li>
+      <li class="mobile-nav__item"><a href="/pages/monthly-rotation" class="mobile-nav__link">Monthly Rotation</a></li>
+      <li class="mobile-nav__item"><a href="/pages/full-bottles" class="mobile-nav__link">Full bottles</a></li>
     {%- else -%}
     {%- for link in section.settings.menu.links -%}
       <li class="mobile-nav__item{% if link.links.size > 0 %} has-children{% endif %}">
@@ -1166,10 +1164,14 @@
     }
   }
 
-  .header--artifact {
+  .header.header--artifact,
+  .header.header--artifact.is-scrolled {
     background: #22392b;
     color: #f4efe3;
+    height: var(--header-height);
   }
+
+  body.template-index,body.template-product,body.template-cart,body.template-collection,body.template-page,body.template-blog,body.template-article { --header-height: 80px; }
 
   .header--artifact .header__inner {
     width: 100%;
@@ -1197,7 +1199,7 @@
 
   .header--artifact .header__nav-link {
     font-family: 'Jost', sans-serif;
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: 0.13em;
     text-transform: uppercase;
@@ -1233,14 +1235,23 @@
 
     function openMobileNav() {
       mobileNav.classList.add('is-active');
+      mobileNav.removeAttribute('inert');
+      mobileNav.setAttribute('aria-hidden', 'false');
+      mobileToggle.setAttribute('aria-expanded', 'true');
       mobileOverlay.classList.add('is-active');
       document.body.style.overflow = 'hidden';
+      mobileClose.focus();
     }
 
     function closeMobileNav() {
+      const wasOpen = mobileNav.classList.contains('is-active');
       mobileNav.classList.remove('is-active');
+      mobileNav.setAttribute('inert', '');
+      mobileNav.setAttribute('aria-hidden', 'true');
+      mobileToggle.setAttribute('aria-expanded', 'false');
       mobileOverlay.classList.remove('is-active');
       document.body.style.overflow = '';
+      if (wasOpen) mobileToggle.focus();
     }
 
     if (mobileToggle) {
@@ -1270,6 +1281,7 @@
 
     function openSearch() {
       searchOverlay.classList.add('is-active');
+      searchToggle.setAttribute('aria-expanded', 'true');
       document.body.style.overflow = 'hidden';
       setTimeout(function() {
         searchInput.focus();
@@ -1277,8 +1289,11 @@
     }
 
     function closeSearch() {
+      const wasOpen = searchOverlay.classList.contains('is-active');
       searchOverlay.classList.remove('is-active');
+      if (searchToggle) searchToggle.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
+      if (wasOpen && searchToggle) searchToggle.focus();
     }
 
     if (searchToggle) {
@@ -1299,6 +1314,15 @@
 
     // Close on escape key
     document.addEventListener('keydown', function(e) {
+      if (e.key === 'Tab') {
+        const panel = searchOverlay.classList.contains('is-active') ? searchOverlay : mobileNav.classList.contains('is-active') ? mobileNav : null;
+        if (panel) {
+          const stops = Array.from(panel.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex="0"]')).filter(function(element) { return element.getClientRects().length; });
+          const first = stops[0], last = stops[stops.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      }
       if (e.key === 'Escape') {
         closeMobileNav();
         closeSearch();

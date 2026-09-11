@@ -1,4 +1,42 @@
 {
+  "fragrance_reference": {
+    "intro": "Real Creed, Tom Ford, Valentino, Xerjoff. Try any 5ml for $20.",
+    "add": "Add to cart",
+    "explore": "Explore {{ fragrance }} in a 5ml vial",
+    "format": "Each order is a 5ml Base Note spray vial. Original bottles are shown for fragrance identification. Preference filters use available catalog labels and include unisex fragrances.",
+    "search": "Search the collection",
+    "search_label": "Find a fragrance",
+    "search_placeholder": "Search scent or brand"
+  },
+  "vial_studio": {
+    "name": "Your scent, in 360°",
+    "format": "5 ml · glass atomizer",
+    "loading": "Loading your 3D vial…",
+    "drag": "Drag to explore · use + / − to zoom",
+    "fallback": "Explore your fragrance below",
+    "canvas": "Interactive 3D glass fragrance vial. Use arrow keys to rotate, plus or minus to zoom, and Home to reset.",
+    "reverse": "View reverse",
+    "detail": "Close-up",
+    "open": "Open cap",
+    "close": "Close cap",
+    "reset": "Reset view",
+    "zoom_in": "Zoom in",
+    "zoom_out": "Zoom out",
+    "tilt_up": "View the vial from above",
+    "tilt_down": "View the vial from below",
+    "choose": "Choose your fragrance",
+    "add": "Get this vial",
+    "adding": "Adding your vial…",
+    "added": "added to your cart.",
+    "sold_out": "Currently unavailable",
+    "error": "We could not add this vial. Please try again.",
+    "onetime": "One-time · no subscription",
+    "additional": "Your additional-vial price",
+    "details": "Scent details",
+    "cart": "View cart",
+    "noscript": "Choose your scent from our fragrance collection.",
+    "fallback_alt": "Base Note clear glass fragrance vials with silver spray caps and white fragrance labels"
+  },
   "general": {
     "password_page": {
       "login_form_heading": "Enter store using password:",
@@ -76,6 +114,18 @@
     }
   },
   "cart": {
+    "feedback": {
+      "label": "Cart update",
+      "added": "Added to cart",
+      "error": "We couldn’t confirm that add",
+      "adding": "Adding…",
+      "loading": "The cart is still loading. Please try again in a moment.",
+      "fallback_error": "Check your cart before trying again.",
+      "quantity": "Quantity: {{ quantity }}",
+      "announcement": "Added to cart: {{ fragrance }}. Quantity: {{ quantity }}.",
+      "view_cart": "View cart",
+      "close": "Close cart update"
+    },
     "general": {
       "title": "Your Queue",
       "remove": "Remove",
