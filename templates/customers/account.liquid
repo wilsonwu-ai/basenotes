@@ -1002,17 +1002,14 @@
         return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       }
 
-      // ── Auto-compute Next Ship date: last order + 1 month (Appstle handles the actual renewal) ──
-      var nextShipDate = null;
-      var lastOrderDateStr = el.getAttribute('data-last-order-date');
-      if (lastOrderDateStr) {
-        var lo = new Date(lastOrderDateStr + 'T00:00:00');
-        if (!isNaN(lo.getTime())) {
-          nextShipDate = new Date(lo.getFullYear(), lo.getMonth() + 1, lo.getDate());
-        }
-      }
+      // The previous order date is not the subscription's next renewal date. Appstle
+      // can have a different cadence, a skipped month, or a manually changed date.
+      // Never present a guessed date/product as the next shipment; the Appstle
+      // response below is the only authoritative source for this card.
+      var nextShipDate = window.__bnLiveNextShipDate ? new Date(window.__bnLiveNextShipDate) : null;
+      if (!nextShipDate || isNaN(nextShipDate.getTime())) nextShipDate = null;
       var nextShipMonth = nextShipDate ? (nextShipDate.getFullYear() + '-' + (nextShipDate.getMonth() + 1 < 10 ? '0' : '') + (nextShipDate.getMonth() + 1)) : null;
-      var nextFragrance = nextShipMonth ? byMonth[nextShipMonth] : (upcomingEntries[0] || null);
+      var nextFragrance = window.__bnLiveNextFragrance || (nextShipMonth ? byMonth[nextShipMonth] : null);
       var nextShipLabel = nextShipDate ? nextShipDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
 
       // Populate the welcome-banner stat tile
@@ -1035,6 +1032,12 @@
             '<a href="#next-shipment" class="dash-journey__next-cta">' + (nextFragrance ? 'Swap' : 'Pick now') + '</a>' +
           '</div>' +
         '</div>';
+      } else {
+        html += '<div class="dash-journey__next dash-journey__next--pending">' +
+          '<div class="dash-journey__next-eyebrow">Next shipment</div>' +
+          '<p class="dash-journey__next-date"><em>Waiting for the subscription portal to confirm your date.</em></p>' +
+          '<p class="dash-journey__next-frag">Your previous shipment is shown below; it is not your next shipment.</p>' +
+          '</div>';
       }
 
       // Upcoming / Queue (rendered before Shipped per PM PRD-1 — Apr 30 2026)
@@ -1123,36 +1126,10 @@
       try { subData = JSON.parse(subDataEl.textContent); } catch(e) { return; }
       if (!subData.isSubscriber) return;
 
-      var journeyEl = document.getElementById('dashJourney');
-      var lastOrderDateStr = journeyEl && journeyEl.getAttribute('data-last-order-date');
-      if (!lastOrderDateStr) return;
-
-      var lo = new Date(lastOrderDateStr + 'T00:00:00');
-      if (isNaN(lo.getTime())) return;
-      var next = new Date(lo.getFullYear(), lo.getMonth() + 1, lo.getDate());
-      var now = new Date();
-      var msPerDay = 1000 * 60 * 60 * 24;
-      var daysLeft = Math.max(0, Math.ceil((next.getTime() - now.getTime()) / msPerDay));
-      var dateLabel = next.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-      var shortLabel = next.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-      var daysEl = document.getElementById('billingDaysLeft');
-      var dateTextEl = document.getElementById('billingDateText');
-      var cancelEl = document.getElementById('cancelDeadline');
-      var barEl = document.getElementById('billingBar');
-      var subNextBillEl = document.getElementById('subNextBilling');
-
-      if (daysEl) daysEl.textContent = daysLeft + (daysLeft === 1 ? ' day' : ' days');
-      if (dateTextEl) dateTextEl.textContent = 'Next charge on ' + dateLabel;
-      if (cancelEl) cancelEl.textContent = shortLabel;
-      if (subNextBillEl) subNextBillEl.textContent = shortLabel;
-      if (barEl) {
-        // Percentage through the billing cycle (0 at charge → 100 at next charge)
-        var cycle = next.getTime() - lo.getTime();
-        var elapsed = now.getTime() - lo.getTime();
-        var pct = Math.max(0, Math.min(100, (elapsed / cycle) * 100));
-        barEl.style.width = pct.toFixed(0) + '%';
-      }
+      // Do not derive billing from the previous order. This hydrator runs before
+      // Appstle's contract request and used to overwrite the account with a
+      // plausible-but-wrong anniversary date. The Appstle response owns these
+      // fields and updates them in fetchAppstleData below.
     })();
 
     // ── Safety-net: queue strip hydration (full renderer, independent of big script) ──
@@ -1748,35 +1725,10 @@ document.addEventListener('DOMContentLoaded', function() {
     var now = new Date();
     var nextBill = null;
 
-    // Try 1: localStorage (set during checkout on this device)
-    try {
-      var subData = JSON.parse(localStorage.getItem('bn_active_subscription') || 'null');
-      if (subData && subData.nextBillDate) {
-        var d = new Date(subData.nextBillDate);
-        if (isValidDate(d)) nextBill = d;
-      }
-    } catch(e) {}
-
-    // Try 2: Anniversary billing from server order date
-    if (!nextBill && serverSubData.orderDate) {
-      var orderDate = new Date(serverSubData.orderDate);
-      if (isValidDate(orderDate)) {
-        var billingDay = orderDate.getDate();
-        nextBill = new Date(now.getFullYear(), now.getMonth(), billingDay);
-      }
-    }
-
-    // Try 3: Fallback to first of next month
-    if (!nextBill) {
-      nextBill = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-    }
-
-    // Advance to future if in the past
-    while (nextBill <= now) {
-      nextBill.setMonth(nextBill.getMonth() + 1);
-    }
-
-    return nextBill;
+    // A previous order date, localStorage value, or first-of-month fallback is not
+    // authoritative. Appstle may skip, pause, swap, or move a renewal. The caller
+    // starts in a pending state and the Appstle response below fills this in.
+    return null;
   }
 
   function renderBillingCountdown() {
@@ -1785,6 +1737,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var now = new Date();
     var nextBill = getNextBillingDate();
+
+    if (!nextBill) {
+      var daysPending = document.getElementById('billingDaysLeft');
+      var barPending = document.getElementById('billingBar');
+      var datePending = document.getElementById('billingDateText');
+      var cancelPending = document.getElementById('cancelDeadline');
+      var subPending = document.getElementById('subNextBilling');
+      if (daysPending) daysPending.textContent = '— days';
+      if (barPending) barPending.style.width = '0%';
+      if (datePending) datePending.textContent = 'Next charge date pending subscription sync';
+      if (cancelPending) cancelPending.textContent = '—';
+      if (subPending) subPending.textContent = '—';
+      return;
+    }
 
     // Days remaining
     var msPerDay = 86400000;
@@ -1851,6 +1817,7 @@ document.addEventListener('DOMContentLoaded', function() {
           || active.billingDate || active.nextDeliveryDate || null;
         var nextBill = rawDate ? new Date(rawDate) : null;
         if (nextBill && isValidDate(nextBill)) {
+          window.__bnLiveNextShipDate = nextBill.toISOString();
           var now = new Date();
           var msPerDay = 86400000;
           var daysLeft = Math.max(0, Math.ceil((nextBill - now) / msPerDay));
@@ -1921,6 +1888,15 @@ document.addEventListener('DOMContentLoaded', function() {
           var prodTitle = line.title || line.productTitle || '';
           var prodVendor = line.variantTitle || line.vendor || '';
           var prodImage = line.image || line.imageSrc || '';
+
+          if (prodTitle) {
+            window.__bnLiveNextFragrance = {
+              title: prodTitle,
+              family: prodVendor,
+              image: prodImage
+            };
+            if (typeof renderDashJourney === 'function') renderDashJourney();
+          }
 
           // Only update if we have a product title from Appstle
           if (prodTitle && nsStatusBadge) {
