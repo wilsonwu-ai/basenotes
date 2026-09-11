@@ -59,16 +59,15 @@
   <h2 id="ScentCard-{{ section_id }}-{{ product.id }}"><a href="{{ product.url }}">{{ product.title }}</a></h2>
   {%- comment -%} Ratings render only from real Judge.me / review data; nothing is shown until reviews exist. {%- endcomment -%}
   {%- if product.metafields.reviews.rating_count.value > 0 or product.metafields.reviews.count.value > 0 or product.metafields.judgeme.review_count > 0 -%}{% render 'product-review-badge', product: product, surface: 'card' %}{%- endif -%}
-  {%- comment -%} Size switch replaces the old "House · 5ml" line (Jeff, 2026-09-10). A listed, available full bottle is selectable; otherwise "Full bottle" is shown muted and does nothing until bottles are stocked. {%- endcomment -%}
+  {%- if bottle != blank and bottle.available -%}
+  {%- comment -%} The 5ml / Full bottle switch shows only for fragrances with a stocked full bottle (Jeff 2026-09-11: "When we have full bottles, we can add the full bottle feature"). Everything else keeps the 8am "House · 5ml" line. {%- endcomment -%}
   <div class="scent-card__sizes" role="group" aria-label="{{ 'Size for ' | append: product.title | escape }}">
     <button type="button" class="scent-card__size" data-card-size data-kind="vial" data-variant-id="{{ vial.id }}" data-price="{{ vial.price }}" data-available="{{ vial.available }}" aria-pressed="true">5ml</button>
-    {%- if bottle != blank and bottle.available -%}
       <button type="button" class="scent-card__size" data-card-size data-kind="bottle" data-variant-id="{{ bottle.id }}" data-price="{{ bottle.price }}" data-available="true" data-label="{{ bottle.title | escape }}"{% if bottle.featured_image %} data-image="{{ bottle.featured_image | image_url: width: 600 }}"{% endif %} aria-pressed="false" aria-label="Full bottle ({{ bottle.title | escape }})">Full bottle</button>
-    {%- else -%}
-      {%- comment -%} Not linked until full bottles are stocked (Wilson to Jeff, 2026-09-11 09:48). {%- endcomment -%}
-      <span class="scent-card__size scent-card__size--unavailable" aria-disabled="true" title="Full bottle coming soon">Full bottle</span>
-    {%- endif -%}
   </div>
+  {%- else -%}
+  <p class="scent-card__brand">{{ product.vendor }} <span aria-hidden="true">·</span> 5ml</p>
+  {%- endif -%}
   {%- else -%}
   <a class="scent-card__media" href="{{ product.url }}" aria-label="Explore {{ product.title | escape }} in a 5ml vial">
     <span class="scent-card__vial">{% render 'vial-illustration', product: product %}</span>
