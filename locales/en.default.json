@@ -1,4 +1,13 @@
 {
+  "fragrance_reference": {
+    "intro": "Real Creed, Tom Ford, Valentino, Xerjoff. Try any 5ml for $20.",
+    "add": "Add to cart",
+    "explore": "Explore {{ fragrance }} in a 5ml vial",
+    "format": "Each order is a 5ml Base Note spray vial. Original bottles are shown for fragrance identification. Preference filters use available catalog labels and include unisex fragrances.",
+    "search": "Search the collection",
+    "search_label": "Find a fragrance",
+    "search_placeholder": "Search scent or brand"
+  },
   "vial_studio": {
     "name": "Your scent, in 360°",
     "format": "5 ml · glass atomizer",

@@ -126,7 +126,7 @@ function contrastRatio(first,second){
   await mobile.goto(storefrontUrl('/collections/fragrances'),{waitUntil:'domcontentloaded',timeout:60000});await mobile.waitForSelector('scent-catalog .scent-card');
   await assertCurrentTheme(mobile);
   const counts={};for(const type of['all','him','her','unisex']){await mobile.locator(`[data-gender-filter="${type}"]`).click();counts[type]=await mobile.locator('[data-scent-card]:not([hidden])').count();assert.ok(counts[type]>0)}
-  await mobile.locator('[data-gender-filter="all"]').click();await mobile.locator('[data-scent-search]').fill('Aventus');assert.equal(await mobile.locator('[data-scent-card]:not([hidden])').count(),1);
+  await mobile.locator('[data-gender-filter="all"]').click();await mobile.locator('.fragrance-catalog__search summary').click();await mobile.locator('[data-scent-search]').fill('Aventus');assert.equal(await mobile.locator('[data-scent-card]:not([hidden])').count(),1);
   await mobile.locator('[data-scent-search]').fill('zzzz-no-match-qa');assert.equal(await mobile.locator('[data-scent-card]:not([hidden])').count(),0);assert.equal(await mobile.locator('[data-scent-empty]').isVisible(),true);
   await mobile.locator('[data-clear-filters]').click();assert.equal(await mobile.locator('[data-scent-card]:not([hidden])').count(),counts.all);
   findings.filters={...counts,search:true,empty:true,clear:true};await mobileContext.close();

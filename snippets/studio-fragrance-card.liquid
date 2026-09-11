@@ -2,6 +2,7 @@
   Compact fragrance card with actual atomizer format and original bottle reference.
   @param {product} product - Shopify fragrance product.
   @param {string} section_id - Unique section identifier.
+  @param {boolean} [compact] - Use Jeff's compact bordered catalog tile.
 {% enddoc %}
 {%- liquid
   assign vial = blank
@@ -25,7 +26,18 @@
   endif
 -%}
 {%- unless product.handle == 'extra-5ml-vial-add-on' or product.price == 0 or vial == blank -%}
-<article class="scent-card" data-scent-card data-gender="{{ gender }}" data-tags="{{ tags_down | escape }}" data-name="{{ product.title | escape }}" aria-labelledby="ScentCard-{{ section_id }}-{{ product.id }}">
+<article class="scent-card{% if compact %} scent-card--reference{% endif %}" data-scent-card data-gender="{{ gender }}" data-tags="{{ tags_down | escape }}" data-name="{{ product.title | escape }}" aria-labelledby="ScentCard-{{ section_id }}-{{ product.id }}">
+  {%- if compact -%}
+  <a class="scent-card__media" href="{{ product.url }}" aria-label="{{ 'fragrance_reference.explore' | t: fragrance: product.title | escape }}">
+    {%- if product.featured_image -%}
+      {{ product.featured_image | image_url: width: 240 | image_tag: loading: 'lazy', widths: '120, 180, 240', sizes: '66px', class: 'scent-card__reference-image', alt: product.featured_image.alt | default: product.title }}
+    {%- else -%}
+      <span class="scent-card__vial">{% render 'vial-illustration', product: product %}</span>
+    {%- endif -%}
+  </a>
+  <h2 id="ScentCard-{{ section_id }}-{{ product.id }}"><a href="{{ product.url }}">{{ product.title }}</a></h2>
+  <p class="scent-card__brand">{{ product.vendor }} <span aria-hidden="true">·</span> 5ml</p>
+  {%- else -%}
   <a class="scent-card__media" href="{{ product.url }}" aria-label="Explore {{ product.title | escape }} in a 5ml vial">
     <span class="scent-card__vial">{% render 'vial-illustration', product: product %}</span>
     {%- if product.featured_image -%}<span class="scent-card__original">{{ product.featured_image | image_url: width: 200 | image_tag: loading: 'lazy', widths: '100, 150, 200', sizes: '64px', alt: product.featured_image.alt | default: product.title }}<span>Original fragrance</span></span>{%- endif -%}
@@ -33,9 +45,10 @@
   <p class="scent-card__brand">{{ product.vendor }}</p>
   <h2 id="ScentCard-{{ section_id }}-{{ product.id }}"><a href="{{ product.url }}">{{ scent_name }}</a></h2>
   <p class="scent-card__format">5ml travel atomizer</p>
+  {%- endif -%}
   <form method="post" action="{{ routes.cart_add_url }}" data-scent-add data-variant-id="{{ vial.id }}" data-handle="{{ product.handle }}" data-title="{{ product.title | escape }}" data-price="{{ vial.price }}">
     <input type="hidden" name="id" value="{{ vial.id }}"><input type="hidden" name="quantity" value="1">
-    <button type="submit" {% unless vial.available %}disabled{% endunless %}>{% if vial.available %}Add vial <span aria-hidden="true">·</span> <span data-scent-price>{{ vial.price | money }}</span>{% else %}Sold out{% endif %}</button>
+    <button type="submit" {% unless vial.available %}disabled{% endunless %}>{% if vial.available %}{% if compact %}{{ 'fragrance_reference.add' | t }}{% else %}Add vial{% endif %} <span aria-hidden="true">·</span> <span data-scent-price>{{ vial.price | money_without_trailing_zeros }}</span>{% else %}{{ 'products.product.sold_out' | t }}{% endif %}</button>
   </form>
 </article>
 {%- endunless -%}
