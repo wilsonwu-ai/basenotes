@@ -22,6 +22,10 @@
   This is deliberately keyed on the template suffix, not on the announcement
   text, so editing the announcement copy later cannot silently re-break it.
 {%- endcomment -%}
+<style>
+  .header__nav-link--soon { cursor: default; opacity: .6; }
+  .header__nav-link--soon small { margin-inline-start: .35em; padding: .1em .45em; border: 1px solid currentColor; border-radius: 99rem; font-size: .62em; letter-spacing: .08em; text-transform: uppercase; vertical-align: .15em; }
+</style>
 {%- unless template.suffix == 'giveaway' or artifact_surface -%}
 {%- if section.settings.announcement_enabled and section.settings.announcement_text != blank -%}
 <div class="announcement-bar">
@@ -76,7 +80,8 @@
       <ul class="header__nav-list">
         {%- if artifact_surface -%}
           <li class="header__nav-item"><a href="/collections/fragrances" class="header__nav-link">Fragrances</a></li>
-          <li class="header__nav-item"><a href="/pages/monthly-rotation" class="header__nav-link">Monthly Rotation</a></li>
+          <li class="header__nav-item"><span class="header__nav-link header__nav-link--soon" aria-disabled="true">Box Sets <small>Soon</small></span></li>
+          <li class="header__nav-item"><a href="/pages/monthly-rotation" class="header__nav-link">Subscription</a></li>
           {%- comment -%} Full bottles menu link removed 2026-09-11 (Jeff: full bottles are offered on the product page only){%- endcomment -%}
           {%- if section.settings.journal_label != blank -%}<li class="header__nav-item"><a href="{{ section.settings.journal_url | default: '/blogs/hub' }}" class="header__nav-link">{{ section.settings.journal_label | escape }}</a></li>{%- endif -%}
         {%- else -%}
@@ -272,7 +277,8 @@
   <ul class="mobile-nav__list">
     {%- if artifact_surface -%}
       <li class="mobile-nav__item"><a href="/collections/fragrances" class="mobile-nav__link">Fragrances</a></li>
-      <li class="mobile-nav__item"><a href="/pages/monthly-rotation" class="mobile-nav__link">Monthly Rotation</a></li>
+      <li class="mobile-nav__item"><span class="mobile-nav__link header__nav-link--soon" aria-disabled="true">Box Sets <small>Soon</small></span></li>
+      <li class="mobile-nav__item"><a href="/pages/monthly-rotation" class="mobile-nav__link">Subscription</a></li>
       {%- comment -%} Full bottles menu link removed 2026-09-11 {%- endcomment -%}
       {%- if section.settings.journal_label != blank -%}<li class="mobile-nav__item"><a href="{{ section.settings.journal_url | default: '/blogs/hub' }}" class="mobile-nav__link">{{ section.settings.journal_label | escape }}</a></li>{%- endif -%}
     {%- else -%}
