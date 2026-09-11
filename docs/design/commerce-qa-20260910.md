@@ -50,6 +50,14 @@ Actual Shopify-rendered screenshots were visually inspected:
 
 The initial preview runs found two timing issues that are now fixed and regression-tested: a stale PDP quote after switching to an unavailable bottle, and cart controls accepting an early click while initial pricing was still being prepared. Cart preparation now announces “Checking your cart prices…” and disables mutation controls until ready. The test waits for the initialized cart controller and its ready state, not just the initial server-rendered button. Shopify's merchant-only preview toolbar is outside customer-facing QA scope; the durable runner activates its own Hide bar control and rejects optional cookies using the storefront control.
 
+## Public post-publication verification
+
+After root published the tested theme, `node scripts/verify-scent-studio-commerce-preview.cjs 164192813274 --live` passed against `https://basenotescent.com` with **no preview parameters**. The fresh browser asserted theme ID `164192813274` and role `main`; this was the actual public storefront, not a preview selected by cookies.
+
+The complete public run repeated the preserved vial/photo and full-bottle enquiry checks, $20 Aventus plus $18 Green Irish Tweed cart, removal back to a $20 original Green Irish Tweed vial, actual Monthly Rotation plan `26547585242` at $15 initially/$20 renewal, checkout consent, blocked unconsented PDP add, and the JavaScript-disabled native $20 add. Desktop CTA bottom remained y699.55. Both mobile overflow checks were false, and browser errors were **0**. Both isolated test carts were cleared. No checkout, order, or customer form was submitted.
+
+Public screenshots are saved separately in `/private/tmp/basenote-public-commerce-qa/`: `scent-studio-product-desktop.png`, `scent-studio-product-mobile.png`, `scent-studio-cart-desktop.png`, `scent-studio-cart-mobile.png`, and `scent-studio-cart-subscription.png`. The public desktop PDP and mobile cart were visually re-inspected and match the tested preview. No source-code change was necessary after publication.
+
 ## Local visual and interaction verification
 
 Rendered the actual updated PDP/cart Liquid through a local LiquidJS compatibility fixture, using public Shopify product data, actual merchant photos, and the updated header/footer. This is a local projection, not Shopify server-rendered preview evidence. The adapter handles Shopify-only tags and LiquidJS's different nil/blank assignment behavior; all cart responses in this visual fixture are explicitly local fixtures.
@@ -69,7 +77,7 @@ The fixture runner is `/private/tmp/basenote-commerce-local-visual-qa.cjs`. The 
 
 ## Remaining verification and limitations
 
-The product/cart preview gate has passed. Publication is managed by the root release workflow; a live, non-preview pass is still required after publication. No production theme was published by the commerce agent.
+Both the product/cart preview gate and public, non-preview post-publication verification have passed. Publication was performed by the root release workflow, not the commerce agent. GitHub merging remains separately subject to its existing review protection; publication and these QA results do not imply the PR was merged.
 
 Creed Aventus has only a 5ml Shopify variant; its full-bottle selector therefore explains availability and links to the bottle enquiry form. Real full-bottle variants, when present, use their own size, inventory availability, and price.
 

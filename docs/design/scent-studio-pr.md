@@ -11,9 +11,13 @@ Implements the user's three Claude artifact page mappings and a one-time-first i
 
 25 Node tests pass; artifact/recovery checks pass; CLI 4.8.0 Theme Check has zero errors (108 warnings, not a zero-warning claim). Actual isolated Shopify carts verify $20 first + $18 extra, mixed-scent anchor removal, real $15 first / $20 renewal subscription, and one-time extras. Actual unpublished Shopify theme `164192813274` passes desktop/mobile 3D controls, photo fallback, preserved banner, search/filters, menu/search focus and scrolled-header contrast checks. Native newsletter/enquiry validation passes without submitting customer data. SEO verification covers real offers, metadata, 16 matching FAQ answers and all three agent/LLM endpoints; an independent sweep passed all 32 ordinary product pages. No orders, checkout payments, campaigns or customer messages were created.
 
-## Release gate
+## Published release / merge gate
 
-Shopify device login is restored. Repeated CLI 3.89.0 authentication failures were resolved with a task-local official CLI 4.8.0 invocation against the canonical shop host; no global installation replacement or scope bypass was used. Fresh live theme settings/header/footer/index snapshots are identical to the earlier preserved copy. Target release theme: `164192813274`; previous live theme retained for recovery: `164190748890`. The actual unpublished-theme commerce browser checks pass, including mixed-scent base removal, native no-JavaScript add, unchecked recurring-consent prevention and zero browser errors. After publication, rerun public checks without preview parameters; record the deployed theme and source commit on this PR.
+**Published:** https://basenotescent.com is running theme `164192813274` (Scent Studio Sep 10 QA), based on tested source commit `622bcd0dc2f70cfc9a0c0e8b1c117ebf42c57690`. The previous theme `164190748890` is retained for recovery. Public checks without preview parameters pass: actual commerce and consent, desktop/mobile 3D and navigation, newsletter/enquiry validation, metadata/FAQ/agent endpoints, and all 32 product pages. No customer forms or orders were submitted.
+
+**Merge still pending:** normal merge was blocked because `main` requires one approving review. Repository auto-merge is disabled. This PR is ready for that review and a normal merge; no protection setting or administrator bypass was used.
+
+Shopify device login is restored. Repeated CLI 3.89.0 authentication failures were resolved with a task-local official CLI 4.8.0 invocation against the canonical shop host; no global installation replacement or scope bypass was used. Fresh live settings/header/footer/index preservation snapshots were identical before publication.
 
 ## Remaining external dependencies
 

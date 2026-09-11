@@ -72,3 +72,21 @@ After publication, explicitly add `--live` to verify the public homepage and col
 ```sh
 NODE_PATH=/Users/wilsonwu/.npm-global/lib/node_modules node scripts/test-vial-studio-browser.cjs 164192813274 --live
 ```
+
+## Published public-site verification
+
+The full read-only `--live` command above completed successfully after theme **164192813274** was published. Fresh browser contexts used `https://basenotescent.com/` and `https://basenotescent.com/collections/fragrances` with no preview parameters; each route asserted the exact ID and `Shopify.theme.role === 'main'`. This pass made no cart additions, checkout/order submissions, or theme edits.
+
+Passed publicly: desktop fragrance/SKU selection, 3D reverse, cap opening, mouse yaw/pitch drag, reset, reduced-motion state, and photo fallback after simulated WebGL context loss; mobile menu open/close/Escape focus restoration, Search Tab/Shift+Tab trap, inactive legacy overlay, and scrolled-header contrast of 10.84:1; all 32 catalog scents, audience filters, search, empty state and clear. Both tested viewports had no page JavaScript exceptions; mobile had no horizontal overflow. Jeff's `gLmqu.jpg?v=1788283290` remained the campaign source, with the complete square composition on mobile.
+
+Public desktop and mobile full-page screenshots were visually inspected for hero fit, label legibility, three purchase paths, product cards, preserved campaign image, FAQ and newsletter/footer. Public evidence directory: `/var/folders/yg/qvjnvr693832pkp806w46tc40000gn/T/basenote-vial-browser-RUek3V`:
+
+- `basenote-actual-home-desktop-full.png`
+- `basenote-actual-home-mobile-top.png`
+- `basenote-actual-home-mobile-full.png`
+- `basenote-actual-studio-selected.png`
+- `basenote-actual-studio-open.png`
+- `basenote-actual-studio-fallback.png`
+- `basenote-actual-header-scrolled-mobile.png`
+
+The earlier preview/local-only limitations are resolved for these viewer, layout, navigation and catalog checks. Commerce and repository approval/merge status are tracked separately by their owning agents.
