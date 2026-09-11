@@ -3,6 +3,50 @@
   const bottleField = document.querySelector('#FullBottleContact input[name="contact[Fragrance]"]');
   const requestedFragrance = new URLSearchParams(location.search).get('fragrance');
   if (bottleField && requestedFragrance && !bottleField.value) bottleField.value = requestedFragrance.slice(0,160);
+  class CartFeedback extends HTMLElement {
+    connectedCallback() {
+      if (this.controller) return;
+      this.controller = new AbortController();
+      this.panel = this.querySelector('[data-cart-feedback-panel]');
+      this.announcement = this.querySelector('[data-cart-feedback-announcement]');
+      this.querySelector('[data-cart-feedback-close]')?.addEventListener('click', () => this.close(), { signal: this.controller.signal });
+      this.panel?.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') { event.preventDefault(); this.close(); }
+      }, { signal: this.controller.signal });
+    }
+    disconnectedCallback() { this.controller?.abort(); this.controller = null; this.announcementRevision++; }
+    show({ title, quantity = 1, error = false, message = '', trigger }) {
+      if (!this.panel) return;
+      this.trigger = trigger;
+      this.querySelector('[data-cart-feedback-heading]').textContent = error ? this.dataset.error : this.dataset.added;
+      this.querySelector('[data-cart-feedback-message]').textContent = error ? message || this.dataset.fallbackError : title;
+      const quantityText = this.dataset.quantity.replace('__quantity__', String(quantity));
+      const quantityNode = this.querySelector('[data-cart-feedback-quantity]');
+      quantityNode.textContent = error ? '' : quantityText;
+      quantityNode.hidden = error;
+      this.querySelector('[data-cart-feedback-icon]').textContent = error ? '!' : '✓';
+      this.panel.dataset.state = error ? 'error' : 'success';
+      this.panel.hidden = false;
+      this.panel.dataset.open = '';
+      if (typeof this.panel.showPopover === 'function' && !this.panel.matches(':popover-open')) this.panel.showPopover();
+      const revision = this.announcementRevision = (this.announcementRevision || 0) + 1;
+      this.announcement.textContent = '';
+      requestAnimationFrame(() => {
+        if (revision !== this.announcementRevision) return;
+        this.announcement.textContent = error ? `${this.dataset.error}. ${message || this.dataset.fallbackError}` : this.dataset.announcement.replace('__fragrance__', title).replace('__quantity__', String(quantity));
+      });
+    }
+    close() {
+      const focusWasInside = this.panel.contains(document.activeElement);
+      this.announcementRevision = (this.announcementRevision || 0) + 1;
+      if (typeof this.panel.hidePopover === 'function' && this.panel.matches(':popover-open')) this.panel.hidePopover();
+      this.panel.hidden = true;
+      delete this.panel.dataset.open;
+      this.announcement.textContent = '';
+      if (focusWasInside && this.trigger?.isConnected) this.trigger.focus({ preventScroll: true });
+    }
+  }
+  if (!customElements.get('cart-feedback')) customElements.define('cart-feedback', CartFeedback);
   if (customElements.get('scent-catalog')) return;
   class ScentCatalog extends HTMLElement {
     connectedCallback() {
@@ -10,6 +54,8 @@
       this.initialized = true;
       this.cards = [...this.querySelectorAll('[data-scent-card]')];
       this.status = this.querySelector('[data-scent-status]');
+      this.feedback = document.querySelector('cart-feedback');
+      if (this.feedback && this.status) this.status.setAttribute('aria-live', 'off');
       this.gender = 'all';
       this.search = this.querySelector('[data-scent-search]');
       this.search?.addEventListener('input', () => this.filter());
@@ -82,15 +128,22 @@
       const button = form.querySelector('button');
       if (button.disabled || this.pending) return;
       if (!window.BaseNoteCommerce) {
-        if (this.status) this.status.textContent = 'The cart is still loading. Please try again in a moment.';
+        const message = this.feedback?.dataset.loading || 'The cart is still loading. Please try again in a moment.';
+        if (this.status) this.status.textContent = message;
+        this.feedback?.show({ error: true, message, trigger: button });
         return;
       }
       this.pending = true;
-      button.disabled = true;
+      const controls = [...this.querySelectorAll('[data-scent-add] button')].map(control => [control, control.disabled]);
+      for (const [control] of controls) control.disabled = true;
+      const originalLabel = [...button.childNodes];
+      button.replaceChildren(document.createTextNode(this.feedback?.dataset.adding || 'Adding…'));
       button.setAttribute('aria-busy', 'true');
+      form.setAttribute('aria-busy', 'true');
       if (this.status) this.status.textContent = `Adding ${form.dataset.title}…`;
       try {
         await window.BaseNoteCommerce.addVial({variantId: form.dataset.variantId, handle: form.dataset.handle, title: form.dataset.title, quantity: 1, source: this.dataset.source || 'Fragrance collection'});
+        this.feedback?.show({ title: form.dataset.title, quantity: 1, trigger: button });
         if (this.status) {
           this.status.textContent = `${form.dataset.title} added to your cart.`;
           const link = document.createElement('a');
@@ -99,10 +152,14 @@
           this.status.append(link);
         }
       } catch (error) {
-        if (this.status) this.status.textContent = error.message || 'We could not confirm the add. Check your cart before trying again.';
+        const message = error.message || this.feedback?.dataset.fallbackError || 'We could not confirm the add. Check your cart before trying again.';
+        if (this.status) this.status.textContent = message;
+        this.feedback?.show({ error: true, message, trigger: button });
       } finally {
-        button.disabled = false;
+        button.replaceChildren(...originalLabel);
+        for (const [control, wasDisabled] of controls) control.disabled = wasDisabled;
         button.removeAttribute('aria-busy');
+        form.removeAttribute('aria-busy');
         this.pending = false;
         this.refreshPrices();
       }

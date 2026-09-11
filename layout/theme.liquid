@@ -300,6 +300,7 @@
 
   <main id="MainContent" class="main-content" role="main" tabindex="-1">
     {{ content_for_layout }}
+    {% render 'cart-feedback' %}
   </main>
 
   {% sections 'footer-group' %}

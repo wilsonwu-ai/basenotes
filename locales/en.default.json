@@ -114,6 +114,18 @@
     }
   },
   "cart": {
+    "feedback": {
+      "label": "Cart update",
+      "added": "Added to cart",
+      "error": "We couldn’t confirm that add",
+      "adding": "Adding…",
+      "loading": "The cart is still loading. Please try again in a moment.",
+      "fallback_error": "Check your cart before trying again.",
+      "quantity": "Quantity: {{ quantity }}",
+      "announcement": "Added to cart: {{ fragrance }}. Quantity: {{ quantity }}.",
+      "view_cart": "View cart",
+      "close": "Close cart update"
+    },
     "general": {
       "title": "Your Queue",
       "remove": "Remove",
