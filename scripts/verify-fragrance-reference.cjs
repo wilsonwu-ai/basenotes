@@ -27,6 +27,7 @@ if (!live) target.searchParams.set('preview_theme_id', theme);
       const identity = await page.evaluate(() => Shopify.theme);
       assert.equal(String(identity.id), theme);
       if (live) assert.equal(identity.role, 'main');
+      assert.equal(await page.locator('main .collection__sidebar, main [data-filter-sidebar]').count(), 0, 'The legacy left category sidebar must not be rendered');
       for (const frame of page.frames()) {
         if (!frame.url().includes('/shopifycloud/preview-bar/')) continue;
         const hide = frame.getByRole('button', { name: 'Hide bar', exact: true });
@@ -48,6 +49,7 @@ if (!live) target.searchParams.set('preview_theme_id', theme);
         const title = document.querySelector('.fragrance-catalog__hero h1');
         const grid = document.querySelector('.fragrance-catalog .scent-grid');
         const tile = grid.querySelector('[data-scent-card]');
+        const categories = [...document.querySelectorAll('.fragrance-catalog__tabs button')];
         const rect = element => ({ x: element.getBoundingClientRect().x, y: element.getBoundingClientRect().y, width: element.getBoundingClientRect().width, height: element.getBoundingClientRect().height });
         return {
           title: { ...rect(title), size: getComputedStyle(title).fontSize, weight: getComputedStyle(title).fontWeight, color: getComputedStyle(title).color },
@@ -55,6 +57,7 @@ if (!live) target.searchParams.set('preview_theme_id', theme);
           tile: rect(tile),
           photo: rect(tile.querySelector('.scent-card__media')),
           nameBeforeBrand: Boolean(tile.querySelector('h2').compareDocumentPosition(tile.querySelector('.scent-card__brand')) & Node.DOCUMENT_POSITION_FOLLOWING),
+          horizontalCategories: categories.length === 4 && categories.every(button => Math.abs(button.getBoundingClientRect().y - categories[0].getBoundingClientRect().y) < 1),
           total: grid.querySelectorAll('[data-scent-card]').length,
           overflow: document.documentElement.scrollWidth > innerWidth
         };
@@ -69,6 +72,7 @@ if (!live) target.searchParams.set('preview_theme_id', theme);
       assert.ok(metrics.tile.height < 300, 'Compact tiles cannot regress to oversized image cards');
       assert.equal(metrics.photo.height, 66);
       assert.equal(metrics.nameBeforeBrand, true);
+      assert.equal(metrics.horizontalCategories, true, 'Reference category controls must remain one horizontal row, never a left sidebar');
       assert.equal(metrics.overflow, false);
       assert.equal(await page.locator('.fragrance-catalog__toolbar').isVisible(), false, 'Search must not displace the reference grid');
       await page.screenshot({ path: path.join(output, `collection-${width}.png`), fullPage: true });
