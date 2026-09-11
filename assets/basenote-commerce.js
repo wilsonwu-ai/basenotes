@@ -334,7 +334,10 @@
       for (const button of this.querySelectorAll('[data-product-image]')) on(button, 'click', () => {
         const image = this.querySelector('[data-product-main-image]');
         image.src = button.dataset.productImage; image.srcset = ''; image.alt = button.dataset.alt || '';
-        for (const thumb of this.querySelectorAll('[data-product-image]')) thumb.setAttribute('aria-pressed', String(thumb === button));
+        const thumbs = [...this.querySelectorAll('[data-product-image]')];
+        for (const thumb of thumbs) thumb.setAttribute('aria-pressed', String(thumb === button));
+        // The first photo is the original bottle; any other photo hides the vial badge and caption.
+        this.querySelector('[data-product-comparison]')?.classList.toggle('is-alt-view', thumbs.indexOf(button) > 0);
       });
       on(document, 'basenote:cart-updated', () => this.updatePrice());
       if (this.rotation) {

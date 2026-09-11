@@ -153,6 +153,8 @@
 }
 .scent-card--reference .scent-card__size + .scent-card__size { border-inline-start: 0; }
 .scent-card--reference .scent-card__size:hover:not([aria-pressed="true"]) { background: rgba(27, 47, 34, .08); color: var(--reference-green-dark); }
+.scent-card--reference .scent-card__size--unavailable,
+.scent-card--reference .scent-card__size--unavailable:hover { color: rgba(27, 47, 34, .38); background: transparent; cursor: default; }
 .scent-card--reference .scent-card__size[aria-pressed="true"] { background: var(--reference-green-dark); color: var(--scent-cream, #f4efe3); }
 .scent-card--reference .scent-card__size:focus-visible { outline: 2px solid var(--scent-gold, #8c7037); outline-offset: 2px; }
 .scent-card--reference .product-review-badge { margin: .375rem 0 0; }

@@ -193,6 +193,9 @@
   .artifact-product__reference--original .artifact-product__reference-label { position:absolute; right:.9rem; bottom:.75rem; margin:0; }
   .artifact-product__reference--vial { position:absolute; left:1rem; bottom:1rem; z-index:1; display:grid; justify-items:center; gap:.35rem; padding:.7rem .8rem .55rem; border:.0625rem solid var(--ap-line); border-radius:.2rem; background:rgb(244 239 227 / 92%); }
   .artifact-product__reference--vial .artifact-product__reference-label { margin:0; }
+  /* Another photo (e.g. the real atomizer) is showing: drop the vial badge and the 'Original fragrance' caption (Jeff 2026-09-11). */
+  .artifact-product__visual.is-alt-view .artifact-product__reference--vial,
+  .artifact-product__visual.is-alt-view .artifact-product__reference--original .artifact-product__reference-label { display:none; }
   @media(min-width:52.01rem) { .artifact-product__media { position:sticky; top:6rem; } }
   .artifact-product__thumbnails { display:flex; justify-content:center; flex-wrap:wrap; gap:.6rem; margin-block-start:.75rem; }
   .artifact-product__thumbnail { display:grid; width:4.25rem; height:4.25rem; padding:.25rem; place-items:center; border:.0625rem solid var(--ap-line); background:transparent; cursor:pointer; }
