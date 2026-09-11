@@ -98,7 +98,7 @@
       form.dataset.kind = option.dataset.kind;
       const input = form.querySelector('input[name="id"]');
       if (input) input.value = option.dataset.variantId;
-      const image = card.querySelector('[data-card-image]');
+      const image = card.querySelector('.scent-card__reference-image');
       if (image) {
         if (image.dataset.vialSrc === undefined) {
           image.dataset.vialSrc = image.getAttribute('src') || '';

@@ -15,8 +15,8 @@
   endfor
   assign bottle = blank
   for variant in product.variants
-    assign variant_compact = variant.title | downcase | remove: ' '
-    if variant_compact != '5ml'
+    if variant.id != vial.id
+      assign variant_compact = variant.title | downcase | remove: ' '
       if variant_compact contains 'ml' or variant_compact contains 'oz' or variant_compact contains 'fullbottle'
         assign bottle = variant
         break
@@ -45,16 +45,17 @@
       if bottle != blank and vial.featured_image
         assign card_image = vial.featured_image
       endif
+      assign card_alt = card_image.alt | default: product.title
     -%}
     {%- if card_image -%}
-      {{ card_image | image_url: width: 240 | image_tag: loading: 'lazy', widths: '120, 180, 240', sizes: '66px', class: 'scent-card__reference-image', alt: card_image.alt | default: product.title, data-card-image: '' }}
+      {{ card_image | image_url: width: 240 | image_tag: loading: 'lazy', widths: '120, 180, 240', sizes: '66px', class: 'scent-card__reference-image', alt: card_alt }}
     {%- else -%}
       <span class="scent-card__vial">{% render 'vial-illustration', product: product %}</span>
     {%- endif -%}
   </a>
   <h2 id="ScentCard-{{ section_id }}-{{ product.id }}"><a href="{{ product.url }}">{{ product.title }}</a></h2>
   {%- comment -%} Ratings render only from real Judge.me / review data; nothing is shown until reviews exist. {%- endcomment -%}
-  {%- if product.metafields.reviews.count.value > 0 or product.metafields.judgeme.review_count > 0 -%}{% render 'product-review-badge', product: product, surface: 'card' %}{%- endif -%}
+  {%- if product.metafields.reviews.rating_count.value > 0 or product.metafields.reviews.count.value > 0 or product.metafields.judgeme.review_count > 0 -%}{% render 'product-review-badge', product: product, surface: 'card' %}{%- endif -%}
   {%- comment -%} Size switch replaces the old "House · 5ml" line (Jeff, 2026-09-10). A listed, available full bottle is selectable; otherwise "Full bottle" opens the bottle enquiry, matching the product page. {%- endcomment -%}
   <div class="scent-card__sizes" role="group" aria-label="{{ 'Size for ' | append: product.title | escape }}">
     <button type="button" class="scent-card__size" data-card-size data-kind="vial" data-variant-id="{{ vial.id }}" data-price="{{ vial.price }}" data-available="{{ vial.available }}" aria-pressed="true">5ml</button>
