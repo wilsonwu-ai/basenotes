@@ -1,0 +1,140 @@
+{% doc %}
+  Uniformly framed grid photo for a fragrance (Jeff 2026-09-11: "resize all the images").
+  Echoes the photo URL only while the product still shows the image it was made from;
+  once someone changes the product photo in Shopify, this echoes nothing and the card uses the new photo.
+
+  @param {string} handle - Product handle.
+  @param {number} image_id - ID of the image the card would otherwise show.
+{% enddoc %}
+{%- liquid
+  case handle
+    when 'acqua-di-gio-profondo-parfum'
+      if image_id == 50694618972378
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/acqua-di-gio-profondo-parfum.jpg?v=1'
+      endif
+    when 'bond-no-9-bleecker-street'
+      if image_id == 52560274292954
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/bond-no-9-bleecker-street.jpg?v=1'
+      endif
+    when 'bond-no-9-fidi'
+      if image_id == 51114105471194
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/bond-no-9-fidi.jpg?v=1'
+      endif
+    when 'bond-no-9-nomad'
+      if image_id == 51087133049050
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/bond-no-9-nomad.jpg?v=1'
+      endif
+    when 'bond-no-9-the-scent-of-peace'
+      if image_id == 50784652787930
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/bond-no-9-the-scent-of-peace.jpg?v=1'
+      endif
+    when 'bvlgari-le-gemme-orom'
+      if image_id == 52560605216986
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/bvlgari-le-gemme-orom.jpg?v=1'
+      endif
+    when 'creed-aventus'
+      if image_id == 50576235266266
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/creed-aventus.jpg?v=1'
+      endif
+    when 'creed-green-irish-tweed'
+      if image_id == 50576236216538
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/creed-green-irish-tweed.jpg?v=1'
+      endif
+    when 'creed-santal'
+      if image_id == 51045036687578
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/creed-santal.jpg?v=1'
+      endif
+    when 'creed-silver-mountain-water'
+      if image_id == 51087016558810
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/creed-silver-mountain-water.jpg?v=1'
+      endif
+    when 'dior-sauvage'
+      if image_id == 51114093412570
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/dior-sauvage.jpg?v=1'
+      endif
+    when 'dolce-gabbana-light-blue'
+      if image_id == 52259533422810
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/dolce-gabbana-light-blue.jpg?v=1'
+      endif
+    when 'dolce-gabbana-the-one'
+      if image_id == 52265182363866
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/dolce-gabbana-the-one.jpg?v=1'
+      endif
+    when 'emporio-armani-stronger-with-you-intensely'
+      if image_id == 50831200518362
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/emporio-armani-stronger-with-you-intensely.jpg?v=1'
+      endif
+    when 'givenchy-gentleman'
+      if image_id == 52265675194586
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/givenchy-gentleman.jpg?v=1'
+      endif
+    when 'initio-side-effect'
+      if image_id == 52259585655002
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/initio-side-effect.jpg?v=1'
+      endif
+    when 'mont-blanc-legend-eau-de-parfum'
+      if image_id == 50815192858842
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/mont-blanc-legend-eau-de-parfum.jpg?v=1'
+      endif
+    when 'paco-rabanne-mesh-metal'
+      if image_id == 50814443225306
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/paco-rabanne-mesh-metal.jpg?v=1'
+      endif
+    when 'parfums-de-marly-haltane'
+      if image_id == 52259208429786
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/parfums-de-marly-haltane.jpg?v=1'
+      endif
+    when 'pdm-althair'
+      if image_id == 50576236347610
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/pdm-althair.jpg?v=1'
+      endif
+    when 'pdm-layton'
+      if image_id == 50576235364570
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/pdm-layton.jpg?v=1'
+      endif
+    when 'pdm-pegasus'
+      if image_id == 50576236380378
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/pdm-pegasus.jpg?v=1'
+      endif
+    when 'pdm-perseus'
+      if image_id == 50576235430106
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/pdm-perseus.jpg?v=1'
+      endif
+    when 'prada-paradigme'
+      if image_id == 52265834807514
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/prada-paradigme.jpg?v=1'
+      endif
+    when 'tom-ford-ombre-leather'
+      if image_id == 50779103953114
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/tom-ford-ombre-leather.jpg?v=1'
+      endif
+    when 'valentino-born-in-roma-intense'
+      if image_id == 52265499590874
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/valentino-born-in-roma-intense.jpg?v=1'
+      endif
+    when 'versace-eros'
+      if image_id == 52265351643354
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/versace-eros.jpg?v=1'
+      endif
+    when 'viktor-rolf-spicebomb-extreme'
+      if image_id == 52266018668762
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/viktor-rolf-spicebomb-extreme.jpg?v=1'
+      endif
+    when 'xerjoff-alexandria-ii'
+      if image_id == 50854035816666
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/xerjoff-alexandria-ii.jpg?v=1'
+      endif
+    when 'xerjoff-erba-pura'
+      if image_id == 50779055292634
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/xerjoff-erba-pura.jpg?v=1'
+      endif
+    when 'xerjoff-torino-21'
+      if image_id == 51114135453914
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/xerjoff-torino-21.jpg?v=1'
+      endif
+    when 'ysl-y-intense'
+      if image_id == 50779073216730
+        echo 'https://basenote-media.wilson-af8.workers.dev/img/grid/ysl-y-intense.jpg?v=1'
+      endif
+  endcase
+-%}

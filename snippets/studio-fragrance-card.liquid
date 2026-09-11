@@ -47,7 +47,10 @@
       endif
       assign card_alt = card_image.alt | default: product.title
     -%}
-    {%- if card_image -%}
+    {%- capture grid_photo -%}{%- if card_image -%}{% render 'grid-photo', handle: product.handle, image_id: card_image.id %}{%- endif -%}{%- endcapture -%}
+    {%- if grid_photo != blank -%}
+      <img src="{{ grid_photo | strip }}" width="600" height="600" loading="lazy" class="scent-card__reference-image" alt="{{ card_alt | escape }}">
+    {%- elsif card_image -%}
       {{ card_image | image_url: width: 600 | image_tag: loading: 'lazy', widths: '240, 360, 480, 600', sizes: '(min-width: 821px) 260px, 45vw', class: 'scent-card__reference-image', alt: card_alt }}
     {%- else -%}
       <span class="scent-card__vial">{% render 'vial-illustration', product: product %}</span>
