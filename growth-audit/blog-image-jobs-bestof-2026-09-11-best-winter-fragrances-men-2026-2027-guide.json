@@ -1,0 +1,20 @@
+[
+  {
+    "handle": "best-winter-fragrances-men-2026-2027-guide",
+    "prompt": "Premium editorial still life for a winter fragrance guide, four generic unbranded 5 ml clear-glass atomizers with plain silver caps standing on a dark walnut surface beside a folded charcoal wool scarf and a small travertine block, soft frosted window light falling from the left, a brass tray edge and a cream linen napkin in the background, cream and deep forest-green palette, warm natural light, realistic glass, wool, wood and stone textures, restrained luxury magazine photography, 16:9 landscape, generous center-safe composition, no people, no hands, no logos, no labels, no typography, no brand marks, no replica designer bottles, no distorted caps",
+    "out": "growth-audit/ai-images/blog/best-winter-fragrances-men-2026-2027-guide/hero.jpg",
+    "aspect": "16:9",
+    "model": "fal-ai/nano-banana-2",
+    "resolution": "2K",
+    "fal_only": true
+  },
+  {
+    "handle": "best-winter-fragrances-men-2026-2027-guide",
+    "prompt": "Premium editorial still life, close view of two generic unbranded 5 ml clear-glass atomizers with plain silver caps resting on a charcoal wool coat folded over a dark walnut bench, a brass dish and a cream linen cloth beside them, a travertine ledge in soft focus, frosted window glass behind diffusing warm natural winter light, cream and deep forest-green palette, realistic glass, wool, walnut and brass textures, quiet luxury magazine photography, 3:2 landscape, no people, no hands, no logos, no labels, no typography, no brand marks, no replica designer bottles, no distorted caps",
+    "out": "growth-audit/ai-images/blog/best-winter-fragrances-men-2026-2027-guide/fig-03.jpg",
+    "aspect": "3:2",
+    "model": "fal-ai/nano-banana-2",
+    "resolution": "2K",
+    "fal_only": true
+  }
+]

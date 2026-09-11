@@ -1,0 +1,20 @@
+[
+  {
+    "handle": "best-niche-fragrances-2026-ranked",
+    "prompt": "Premium editorial still life for a ranked niche fragrance guide, a considered row of eleven generic unbranded 5 ml clear-glass atomizers with plain brushed-brass caps standing on a shallow brass tray on a cream travertine surface, a folded cream linen cloth and a deep forest-green linen runner beneath, warm natural side light from a window, soft long shadows, realistic glass, stone, metal and fabric textures, quiet luxury magazine photography, cream and deep forest-green palette, 16:9 landscape, generous center-safe composition, no people, no hands, no logos, no labels, no typography, no brand marks, no replica designer bottles, no distorted caps",
+    "out": "growth-audit/ai-images/blog/best-niche-fragrances-2026-ranked/hero.jpg",
+    "aspect": "16:9",
+    "model": "fal-ai/nano-banana-2",
+    "resolution": "2K",
+    "fal_only": true
+  },
+  {
+    "handle": "best-niche-fragrances-2026-ranked",
+    "prompt": "Quiet luxury editorial still life, close three-quarter view of a considered row of generic unbranded 5 ml clear-glass atomizers with plain brass caps on a polished brass tray resting on a travertine ledge, draped cream linen and a small fold of deep forest-green linen in the background, warm natural afternoon light, gentle reflections in the glass, shallow depth of field, realistic stone, brass and fabric textures, cream and deep forest-green palette, 3:2 landscape, no people, no hands, no logos, no labels, no typography, no brand marks, no replica designer bottles, no distorted caps",
+    "out": "growth-audit/ai-images/blog/best-niche-fragrances-2026-ranked/fig-03.jpg",
+    "aspect": "3:2",
+    "model": "fal-ai/nano-banana-2",
+    "resolution": "2K",
+    "fal_only": true
+  }
+]

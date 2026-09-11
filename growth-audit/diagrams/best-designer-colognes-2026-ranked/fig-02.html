@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Designer cologne scent map</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:#f4efe3;}
+  body{
+    font-family:'Jost', sans-serif;
+    color:#24372b;
+    width:1280px;
+    height:980px;
+    overflow:hidden;
+  }
+  svg{width:1280px;height:980px;display:block;}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 1280 980" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig02-title fig02-desc">
+<title id="fig02-title">Designer cologne scent map: ten picks by their official notes</title>
+<desc id="fig02-desc">A two-by-two map running fresh to warm left to right and light to rich bottom to top, placing ten ranked designer colognes from Dolce and Gabbana Light Blue EDP in the fresh and light corner to Viktor and Rolf Spicebomb Extreme EDP in the warm and rich corner, based on Base Note's reading of each brand's official notes.</desc>
+
+<rect width="100%" height="100%" fill="#f4efe3"/>
+
+<!-- Title -->
+<text x="640" y="56" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="700" font-size="32" fill="#22392b">Designer cologne scent map: ten picks by their official notes</text>
+
+<!-- Plot area: x 160..1120 (fresh->warm), y 120..760 (rich top -> light bottom) -->
+<rect x="160" y="120" width="480" height="320" fill="#22392b" opacity="0.035"/>
+<rect x="640" y="120" width="480" height="320" fill="#ac9159" opacity="0.05"/>
+<rect x="160" y="440" width="480" height="320" fill="#22392b" opacity="0.02"/>
+<rect x="640" y="440" width="480" height="320" fill="#ac9159" opacity="0.03"/>
+
+<!-- axis cross -->
+<line x1="640" y1="100" x2="640" y2="780" stroke="#24372b" stroke-width="1.2"/>
+<line x1="140" y1="440" x2="1140" y2="440" stroke="#24372b" stroke-width="1.2"/>
+
+<line x1="140" y1="440" x2="120" y2="440" stroke="#24372b" stroke-width="1.2"/>
+<line x1="1140" y1="440" x2="1160" y2="440" stroke="#24372b" stroke-width="1.2"/>
+<line x1="640" y1="100" x2="640" y2="82" stroke="#24372b" stroke-width="1.2"/>
+<line x1="640" y1="780" x2="640" y2="798" stroke="#24372b" stroke-width="1.2"/>
+
+<!-- Axis labels -->
+<text x="640" y="76" text-anchor="middle" font-family="'Jost', sans-serif" font-size="14" font-weight="600" letter-spacing="2.5" fill="#24372b">RICH</text>
+<text x="640" y="822" text-anchor="middle" font-family="'Jost', sans-serif" font-size="14" font-weight="600" letter-spacing="2.5" fill="#24372b">LIGHT</text>
+<text x="104" y="445" text-anchor="end" font-family="'Jost', sans-serif" font-size="14" font-weight="600" letter-spacing="2.5" fill="#24372b">FRESH</text>
+<text x="1176" y="445" text-anchor="start" font-family="'Jost', sans-serif" font-size="14" font-weight="600" letter-spacing="2.5" fill="#24372b">WARM</text>
+
+<!-- quadrant corner tags -->
+<text x="180" y="146" font-family="'Jost', sans-serif" font-size="12" font-weight="500" letter-spacing="1.5" fill="#62675d">FRESH AND RICH</text>
+<text x="1100" y="146" text-anchor="end" font-family="'Jost', sans-serif" font-size="12" font-weight="500" letter-spacing="1.5" fill="#62675d">WARM AND RICH</text>
+<text x="180" y="738" font-family="'Jost', sans-serif" font-size="12" font-weight="500" letter-spacing="1.5" fill="#62675d">FRESH AND LIGHT</text>
+<text x="1100" y="738" text-anchor="end" font-family="'Jost', sans-serif" font-size="12" font-weight="500" letter-spacing="1.5" fill="#62675d">WARM AND LIGHT</text>
+
+<!--
+  Coordinate mapping (from spec.json): px(x) = 160 + x*96 ; py(y) = 760 - y*64
+  Labels use the article's exact names. Label boxes are sized by measuring the rendered text (see script below).
+-->
+
+<!-- 1. Dior Sauvage EDP  x=5 y=5 -> (640,440), focal -->
+<circle cx="640" cy="440" r="7" fill="#ac9159" stroke="#22392b" stroke-width="1.4"/>
+<g class="lbl" data-anchor="middle"><rect/><text x="640" y="415" text-anchor="middle" font-family="'Jost', sans-serif" font-size="12.5" font-weight="600" fill="#22392b">Dior Sauvage EDP</text></g>
+
+<!-- 2. Acqua di Gio Profondo Parfum x=2.5 y=5.5 -> (400,408) -->
+<circle cx="400" cy="408" r="5" fill="#22392b"/>
+<g class="lbl"><rect/><text x="392" y="398" text-anchor="end" font-family="'Jost', sans-serif" font-size="12" fill="#24372b">Acqua di Gio Profondo Parfum</text></g>
+
+<!-- 3. YSL Y Intense EDP x=3.5 y=7 -> (496,312) -->
+<circle cx="496" cy="312" r="5" fill="#22392b"/>
+<g class="lbl"><rect/><text x="488" y="302" text-anchor="end" font-family="'Jost', sans-serif" font-size="12" fill="#24372b">YSL Y Intense EDP</text></g>
+
+<!-- 4. Dolce & Gabbana Light Blue EDP x=1.5 y=2.5 -> (304,600) -->
+<circle cx="304" cy="600" r="5" fill="#22392b"/>
+<g class="lbl"><rect/><text x="316" y="604" text-anchor="start" font-family="'Jost', sans-serif" font-size="12" fill="#24372b">Dolce &amp; Gabbana Light Blue EDP</text></g>
+
+<!-- 5. Versace Eros EDP x=5.5 y=6.5 -> (688,344) -->
+<circle cx="688" cy="344" r="5" fill="#22392b"/>
+<g class="lbl"><rect/><text x="700" y="348" text-anchor="start" font-family="'Jost', sans-serif" font-size="12" fill="#24372b">Versace Eros EDP</text></g>
+
+<!-- 6. Dolce & Gabbana The One EDP x=4.5 y=3.5 -> (592,536) -->
+<circle cx="592" cy="536" r="5" fill="#22392b"/>
+<g class="lbl"><rect/><text x="580" y="540" text-anchor="end" font-family="'Jost', sans-serif" font-size="12" fill="#24372b">Dolce &amp; Gabbana The One EDP</text></g>
+
+<!-- 7. Givenchy Gentleman EDP x=6.5 y=7.5 -> (784,280) -->
+<circle cx="784" cy="280" r="5" fill="#22392b"/>
+<g class="lbl"><rect/><text x="796" y="284" text-anchor="start" font-family="'Jost', sans-serif" font-size="12" fill="#24372b">Givenchy Gentleman EDP</text></g>
+
+<!-- 8. Valentino Born in Roma Intense EDP x=7.5 y=5.5 -> (880,408) -->
+<circle cx="880" cy="408" r="5" fill="#22392b"/>
+<g class="lbl"><rect/><text x="892" y="412" text-anchor="start" font-family="'Jost', sans-serif" font-size="12" fill="#24372b">Valentino Born in Roma Intense EDP</text></g>
+
+<!-- 9. Viktor & Rolf Spicebomb Extreme EDP x=9.5 y=9 -> (1072,184) -->
+<circle cx="1072" cy="184" r="5" fill="#22392b"/>
+<g class="lbl"><rect/><text x="1060" y="188" text-anchor="end" font-family="'Jost', sans-serif" font-size="12" fill="#24372b">Viktor &amp; Rolf Spicebomb Extreme EDP</text></g>
+
+<!-- 10. Prada Paradigme EDP x=8 y=8 -> (928,248) -->
+<circle cx="928" cy="248" r="5" fill="#22392b"/>
+<g class="lbl"><rect/><text x="940" y="252" text-anchor="start" font-family="'Jost', sans-serif" font-size="12" fill="#24372b">Prada Paradigme EDP</text></g>
+
+<!-- Legend strip -->
+<line x1="160" y1="852" x2="1120" y2="852" stroke="#d9d4c8" stroke-width="1"/>
+<text x="160" y="880" font-family="'Jost', sans-serif" font-size="11" font-weight="600" letter-spacing="2" fill="#62675d">LEGEND</text>
+<circle cx="360" cy="876" r="7" fill="#ac9159" stroke="#22392b" stroke-width="1.4"/>
+<text x="376" y="881" font-family="'Jost', sans-serif" font-size="13" fill="#24372b">#1 pick (Dior Sauvage EDP)</text>
+<circle cx="660" cy="876" r="5" fill="#22392b"/>
+<text x="676" y="881" font-family="'Jost', sans-serif" font-size="13" fill="#24372b">Other ranked picks</text>
+
+<!-- Caption -->
+<text x="640" y="930" text-anchor="middle" font-family="'EB Garamond', serif" font-style="italic" font-size="16" fill="#62675d">
+  <tspan x="640" dy="0">Placement is Base Note's reading of each brand's official notes</tspan>
+  <tspan x="640" dy="24">(fresh to warm across, light to rich up), not a measurement.</tspan>
+</text>
+
+</svg>
+<script>
+  // Size each label's cream backing box to its rendered text, after fonts load.
+  function sizeLabels(){
+    document.querySelectorAll('g.lbl').forEach(function(g){
+      var t=g.querySelector('text'), r=g.querySelector('rect'), b=t.getBBox();
+      r.setAttribute('x', b.x-4); r.setAttribute('y', b.y-2);
+      r.setAttribute('width', b.width+8); r.setAttribute('height', b.height+4);
+      r.setAttribute('rx', 2); r.setAttribute('fill', '#f4efe3');
+    });
+  }
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(sizeLabels); } else { sizeLabels(); }
+</script>
+</body>
+</html>

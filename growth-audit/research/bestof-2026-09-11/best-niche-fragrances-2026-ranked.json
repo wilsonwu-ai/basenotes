@@ -1,0 +1,324 @@
+{
+  "run": "2026-09-11T11:30Z",
+  "handle": "best-niche-fragrances-2026-ranked",
+  "title": "The Best Niche Fragrances of 2026, Ranked",
+  "query_family": [
+    "best niche fragrances 2026",
+    "best niche fragrance for men",
+    "best niche cologne 2026"
+  ],
+  "why": "Base Note's best-converting ChatGPT-referral page is the ranked '32 Best Luxury Fragrances of 2026' post (/blogs/hub/32-luxury-fragrances-ranked). This article splits off one of that post's biggest query families (niche specifically) so it needs to stand on its own, answer the niche-specific questions that post doesn't, and must not reuse that post's entry copy.",
+  "catalog_segments": [
+    {
+      "handle": "creed-aventus",
+      "segment": "niche",
+      "reason": "Independent perfume house (no apparel/accessories line), boutique + specialty distribution, artisan positioning since 1760 lineage story; the most mainstream-adjacent niche pick but still niche by distribution and house structure.",
+      "member_favourite": true
+    },
+    {
+      "handle": "creed-green-irish-tweed",
+      "segment": "niche",
+      "reason": "Same independent house as Aventus; classic aromatic fougere sold through niche/specialty channels, not department-store designer counters.",
+      "member_favourite": true
+    },
+    {
+      "handle": "creed-silver-mountain-water",
+      "segment": "niche",
+      "reason": "Independent Creed house; fresh citrus-tea composition, specialty distribution only.",
+      "member_favourite": false
+    },
+    {
+      "handle": "creed-santal",
+      "segment": "niche",
+      "reason": "Independent Creed house; spiced aromatic fougere, specialty distribution only.",
+      "member_favourite": false
+    },
+    {
+      "handle": "pdm-layton",
+      "segment": "niche",
+      "reason": "Parfums de Marly is a dedicated independent perfume house (est. 2009, no other product categories); sold through niche fragrance retailers.",
+      "member_favourite": false
+    },
+    {
+      "handle": "pdm-pegasus",
+      "segment": "niche",
+      "reason": "Same dedicated PdM house; distinct anise-almond gourmand structure not found in mall/designer fragrance.",
+      "member_favourite": false
+    },
+    {
+      "handle": "pdm-perseus",
+      "segment": "niche",
+      "reason": "Same dedicated PdM house; fresh citrus-vetiver, sold niche-only.",
+      "member_favourite": true
+    },
+    {
+      "handle": "pdm-althair",
+      "segment": "niche",
+      "reason": "Same dedicated PdM house; vanilla-orange blossom gourmand.",
+      "member_favourite": false
+    },
+    {
+      "handle": "parfums-de-marly-haltane",
+      "segment": "niche",
+      "reason": "Same dedicated PdM house; oud-leather-saffron composition, more polarizing/heavier niche profile.",
+      "member_favourite": false
+    },
+    {
+      "handle": "xerjoff-alexandria-ii",
+      "segment": "niche",
+      "reason": "Xerjoff is an independent Italian niche perfumery with no other product lines; ultra-premium boutique-only distribution.",
+      "member_favourite": true
+    },
+    {
+      "handle": "xerjoff-erba-pura",
+      "segment": "niche",
+      "reason": "Same independent Xerjoff house; Mediterranean citrus-vanilla, the brand's most approachable/entry composition.",
+      "member_favourite": false
+    },
+    {
+      "handle": "xerjoff-torino-21",
+      "segment": "niche",
+      "reason": "Same independent Xerjoff house; part of the 'Join the Club' collection, one of the few fragrances on the market with an officially undisclosed note list, which is itself a niche-market signal (mystique over transparency).",
+      "member_favourite": false
+    },
+    {
+      "handle": "bond-no-9-nomad",
+      "segment": "niche",
+      "reason": "Bond No. 9 is a dedicated New York perfume house (no other categories); neighborhood-storytelling concept fragrance sold in specialty/niche retail.",
+      "member_favourite": false
+    },
+    {
+      "handle": "bond-no-9-fidi",
+      "segment": "niche",
+      "reason": "Same dedicated Bond No. 9 house; spicy-woody, part of the same NYC-neighborhood concept line.",
+      "member_favourite": false
+    },
+    {
+      "handle": "bond-no-9-bleecker-street",
+      "segment": "niche",
+      "reason": "Same dedicated Bond No. 9 house; gourmand-floral, one of the brand's longest-running and most distinct compositions.",
+      "member_favourite": true
+    },
+    {
+      "handle": "bond-no-9-the-scent-of-peace",
+      "segment": "niche",
+      "reason": "Same dedicated Bond No. 9 house; fresh citrus-vetiver, one of the brand's most versatile daily wears.",
+      "member_favourite": true
+    },
+    {
+      "handle": "initio-side-effect",
+      "segment": "niche",
+      "reason": "Initio Parfums Prives is a dedicated niche house built specifically around molecule-driven, high-concentration compositions; specialty/niche retail only.",
+      "member_favourite": false
+    },
+    {
+      "handle": "tom-ford-ombre-leather",
+      "segment": "borderline",
+      "reason": "Store product is Tom Ford Oud Wood, Private Blend. Tom Ford is a full fashion house (apparel, accessories, beauty), which is a designer-house trait, but Private Blend is priced, bottled, and historically distributed as an exclusive/niche-tier line separate from Tom Ford's mainline signature fragrances -- the textbook 'designer house's niche line' case.",
+      "member_favourite": false
+    },
+    {
+      "handle": "bvlgari-le-gemme-orom",
+      "segment": "borderline",
+      "reason": "Bvlgari is primarily a jewelry and luxury-goods maison, which is a designer-house trait, but Le Gemme is an exclusive high-concentration collection at a materially higher price point and narrower distribution than Bvlgari's mainline fragrances -- the same 'exclusive line inside a big house' pattern as Tom Ford Private Blend.",
+      "member_favourite": false
+    }
+  ],
+  "official_sources": [
+    {
+      "handle": "creed-aventus",
+      "official_url": "https://www.creedboutique.com/products/aventus",
+      "fetched": true,
+      "notes_quote": "Head Notes: Calabrian Bergamot, Sicilian Lemon & Blackcurrant Leaf Accord. Heart Notes: Pineapple Accord, Pink Pepper & Jasmine Accord. Base Notes: Birch, Patchouli & Musk Accord. Family: Dry Woods, Fresh, Citrus & Fruity."
+    },
+    {
+      "handle": "creed-green-irish-tweed",
+      "official_url": "https://www.creedboutique.com/products/green-irish-tweed",
+      "fetched": true,
+      "notes_quote": "Head Notes: Peppermint, Verbena, Lemon, Bergamot & Galbanum. Heart Notes: Geranium, Lavender & Violet. Base Notes: Sandalwood, Cedarwood, Ambroxan & Oakmoss. Family: Aromatic Fougere, Green & Mossy Woods."
+    },
+    {
+      "handle": "creed-silver-mountain-water",
+      "official_url": "https://www.creedboutique.com/products/silver-mountain-water",
+      "fetched": true,
+      "notes_quote": "Head Notes: Bergamot, Blackcurrant, Galbanum & Orange. Heart Notes: Tea & Ozonic Accord. Base Notes: Musk & Sandalwood. Family: Citrus, Fruity & Woody."
+    },
+    {
+      "handle": "creed-santal",
+      "official_url": "https://www.creedboutique.com/products/original-santal",
+      "fetched": true,
+      "notes_quote": "Head Notes: Ginger, Juniper Berries, Bergamot, Rosemary, Coriander, Mandarin. Heart Notes: Lavender, Geranium, Orange Blossom, Sandalwood. Base Notes: Oakmoss, Musk, Tonka Bean, Cedarwood. Family: Aromatic Fougere & Ambery -- 'richly spiced, deeply sensual and effortlessly indulgent.'"
+    },
+    {
+      "handle": "pdm-layton",
+      "official_url": "https://us.parfums-de-marly.com/products/layton",
+      "fetched": true,
+      "notes_quote": "Top Notes: Apple, Bergamot, Cardamom. Heart Notes: Lavender, Violet, Geranium. Base Notes: Patchouli, Vanilla, Guaicwood, Praline."
+    },
+    {
+      "handle": "pdm-pegasus",
+      "official_url": "https://us.parfums-de-marly.com/products/pegasus",
+      "fetched": true,
+      "notes_quote": "Top Notes: Anise, Bergamot, Almond. Heart Notes: Cypress, Violet Leaves, Orange Blossom. Base Notes: Ambrox, Vanilla, Sandalwood."
+    },
+    {
+      "handle": "pdm-perseus",
+      "official_url": "https://us.parfums-de-marly.com/products/perseus",
+      "fetched": true,
+      "notes_quote": "Top notes: Bergamot, Grapefruit. Heart notes: Geranium, Blackcurrant Bud. Base notes: Vetiver, Amberwood, Grey Amber -- 'Bright, invigorating and refined.'"
+    },
+    {
+      "handle": "pdm-althair",
+      "official_url": "https://us.parfums-de-marly.com/products/althair",
+      "fetched": true,
+      "notes_quote": "Top Notes: Bergamot, Mandarin, Elemi. Heart Notes: Orange Blossom, Cinnamon, Cardamom. Base Notes: Bourbon Vanilla, Guaicwood, Praline."
+    },
+    {
+      "handle": "parfums-de-marly-haltane",
+      "official_url": "https://us.parfums-de-marly.com/products/haltane",
+      "fetched": true,
+      "notes_quote": "Top Notes: Bergamot, Pink Peppercorn. Heart Notes: Saffron, Praline, Lavender, Clary Sage. Base Notes: Oud, Patchouli, Vetiver, Leather."
+    },
+    {
+      "handle": "xerjoff-alexandria-ii",
+      "official_url": "https://www.xerjoff.com/en-us/products/alexandria-ll-parfum",
+      "fetched": true,
+      "notes_quote": "Top Notes: Apple, Cinnamon, Lavender, Rosewood. Heart Notes: Cedarwood, Lily of the Valley, Bulgarian Rose. Base Notes: Amber, Laotian Oud, Musk, Sandalwood, Vanilla."
+    },
+    {
+      "handle": "xerjoff-erba-pura",
+      "official_url": "https://www.xerjoff.com/en-us/products/erba-pura-eau-de-parfum",
+      "fetched": true,
+      "notes_quote": "Top Notes: Lemon, Calabrian Bergamot, Sicilian Orange. Heart Notes: Mediterranean Fruit. Base Notes: Amber, Madagascar Vanilla Beans, White Musk."
+    },
+    {
+      "handle": "xerjoff-torino-21",
+      "official_url": "https://www.xerjoff.com/en-us/products/torino21-eau-de-parfum",
+      "fetched": true,
+      "notes_quote": "'As with all perfumes in the Join the Club collection, the notes of TORINO21 are kept a closely guarded secret.' (Third-party retail copy describes an opening of lemon, mint and basil, a jasmine-and-lavender heart, and a musk-and-verbena base, but Xerjoff's own page discloses no official note pyramid.)"
+    },
+    {
+      "handle": "bond-no-9-nomad",
+      "official_url": "https://www.bondno9.com/products/nomad",
+      "fetched": true,
+      "notes_quote": "Top Notes: Pear, Quince, Blackcurrant. Heart Notes: Violet Leaves, Oud Accord, Orris, Rose. Base Notes: Amber, Sandalwood, Vanilla."
+    },
+    {
+      "handle": "bond-no-9-fidi",
+      "official_url": "https://www.bondno9.com/products/fidi",
+      "fetched": true,
+      "notes_quote": "Top Notes: Pink Pepper, Madagascar Black Pepper, Bergamot, Mandarin. Heart Notes: Nutmeg, Lotus Flower. Base Notes: Tonka Bean, Ambrox, Musk, Amber, Cedarwood."
+    },
+    {
+      "handle": "bond-no-9-bleecker-street",
+      "official_url": "https://www.bondno9.com/products/bleecker-street",
+      "fetched": true,
+      "notes_quote": "Top Notes: Violet leaf, Cassis, Thyme. Heart Notes: Jasmine, Cedarwood, Cinnamon. Base Notes: Oak Moss, Suede, Patchouli, Amber, Vanilla. 'Art, fashion, seduction and dessert in liquid form.'"
+    },
+    {
+      "handle": "bond-no-9-the-scent-of-peace",
+      "official_url": "https://www.bondno9.com/products/the-scent-of-peace-for-him",
+      "fetched": true,
+      "notes_quote": "Top Notes: Bergamot, Pineapple, Juniper Berry. Heart Notes: Blackcurrant, Cedarwood, Vetiver. Base Notes: Patchouli, Moss, Musk, Amber."
+    },
+    {
+      "handle": "initio-side-effect",
+      "official_url": "https://us.initioparfums.com/products/side-effect",
+      "fetched": true,
+      "notes_quote": "Main Notes: Cinnamon, Rum, Tobacco, Saffron, Sandalwood, Hedione. Classified 'Ambery, Spicy.'"
+    },
+    {
+      "handle": "tom-ford-ombre-leather",
+      "official_url": "https://www.tomfordbeauty.com/products/oud-wood-eau-de-parfum",
+      "fetched": true,
+      "notes_quote": "Key Notes: Cardamom, Pink Pepper, Patchouli, Amber, Oud, Tonka Bean. 'Exotic rosewood and cardamom give way to a smoky blend of precious oud notes, sandalwood and vetiver. Tonka bean and amber add warmth and sensuality.' (Store title: Tom Ford Oud Wood EDP; the /products/tom-ford-ombre-leather handle is Oud Wood, Private Blend, NOT the Ombre Leather fragrance -- do not confuse the two in copy.)"
+    },
+    {
+      "handle": "bvlgari-le-gemme-orom",
+      "official_url": "https://www.bulgari.com/en-us/fragrances/bvlgari-le-gemme/le-gemme-orom-eau-de-parfum-42180",
+      "fetched": false,
+      "notes_quote": "bulgari.com returned HTTP 403 to both WebFetch and curl (no bypass attempted beyond the given UA string). Best available via WebSearch summary of the official page: 'notes of deep leather, where vanilla bourbon caviar absolute intertwines with precious oud assam essence, creating a contrasted woody ambery signature' -- top note Bourbon vanilla, middle note Siam benzoin, base note agarwood (oud). Flag for a human to verify against the live Bulgari page before publishing this note list as a direct quote."
+    }
+  ],
+  "questions_people_ask": [
+    "What's the difference between niche and designer fragrances?",
+    "Are niche fragrances worth the higher price?",
+    "What is the best niche fragrance for a beginner?",
+    "What's the best niche fragrance for men in 2026?",
+    "How do I avoid an expensive blind-buy mistake on a $200-500 niche bottle?",
+    "Which niche fragrance lasts the longest / has the best longevity and projection?",
+    "Is Creed actually niche, or is it basically designer now?",
+    "What's a niche 'exclusive line' inside a big designer house (Tom Ford Private Blend, Bvlgari Le Gemme) -- does that count as niche?",
+    "What's a good niche alternative to Creed Aventus?"
+  ],
+  "competitor_pages": [
+    {
+      "url": "https://www.readysleek.com/best-niche-colognes-men/",
+      "what_they_rank": "8 artisan/niche colognes for men, framed as 'worth the investment,' leaning on classic recommendations like Roja Elysium and niche house staples.",
+      "what_they_miss": "No mechanism to try before a full-bottle commitment -- readers are pushed straight to a $200-500 blind buy. Base Note can answer this directly by recommending a 5 ml atomizer of each ranked pick before any full-bottle purchase, and linking to how-long-does-5ml-fragrance-atomizer-last for how long that trial actually lasts."
+    },
+    {
+      "url": "https://sensabeauty.com/blogs/knowledge-hub/best-niche-colognes-for-men-2026",
+      "what_they_rank": "22 niche colognes, a long undifferentiated list spanning many houses (Xerjoff, Mancera, Nishane, Amouage, etc.) with short blurbs each.",
+      "what_they_miss": "Breadth over depth -- 22 entries means no real explanation of WHY something is niche vs. designer, and no honest word on which picks are actually easy to wear daily vs. special-occasion only. Base Note can differentiate with a tighter, sourced list plus explicit member-favourite signal from real subscriber data, which a generic 22-item roundup cannot offer."
+    },
+    {
+      "url": "https://prosodylondon.com/blog/10-best-niche-perfumes-for-men/",
+      "what_they_rank": "10 niche perfumes for men curated by 'a perfumer,' skewing toward European/UK-available niche names.",
+      "what_they_miss": "Written from a UK retail perspective with limited attention to US buyers who are deciding whether to blind-buy a full bottle vs. sample first -- and no mention of subscription/rotation as a way to try several of these without four-figure spend. Base Note's cost-per-ml and rotation framing (fragrance-subscription-cost-per-ml-compared) directly fills that gap."
+    },
+    {
+      "url": "https://scentgrade.com/blogs/blog/10-best-niche-perfumes-for-men-in-2026",
+      "what_they_rank": "10 niche perfumes for men in 2026, general best-of format similar to Prosody's list.",
+      "what_they_miss": "No note-by-note sourcing back to the brands' own official pyramids (mixes fan-site notes with marketing copy inconsistently), and doesn't address the 'is this actually niche' classification question at all -- it treats Creed and Tom Ford the same as fully independent houses without ever naming the distinction. Base Note can own the segment/definition angle up front (linking designer-vs-niche-fragrance-whats-the-difference) as a hook competitors skip entirely."
+    },
+    {
+      "url": "https://argosfragrances.com/blogs/news/best-niche-fragrances-for-men",
+      "what_they_rank": "A 'complete guide' style roundup of niche fragrances for men, blending house overviews with individual picks.",
+      "what_they_miss": "Reads as a house-by-house catalog rather than a decisive ranked list -- it never commits to a top pick or explains trade-offs between similar options (e.g., Alexandria II vs. Silver Mountain Water, both fresh-fruity-ozonic). Base Note can win by giving a decisive #1-through-N order with the reasoning for each placement, which is exactly what a ranked list implies and this page does not deliver."
+    }
+  ],
+  "angle_recommendation": "Frame this as the niche-only half of the 32-luxury-fragrances-ranked pillar, written to stand alone: open by defining niche vs. designer vs. 'exclusive line inside a designer house' (link designer-vs-niche-fragrance-whats-the-difference) so readers can place Tom Ford Private Blend and Bvlgari Le Gemme correctly instead of lumping them in blind. Rank strictly within the in-scope niche/borderline catalog (never re-use 32-luxury-fragrances-ranked's entry copy), lead with member-favourite badges only where the reference sheet allows it (Aventus, Bleecker Street, Green Irish Tweed, The Scent of Peace, Alexandria II, Perseus), and push the 5ml-atomizer-before-full-bottle angle hard in every entry because niche bottles run $200-500+ and none of the 5 strongest competing pages offer a lower-risk way to try before buying. Close with an FAQ block answering the 'is Creed/Tom Ford really niche' classification question directly, since none of the competing pages address it.",
+  "ranking_recommendation": [
+    "creed-aventus",
+    "pdm-layton",
+    "xerjoff-alexandria-ii",
+    "creed-green-irish-tweed",
+    "bond-no-9-bleecker-street",
+    "pdm-perseus",
+    "bond-no-9-the-scent-of-peace",
+    "tom-ford-ombre-leather",
+    "initio-side-effect",
+    "pdm-pegasus",
+    "creed-silver-mountain-water",
+    "xerjoff-erba-pura",
+    "pdm-althair",
+    "bvlgari-le-gemme-orom",
+    "bond-no-9-fidi",
+    "creed-santal",
+    "parfums-de-marly-haltane",
+    "bond-no-9-nomad",
+    "xerjoff-torino-21"
+  ],
+  "ranking_reasons": {
+    "creed-aventus": "Member favourite; the single most-searched niche fragrance in the query family and the universal gateway pick (pineapple-birch-musk is broadly crowd-pleasing per official notes) -- earns the #1 slot on both demand and sales signal.",
+    "pdm-layton": "Not a member favourite by the reference list, but independently the most-recommended niche cologne across competing pages and general search ('most recommended niche cologne in the world'); apple-lavender-guaiac wood pyramid is the most versatile in the set.",
+    "xerjoff-alexandria-ii": "Member favourite; official apple-rose-oud pyramid backs up its reputation as a richer, better-performing alternative to Creed's fresher picks -- justifies a top-3 slot.",
+    "creed-green-irish-tweed": "Member favourite; classic aromatic fougere with an official pyramid (peppermint/verbena top, sandalwood/ambroxan base) that reads as the definitive 'office-to-evening' niche fougere.",
+    "bond-no-9-bleecker-street": "Member favourite; official notes (violet leaf/cassis top, oakmoss/vanilla/caramel base) give it real gourmand-floral distinctiveness no other pick in the set matches.",
+    "pdm-perseus": "Member favourite; official bergamot-grapefruit-vetiver pyramid makes it the most 'wearable daily' Parfums de Marly in the set, differentiating it from the heavier Haltane/Althair entries.",
+    "bond-no-9-the-scent-of-peace": "Member favourite; official pineapple-vetiver-patchouli pyramid gives it crossover appeal similar to Aventus, justifying a top-half slot.",
+    "tom-ford-ombre-leather": "Borderline segment but culturally the most recognized 'gateway to oud' fragrance in the catalog (official cardamom-oud-tonka pyramid); placed just past the confirmed member favourites because its designer-house status needs the segment callout before it can be called niche without qualification.",
+    "initio-side-effect": "Not a member favourite, but shows up unprompted in general 'best niche 2026' search results as a top pick (tobacco-vanilla-rum-cinnamon) -- strong organic demand signal even without internal sales data backing it.",
+    "pdm-pegasus": "Distinct anise-almond-cypress gourmand pyramid gives it a clear reason to exist next to Layton/Perseus without overlapping them.",
+    "creed-silver-mountain-water": "Official bergamot-tea-musk pyramid is the freshest, most polarizing-in-a-good-way Creed pick; ranked mid-list since it lacks the member-favourite signal Aventus and GIT have.",
+    "xerjoff-erba-pura": "The most approachable/entry-level Xerjoff (Mediterranean citrus-vanilla per official notes), a reasonable next step after Alexandria II for readers wanting a lighter house intro.",
+    "pdm-althair": "Warm vanilla-orange blossom pyramid overlaps somewhat with Layton's gourmand-woody territory, placed after the more differentiated PdM picks.",
+    "bvlgari-le-gemme-orom": "Borderline segment with the weakest sourcing in this set (official page fetch failed, 403) -- ranked here pending a human re-verification of the note claim before publishing it as sourced fact.",
+    "bond-no-9-fidi": "Solid spicy-woody office pick per official notes, but less distinctive than Bleecker Street or The Scent of Peace within the same house.",
+    "creed-santal": "Classic but more divisive aromatic fougere (oakmoss/tonka/cedarwood per official notes) -- ranked lower as a 'for fans of the genre' pick rather than a universal recommendation.",
+    "parfums-de-marly-haltane": "Heaviest, most polarizing PdM entry (oud-leather-saffron per official notes) -- appropriate for a 'if you want something bolder' slot near the bottom rather than a top recommendation.",
+    "bond-no-9-nomad": "Newer, less-established Bond No. 9 entry (oud-pear-quince per official notes); ranked low pending more real-world wear data relative to the brand's older, better-known entries.",
+    "xerjoff-torino-21": "Ranked last because Xerjoff's own page discloses no official note pyramid ('kept a closely guarded secret'), making it the hardest entry in the set to write authoritative, sourced copy about -- flag this for the writer so the entry leans on verified brand story/inspiration rather than invented notes."
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "handle": "best-winter-fragrances-men-2026-2027-guide",
+  "run": "2026-09-11T11:30Z",
+  "task": "Rewrite unverified draft blog-post-20 into house format; re-source every note from official manufacturer pages fetched in this run.",
+  "query_family": ["best winter fragrances for men 2026", "best winter cologne", "winter cologne for men"],
+  "verification_pass": "Second pass in the same run: every official page below re-fetched with curl (desktop Chrome user agent) and the notes and quotes matched against the raw HTML text; Side Effect and Spicebomb Extreme also re-checked with WebFetch.",
+  "positioning_source": {
+    "url": "https://basenotescent.com/",
+    "fetched": "2026-09-11",
+    "live_wording": [
+      "Try authentic designer and niche scents in a 5ml spray vial, without committing to a full bottle.",
+      "Real fragrance, decanted from the original bottle into a labeled glass atomizer.",
+      "5 ml · glass atomizer"
+    ],
+    "used": "Authentic designer and niche fragrance decanted from the original bottle into labeled 5 ml glass atomizers; try before committing to a full bottle. No price used."
+  },
+  "ranked": [
+    {
+      "rank": 1,
+      "handle": "pdm-layton",
+      "store_title": "Parfums de Marly Layton EDP",
+      "available_on_base_note": true,
+      "source": "https://us.parfums-de-marly.com/products/layton",
+      "fetch": "curl 200; notes and description confirmed in raw HTML",
+      "notes": {"top": ["Apple", "Bergamot", "Cardamom"], "heart": ["Lavender", "Violet", "Geranium"], "base": ["Patchouli", "Vanilla", "Guaicwood", "Praline"]},
+      "quote": "Layton blends the freshness of apple with calming lavender, wrapped in the earthy depth of patchouli. Elegant, sensual and flamboyant.",
+      "quoted_in_article": ["Elegant, sensual and flamboyant."],
+      "editorial_note": "'calming' deliberately not reproduced to avoid any wellness-claim reading."
+    },
+    {
+      "rank": 2,
+      "handle": "xerjoff-alexandria-ii",
+      "store_title": "Xerjoff Alexandria II EDP",
+      "member_favourite": true,
+      "available_on_base_note": true,
+      "source": "https://www.xerjoff.com/en-us/products/alexandria-ll-parfum",
+      "fetch": "curl 200; notes and description confirmed in raw HTML. The page text does not state a concentration; the article does not claim one beyond the store title.",
+      "notes": {"top": ["Apple", "Cinnamon", "Lavender", "Rosewood"], "heart": ["Cedarwood", "Lily of the Valley", "Bulgarian Rose"], "base": ["Amber", "Laotian Oud", "Musk", "Sandalwood", "Vanilla"]},
+      "quote": "Inspired by the ancient Arabian art of perfumery, Alexandria II captures the essence of the city that has long been a crossroads of cultures, history and trade."
+    },
+    {
+      "rank": 3,
+      "handle": "tom-ford-ombre-leather",
+      "store_title": "Tom Ford Oud Wood EDP",
+      "note": "Store handle is tom-ford-ombre-leather but the product is Tom Ford Oud Wood (Private Blend); article names it Oud Wood and sources Oud Wood's page.",
+      "available_on_base_note": true,
+      "source": "https://www.tomfordbeauty.com/products/oud-wood-eau-de-parfum",
+      "fetch": "curl 200; key notes and description confirmed in raw HTML",
+      "notes": {"key_notes": ["Cardamom", "Pink Pepper", "Patchouli", "Amber", "Oud", "Tonka Bean"], "description_notes": ["rosewood", "cardamom", "oud", "sandalwood", "vetiver", "tonka bean", "amber"]},
+      "quote": "Exotic rosewood and cardamom give way to a smoky blend of precious oud notes, sandalwood and vetiver. Tonka bean and amber add warmth and sensuality."
+    },
+    {
+      "rank": 4,
+      "handle": "creed-santal",
+      "store_title": "Creed Santal EDP",
+      "note": "Creed now sells it as Original Santal Eau de Parfum; /products/original-santal is live.",
+      "available_on_base_note": true,
+      "source": "https://creedboutique.com/products/original-santal",
+      "fetch": "curl 200; notes, family and description confirmed in raw HTML",
+      "family": "Aromatic Fougère & Ambery",
+      "notes": {"head": ["Ginger", "Juniper Berries", "Bergamot", "Rosemary", "Coriander", "Mandarin"], "heart": ["Lavender", "Geranium", "Orange Blossom", "Sandalwood"], "base": ["Oakmoss", "Musk", "Tonka Bean", "Cedarwood"]},
+      "quote": "Inspired by the opulence of India, Original Santal is richly spiced, deeply sensual and effortlessly ingulgent. ... Warming ginger and coriander evolve into a sophisticated sandalwood heart, finally resting on a creamy base of tonka bean and oakmoss for a decadent dry-down that endures.",
+      "quoted_in_article": ["richly spiced, deeply sensual"],
+      "editorial_note": "'a decadent dry-down that endures' not used (longevity wording)."
+    },
+    {
+      "rank": 5,
+      "handle": "pdm-althair",
+      "store_title": "Parfums de Marly Althair EDP",
+      "available_on_base_note": true,
+      "source": "https://us.parfums-de-marly.com/products/althair",
+      "fetch": "curl 200; notes and description confirmed in raw HTML",
+      "notes": {"top": ["Bergamot", "Mandarin", "Elemi"], "heart": ["Orange Blossom", "Cinnamon", "Cardamom"], "base": ["Bourbon Vanilla", "Guaicwood", "Praline"]},
+      "quote": "Althaïr combines the smoothness of vanilla, the indulgence of praline, and the brightness of orange blossom. Elegant, generous and charismatic."
+    },
+    {
+      "rank": 6,
+      "handle": "viktor-rolf-spicebomb-extreme",
+      "store_title": "Viktor & Rolf Spicebomb Extreme EDP",
+      "available_on_base_note": true,
+      "source": "https://www.viktor-rolf.com/products/spicebomb-extreme-eau-de-parfum",
+      "fetch": "curl 200 (a request with an Accept-Language header is geo-redirected to /en-us; without it the product page loads); WebFetch 200; product .js JSON 200. Key notes, family and 'Type: Eau De Parfum' confirmed in raw HTML.",
+      "family": "Ambery Spicy",
+      "notes": {"top": ["Black Pepper Essence"], "middle": ["Saffron Accord"], "base": ["Cistus Absolute"], "description_notes": ["aromatic lavender", "pepper", "saffron", "tobacco", "bourbon", "warm vanilla"]},
+      "quote": "A warm cocktail of virility designed around an ardent and contrasted explosion of black pepper and saffron.",
+      "editorial_note": "'deeper, longer-lasting version' not used (longevity wording)."
+    },
+    {
+      "rank": 7,
+      "handle": "initio-side-effect",
+      "store_title": "Initio Side Effect EDP",
+      "available_on_base_note": true,
+      "source": "https://www.initioparfums.com/products/side-effect",
+      "fetch": "curl 200 (redirects to initioparfums.com); WebFetch 200; key notes list and description confirmed in raw HTML",
+      "family": "Ambery, Spicy",
+      "notes": {"key_notes": ["Cinnamon", "Rum", "Tobacco", "Saffron", "Sandalwood", "Hedione"], "description_notes": ["Tobacco", "Vanilla", "Rum", "Cinnamon", "Hedione"]},
+      "quote": "An olfactory shockwave that disrupts and intoxicates. ... Defined by a hypnotic blend of Tobacco, Vanilla, Rum, and Cinnamon, enhanced by Hedione, this enigmatic night perfume captivates effortlessly."
+    }
+  ],
+  "dropped_from_draft": [
+    {"name": "Tom Ford Tobacco Vanille", "reason": "Not in the Base Note catalog."},
+    {"name": "Bond No. 9 New York Forever", "reason": "Not in the Base Note catalog."},
+    {"name": "Tom Ford Ombré Leather", "reason": "The store product at /products/tom-ford-ombre-leather is Oud Wood; Ombré Leather itself is not sold. Replaced by Oud Wood."},
+    {"name": "Creed Aventus", "reason": "In catalog and a member favourite, but its official profile is fruity and smoky rather than cold-weather-led; not among the strongest winter fits."}
+  ],
+  "considered_not_sourced": [
+    {"handle": "emporio-armani-stronger-with-you-intensely", "reason": "Official page returned 403 to WebFetch and to curl with a desktop user agent."},
+    {"handle": "valentino-born-in-roma-intense", "reason": "Official page returned 403 to WebFetch and to curl with a desktop user agent."},
+    {"handle": "bvlgari-le-gemme-orom", "reason": "Official page returned 403 to WebFetch and to curl with a desktop user agent."}
+  ],
+  "draft_ideas_kept": [
+    "The real winter problem is the swing from a cold street into a heated room; dress the fragrance for the room.",
+    "Apply lightly and let warmth do the work; add only after smelling it indoors.",
+    "A light mist on a wool scarf, avoiding delicate fabrics.",
+    "Test in real cold before a full-bottle decision."
+  ],
+  "draft_claims_removed": [
+    "All prices and the flat monthly subscription offer.",
+    "Temperature thresholds tied to evaporation physics, spray counts and 5 ml day counts.",
+    "Batch-variation and performance claims; perfumer and launch-year details not on official pages.",
+    "Absolute-URL internal links and the founder-page link."
+  ]
+}

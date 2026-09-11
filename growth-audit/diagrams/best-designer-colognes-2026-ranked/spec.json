@@ -1,0 +1,163 @@
+{
+  "handle": "best-designer-colognes-2026-ranked",
+  "palette": "cream background, deep forest-green and charcoal ink, one warm amber accent; no brand logos, no bottle replicas",
+  "fig-01": {
+    "file": "fig-01.png",
+    "purpose": "ELI5 picture for the 'Explained simply' section. Big pictures, few words.",
+    "title": "Designer cologne, explained simply",
+    "layout": "three panels left to right, joined by arrows, with one short line under the whole graphic",
+    "panels": [
+      {
+        "order": 1,
+        "picture": "a simple drawn shop front with a plain clothes hanger on its sign, no names or logos",
+        "label": "Fashion house"
+      },
+      {
+        "order": 2,
+        "picture": "split card: left half a lemon slice and a lavender sprig in pale green; right half a vanilla pod and a wood slice in warm amber",
+        "label_left": "Fresh / cool and bright",
+        "label_right": "Warm / cozy"
+      },
+      {
+        "order": 3,
+        "picture": "a small plain unbranded clear-glass 5 ml atomizer standing next to a larger plain unbranded bottle outline",
+        "label": "5 ml atomizer"
+      }
+    ],
+    "all_text_on_image": [
+      "Designer cologne, explained simply",
+      "Fashion house",
+      "Fresh",
+      "cool and bright",
+      "Warm",
+      "cozy",
+      "5 ml atomizer",
+      "Try small first, then choose."
+    ],
+    "footer_line": "Try small first, then choose."
+  },
+  "fig-02": {
+    "file": "fig-02.png",
+    "purpose": "2x2 scent map placing every ranked fragrance. Placement is Base Note's reading of each brand's official notes, not a measurement.",
+    "title": "Designer cologne scent map: ten picks by their official notes",
+    "x_axis": {
+      "label": "Fresh to warm",
+      "left_end": "Fresh",
+      "right_end": "Warm",
+      "scale": "0 fresh to 10 warm",
+      "midline": 5
+    },
+    "y_axis": {
+      "label": "Light to rich",
+      "bottom_end": "Light",
+      "top_end": "Rich",
+      "scale": "0 light to 10 rich",
+      "midline": 5
+    },
+    "quadrant_labels": {
+      "top_left": "Fresh and rich",
+      "top_right": "Warm and rich",
+      "bottom_left": "Fresh and light",
+      "bottom_right": "Warm and light"
+    },
+    "points": [
+      {
+        "rank": 1,
+        "name": "Dior Sauvage EDP",
+        "x": 5,
+        "y": 5,
+        "reason": "Calabrian bergamot on top, Sichuan pepper, lavender and star anise in the heart, and Papua New Guinea vanilla extract with ambroxan in the base: a fresh opening balanced by a warm base, so it sits at the centre."
+      },
+      {
+        "rank": 2,
+        "name": "Acqua di Gio Profondo Parfum",
+        "x": 2.5,
+        "y": 5.5,
+        "reason": "Armani describes a deep freshness with a dense, resinous and mineral facet, built on bergamot notes, balsamic cistus absolute and everlasting essence: fresh-leaning, with more weight than a light aquatic."
+      },
+      {
+        "rank": 3,
+        "name": "YSL Y Intense EDP",
+        "x": 3.5,
+        "y": 7,
+        "reason": "French blue lavender, crisp sage and fresh geranium intensified with blue juniper berries and patchouli from Bali: aromatic and fresh-leaning, pulled richer by the patchouli."
+      },
+      {
+        "rank": 4,
+        "name": "Dolce & Gabbana Light Blue EDP",
+        "x": 1.5,
+        "y": 2.5,
+        "reason": "Seawater cypress with aromatic notes and salty, mineral nuances in a woody aromatic family, described as evoking a sea breeze: the freshest and lightest profile on the list."
+      },
+      {
+        "rank": 5,
+        "name": "Versace Eros EDP",
+        "x": 5.5,
+        "y": 6.5,
+        "reason": "Lemon, mandarin, mint oil and candied apple on top over geranium, clary sage and AmberMax, then cedarwood, vetiver, patchouli, sandalwood and vanilla meeting leather: a fresh top over a sweet woody base, just warm of centre."
+      },
+      {
+        "rank": 6,
+        "name": "Dolce & Gabbana The One EDP",
+        "x": 4.5,
+        "y": 3.5,
+        "reason": "Tarocco blood orange and clary sage over Australian sandalwood, classified Aromatic by Dolce & Gabbana: just fresh of centre and light, softened by sandalwood."
+      },
+      {
+        "rank": 7,
+        "name": "Givenchy Gentleman EDP",
+        "x": 6.5,
+        "y": 7.5,
+        "reason": "Pepper and lavender over orris and Peru balm, with patchouli and black vanilla in a woody floral family that Givenchy also calls balmy: warm and rich."
+      },
+      {
+        "rank": 8,
+        "name": "Valentino Born in Roma Intense EDP",
+        "x": 7.5,
+        "y": 5.5,
+        "reason": "Bourbon vanilla lifted by ginger, lavandin in the heart and smoked vetiver in an ambery fougère, with the vanilla described as unsweetened and leathery: warm, moderately rich, lifted by the lavandin."
+      },
+      {
+        "rank": 9,
+        "name": "Viktor & Rolf Spicebomb Extreme EDP",
+        "x": 9.5,
+        "y": 9,
+        "reason": "Black pepper essence, saffron accord and cistus absolute in an ambery spicy family, with lavender, tobacco, bourbon and vanilla in the brand's description: the warmest and richest profile in the guide."
+      },
+      {
+        "rank": 10,
+        "name": "Prada Paradigme EDP",
+        "x": 8,
+        "y": 8,
+        "reason": "Opens on a smoky blend of Peru balsam, benzoin resin and guaiac wood, with a double geranium extract, Calabrian bergamot and airy musks at the heart: warm and rich, with some lift."
+      }
+    ],
+    "caption": "Placement is Base Note's reading of each brand's official notes (fresh to warm across, light to rich up), not a measurement.",
+    "all_text_on_image": [
+      "Designer cologne scent map: ten picks by their official notes",
+      "RICH",
+      "LIGHT",
+      "FRESH",
+      "WARM",
+      "FRESH AND RICH",
+      "WARM AND RICH",
+      "FRESH AND LIGHT",
+      "WARM AND LIGHT",
+      "Dior Sauvage EDP",
+      "Acqua di Gio Profondo Parfum",
+      "YSL Y Intense EDP",
+      "Dolce & Gabbana Light Blue EDP",
+      "Versace Eros EDP",
+      "Dolce & Gabbana The One EDP",
+      "Givenchy Gentleman EDP",
+      "Valentino Born in Roma Intense EDP",
+      "Viktor & Rolf Spicebomb Extreme EDP",
+      "Prada Paradigme EDP",
+      "LEGEND",
+      "#1 pick (Dior Sauvage EDP)",
+      "Other ranked picks",
+      "Placement is Base Note's reading of each brand's official notes (fresh to warm across, light to rich up), not a measurement."
+    ],
+    "label_names": "Dot labels use the article's exact names, as in the comparison table and headings."
+  }
+}

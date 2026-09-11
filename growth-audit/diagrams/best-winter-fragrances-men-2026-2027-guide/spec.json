@@ -1,0 +1,138 @@
+{
+  "handle": "best-winter-fragrances-men-2026-2027-guide",
+  "palette": "cream background, deep forest-green and charcoal ink, one warm amber accent; no brand logos, no bottle replicas",
+  "fig-01": {
+    "file": "fig-01.png",
+    "purpose": "ELI5 picture for the 'Explained simply' section. Big pictures, few words.",
+    "title": "Winter scent, explained simply",
+    "layout": "three panels left to right, joined by arrows",
+    "panels": [
+      {
+        "order": 1,
+        "picture": "a simple drawn list card with three small icons on it: a peppercorn, a vanilla pod, a slice of wood",
+        "label": "Notes = the smells a perfume lists",
+        "icon_labels": [
+          "Pepper",
+          "Vanilla",
+          "Wood"
+        ]
+      },
+      {
+        "order": 2,
+        "picture": "split card: left half a lemon slice and a mint leaf in pale green; right half a cinnamon stick, a wood slice and a vanilla pod in warm amber",
+        "label_left": "Cool, bright",
+        "label_right": "Cozy, warm"
+      },
+      {
+        "order": 3,
+        "picture": "abstract icons: a window pane with a few white dots and a tan room swatch with a small circle, a dark bench shape, and a small plain bottle silhouette with a gold cap (as rendered in fig-01.png)",
+        "label": "Winter: pick cozy, spray light"
+      }
+    ],
+    "all_text_on_image": [
+      "Pepper",
+      "Vanilla",
+      "Wood",
+      "Notes = the smells a perfume lists",
+      "Cool, bright",
+      "Cozy, warm",
+      "Winter: pick cozy, spray light"
+    ],
+    "on_image_word_budget": "20 words or fewer; no kicker or heading text on the image"
+  },
+  "fig-02": {
+    "file": "fig-02.png",
+    "purpose": "2x2 scent map placing every ranked fragrance. Placement is Base Note's reading of each brand's official notes, not a measurement.",
+    "title": "Winter scent map: seven picks by their official notes",
+    "x_axis": {
+      "label": "Fresh to warm",
+      "left_end": "Fresh",
+      "right_end": "Warm",
+      "scale": "0 fresh to 10 warm",
+      "midline": 5
+    },
+    "y_axis": {
+      "label": "Light to rich",
+      "bottom_end": "Light",
+      "top_end": "Rich",
+      "scale": "0 light to 10 rich",
+      "midline": 5
+    },
+    "quadrant_labels": {
+      "top_left": "Fresh and rich",
+      "top_right": "Warm and rich",
+      "bottom_left": "Fresh and light",
+      "bottom_right": "Warm and light"
+    },
+    "points": [
+      {
+        "rank": 1,
+        "name": "Parfums de Marly Layton",
+        "x": 4.5,
+        "y": 5.5,
+        "reason": "Official notes open fresh (apple, bergamot, cardamom) over lavender, violet and geranium, then settle on patchouli, vanilla, guaiac wood and praline: balanced between fresh and warm, mid-rich."
+      },
+      {
+        "rank": 2,
+        "name": "Xerjoff Alexandria II",
+        "x": 6,
+        "y": 7.5,
+        "reason": "Apple, cinnamon, lavender and rosewood on top, cedarwood, lily of the valley and Bulgarian rose in the heart, and a dense base of amber, Laotian oud, musk, sandalwood and vanilla: warm-leaning and rich."
+      },
+      {
+        "rank": 3,
+        "name": "Tom Ford Oud Wood",
+        "x": 7,
+        "y": 8.5,
+        "reason": "Key notes cardamom, pink pepper, patchouli, amber, oud and tonka bean, described as a smoky blend of oud, sandalwood and vetiver warmed by tonka and amber: warm and very rich, dry rather than sweet."
+      },
+      {
+        "rank": 4,
+        "name": "Creed Santal",
+        "x": 3.5,
+        "y": 4.5,
+        "reason": "Head notes of ginger, juniper berries, bergamot, rosemary, coriander and mandarin over lavender, geranium, orange blossom and sandalwood, with oakmoss, musk, tonka bean and cedarwood: the freshest opening here, medium weight."
+      },
+      {
+        "rank": 5,
+        "name": "Parfums de Marly Althair",
+        "x": 7,
+        "y": 6.5,
+        "reason": "Bergamot, mandarin and elemi lift orange blossom, cinnamon and cardamom, over bourbon vanilla, guaiac wood and praline: warm and sweet, rich but lifted."
+      },
+      {
+        "rank": 6,
+        "name": "Viktor & Rolf Spicebomb Extreme",
+        "x": 8.5,
+        "y": 8,
+        "reason": "Key notes black pepper essence, saffron accord and cistus absolute in an ambery spicy family, with lavender, tobacco, bourbon and warm vanilla in the official description: hot spice over resin, warm and rich."
+      },
+      {
+        "rank": 7,
+        "name": "Initio Side Effect",
+        "x": 9.5,
+        "y": 9.5,
+        "reason": "Key notes cinnamon, rum, tobacco, saffron, sandalwood and hedione in an ambery, spicy family, described as a blend of tobacco, vanilla, rum and cinnamon and a night perfume: the warmest and richest profile in the guide."
+      }
+    ],
+    "caption": "Placement is Base Note's reading of each brand's official notes (fresh to warm across, light to rich up), not a measurement.",
+    "all_text_on_image": [
+      "Winter scent map: seven picks by their official notes",
+      "Fresh",
+      "Warm",
+      "Light",
+      "Rich",
+      "Fresh and rich",
+      "Warm and rich",
+      "Fresh and light",
+      "Warm and light",
+      "Parfums de Marly Layton",
+      "Xerjoff Alexandria II",
+      "Tom Ford Oud Wood",
+      "Creed Santal",
+      "Parfums de Marly Althair",
+      "Viktor & Rolf Spicebomb Extreme",
+      "Initio Side Effect"
+    ]
+  }
+}

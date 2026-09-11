@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Where the eleven sit: a niche scent map</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #f4efe3;
+    --ink: #24372b;
+    --green: #22392b;
+    --muted: #62675d;
+    --gold: #ac9159;
+    --line: #d9d4c8;
+    --font-sans: 'Jost', sans-serif;
+    --font-serif: 'Playfair Display', serif;
+  }
+  body {
+    font-family: var(--font-sans);
+    background: var(--cream);
+    color: var(--ink);
+    width: 1240px;
+    padding: 48px;
+  }
+  .frame { width: 1160px; }
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-family: var(--font-serif);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+  svg { width: 100%; display: block; }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Niche fragrance comparison</p>
+    <h1>Where the eleven sit: a niche scent map</h1>
+    <svg viewBox="0 0 1160 1320" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig02-title fig02-desc">
+      <title id="fig02-title">Where the eleven sit: a niche scent map</title>
+      <desc id="fig02-desc">Two-by-two scent map placing eleven ranked niche fragrances from fresh to warm across and light to rich upward, with Creed Silver Mountain Water at fresh and light and Initio Side Effect at warm and rich.</desc>
+      <defs>
+        <marker id="arrow-muted" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#62675d"/></marker>
+      </defs>
+
+      <rect width="1160" height="1320" fill="#f4efe3"/>
+
+      <!-- plot box -->
+      <rect x="180" y="140" width="800" height="800" fill="#ffffff" stroke="#24372b" stroke-opacity="0.14" stroke-width="1"/>
+
+      <!-- quadrant tint (top-right = warm and rich, contains highest concentration) -->
+      <rect x="580" y="140" width="400" height="400" fill="#ac9159" fill-opacity="0.06"/>
+
+      <!-- center cross -->
+      <line x1="580" y1="140" x2="580" y2="940" stroke="#24372b" stroke-opacity="0.22" stroke-width="1"/>
+      <line x1="180" y1="540" x2="980" y2="540" stroke="#24372b" stroke-opacity="0.22" stroke-width="1"/>
+
+      <!-- quadrant corner captions -->
+      <text x="204" y="172" font-family="'Jost', sans-serif" font-size="13" font-style="italic" fill="#62675d">Fresh and rich</text>
+      <text x="900" y="172" text-anchor="end" font-family="'Jost', sans-serif" font-size="13" font-style="italic" fill="#62675d">Warm and rich</text>
+      <text x="204" y="912" font-family="'Jost', sans-serif" font-size="13" font-style="italic" fill="#62675d">Fresh and light</text>
+      <text x="956" y="912" text-anchor="end" font-family="'Jost', sans-serif" font-size="13" font-style="italic" fill="#62675d">Warm and light</text>
+
+      <!-- axis arrow stubs -->
+      <line x1="580" y1="140" x2="580" y2="104" stroke="#62675d" stroke-width="1.5" marker-end="url(#arrow-muted)"/>
+      <line x1="580" y1="940" x2="580" y2="976" stroke="#62675d" stroke-width="1.5" marker-end="url(#arrow-muted)"/>
+      <line x1="180" y1="540" x2="144" y2="540" stroke="#62675d" stroke-width="1.5" marker-end="url(#arrow-muted)"/>
+      <line x1="980" y1="540" x2="1016" y2="540" stroke="#62675d" stroke-width="1.5" marker-end="url(#arrow-muted)"/>
+
+      <!-- axis labels: jobs-minimal, one word -->
+      <text x="580" y="84" text-anchor="middle" font-family="'Jost', sans-serif" font-size="13" font-weight="600" letter-spacing="0.18em" fill="#24372b">RICH</text>
+      <text x="580" y="1012" text-anchor="middle" font-family="'Jost', sans-serif" font-size="13" font-weight="600" letter-spacing="0.18em" fill="#24372b">LIGHT</text>
+      <text x="128" y="545" text-anchor="end" font-family="'Jost', sans-serif" font-size="13" font-weight="600" letter-spacing="0.18em" fill="#24372b">FRESH</text>
+      <text x="1032" y="545" text-anchor="start" font-family="'Jost', sans-serif" font-size="13" font-weight="600" letter-spacing="0.18em" fill="#24372b">WARM</text>
+
+      <!-- points: rank badges, x=180+(x/10)*800, y=940-(y/10)*800 -->
+      <!-- 1 Creed Aventus (4,5.5) -> 500,500 focal -->
+      <circle cx="500" cy="500" r="15" fill="#ac9159" stroke="#24372b" stroke-width="1"/>
+      <text x="500" y="505" text-anchor="middle" font-family="'Jost', sans-serif" font-size="13" font-weight="600" fill="#ffffff">1</text>
+
+      <!-- 2 PDM Layton (6.5,6.5) -> 700,420 -->
+      <circle cx="700" cy="420" r="12" fill="#22392b"/>
+      <text x="700" y="425" text-anchor="middle" font-family="'Jost', sans-serif" font-size="12" font-weight="600" fill="#ffffff">2</text>
+
+      <!-- 3 Xerjoff Alexandria II (7.5,8) -> 780,300 -->
+      <circle cx="780" cy="300" r="12" fill="#22392b"/>
+      <text x="780" y="305" text-anchor="middle" font-family="'Jost', sans-serif" font-size="12" font-weight="600" fill="#ffffff">3</text>
+
+      <!-- 4 Creed GIT (2.5,5) -> 380,540 -->
+      <circle cx="380" cy="540" r="12" fill="#22392b"/>
+      <text x="380" y="545" text-anchor="middle" font-family="'Jost', sans-serif" font-size="12" font-weight="600" fill="#ffffff">4</text>
+
+      <!-- 5 Bond Bleecker Street (6.5,7) -> 700,380 -->
+      <circle cx="700" cy="380" r="12" fill="#22392b"/>
+      <text x="700" y="385" text-anchor="middle" font-family="'Jost', sans-serif" font-size="12" font-weight="600" fill="#ffffff">5</text>
+
+      <!-- 6 PDM Perseus (2.5,3) -> 380,700 -->
+      <circle cx="380" cy="700" r="12" fill="#22392b"/>
+      <text x="380" y="705" text-anchor="middle" font-family="'Jost', sans-serif" font-size="12" font-weight="600" fill="#ffffff">6</text>
+
+      <!-- 7 Bond Scent of Peace (3.5,4.5) -> 460,580 -->
+      <circle cx="460" cy="580" r="12" fill="#22392b"/>
+      <text x="460" y="585" text-anchor="middle" font-family="'Jost', sans-serif" font-size="12" font-weight="600" fill="#ffffff">7</text>
+
+      <!-- 8 Tom Ford Oud Wood (8,8.5) -> 820,260 -->
+      <circle cx="820" cy="260" r="12" fill="#22392b"/>
+      <text x="820" y="265" text-anchor="middle" font-family="'Jost', sans-serif" font-size="12" font-weight="600" fill="#ffffff">8</text>
+
+      <!-- 9 Initio Side Effect (9.5,9.5) -> 940,180 -->
+      <circle cx="940" cy="180" r="12" fill="#22392b"/>
+      <text x="940" y="185" text-anchor="middle" font-family="'Jost', sans-serif" font-size="12" font-weight="600" fill="#ffffff">9</text>
+
+      <!-- 10 PDM Pegasus (6,5) -> 660,540 -->
+      <circle cx="660" cy="540" r="12" fill="#22392b"/>
+      <text x="660" y="545" text-anchor="middle" font-family="'Jost', sans-serif" font-size="12" font-weight="600" fill="#ffffff">10</text>
+
+      <!-- 11 Creed Silver Mountain Water (1.5,1.5) -> 300,820 -->
+      <circle cx="300" cy="820" r="12" fill="#22392b"/>
+      <text x="300" y="825" text-anchor="middle" font-family="'Jost', sans-serif" font-size="12" font-weight="600" fill="#ffffff">11</text>
+
+      <!-- legend heading -->
+      <line x1="180" y1="1040" x2="980" y2="1040" stroke="#d9d4c8" stroke-width="1"/>
+      <text x="180" y="1068" font-family="'Jost', sans-serif" font-size="12" font-weight="600" letter-spacing="0.14em" fill="#62675d">RANKED FRAGRANCES</text>
+
+      <!-- legend two columns x 6 rows -->
+      <g font-family="'Jost', sans-serif" font-size="15" fill="#24372b">
+        <text x="180" y="1100">1. Creed Aventus</text>
+        <text x="180" y="1132">2. Parfums de Marly Layton</text>
+        <text x="180" y="1164">3. Xerjoff Alexandria II</text>
+        <text x="180" y="1196">4. Creed Green Irish Tweed</text>
+        <text x="180" y="1228">5. Bond No. 9 Bleecker Street</text>
+        <text x="180" y="1260">6. Parfums de Marly Perseus</text>
+
+        <text x="660" y="1100">7. Bond No. 9 The Scent of Peace for Him</text>
+        <text x="660" y="1132">8. Tom Ford Oud Wood</text>
+        <text x="660" y="1164">9. Initio Side Effect</text>
+        <text x="660" y="1196">10. Parfums de Marly Pegasus</text>
+        <text x="660" y="1228">11. Creed Silver Mountain Water</text>
+      </g>
+
+      <text x="580" y="1300" text-anchor="middle" font-family="'Playfair Display', serif" font-style="italic" font-size="15" fill="#62675d">Placements are Base Note's reading of each manufacturer's official notes, not a lab measurement.</text>
+    </svg>
+  </div>
+</body>
+</html>

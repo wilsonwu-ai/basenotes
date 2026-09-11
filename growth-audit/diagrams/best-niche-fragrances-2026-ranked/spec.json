@@ -1,0 +1,143 @@
+{
+  "handle": "best-niche-fragrances-2026-ranked",
+  "run": "2026-09-11T11:30Z",
+  "instructions": "Draw exactly what is listed here and nothing else. Palette: cream background, deep forest green and brass accents, dark ink text. No brand logos, no bottle designs, no prices, no numbers other than the rank numbers given for fig-02.",
+  "figures": {
+    "fig-01": {
+      "file": "fig-01.png",
+      "type": "eli5-illustration",
+      "title": "What makes a perfume niche?",
+      "layout": "Two side-by-side panels on top, one full-width strip underneath, one footer line.",
+      "panels": [
+        {
+          "id": "left",
+          "heading": "Fashion house",
+          "icons": ["shirt", "handbag", "small perfume bottle"],
+          "label": "Perfume is one thing it sells among many"
+        },
+        {
+          "id": "right",
+          "heading": "Niche perfume house",
+          "icons": ["small perfume bottle"],
+          "label": "Perfume is the whole business"
+        }
+      ],
+      "strip": {
+        "heading": "Notes: the smells you notice",
+        "layers": [
+          {"label": "Top", "text": "Bright smells you notice first"},
+          {"label": "Heart", "text": "The middle of the scent"},
+          {"label": "Base", "text": "Deep smells underneath"}
+        ]
+      },
+      "footer": "Pick the notes you like, then try a small bottle first."
+    },
+    "fig-02": {
+      "file": "fig-02.png",
+      "type": "2x2-scent-map",
+      "title": "Where the eleven sit: a niche scent map",
+      "axes": {
+        "x": {"label": "Fresh to warm", "min_label": "Fresh", "max_label": "Warm", "range": [0, 10]},
+        "y": {"label": "Light to rich", "min_label": "Light", "max_label": "Rich", "range": [0, 10]}
+      },
+      "quadrant_labels": {
+        "bottom_left": "Fresh and light",
+        "top_left": "Fresh and rich",
+        "bottom_right": "Warm and light",
+        "top_right": "Warm and rich"
+      },
+      "point_label_format": "rank number, then name (for example: 1. Creed Aventus)",
+      "caption": "Placements are Base Note's reading of each manufacturer's official notes, not a lab measurement.",
+      "points": [
+        {
+          "rank": 1,
+          "name": "Creed Aventus",
+          "handle": "creed-aventus",
+          "x": 4,
+          "y": 5.5,
+          "reason": "Bergamot, lemon and blackcurrant leaf on top keep it on the fresh side; a pineapple accord and pink pepper in the heart and birch, patchouli and musk in the base add body, so it sits near the middle."
+        },
+        {
+          "rank": 2,
+          "name": "Parfums de Marly Layton",
+          "handle": "pdm-layton",
+          "x": 6.5,
+          "y": 6.5,
+          "reason": "Apple, bergamot and lavender give a fresh opening, but a base of vanilla, praline, patchouli and guaiac wood pulls it warm and moderately rich."
+        },
+        {
+          "rank": 3,
+          "name": "Xerjoff Alexandria II",
+          "handle": "xerjoff-alexandria-ii",
+          "x": 7.5,
+          "y": 8,
+          "reason": "Cinnamon and rosewood on top, Bulgarian rose in the heart and a base of amber, Laotian oud, sandalwood and vanilla make it warm and rich."
+        },
+        {
+          "rank": 4,
+          "name": "Creed Green Irish Tweed",
+          "handle": "creed-green-irish-tweed",
+          "x": 2.5,
+          "y": 5,
+          "reason": "Peppermint, verbena, lemon and galbanum make it fresh and green; sandalwood, cedarwood, ambroxan and oakmoss in the base give it a medium body."
+        },
+        {
+          "rank": 5,
+          "name": "Bond No. 9 Bleecker Street",
+          "handle": "bond-no-9-bleecker-street",
+          "x": 6.5,
+          "y": 7,
+          "reason": "Violet leaf, cassis and thyme on top are green, but cinnamon in the heart and suede, amber, patchouli and vanilla in the base make it warm and fairly rich."
+        },
+        {
+          "rank": 6,
+          "name": "Parfums de Marly Perseus",
+          "handle": "pdm-perseus",
+          "x": 2.5,
+          "y": 3,
+          "reason": "Bergamot and grapefruit on top with geranium and blackcurrant bud keep it fresh and light; vetiver, amberwood and grey amber give it a light woody base."
+        },
+        {
+          "rank": 7,
+          "name": "Bond No. 9 The Scent of Peace for Him",
+          "handle": "bond-no-9-the-scent-of-peace",
+          "x": 3.5,
+          "y": 4.5,
+          "reason": "Bergamot, pineapple and juniper berry on top are fresh; cedarwood and vetiver in the heart and patchouli, moss, musk and amber in the base add moderate weight."
+        },
+        {
+          "rank": 8,
+          "name": "Tom Ford Oud Wood",
+          "handle": "tom-ford-ombre-leather",
+          "x": 8,
+          "y": 8.5,
+          "reason": "Official key notes of cardamom, pink pepper, patchouli, amber, oud and tonka bean, described as a smoky blend of oud, sandalwood and vetiver, place it warm and rich."
+        },
+        {
+          "rank": 9,
+          "name": "Initio Side Effect",
+          "handle": "initio-side-effect",
+          "x": 9.5,
+          "y": 9.5,
+          "reason": "Main notes of cinnamon, rum, tobacco, saffron and sandalwood, classified by Initio as ambery and spicy, make it the warmest and richest point on the map."
+        },
+        {
+          "rank": 10,
+          "name": "Parfums de Marly Pegasus",
+          "handle": "pdm-pegasus",
+          "x": 6,
+          "y": 5,
+          "reason": "Anise, bergamot and almond on top with cypress and violet leaves in the heart keep it lighter than Layton; the vanilla, sandalwood and ambrox base makes it warm."
+        },
+        {
+          "rank": 11,
+          "name": "Creed Silver Mountain Water",
+          "handle": "creed-silver-mountain-water",
+          "x": 1.5,
+          "y": 1.5,
+          "reason": "Bergamot, blackcurrant, galbanum and orange on top, tea and an ozonic accord in the heart and only musk and sandalwood in the base make it the freshest and lightest point."
+        }
+      ]
+    }
+  }
+}
