@@ -51,7 +51,7 @@ Validation completed before the deployment gate:
 
 ### Deployment gate
 
-The new theme has **not** been published or merged. The existing live theme remains `164190748890` (Claude Artifact Fidelity Sep 10 QA). The CLI successfully pulled a preservation snapshot earlier in this session, then requested a fresh device login for the upload. The canonical store alias also returned HTTP 401 `Service is not valid for authentication`. Selecting the existing CLI account did not restore store access. A device login was provided to the user while QA continued; no saved credentials or auth scopes were altered to bypass that requirement.
+The new theme has **not** been published or merged. The existing live theme remains `164190748890` (Claude Artifact Fidelity Sep 10 QA). The CLI successfully pulled a preservation snapshot earlier in this session, then requested a fresh device login for the upload. The canonical store alias also returned HTTP 401 `Service is not valid for authentication`. Selecting the existing CLI account did not restore store access. The device login expired before completion (`expired_token`); a fresh login is required. No saved credentials or auth scopes were altered to bypass that requirement. Source is saved in draft PR #56, https://github.com/wilsonwu-ai/basenotes/pull/56.
 
 After authentication is restored:
 

@@ -13,7 +13,7 @@ Implements the user's three Claude artifact page mappings and a one-time-first i
 
 ## Do not merge yet
 
-Shopify's saved deployment authentication stopped working after the preservation pull. The upload is waiting for fresh device login. No new theme is published. Final unpublished-Shopify-theme rendering, SEO verifier and newsletter backend checks must pass before merge/publication. Local projections and injected-asset backend tests are deliberately identified separately from full preview QA.
+Shopify's saved deployment authentication stopped working after the preservation pull. The upload's device login expired before completion, so a fresh login is required. No new theme is published. Final unpublished-Shopify-theme rendering, SEO verifier and newsletter form checks must pass before merge/publication. Local projections and injected-asset backend tests are deliberately identified separately from full preview QA.
 
 ## Remaining external dependencies
 
