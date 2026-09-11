@@ -1,5 +1,7 @@
 # Base Note storefront execution · September 10, 2026
 
+**Latest release:** The subsequent [Fragrances reference correction](fragrance-reference-correction-20260910.md) is published as theme `164193468634`, source `440fa69`. It supersedes the collection styling and theme identity in the historical release notes below. The corrected public collection, commerce and preserved homepage all passed verification; PR #56 remains pending GitHub's recorded approving review.
+
 ## Dependency graph
 
 | Step | Reads prior output? | Verdict |

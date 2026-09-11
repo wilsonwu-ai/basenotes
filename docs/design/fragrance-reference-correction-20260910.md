@@ -25,4 +25,14 @@ Intentional differences from the mockup are retained: real merchant photos rathe
 
 Reference/source verification → collection correction → preview visual + commerce QA → publish → fresh public verification. Read-only PR inventory and independent screenshot comparison run alongside implementation; neither owns source files. Older PRs include staging apps, unrelated histories and obsolete storefront snapshots, so they are not bulk-merged into this release. Repository approval status must be reported separately from Shopify publication.
 
-Publication and final source commit are recorded below after the actual public checks complete.
+## Published result
+
+Theme `164193468634` is now published at https://basenotescent.com/collections/fragrances. Exact deployed theme source: `440fa69e983c996cdcd9c6bcc67037c3fe8c2aad`, committed and pushed to PR #56. The prior theme `164192813274` remains available unpublished for recovery.
+
+Fresh public contexts with **no preview parameters** assert theme `164193468634` and role `main`. The reference verifier passes desktop/mobile typography, connected-grid geometry, product ordering within cards, 32 products, preference filters/search, no overflow and no browser errors. Root inspected the public first-view screenshots, not just preview captures. Public SEO verification and the independent commerce regression also pass. The independent public homepage runner passes 3D interactions, reduced motion, photo fallback, preserved `gLmqu.jpg` banner, mobile focus/search, header contrast and collection search. All 25 Node regressions pass.
+
+Public evidence: `/private/tmp/basenote-fragrance-fidelity-live.json`; screenshots in `/var/folders/yg/qvjnvr693832pkp806w46tc40000gn/T/basenote-fragrance-fidelity-NpN3vV`; commerce screenshots in `/private/tmp/basenote-compact-public-commerce-qa`. No orders or customer submissions occurred; only fresh isolated QA carts were changed and cleared.
+
+PR #56 remains **open**, because a fresh ordinary merge attempt is rejected by the branch's approving-review requirement. GitHub returns `REVIEW_REQUIRED` and has no recorded approving review. No admin override or branch-protection changes were used. This does not block the completed Shopify publication. Other open PRs were not bulk-merged: they include unrelated staging apps, unrelated branch histories, and obsolete visuals that could undo the approved correction.
+
+The frontend, Shopify and UI/UX checks narrowed the correction to reference typography/density and preserved native commerce and touch usability. The independent visual and commerce branches both returned usable verification; neither needed to edit the other's files. No measured speedup or conversion uplift is claimed.
