@@ -117,6 +117,40 @@
   font: 400 .6875rem/1.4 var(--reference-sans);
   letter-spacing: .08em;
 }
+/* 5ml / Full bottle switch (replaces the "House · 5ml" line, Jeff 2026-09-10).
+ * The switch and the add button sit together at the foot of each tile so rows align. */
+.scent-card--reference .scent-card__sizes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: auto 0 .75rem;
+  padding-block-start: .75rem;
+}
+.scent-card--reference .scent-card__sizes + form { margin-block-start: 0; }
+.scent-card--reference .scent-card__size {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 2.75rem;
+  margin: 0;
+  padding: .375rem .25rem;
+  border: 1px solid var(--reference-green-dark);
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--reference-green-dark);
+  font: 400 .625rem/1.25 var(--reference-sans);
+  letter-spacing: .08em;
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+}
+.scent-card--reference .scent-card__size + .scent-card__size { border-inline-start: 0; }
+.scent-card--reference .scent-card__size:hover:not([aria-pressed="true"]) { background: rgba(27, 47, 34, .08); color: var(--reference-green-dark); }
+.scent-card--reference .scent-card__size[aria-pressed="true"] { background: var(--reference-green-dark); color: var(--scent-cream, #f4efe3); }
+.scent-card--reference .scent-card__size:focus-visible { outline: 2px solid var(--scent-gold, #8c7037); outline-offset: 2px; }
+.scent-card--reference .product-review-badge { margin: .375rem 0 0; }
 .fragrance-catalog__search { max-width: 24rem; margin: 1.5rem auto 0; }
 .fragrance-catalog__search summary {
   min-height: 2.75rem;

@@ -78,6 +78,7 @@
           <li class="header__nav-item"><a href="/collections/fragrances" class="header__nav-link">Fragrances</a></li>
           <li class="header__nav-item"><a href="/pages/monthly-rotation" class="header__nav-link">Monthly Rotation</a></li>
           <li class="header__nav-item"><a href="/pages/full-bottles" class="header__nav-link">Full bottles</a></li>
+          {%- if section.settings.journal_label != blank -%}<li class="header__nav-item"><a href="{{ section.settings.journal_url | default: '/blogs/hub' }}" class="header__nav-link">{{ section.settings.journal_label | escape }}</a></li>{%- endif -%}
         {%- else -%}
         {%- for link in section.settings.menu.links -%}
           <li class="header__nav-item{% if link.links.size > 0 %} has-dropdown{% endif %}">
@@ -273,6 +274,7 @@
       <li class="mobile-nav__item"><a href="/collections/fragrances" class="mobile-nav__link">Fragrances</a></li>
       <li class="mobile-nav__item"><a href="/pages/monthly-rotation" class="mobile-nav__link">Monthly Rotation</a></li>
       <li class="mobile-nav__item"><a href="/pages/full-bottles" class="mobile-nav__link">Full bottles</a></li>
+      {%- if section.settings.journal_label != blank -%}<li class="mobile-nav__item"><a href="{{ section.settings.journal_url | default: '/blogs/hub' }}" class="mobile-nav__link">{{ section.settings.journal_label | escape }}</a></li>{%- endif -%}
     {%- else -%}
     {%- for link in section.settings.menu.links -%}
       <li class="mobile-nav__item{% if link.links.size > 0 %} has-children{% endif %}">

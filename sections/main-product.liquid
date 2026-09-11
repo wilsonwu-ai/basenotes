@@ -137,6 +137,7 @@
         {%- endform -%}
         <p class="artifact-product__size-note" data-artifact-size-note>{% if vial_variant %}5ml in a portable spray atomizer. Try it on your skin before committing to a bottle.{% else %}Original full bottle. Size and price shown are for the selected variant.{% endif %}</p>
         <p class="artifact-product__shipping"><a href="/pages/shipping">Shipping &amp; delivery details</a></p>
+        {% render 'product-journal-link', product: product %}
         <p class="artifact-product__status" data-artifact-product-status role="status" aria-live="polite"></p>
       </div>
     </div>
@@ -233,6 +234,9 @@
   .artifact-product__notes p,.artifact-product__details li { margin:.5rem 0 0; color:var(--ap-muted); font:1rem/1.45 var(--ap-serif); }
   .artifact-product__details ul { margin:0; padding-inline-start:1.1rem; }
   .artifact-product__details li::marker { color:var(--ap-gold); }
+  .artifact-product__journal { display:flex; flex-wrap:wrap; gap:.2rem .45rem; align-items:baseline; max-width:47ch; margin:.6rem 0 0; color:var(--ap-muted); font:.73rem/1.5 var(--ap-sans); }
+  .artifact-product__journal span { color:var(--ap-gold); font-size:.63rem; letter-spacing:.1em; text-transform:uppercase; }
+  .artifact-product__journal a { color:var(--ap-green); text-decoration:underline; text-underline-offset:.2em; text-decoration-color:var(--ap-gold); }
   .artifact-product__status { min-height:1.5rem; margin:1rem 0 0; color:var(--ap-green); font:.85rem/1.5 var(--ap-sans); }
   .artifact-product__guard { width:min(100% - 3rem,40rem); margin-inline:auto; padding-block:7rem; text-align:center; }
   .artifact-product__guard h1 { font:700 3rem/1.05 'Playfair Display',serif; }
