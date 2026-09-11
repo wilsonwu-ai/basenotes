@@ -65,13 +65,56 @@ function harness({ stripPlans = false, capturedFetch = false, discountKeys = fal
   }
   class DummyEvent { constructor(type, init) { this.type = type; this.detail = init?.detail; } }
   const window = { Shopify: { routes: { root: '/' } }, location: { origin: 'https://test.local', href: 'https://test.local/' }, dispatchEvent() {}, ...(capturedFetch ? { __bnFetch: fetch, fetch: () => { throw new Error('Wrapped fetch must not be used'); } } : {}) };
-  const context = { window, document: { documentElement: { lang: 'en-US' }, dispatchEvent() {}, querySelectorAll: () => [] }, navigator: {}, fetch, URL, Intl, CustomEvent: DummyEvent, HTMLElement: class {}, customElements: { get: () => false, define() {} }, AbortController, console };
+  const elements = new Map();
+  const context = { window, document: { documentElement: { lang: 'en-US' }, dispatchEvent() {}, querySelectorAll: () => [] }, navigator: {}, fetch, URL, Intl, CustomEvent: DummyEvent, HTMLElement: class {}, customElements: { get: (name) => elements.get(name), define: (name, value) => elements.set(name, value) }, AbortController, console };
   vm.runInNewContext(source, context);
-  return { api: window.BaseNoteCommerce, cart, products, requests, seed: (spec) => add(spec), fail: (path) => { nextFailure = { path }; } };
+  return { api: window.BaseNoteCommerce, Product: elements.get('artifact-product'), Cart: elements.get('artifact-cart'), cart, products, requests, seed: (spec) => add(spec), fail: (path) => { nextFailure = { path }; } };
 }
 
 const a = { variantId: 101, handle: 'creed-aventus' };
 const b = { variantId: 102, handle: 'another-scent' };
+
+test('switching to an unavailable bottle invalidates the pending vial price quote', async () => {
+  const h = harness();
+  const product = new h.Product();
+  product.current = { id: 101, price: 2000, isVial: true };
+  product.dataset = { productHandle: 'creed-aventus' };
+  product.quantity = { value: '1' };
+  product.price = { textContent: '$20.00', setAttribute() {} };
+  product.querySelector = () => ({ textContent: '' });
+  const pending = product.updatePrice();
+  product.current = undefined;
+  await product.updatePrice();
+  product.price.textContent = 'Not currently available';
+  await pending;
+  assert.equal(product.price.textContent, 'Not currently available');
+});
+
+test('cart preparation disables mutation controls until pricing is ready', () => {
+  const h = harness();
+  const cart = new h.Cart();
+  const quantity = {};
+  const mode = { dataset: {} };
+  const unavailable = { dataset: { unavailable: 'true' } };
+  const remove = { setAttribute(name, value) { this[name] = value; } };
+  cart.setAttribute = () => {};
+  cart.checkout = {};
+  cart.querySelectorAll = (selector) => selector.includes('data-cart-step') ? [quantity] : selector.includes('artifact_order_mode') ? [mode, unavailable] : [remove];
+  cart.busy = true;
+  cart.updateCheckout();
+  assert.equal(cart.checkout.disabled, true);
+  assert.equal(quantity.disabled, true);
+  assert.equal(mode.disabled, true);
+  assert.equal(remove['aria-disabled'], 'true');
+  assert.equal(remove.tabIndex, -1);
+  cart.busy = false;
+  cart.updateCheckout();
+  assert.equal(cart.checkout.disabled, false);
+  assert.equal(quantity.disabled, false);
+  assert.equal(mode.disabled, false);
+  assert.equal(unavailable.disabled, true);
+  assert.equal(remove['aria-disabled'], 'false');
+});
 
 test('one-time first/additional pricing is authoritative and preserves scent identity', async () => {
   const h = harness();

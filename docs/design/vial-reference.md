@@ -46,3 +46,29 @@ Full-page review also caught mobile campaign clipping at the top-row vial caps. 
 Final full-page evidence: `/private/tmp/basenote-root-local-home-desktop-full.png`, `/private/tmp/basenote-root-local-home-mobile-full.png`. Additional viewport/region files follow `/private/tmp/basenote-root-local-{home,collection,ways,campaign,footer}-{desktop,mobile}.png`. Shopify preview, actual cart behavior and native newsletter submission remain separate root verification requirements.
 
 The updated header's actual inline controller was subsequently checked with `BASENOTE_HEADER_QA=1 node /private/tmp/basenote-root-local-visual-qa.cjs`. At 390×844, its three-line SVG hamburger rendered, closed navigation remained inert/hidden, open navigation focused its close button, search focused its input, and both panels trapped Tab/Shift+Tab (6 navigation stops, 8 search stops). Escape and close buttons restored the correct trigger focus, cleared body scroll locking and reset expanded state. No horizontal overflow or JavaScript errors. Evidence: `/private/tmp/basenote-header-nav-mobile.png`, `/private/tmp/basenote-header-search-mobile.png`.
+
+## Actual unpublished Shopify preview verification
+
+After Shopify access was restored, these checks were repeated against the actual unpublished theme **164192813274**, not the local fixture. This supersedes the earlier pending-preview limitation. Playwright verified `Shopify.theme.id` before interacting. No order or checkout was submitted.
+
+- Desktop 1440×1000 and mobile 390×844 homepage/collection: 32 actual fragrance options, WebGL ready, no overflow, no page JavaScript exceptions, and the unchanged `gLmqu.jpg` campaign image. Mobile retains its full square image without trimming the top-row caps.
+- Actual 3D controls: selected Green Irish Tweed label/SKU, reverse, yaw/pitch drag, cap separation, reset, reduced-motion final state, and forced WebGL context-loss fallback passed. The fallback leaves the photo and commerce controls available.
+- A fresh isolated browser cart verified Aventus first vial at $20, the subsequent button quote at $18, then Green Irish Tweed as the $18 additional vial, totaling $38. The additional line retained the selected scent handle/variant properties and had no selling plan. That temporary test cart was cleared before closing the browser context.
+- Integration uncovered a duplicated legacy mobile-nav controller in `assets/theme.js`. The current header now owns its nav exclusively; the legacy controller still operates on older header markup. `scripts/test-header-controller.cjs` exercises the actual header and legacy script together, including Escape cleanup and focus restoration.
+- The final real-preview mobile regression passed after the header updates: menu open/close/Escape and focus restoration; Search still clickable after menu Escape; Search Tab/Shift+Tab trap; no active legacy click-blocking overlay; readable scrolled header. Actual scrolled colors are `rgb(34, 57, 43)` and `rgb(244, 239, 227)`, contrast **10.84:1**.
+- Actual collection filters returned all 32 / him 13 / her 6 / unisex 6. Aventus search, no-match empty state, and clear-to-32 passed.
+
+Durable browser runner (read-only by default; `--cart` explicitly enables isolated cart additions and cleanup):
+
+```sh
+NODE_PATH=/Users/wilsonwu/.npm-global/lib/node_modules node scripts/test-vial-studio-browser.cjs 164192813274 --mobile-only
+node scripts/test-header-controller.cjs
+```
+
+Omit `--mobile-only` to include desktop 3D interaction/fallback checks. Each run creates a unique temporary evidence directory and prints its path. Final focused regression evidence: `/var/folders/yg/qvjnvr693832pkp806w46tc40000gn/T/basenote-vial-browser-5VZaE0`, including mobile top/full-page and scrolled-header screenshots. Actual desktop evidence: `/private/tmp/basenote-actual-home-desktop-full.png`, `/private/tmp/basenote-actual-studio-selected.png`, `/private/tmp/basenote-actual-studio-open.png`, `/private/tmp/basenote-actual-studio-fallback.png`. Public production deployment and post-publish sanity checks remain the parent agent's responsibility.
+
+After publication, explicitly add `--live` to verify the public homepage and collection URLs with no preview query parameters. This mode asserts both the expected theme ID and `Shopify.theme.role === 'main'` on desktop/mobile home and the collection; the default still targets the unpublished preview. Live mode remains read-only unless `--cart` is separately supplied. Do not run this mode before the expected theme is published.
+
+```sh
+NODE_PATH=/Users/wilsonwu/.npm-global/lib/node_modules node scripts/test-vial-studio-browser.cjs 164192813274 --live
+```

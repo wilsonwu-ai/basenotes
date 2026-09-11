@@ -23,9 +23,32 @@ Live testing discovered that the store's existing automatic discount can change 
 
 ## Automated checks
 
-`node --test scripts/test-scent-studio-commerce.cjs`: 19 passing behavioral tests. Coverage includes concurrent adds, repeated quantities, same/different-scent base removal, legacy selected-scent recovery, changing Shopify line keys, invalid helper subscriptions, rollback after a failed replacement, stripped selling plans, unavailable variants, and full-bottle pricing exclusion.
+`node --test scripts/test-scent-studio-commerce.cjs`: 21 passing behavioral tests. Coverage includes concurrent adds, repeated quantities, same/different-scent base removal, legacy selected-scent recovery, changing Shopify line keys, invalid helper subscriptions, rollback after a failed replacement, stripped selling plans, unavailable variants, full-bottle pricing exclusion, an in-flight price quote resolving after switching to the unavailable full-bottle state, and disabled cart controls while pricing is being prepared.
 
 `scripts/check-claude-artifact-fidelity.sh` and `scripts/check-theme-recovery-static.sh` pass with current native form and metadata guards. Shopify Theme Check reports zero errors in the changed product and cart templates. Native quantity fields, remove links, and ordinary product forms provide a no-JavaScript fallback; subscription consent remains a native required checkbox.
+
+## Actual Shopify-rendered preview verification
+
+Unpublished theme `164192813274` passed the real browser purchase flow after the latest commerce asset and cart template were uploaded. The runner asserted the exact Shopify theme ID and unpublished status, used only new isolated browser carts, and cleared those carts afterward. No checkout, order, newsletter, customer, or product mutation was submitted.
+
+- Desktop 1440 × 1000: preserved merchant Aventus photo loaded beside the labeled Base Note vial illustration. Selecting the unavailable full bottle hid only the vial illustration and showed the fragrance-prefilled enquiry link; returning to 5ml restored the vial. The add button ended at y699.55, above the fold.
+- First Aventus add: original variant `47527167951066`, $20.
+- Collection add of Green Irish Tweed: $18 helper line with actual selected scent, original handle `creed-green-irish-tweed`, and source variant `47527168114906`; subtotal $38.
+- Removing the Aventus base: remaining Green Irish Tweed became its real original variant at $20, not an orphan $18 helper.
+- Opting into Monthly Rotation: actual plan `26547585242` remained attached, $15 first shipment and $20 monthly renewal. Checkout stayed disabled until recurring consent was checked.
+- Mobile 390 × 844: PDP and cart had no horizontal overflow. The subscription-prefilled PDP retained an unchecked required consent box, and attempting to add without consent produced no cart mutation.
+- A separate JavaScript-disabled browser completed a native product form add and rendered a $20 cart.
+- Browser JavaScript errors: **0**.
+
+Actual Shopify-rendered screenshots were visually inspected:
+
+- `/private/tmp/scent-studio-product-desktop.png`
+- `/private/tmp/scent-studio-product-mobile.png`
+- `/private/tmp/scent-studio-cart-desktop.png`
+- `/private/tmp/scent-studio-cart-mobile.png`
+- `/private/tmp/scent-studio-cart-subscription.png`
+
+The initial preview runs found two timing issues that are now fixed and regression-tested: a stale PDP quote after switching to an unavailable bottle, and cart controls accepting an early click while initial pricing was still being prepared. Cart preparation now announces “Checking your cart prices…” and disables mutation controls until ready. The test waits for the initialized cart controller and its ready state, not just the initial server-rendered button. Shopify's merchant-only preview toolbar is outside customer-facing QA scope; the durable runner activates its own Hide bar control and rejects optional cookies using the storefront control.
 
 ## Local visual and interaction verification
 
@@ -42,11 +65,11 @@ Screenshots (local projection):
 - `/private/tmp/basenote-commerce-local-subscription-1440.png`
 - `/private/tmp/basenote-commerce-local-subscription-390.png`
 
-The fixture runner is `/private/tmp/basenote-commerce-local-visual-qa.cjs`. The isolated actual Shopify API runner is `/private/tmp/basenote-live-commerce-api-qa.cjs`. The prepared unpublished-theme browser runner is `/private/tmp/basenote-scent-studio-commerce-qa.cjs THEME_ID`.
+The fixture runner is `/private/tmp/basenote-commerce-local-visual-qa.cjs`. The isolated actual Shopify API runner is `/private/tmp/basenote-live-commerce-api-qa.cjs`. The durable browser runner is `node scripts/verify-scent-studio-commerce-preview.cjs THEME_ID` (requires Playwright, or an explicit `BASENOTE_PLAYWRIGHT_PATH`). It defaults to unpublished preview verification. Explicit `--live` removes preview parameters and requires that exact theme to have role `main`, for post-publication verification. Both modes fail on browser errors, omit cart tokens from output, and clear only their fresh isolated test carts. Screenshots default to the system temporary directory; `BASENOTE_QA_OUTPUT_DIR` can select a durable artifact location.
 
 ## Remaining verification and limitations
 
-The new templates still require screenshot/interaction testing in the unpublished Shopify theme once its upload authentication is restored. Neither the actual backend tests nor the local visual projection substitutes for that final Shopify preview QA. Root will keep the PR unmerged and production unchanged until that gate passes.
+The product/cart preview gate has passed. Publication is managed by the root release workflow; a live, non-preview pass is still required after publication. No production theme was published by the commerce agent.
 
 Creed Aventus has only a 5ml Shopify variant; its full-bottle selector therefore explains availability and links to the bottle enquiry form. Real full-bottle variants, when present, use their own size, inventory availability, and price.
 

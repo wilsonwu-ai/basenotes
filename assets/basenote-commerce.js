@@ -384,19 +384,20 @@
       this.updatePrice();
     }
     async updatePrice() {
-      if (!this.current) return;
       const ticket = this.priceTicket = (this.priceTicket || 0) + 1;
+      const current = this.current;
+      if (!current) return;
       const quantity = Math.max(1, Number(this.quantity.value) || 1);
-      let quote = { unitPrice: this.current.price, totalPrice: this.current.price * quantity };
-      if (this.plan?.value) quote = { unitPrice: this.current.planPrice, totalPrice: this.current.planPrice };
+      let quote = { unitPrice: current.price, totalPrice: current.price * quantity };
+      if (this.plan?.value) quote = { unitPrice: current.planPrice, totalPrice: current.planPrice };
       else {
-        try { quote = await quoteVial({ variantId: this.current.id, handle: this.dataset.productHandle, quantity }); }
+        try { quote = await quoteVial({ variantId: current.id, handle: this.dataset.productHandle, quantity }); }
         catch (_) { /* Initial Shopify-rendered price remains a valid fallback. */ }
       }
-      if (ticket !== this.priceTicket) return;
+      if (ticket !== this.priceTicket || current !== this.current) return;
       this.price.textContent = money(quote.totalPrice, quote.currency);
       this.price.setAttribute('aria-label', `${quantity > 1 ? `Total for ${quantity} items` : 'Price'} ${this.price.textContent}`);
-      this.querySelector('[data-artifact-price-note]').textContent = this.plan?.value ? 'First shipment. Recurring price below.' : quote.additional ? `${money(quote.unitPrice, quote.currency)} per additional vial in this order.` : quantity > 1 && this.current.isVial && this.current.price === 2000 ? 'First vial at regular price; additional 5ml vials are $18 each.' : this.current.isVial && this.current.price === 2000 ? `${money(this.current.price)} first vial · $18 each additional vial in your order.` : '';
+      this.querySelector('[data-artifact-price-note]').textContent = this.plan?.value ? 'First shipment. Recurring price below.' : quote.additional ? `${money(quote.unitPrice, quote.currency)} per additional vial in this order.` : quantity > 1 && current.isVial && current.price === 2000 ? 'First vial at regular price; additional 5ml vials are $18 each.' : current.isVial && current.price === 2000 ? `${money(current.price)} first vial · $18 each additional vial in your order.` : '';
     }
     async add(event) {
       event.preventDefault();
@@ -409,7 +410,7 @@
         this.status.textContent = `${this.dataset.productTitle} is in your cart. `;
         const link = document.createElement('a'); link.href = url('cart'); link.textContent = 'View cart →'; this.status.append(link);
       } catch (error) { this.status.textContent = `${error.message} Open your cart to check the current items.`; }
-      finally { this.busy = false; this.submit.disabled = !this.current.available; }
+      finally { this.busy = false; this.submit.disabled = !this.current?.available; }
     }
   }
 
@@ -440,14 +441,25 @@
       this.prepare();
     }
     disconnectedCallback() { this.controller?.abort(); this.controller = null; }
-    updateCheckout() { this.checkout.disabled = Boolean(this.busy || this.failed || (this.consent && !this.consent.checked)); }
+    updateCheckout() {
+      this.checkout.disabled = Boolean(this.busy || this.failed || (this.consent && !this.consent.checked));
+      this.setAttribute('aria-busy', String(Boolean(this.busy)));
+      for (const input of this.querySelectorAll('[data-cart-step], [data-cart-quantity]')) input.disabled = Boolean(this.busy);
+      for (const radio of this.querySelectorAll('input[name="artifact_order_mode"]')) radio.disabled = Boolean(this.busy || radio.dataset.unavailable === 'true');
+      for (const link of this.querySelectorAll('[data-cart-remove]')) {
+        link.setAttribute('aria-disabled', String(Boolean(this.busy)));
+        link.tabIndex = this.busy ? -1 : 0;
+      }
+    }
     async prepare() {
       this.busy = true; this.updateCheckout();
+      this.status.textContent = 'Checking your cart prices…';
       try {
         const before = await getCart();
         const after = await prepareCart();
         const signature = (cart) => JSON.stringify(cart.items.map((item) => [item.key, item.quantity, item.final_line_price]));
         if (signature(before) !== signature(after)) { window.location.reload(); return; }
+        this.status.textContent = '';
       } catch (error) { this.failed = true; this.status.textContent = error.message; }
       this.busy = false; this.updateCheckout();
     }

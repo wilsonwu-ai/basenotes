@@ -62,12 +62,19 @@
       assign meta_description = 'Try authentic designer and niche fragrance in a 5ml vial. Start at $20, explore Monthly Rotation, or find your full bottle.'
     elsif template.name == 'collection' and collection.handle == 'fragrances' or template.name == 'collection' and collection.handle == 'all'
       assign meta_description = 'Explore authentic designer and niche fragrance in 5ml travel atomizers. Choose your first scent for $20 and additional vials for $18.'
+    elsif template.name == 'page' and page.handle == 'faq'
+      assign meta_description = page_description | default: 'Answers about one-time fragrance vials, the optional Monthly Rotation subscription, full-bottle availability, shipping, authenticity and your Base Note account.'
     endif
     assign brand_description = 'Base Note offers authentic designer and niche fragrance in one-time 5ml vials, an optional Monthly Rotation subscription, and full bottles subject to availability.'
     assign is_internal_addon_page = false
     if template.name == 'product' and product.handle == 'extra-5ml-vial-add-on'
       assign is_internal_addon_page = true
       assign meta_description = 'Internal additional-vial item. Choose your fragrance from the Base Note collection; additional 5ml vials are $18 with a qualifying vial in your cart.'
+    endif
+    if template.name == 'article' and page_description != blank
+      assign meta_description = page_description | strip_html
+    else
+      assign meta_description = meta_description | strip_html | truncatewords: 22, '…'
     endif
   -%}
   {%- comment -%}
@@ -78,12 +85,13 @@
     strip_html leaves them alone, so plain `escape` re-encoded the ampersand and rendered a visible
     '&amp;#39;' in the snippet. escape_once skips anything already a valid entity and escapes the
     rest, which is exactly this case. (A replace-chain was tried first and did not match.)
-    22 words lands ~155 chars, inside Google's display limit.
+    Normalize once above so search and social descriptions agree. Keep explicit article copy
+    intact; a 22-word fallback is concise but does not guarantee a search display length.
   {%- endcomment -%}
   {%- if template.name == 'article' and page_description != blank -%}
     <meta name="description" content="{{ page_description | strip_html | escape_once }}">
   {%- else -%}
-    <meta name="description" content="{{ meta_description | strip_html | truncatewords: 22, '…' | escape_once }}">
+    <meta name="description" content="{{ meta_description | escape_once }}">
   {%- endif -%}
   {%- comment -%}
     The giveaway landing page is reachable only by a direct link from a paid ad. Shopify's Unlisted

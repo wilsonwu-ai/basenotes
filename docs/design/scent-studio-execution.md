@@ -42,23 +42,22 @@ Three core workers returned usable implementations; all three were retained. Roo
 
 Validation completed before the deployment gate:
 
-- 19 shared-commerce behavioral tests and 3 order-surface/FAQ guard tests pass.
+- 21 shared-commerce behavioral tests, 3 order-surface/FAQ guard tests, and the shared-header controller regression pass (25 Node tests total).
 - Both current artifact-fidelity and recovery-invariant checks pass.
 - Full Shopify Theme Check: zero errors; existing advisory warnings are not represented as a zero-warning result.
 - Real Shopify Ajax API, fresh isolated cart: $20 first vial; $18 additional; $38 total; removing the anchor restores the remaining scent to $20; actual $15 first/$20 renewal Monthly Rotation plan retained; extras remain $18 one-time; quantity three totals $56. No checkout or order was submitted.
 - Local actual-Liquid projections at desktop/mobile widths: homepage, collection, product and cart inspected, no horizontal overflow or JavaScript errors. WebGL orbit, cap, fragrance label changes, 32 real fragrance choices, touch scroll, reduced motion and photo fallback pass. These are **not** a substitute for an unpublished Shopify theme's final rendered-page checks.
 - Audit content changes independently read back live: two redirects, article link repairs, two purchase pages, two primary-source researched comparison articles. Recovery snapshots and all 29 audit statuses are recorded in `docs/audit-resolution-20260910.md`.
 
-### Deployment gate
+### Restored deployment access and actual preview
 
-The new theme has **not** been published or merged. The existing live theme remains `164190748890` (Claude Artifact Fidelity Sep 10 QA). The CLI successfully pulled a preservation snapshot earlier in this session, then requested a fresh device login for the upload. The canonical store alias also returned HTTP 401 `Service is not valid for authentication`. Selecting the existing CLI account did not restore store access. The device login expired before completion (`expired_token`); a fresh login is required. No saved credentials or auth scopes were altered to bypass that requirement. Source is saved in draft PR #56, https://github.com/wilsonwu-ai/basenotes/pull/56.
+The user completed the Shopify device login. The unpublished theme `164192813274` (Scent Studio Sep 10 QA) was uploaded successfully. The installed CLI 3.89.0 then returned HTTP 401 again; a task-local invocation of official CLI 4.8.0 against `ath7ay-1y.myshopify.com` successfully listed, pulled and pushed repeatedly. No global CLI replacement, credential extraction, scope bypass or unrelated background-process termination was performed. A fresh live configuration capture at `/private/tmp/basenote-release-preserve-jVZLhc` exactly matches the earlier preservation snapshot.
 
-After authentication is restored:
+Real Shopify preview testing—not local projections—found and corrected: an in-flight price quote after selecting an unavailable bottle; two mobile navigation controllers leaving an invisible overlay; legacy scrolled-header background overriding the green header; divergent FAQ/product search and social descriptions; and an implicit cart-pricing loading window that could ignore a premature remove click. Cart mutation controls now disable visibly while prices are checked, with status and ARIA busy state. The corrected preview passes the SEO verifier, including 16 exact FAQ answers and three agent/LLM endpoints. An independent read-only sweep passed all 32 ordinary product pages. Monthly Rotation, bottle enquiry and FAQ pages pass desktop/mobile route, native newsletter validation and scrolled-header contrast checks without any customer-data submission. CLI 4.8.0 Theme Check reports zero errors and 108 warnings; this is not a zero-warning claim.
 
-1. Upload the branch as an unpublished theme. Keep live settings and `gLmqu.jpg` intact.
-2. Run `node scripts/verify-storefront-seo.cjs --theme=THEME_ID`, and the actual rendered desktop/mobile commerce, viewer, navigation, newsletter validation checks. Temporary browser runners: `/private/tmp/basenote-preview-visual-qa.cjs` and `/private/tmp/basenote-scent-studio-commerce-qa.cjs`.
-3. Only after those pass, mark the PR ready, merge, publish the tested theme, and rerun public URL/schema/cart sanity checks without preview parameters.
-4. Catalog audit rows need actual `read_products`/`write_products` access. `scripts/apply-catalog-metadata.cjs` is a read-only plan unless explicitly run with `--apply`; it backs up affected records, excludes internal helper/zero-price items and protects prices/inventory/images/plans. Full-bottle checkout additionally needs real bottle sizes, prices and inventory. GSC reporting needs an authenticated property connection.
+Durable browser runners now live in `scripts/test-vial-studio-browser.cjs`, `scripts/verify-scent-studio-commerce-preview.cjs`, and `scripts/test-purchase-routes-browser.cjs`. They distinguish unpublished theme identity, isolate any cart changes, and never place an order or submit customer/newsletter data. Final actual-preview commerce checks pass: mixed Aventus/Green Irish Tweed $20+$18 cart, remaining original scent restored to $20, real $15 first/$20 renewal subscription, unchecked consent blocking purchase, native no-JavaScript add, no mobile overflow and zero browser errors. The release is ready for root to merge PR #56 and publish the tested theme; public verification must still run afterward without preview parameters. Viewer and commerce runners have an explicit `--live` mode that additionally asserts the published theme role.
+
+Catalog audit rows still need actual `read_products`/`write_products` access. `scripts/apply-catalog-metadata.cjs` is a read-only plan unless explicitly run with `--apply`; it backs up affected records, excludes internal helper/zero-price items and protects prices/inventory/images/plans. Full-bottle checkout additionally needs real bottle sizes, prices and inventory. GSC reporting needs an authenticated property connection.
 
 ### Graph retrospective
 

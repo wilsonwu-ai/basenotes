@@ -185,6 +185,8 @@
   .artifact-cart__status a { text-decoration:underline; }
   .artifact-cart [hidden] { display:none; }
   .artifact-cart__remove { display:inline-flex; align-items:center; min-height:2.75rem; text-decoration:underline; border:0; }
+  .artifact-cart__remove[aria-disabled="true"] { pointer-events:none; opacity:.45; }
+  .artifact-cart__quantity :disabled { opacity:.45; cursor:wait; }
   .artifact-cart__disclosure,.artifact-cart__consent { font-size:.82rem; }
   .artifact-cart__consent input { min-width:1.2rem; min-height:1.2rem; }
   @media(max-width:52rem){.artifact-cart__layout{grid-template-columns:1fr}.artifact-cart__summary{position:static}.artifact-cart__item{grid-template-columns:4.5rem minmax(0,1fr) auto}.artifact-cart__line-price{grid-column:2;text-align:start}.artifact-cart__quantity{grid-column:3;grid-row:1 / span 2}}

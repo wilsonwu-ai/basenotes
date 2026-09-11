@@ -9,11 +9,11 @@ Implements the user's three Claude artifact page mappings and a one-time-first i
 
 ## Validation
 
-22 Node tests pass; artifact/recovery checks pass; Theme Check has zero errors. Actual isolated Shopify carts verify $20 first + $18 extra, anchor removal, real $15 first / $20 renewal subscription, and one-time extras. Desktop/mobile local Liquid projections pass overflow/console/visual checks. No orders, checkout payments, campaigns or customer messages were created.
+25 Node tests pass; artifact/recovery checks pass; CLI 4.8.0 Theme Check has zero errors (108 warnings, not a zero-warning claim). Actual isolated Shopify carts verify $20 first + $18 extra, mixed-scent anchor removal, real $15 first / $20 renewal subscription, and one-time extras. Actual unpublished Shopify theme `164192813274` passes desktop/mobile 3D controls, photo fallback, preserved banner, search/filters, menu/search focus and scrolled-header contrast checks. Native newsletter/enquiry validation passes without submitting customer data. SEO verification covers real offers, metadata, 16 matching FAQ answers and all three agent/LLM endpoints; an independent sweep passed all 32 ordinary product pages. No orders, checkout payments, campaigns or customer messages were created.
 
-## Do not merge yet
+## Release gate
 
-Shopify's saved deployment authentication stopped working after the preservation pull. The upload's device login expired before completion, so a fresh login is required. No new theme is published. Final unpublished-Shopify-theme rendering, SEO verifier and newsletter form checks must pass before merge/publication. Local projections and injected-asset backend tests are deliberately identified separately from full preview QA.
+Shopify device login is restored. Repeated CLI 3.89.0 authentication failures were resolved with a task-local official CLI 4.8.0 invocation against the canonical shop host; no global installation replacement or scope bypass was used. Fresh live theme settings/header/footer/index snapshots are identical to the earlier preserved copy. Target release theme: `164192813274`; previous live theme retained for recovery: `164190748890`. The actual unpublished-theme commerce browser checks pass, including mixed-scent base removal, native no-JavaScript add, unchecked recurring-consent prevention and zero browser errors. After publication, rerun public checks without preview parameters; record the deployed theme and source commit on this PR.
 
 ## Remaining external dependencies
 
