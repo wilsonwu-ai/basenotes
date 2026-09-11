@@ -78,15 +78,20 @@
 .fragrance-catalog .scent-card--reference {
   display: flex;
   flex-direction: column;
-  padding: 1.625rem 1.125rem 1.375rem;
+  padding: 1.125rem 1.125rem 1.375rem;
   background: var(--scent-cream);
 }
+/* Big image blocks (Wilson + Jeff 2026-09-11: the old site's larger product images, bottle fully visible). */
 .scent-card--reference .scent-card__media {
+  display: block;
   flex: 0 0 auto;
-  width: 4.125rem;
-  height: 4.125rem;
-  margin: 0 auto .875rem;
-  background: transparent;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  margin: 0 0 1rem;
+  padding: 8%;
+  box-sizing: border-box;
+  background: #faf7f0;
 }
 .scent-card__reference-image {
   display: block;
@@ -168,6 +173,7 @@
   .fragrance-catalog__body { padding-inline: 1.25rem; }
   .fragrance-catalog__purchase-note { padding-block: 1.5rem; }
   .fragrance-catalog__pricing { max-width: 19rem; margin-inline: auto; }
-  .fragrance-catalog .scent-card--reference { padding: 1.25rem .875rem; }
+  .fragrance-catalog .scent-card--reference { padding: .875rem .875rem 1.25rem; }
+  .scent-card--reference .scent-card__media { padding: 6%; margin-bottom: .75rem; }
   .fragrance-catalog__tabs { gap: 1.25rem; }
 }

@@ -77,7 +77,7 @@
         {%- if artifact_surface -%}
           <li class="header__nav-item"><a href="/collections/fragrances" class="header__nav-link">Fragrances</a></li>
           <li class="header__nav-item"><a href="/pages/monthly-rotation" class="header__nav-link">Monthly Rotation</a></li>
-          <li class="header__nav-item"><a href="/pages/full-bottles" class="header__nav-link">Full bottles</a></li>
+          {%- comment -%} Full bottles menu link removed 2026-09-11 (Jeff: full bottles are offered on the product page only){%- endcomment -%}
           {%- if section.settings.journal_label != blank -%}<li class="header__nav-item"><a href="{{ section.settings.journal_url | default: '/blogs/hub' }}" class="header__nav-link">{{ section.settings.journal_label | escape }}</a></li>{%- endif -%}
         {%- else -%}
         {%- for link in section.settings.menu.links -%}
@@ -273,7 +273,7 @@
     {%- if artifact_surface -%}
       <li class="mobile-nav__item"><a href="/collections/fragrances" class="mobile-nav__link">Fragrances</a></li>
       <li class="mobile-nav__item"><a href="/pages/monthly-rotation" class="mobile-nav__link">Monthly Rotation</a></li>
-      <li class="mobile-nav__item"><a href="/pages/full-bottles" class="mobile-nav__link">Full bottles</a></li>
+      {%- comment -%} Full bottles menu link removed 2026-09-11 {%- endcomment -%}
       {%- if section.settings.journal_label != blank -%}<li class="mobile-nav__item"><a href="{{ section.settings.journal_url | default: '/blogs/hub' }}" class="mobile-nav__link">{{ section.settings.journal_label | escape }}</a></li>{%- endif -%}
     {%- else -%}
     {%- for link in section.settings.menu.links -%}

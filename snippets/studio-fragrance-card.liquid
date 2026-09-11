@@ -48,7 +48,7 @@
       assign card_alt = card_image.alt | default: product.title
     -%}
     {%- if card_image -%}
-      {{ card_image | image_url: width: 240 | image_tag: loading: 'lazy', widths: '120, 180, 240', sizes: '66px', class: 'scent-card__reference-image', alt: card_alt }}
+      {{ card_image | image_url: width: 600 | image_tag: loading: 'lazy', widths: '240, 360, 480, 600', sizes: '(min-width: 821px) 260px, 45vw', class: 'scent-card__reference-image', alt: card_alt }}
     {%- else -%}
       <span class="scent-card__vial">{% render 'vial-illustration', product: product %}</span>
     {%- endif -%}
@@ -60,7 +60,7 @@
   <div class="scent-card__sizes" role="group" aria-label="{{ 'Size for ' | append: product.title | escape }}">
     <button type="button" class="scent-card__size" data-card-size data-kind="vial" data-variant-id="{{ vial.id }}" data-price="{{ vial.price }}" data-available="{{ vial.available }}" aria-pressed="true">5ml</button>
     {%- if bottle != blank and bottle.available -%}
-      <button type="button" class="scent-card__size" data-card-size data-kind="bottle" data-variant-id="{{ bottle.id }}" data-price="{{ bottle.price }}" data-available="true" data-label="{{ bottle.title | escape }}"{% if bottle.featured_image %} data-image="{{ bottle.featured_image | image_url: width: 240 }}"{% endif %} aria-pressed="false" aria-label="Full bottle ({{ bottle.title | escape }})">Full bottle</button>
+      <button type="button" class="scent-card__size" data-card-size data-kind="bottle" data-variant-id="{{ bottle.id }}" data-price="{{ bottle.price }}" data-available="true" data-label="{{ bottle.title | escape }}"{% if bottle.featured_image %} data-image="{{ bottle.featured_image | image_url: width: 600 }}"{% endif %} aria-pressed="false" aria-label="Full bottle ({{ bottle.title | escape }})">Full bottle</button>
     {%- else -%}
       <a class="scent-card__size scent-card__size--request" href="/pages/full-bottles?fragrance={{ product.title | url_encode }}#BottleEnquiry" aria-label="Ask about a full bottle of {{ product.title | escape }}" title="Ask about a full bottle">Full bottle</a>
     {%- endif -%}
