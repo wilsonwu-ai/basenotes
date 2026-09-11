@@ -1347,7 +1347,8 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     {%- endif -%}
     fotmDisplayName: {{ settings.fotm_display_name | json }},
-    isStaff: {{ customer.tags | join: ',' | downcase | contains: 'staff' | json }}
+    {%- assign customer_tag_text = customer.tags | join: ',' | downcase -%}
+    isStaff: {% if customer_tag_text contains 'staff' %}true{% else %}false{% endif %}
   };
 
   function isValidDate(d) {
@@ -1361,7 +1362,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.__bnStage = 2;
   } catch (e) { console.error('[bn-router] stage 2 FAIL', e); }
 
-  // Router lives in the standalone <script> tag above — removed from here so this big block
+  // Router lives in the standalone script block above — removed from here so this big block
   // can't break routing if it has a parse error.
 
   /* ── Fragrance History ── */

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ shop.name }} - Gift Card</title>
+  <script src="{{ 'vendor/qrcode.js' | shopify_asset_url }}" defer></script>
 
   {{ 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap' | stylesheet_tag }}
 
@@ -287,8 +288,7 @@
       </div>
     </div>
 
-    <div class="gift-card__qr">
-      <img src="{{ gift_card.qr_code_identifier | qr_code }}" alt="QR code for gift card">
+    <div class="gift-card__qr" id="giftCardQr" data-identifier="{{ gift_card.qr_identifier | escape }}">
     </div>
 
     <div class="gift-card__actions">
@@ -341,6 +341,17 @@
   </div>
 
   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const target = document.getElementById('giftCardQr');
+      if (!target.dataset.identifier || typeof QRCode !== 'function') return;
+      new QRCode(target, {
+        text: target.dataset.identifier,
+        width: 120,
+        height: 120,
+        imageAltText: 'QR code for gift card'
+      });
+    });
+
     function copyCode() {
       const code = document.getElementById('giftCardCode').textContent.replace(/\s/g, '');
       const btn = document.getElementById('copyCodeBtn');

@@ -19,12 +19,16 @@
                   src="{{ collection.image | image_url: width: 800 }}"
                   alt="{{ collection.image.alt | default: collection.title }}"
                   loading="lazy"
+                  width="{{ collection.image.width }}"
+                  height="{{ collection.image.height }}"
                 >
               {%- elsif collection.products.first.featured_image != blank -%}
                 <img
                   src="{{ collection.products.first.featured_image | image_url: width: 800 }}"
                   alt="{{ collection.title }}"
                   loading="lazy"
+                  width="{{ collection.products.first.featured_image.width }}"
+                  height="{{ collection.products.first.featured_image.height }}"
                 >
               {%- else -%}
                 <div class="collection-card__placeholder">

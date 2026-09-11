@@ -1,6 +1,6 @@
 {%- liquid
   assign artifact_surface = false
-  if request.page_type == 'index' or request.page_type == 'product' or request.page_type == 'cart'
+  if request.page_type == 'index' or request.page_type == 'product' or request.page_type == 'cart' or request.page_type == 'collection' or template.name == 'page' or template.name == 'blog' or template.name == 'article'
     assign artifact_surface = true
   endif
 -%}
@@ -11,22 +11,27 @@
         <div>
           <p class="artifact-footer__eyebrow">The scent list</p>
           <h2>New scents keep landing.</h2>
-          <p>Get first access to every new vial drop.</p>
+          <p>Discover new vial drops, fragrance notes, and your next favorite.</p>
         </div>
         {%- form 'customer', class: 'artifact-footer__form' -%}
           <input type="hidden" name="contact[tags]" value="newsletter,artifact-footer">
           <label class="visually-hidden" for="ArtifactFooterEmail-{{ section.id }}">Email address</label>
           <input id="ArtifactFooterEmail-{{ section.id }}" type="email" name="contact[email]" placeholder="Email address" autocomplete="email" required>
           <button type="submit">Join the list</button>
+          <p class="artifact-footer__privacy">New scents, delivered to your inbox. Unsubscribe anytime.</p>
+          {% if form.posted_successfully? %}<p class="artifact-footer__feedback" role="status">You’re on the list. Watch your inbox for the next scent drop.</p>{% endif %}
+          {% if form.errors %}<div class="artifact-footer__feedback" role="alert">{{ form.errors | default_errors }}</div>{% endif %}
         {%- endform -%}
       </div>
       <div class="artifact-footer__base">
         <p>© {{ 'now' | date: '%Y' }} Base Note</p>
-        <nav aria-label="Footer"><a href="/collections/fragrances">Fragrances</a><a href="/pages/about-us">About</a><a href="{{ policies.privacy_policy.url }}">Privacy</a><a href="{{ policies.terms_of_service.url }}">Terms</a></nav>
+        <nav aria-label="Footer"><a href="/collections/fragrances">Fragrances</a><a href="/pages/about">About</a><a href="/blogs/hub">Journal</a><a href="/pages/faq">FAQ</a><a href="/pages/contact">Contact</a><a href="{{ shop.privacy_policy.url | default: '/policies/privacy-policy' }}">Privacy</a><a href="{{ shop.terms_of_service.url | default: '/policies/terms-of-service' }}">Terms</a><a href="{{ shop.refund_policy.url | default: '/policies/refund-policy' }}">Returns</a></nav>
       </div>
+      {% if section.settings.tagline != blank %}<p class="artifact-footer__disclaimer">{{ section.settings.tagline | escape }}</p>{% endif %}
     </div>
   {%- endif -%}
   {% comment %} Newsletter Section {% endcomment %}
+  {% unless artifact_surface %}
   {%- if section.settings.newsletter_enabled -%}
   <div class="footer__newsletter">
     <div class="container">
@@ -213,6 +218,7 @@
       </div>
     </div>
   </div>
+  {% endunless %}
 </footer>
 
 <style>
@@ -641,8 +647,10 @@
   .artifact-footer__form {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    border-block-end: 0.0625rem solid #d5bc82;
   }
+  .artifact-footer__form input,.artifact-footer__form button { border-bottom:1px solid #d5bc82!important; }
+  .artifact-footer__privacy,.artifact-footer__feedback { grid-column:1/-1; margin:.8rem 0 0; color:#d1d2c5; font:.75rem/1.6 'Jost',sans-serif; }
+  .artifact-footer__form :focus-visible { outline:2px solid #d5bc82;outline-offset:5px; }
 
   .artifact-footer__form input,
   .artifact-footer__form button {
@@ -676,7 +684,7 @@
     gap: 2rem;
     padding-block-start: 1.4rem;
     color: rgb(244 239 227 / 55%);
-    font: 500 0.62rem/1.4 'Jost', sans-serif;
+    font: 500 0.7rem/1.4 'Jost', sans-serif;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
@@ -684,6 +692,7 @@
   .artifact-footer__base p { margin: 0; }
   .artifact-footer__base nav { display: flex; flex-wrap: wrap; gap: 1.4rem; }
   .artifact-footer__base a { color: inherit; }
+  .artifact-footer__disclaimer { max-width:48rem;margin:1.2rem 0 0;color:#b7bfb1;font:.7rem/1.6 'Jost',sans-serif; }
 
   @media (max-width: 46rem) {
     .artifact-footer { width: min(100% - 2rem, 72rem); padding-block-start: 3rem; }

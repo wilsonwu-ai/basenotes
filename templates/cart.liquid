@@ -2,18 +2,29 @@
 {% comment %} CART_ADDON_CONFIGURATION_GUARD: the internal $18 helper is never exposed as a standalone cart upsell. {% endcomment %}
 {%- liquid
   assign has_subscription = false
-  assign has_onetime = false
-  assign has_bottle = false
+  assign has_base_vial = false
+  assign has_helper = false
+  assign cart_configuration_issue = false
+  assign rotation_variant = nil
+  assign rotation_product = nil
   assign cart_savings = 0
   for item in cart.items
     assign item_title_down = item.variant.title | downcase
+    assign compact_title = item_title_down | remove: ' '
+    if item.product.handle == 'extra-5ml-vial-add-on'
+      assign has_helper = true
+      if item.properties['Selected scent'] == blank or item.selling_plan_allocation
+        assign cart_configuration_issue = true
+      endif
+    elsif compact_title == '5ml' and item.variant.price == 2000
+      assign has_base_vial = true
+      if rotation_variant == blank and item.variant.selling_plan_allocations.size > 0
+        assign rotation_variant = item.variant
+        assign rotation_product = item.product
+      endif
+    endif
     if item.selling_plan_allocation
       assign has_subscription = true
-    else
-      assign has_onetime = true
-    endif
-    if item_title_down contains '100ml' or item_title_down contains '100 ml' or item_title_down contains '3.3' or item_title_down contains 'full bottle'
-      assign has_bottle = true
     endif
     if item.variant.compare_at_price > item.final_price
       assign compare_line = item.variant.compare_at_price | times: item.quantity
@@ -28,68 +39,92 @@
     <a class="artifact-cart__back" href="/collections/fragrances">← Continue shopping</a>
     {%- if cart.item_count > 0 -%}
       <h1>Your Cart</h1>
+      <p class="artifact-cart__status" data-cart-status role="status" aria-live="polite">{% if cart_configuration_issue %}An additional vial needs a valid one-time scent selection. Remove it and choose the fragrance again before checkout.{% elsif has_helper and has_base_vial == false %}An additional vial needs a first fragrance in the cart. Choose a fragrance below or remove the additional vial before continuing.{% endif %}</p>
       <form action="{{ routes.cart_url }}" method="post" class="artifact-cart__form">
         <div class="artifact-cart__layout">
           <div class="artifact-cart__main">
             <div class="artifact-cart__items">
               {%- for item in cart.items -%}
                 {%- liquid
-                  assign title_down = item.variant.title | downcase
+                  assign title_down = item.variant.title | downcase | remove: ' '
                   assign item_is_bottle = false
-                  if title_down contains '100ml' or title_down contains '100 ml' or title_down contains '3.3' or title_down contains 'full bottle'
-                    assign item_is_bottle = true
-                  endif
+                  unless title_down == '5ml'
+                    if title_down contains 'ml' or title_down contains 'oz' or title_down contains 'fullbottle'
+                      assign item_is_bottle = true
+                    endif
+                  endunless
                   assign item_plan = item.variant.selling_plan_allocations.first.selling_plan
+                  assign item_label = item.product.title
+                  assign item_url = item.url
+                  assign item_image = item.image
+                  assign item_is_helper = false
+                  assign source_product = nil
+                  if item.product.handle == 'extra-5ml-vial-add-on'
+                    assign item_is_helper = true
+                    assign item_label = item.properties['Selected scent'] | default: 'Additional vial — choose a scent'
+                    assign scent_handle = item.properties['_Base Note scent handle']
+                    assign item_url = '/collections/fragrances'
+                    assign item_image = nil
+                    if scent_handle != blank
+                      assign source_product = all_products[scent_handle]
+                      assign item_url = source_product.url | default: item_url
+                      assign item_image = source_product.featured_image
+                    endif
+                  endif
                 -%}
                 <article class="artifact-cart__item" data-cart-key="{{ item.key }}" data-plan-id="{{ item_plan.id }}" data-bottle="{{ item_is_bottle }}">
-                  <div class="artifact-cart__image">
-                    {%- if item.image -%}{{ item.image | image_url: width: 180 | image_tag: loading: 'lazy', width: 90, height: 110, alt: item.product.title }}{%- else -%}{% render 'vial-illustration', product: item.product %}{%- endif -%}
-                  </div>
+                  <a class="artifact-cart__image" href="{{ item_url }}" tabindex="-1" aria-hidden="true">
+                    {%- if item_image -%}{{ item_image | image_url: width: 180 | image_tag: loading: 'lazy', width: 90, height: 110, alt: '' }}{%- else -%}{% render 'vial-illustration', product: source_product %}{%- endif -%}
+                  </a>
                   <div class="artifact-cart__details">
-                    <h2>{{ item.product.title }}</h2>
-                    <p>{%- if item_is_bottle -%}Full bottle · 3.3oz{%- else -%}5ml atomizer{%- endif -%}</p>
-                    {%- if item.selling_plan_allocation -%}<p class="artifact-cart__plan">{{ item.selling_plan_allocation.selling_plan.name }} subscription</p>{%- endif -%}
-                    <button type="button" class="artifact-cart__remove" data-cart-remove aria-label="Remove {{ item.product.title | escape }} from cart">Remove</button>
+                    <h2><a href="{{ item_url }}">{{ item_label | escape }}</a></h2>
+                    <p>{%- if item_is_helper -%}5ml atomizer · additional vial{%- elsif item.variant.title != 'Default Title' -%}{{ item.variant.title | escape }}{% unless item_is_bottle %} atomizer{% endunless %}{%- endif -%}</p>
+                    {%- if item.selling_plan_allocation -%}<p class="artifact-cart__plan">Monthly Rotation subscription</p>{%- elsif has_subscription and item_is_helper -%}<p class="artifact-cart__plan">One-time extra · does not renew</p>{%- endif -%}
+                    <a class="artifact-cart__remove" href="{{ item.url_to_remove }}" data-cart-remove aria-label="Remove {{ item_label | escape }} from cart">Remove</a>
                   </div>
-                  <div class="artifact-cart__quantity" aria-label="Quantity for {{ item.product.title | escape }}">
-                    <button type="button" data-cart-quantity="{{ item.quantity | minus: 1 }}" aria-label="Decrease quantity">−</button>
-                    <span aria-live="polite">{{ item.quantity }}</span>
-                    <button type="button" data-cart-quantity="{{ item.quantity | plus: 1 }}" aria-label="Increase quantity">+</button>
+                  <div class="artifact-cart__quantity">
+                    <button type="button" data-cart-step="-1" aria-label="Decrease {{ item_label | escape }} quantity" hidden>−</button>
+                    <label class="visually-hidden" for="CartQuantity-{{ forloop.index }}">Quantity for {{ item_label | escape }}</label>
+                    <input id="CartQuantity-{{ forloop.index }}" type="number" name="updates[]" min="0" max="99" value="{{ item.quantity }}" inputmode="numeric" data-cart-quantity>
+                    <button type="button" data-cart-step="1" aria-label="Increase {{ item_label | escape }} quantity" hidden>+</button>
                   </div>
-                  <strong class="artifact-cart__line-price">{{ item.final_line_price | money }}</strong>
+                  <strong class="artifact-cart__line-price" aria-label="Line total {{ item.final_line_price | money }}">{{ item.final_line_price | money }}</strong>
                 </article>
               {%- endfor -%}
             </div>
 
-            <fieldset class="artifact-cart__order-mode">
+            <noscript><button type="submit" name="update" class="artifact-cart__native-update" formnovalidate>Update quantities</button></noscript>
+            {% if rotation_variant != blank or has_subscription %}<fieldset class="artifact-cart__order-mode">
               <legend>How would you like to order?</legend>
               <label class="artifact-cart__mode{% unless has_subscription %} artifact-cart__mode--active{% endunless %}">
-                <input type="radio" name="artifact_order_mode" value="onetime" {% unless has_subscription %}checked{% endunless %}>
+                <input type="radio" name="artifact_order_mode" value="onetime" disabled {% unless has_subscription %}checked{% endunless %}>
                 <span><strong>One-time purchase</strong><small>$20 for the first 5ml and $18 for each additional vial. No subscription, no renewals.</small></span>
               </label>
               <label class="artifact-cart__mode{% if has_subscription %} artifact-cart__mode--active{% endif %}">
-                <input type="radio" name="artifact_order_mode" value="subscription" {% if has_subscription %}checked{% endif %}>
-                <span><strong>Subscribe &amp; save <em>Best value</em></strong><small>$15 for your first 5ml shipment, then $20/month. Monthly Rotation is a subscription; skip, swap, or cancel anytime.</small></span>
+                <input type="radio" name="artifact_order_mode" value="subscription" disabled {% if rotation_variant == blank %}data-unavailable="true"{% endif %} {% if has_subscription %}checked{% endif %}>
+                <span><strong>Monthly Rotation <em>Subscription</em></strong><small>{% if rotation_variant != blank %}{{ rotation_variant.selling_plan_allocations.first.price | money }} for the first shipment, then {{ rotation_variant.selling_plan_allocations.first.price_adjustments.last.price | default: rotation_variant.price | money }} monthly for one 5ml vial of {{ rotation_product.title | escape }}.{% endif %} Extra vials and full bottles stay one-time purchases. Skip, swap, or cancel anytime.</small></span>
               </label>
               <a href="/pages/subscription-terms">What does the subscription actually include?</a>
-            </fieldset>
+              <noscript><p>To change your purchase option, visit the <a href="/pages/monthly-rotation">Monthly Rotation page</a>.</p></noscript>
+            </fieldset>{% endif %}
           </div>
 
           <aside class="artifact-cart__summary" aria-labelledby="ArtifactSummaryTitle">
             <h2 id="ArtifactSummaryTitle">Order summary</h2>
             <dl class="artifact-cart__summary-lines">
-              {%- for item in cart.items -%}<div><dt>{{ item.product.title | truncate: 28 }}</dt><dd>{{ item.final_line_price | money }}</dd></div>{%- endfor -%}
-              <div><dt>Shipping</dt><dd>{% if has_subscription and has_onetime == false %}Free{% else %}Calculated at checkout{% endif %}</dd></div>
+              {%- for item in cart.items -%}<div><dt>{% if item.product.handle == 'extra-5ml-vial-add-on' %}{{ item.properties['Selected scent'] | default: 'Additional vial' | escape }}{% else %}{{ item.product.title | escape }}{% endif %}{% if item.quantity > 1 %} × {{ item.quantity }}{% endif %}</dt><dd>{{ item.final_line_price | money }}</dd></div>{%- endfor -%}
+              <div><dt>Shipping &amp; taxes</dt><dd>Calculated at checkout</dd></div>
             </dl>
-            <div class="artifact-cart__total"><span>Total due today</span><strong>{{ cart.total_price | money }}</strong></div>
+            <div class="artifact-cart__total"><span>Subtotal today</span><strong>{{ cart.total_price | money }}</strong></div>
             {%- if cart_savings > 0 -%}<div class="artifact-cart__savings"><span>You’re saving</span><strong>{{ cart_savings | money }}</strong></div>{%- endif -%}
             {%- if has_subscription -%}
-              <p class="artifact-cart__disclosure">Monthly Rotation renews automatically at the price and cadence shown until cancelled.</p>
-              <label class="artifact-cart__consent"><input type="checkbox" data-cart-consent> <span>I agree to the recurring subscription and <a href="/pages/subscription-terms" target="_blank">subscription terms</a>.</span></label>
+              <div class="artifact-cart__disclosure"><strong>This is a recurring subscription.</strong>{% for item in cart.items %}{% if item.selling_plan_allocation %}<p>{{ item.product.title | escape }}: {{ item.selling_plan_allocation.price | times: item.quantity | money }} for this shipment, then {{ item.selling_plan_allocation.price_adjustments.last.price | default: item.variant.price | times: item.quantity | money }} every month until cancelled.</p>{% endif %}{% endfor %}<p>Skip, swap, or cancel in your account. Any one-time extras do not renew.</p></div>
+              <label class="artifact-cart__consent"><input type="checkbox" required data-cart-consent> <span>I agree to the recurring subscription and <a href="/pages/subscription-terms">subscription terms</a>.</span></label>
             {%- else -%}
               <p class="artifact-cart__disclosure">One-time purchase. No subscription, no recurring charges.</p>
             {%- endif -%}
-            <button class="artifact-cart__checkout" type="submit" name="checkout" data-cart-checkout {% if has_subscription %}disabled{% endif %}>Continue to payment</button>
+            <button class="artifact-cart__checkout" type="submit" name="checkout" data-cart-checkout {% if cart_configuration_issue or has_helper and has_base_vial == false %}disabled{% endif %}>Continue to payment</button>
+            {% if has_helper and has_base_vial == false %}<a class="artifact-cart__back" href="/collections/fragrances">Choose a first fragrance</a>{% endif %}
           </aside>
         </div>
       </form>
@@ -97,7 +132,6 @@
       <div class="artifact-cart__empty"><h1>Your Cart</h1><p>Your next scent is waiting.</p><a href="/collections/fragrances">Shop fragrances</a></div>
     {%- endif -%}
   </div>
-  <p class="artifact-cart__status" data-cart-status role="status" aria-live="polite"></p>
 </artifact-cart>
 
 <style>
@@ -113,8 +147,10 @@
   .artifact-cart__details p { margin:.35rem 0 0; color:var(--ac-muted); font:.68rem/1.4 'Jost',sans-serif; letter-spacing:.08em; text-transform:uppercase; }
   .artifact-cart__details .artifact-cart__plan { color:var(--ac-gold); }
   .artifact-cart__remove { margin-block-start:.55rem; padding:0 0 .12rem; border:0; border-block-end:.0625rem solid var(--ac-muted); color:var(--ac-muted); background:transparent; font:.7rem/1.2 'Jost',sans-serif; cursor:pointer; }
-  .artifact-cart__quantity { display:grid; grid-template-columns:2.5rem 2.5rem 2.5rem; align-items:center; border:.0625rem solid var(--ac-line); text-align:center; }
-  .artifact-cart__quantity button,.artifact-cart__quantity span { display:grid; width:2.5rem; height:2.7rem; place-items:center; border:0; color:var(--ac-ink); background:transparent; font:.8rem/1 'Jost',sans-serif; }
+  .artifact-cart__quantity { display:flex; align-items:center; border:.0625rem solid var(--ac-line); text-align:center; }
+  .artifact-cart__quantity button,.artifact-cart__quantity input { display:grid; width:2.75rem; height:2.75rem; padding:0; place-items:center; border:0; color:var(--ac-ink); background:transparent; font:1rem/1 'Jost',sans-serif; text-align:center; }
+  .artifact-cart__quantity input { appearance:textfield; }
+  .artifact-cart__quantity input::-webkit-inner-spin-button { appearance:none; }
   .artifact-cart__quantity button { cursor:pointer; }
   .artifact-cart__line-price { min-width:4.8rem; text-align:end; font:500 .95rem/1 'Jost',sans-serif; }
   .artifact-cart__order-mode { margin-block-start:2rem; padding:1.6rem; border:.0625rem solid var(--ac-gold); }
@@ -144,20 +180,14 @@
   .artifact-cart__checkout[disabled] { cursor:not-allowed; opacity:.48; }
   .artifact-cart__empty { padding-block:5rem 8rem; text-align:center; }
   .artifact-cart__empty a { display:inline-flex; min-height:3.4rem; align-items:center; padding-inline:1.4rem; color:var(--ac-cream); background:var(--ac-green); font:.75rem/1 'Jost',sans-serif; text-transform:uppercase; }
-  .artifact-cart__status { position:fixed; z-index:5; inset:auto 1rem 1rem auto; margin:0; padding:.75rem 1rem; color:var(--ac-cream); background:var(--ac-green); font:.75rem/1.4 'Jost',sans-serif; opacity:0; pointer-events:none; transition:opacity 180ms ease; }
-  .artifact-cart__status--visible { opacity:1; }
+  .artifact-cart__status { margin:0; color:var(--ac-green); font:.85rem/1.5 'Jost',sans-serif; }
+  .artifact-cart__status:not(:empty) { margin-block-end:1rem; padding:.75rem; border:.0625rem solid var(--ac-gold); }
+  .artifact-cart__status a { text-decoration:underline; }
+  .artifact-cart [hidden] { display:none; }
+  .artifact-cart__remove { display:inline-flex; align-items:center; min-height:2.75rem; text-decoration:underline; border:0; }
+  .artifact-cart__disclosure,.artifact-cart__consent { font-size:.82rem; }
+  .artifact-cart__consent input { min-width:1.2rem; min-height:1.2rem; }
   @media(max-width:52rem){.artifact-cart__layout{grid-template-columns:1fr}.artifact-cart__summary{position:static}.artifact-cart__item{grid-template-columns:4.5rem minmax(0,1fr) auto}.artifact-cart__line-price{grid-column:2;text-align:start}.artifact-cart__quantity{grid-column:3;grid-row:1 / span 2}}
-  @media(max-width:35rem){.artifact-cart__shell{width:min(100% - 2rem,68rem)}.artifact-cart__item{gap:.7rem}.artifact-cart__quantity{grid-template-columns:2.2rem 2.2rem 2.2rem}.artifact-cart__quantity button,.artifact-cart__quantity span{width:2.2rem}.artifact-cart__order-mode{padding:1rem}.artifact-cart__mode{padding:.85rem}}
+  @media(max-width:35rem){.artifact-cart__shell{width:min(100% - 2rem,68rem)}.artifact-cart__item{grid-template-columns:3rem minmax(0,1fr);gap:.7rem}.artifact-cart__image{width:3rem}.artifact-cart__quantity{grid-column:2;grid-row:auto;width:max-content}.artifact-cart__line-price{grid-column:2}.artifact-cart__order-mode{padding:1rem}.artifact-cart__mode{padding:.85rem}}
   @media(prefers-reduced-motion:reduce){.artifact-cart__status{transition:none}}
 </style>
-
-<script>
-  if (!customElements.get('artifact-cart')) {
-    customElements.define('artifact-cart', class extends HTMLElement {
-      connectedCallback(){this.status=this.querySelector('[data-cart-status]');this.querySelectorAll('[data-cart-quantity]').forEach((button)=>button.addEventListener('click',()=>this.change(button.closest('[data-cart-key]'),Number(button.dataset.cartQuantity))));this.querySelectorAll('[data-cart-remove]').forEach((button)=>button.addEventListener('click',()=>this.change(button.closest('[data-cart-key]'),0)));this.querySelectorAll('input[name="artifact_order_mode"]').forEach((radio)=>radio.addEventListener('change',()=>this.setMode(radio.value)));this.querySelector('[data-cart-consent]')?.addEventListener('change',(event)=>{this.querySelector('[data-cart-checkout]').disabled=!event.currentTarget.checked;});}
-      show(message){this.status.textContent=message;this.status.classList.add('artifact-cart__status--visible');}
-      async change(item,quantity){this.show('Updating your cart…');const response=await fetch('/cart/change.js',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({id:item.dataset.cartKey,quantity})});if(response.ok)location.reload();else this.show('We could not update your cart. Please try again.');}
-      async setMode(mode){this.show('Updating how you order…');const items=[...this.querySelectorAll('[data-cart-key]')];try{for(const item of items){if(item.dataset.bottle==='true'||!item.dataset.planId)continue;const body={id:item.dataset.cartKey,quantity:Number(item.querySelector('.artifact-cart__quantity span').textContent),selling_plan:mode==='subscription'?Number(item.dataset.planId):null};const response=await fetch('/cart/change.js',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error('mode change failed');}location.reload();}catch(error){this.show('This order option could not be applied. Your cart was not changed.');}}
-    });
-  }
-</script>

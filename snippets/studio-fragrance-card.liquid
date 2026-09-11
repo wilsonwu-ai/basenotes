@@ -1,0 +1,41 @@
+{% doc %}
+  Compact fragrance card with actual atomizer format and original bottle reference.
+  @param {product} product - Shopify fragrance product.
+  @param {string} section_id - Unique section identifier.
+{% enddoc %}
+{%- liquid
+  assign vial = blank
+  for variant in product.variants
+    assign variant_title = variant.title | downcase | remove: ' '
+    if variant_title contains '5ml'
+      assign vial = variant
+      break
+    endif
+  endfor
+  assign scent_name = product.title | split: ' — ' | first | remove_first: product.vendor | strip
+  assign gender = 'unclassified'
+  assign tags_down = product.tags | join: '|' | downcase
+  assign title_down = product.title | downcase
+  if tags_down contains 'unisex'
+    assign gender = 'unisex'
+  elsif tags_down contains 'feminine' or title_down contains 'for her' or title_down contains 'pour femme'
+    assign gender = 'her'
+  elsif tags_down contains 'masculine' or title_down contains 'for him' or title_down contains 'pour homme'
+    assign gender = 'him'
+  endif
+-%}
+{%- unless product.handle == 'extra-5ml-vial-add-on' or product.price == 0 or vial == blank -%}
+<article class="scent-card" data-scent-card data-gender="{{ gender }}" data-tags="{{ tags_down | escape }}" data-name="{{ product.title | escape }}" aria-labelledby="ScentCard-{{ section_id }}-{{ product.id }}">
+  <a class="scent-card__media" href="{{ product.url }}" aria-label="Explore {{ product.title | escape }} in a 5ml vial">
+    <span class="scent-card__vial">{% render 'vial-illustration', product: product %}</span>
+    {%- if product.featured_image -%}<span class="scent-card__original">{{ product.featured_image | image_url: width: 200 | image_tag: loading: 'lazy', widths: '100, 150, 200', sizes: '64px', alt: product.featured_image.alt | default: product.title }}<span>Original fragrance</span></span>{%- endif -%}
+  </a>
+  <p class="scent-card__brand">{{ product.vendor }}</p>
+  <h2 id="ScentCard-{{ section_id }}-{{ product.id }}"><a href="{{ product.url }}">{{ scent_name }}</a></h2>
+  <p class="scent-card__format">5ml travel atomizer</p>
+  <form method="post" action="{{ routes.cart_add_url }}" data-scent-add data-variant-id="{{ vial.id }}" data-handle="{{ product.handle }}" data-title="{{ product.title | escape }}" data-price="{{ vial.price }}">
+    <input type="hidden" name="id" value="{{ vial.id }}"><input type="hidden" name="quantity" value="1">
+    <button type="submit" {% unless vial.available %}disabled{% endunless %}>{% if vial.available %}Add vial <span aria-hidden="true">·</span> <span data-scent-price>{{ vial.price | money }}</span>{% else %}Sold out{% endif %}</button>
+  </form>
+</article>
+{%- endunless -%}

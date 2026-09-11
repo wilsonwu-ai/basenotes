@@ -28,12 +28,16 @@
               alt="{{ featured_image.alt | default: product.title }}"
               id="mainCaseImage"
               class="case-gallery__image"
+              width="{{ featured_image.width }}"
+              height="{{ featured_image.height }}"
             >
           {%- else -%}
             <img
               src="{{ 'hero-atomizer.png' | asset_url }}"
               alt="{{ product.title }}"
               class="case-gallery__image"
+              width="1376"
+              height="768"
             >
           {%- endif -%}
 
@@ -55,6 +59,8 @@
                   src="{{ image | image_url: width: 150 }}"
                   alt="{{ image.alt | default: product.title }}"
                   loading="lazy"
+                  width="{{ image.width }}"
+                  height="{{ image.height }}"
                 >
               </button>
             {%- endfor -%}

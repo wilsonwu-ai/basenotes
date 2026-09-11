@@ -1,16 +1,35 @@
 {%- liquid
-  assign vial_variant = product.selected_or_first_available_variant
-  assign bottle_variant = blank
+  assign current_variant = product.selected_or_first_available_variant
+  assign vial_variant = nil
+  assign bottle_variant = nil
   for candidate in product.variants
-    assign candidate_title = candidate.title | downcase
-    if candidate_title contains '100ml' or candidate_title contains '100 ml' or candidate_title contains '3.3' or candidate_title contains 'full bottle'
-      assign bottle_variant = candidate
-    else
+    assign compact_size = candidate.title | downcase | remove: ' '
+    if compact_size == '5ml'
       assign vial_variant = candidate
+    elsif compact_size contains 'ml' or compact_size contains 'oz' or compact_size contains 'fullbottle'
+      assign bottle_variant = candidate
     endif
   endfor
-  assign vial_plan = vial_variant.selling_plan_allocations.first.selling_plan
+  assign current_variant = product.selected_variant | default: vial_variant | default: current_variant
+  assign current_allocation = current_variant.selling_plan_allocations.first
   assign display_title = product.title | remove_first: product.vendor | remove: 'EDP' | remove: 'Eau de Parfum' | strip
+  assign primary_image = product.featured_image
+  assign top_notes = product.metafields.custom.top_notes.value
+  assign heart_notes = product.metafields.custom.heart_notes.value
+  assign base_notes = product.metafields.custom.base_notes.value
+  assign description_html = product.description
+  if description_html contains '<strong>Top Notes:</strong>'
+    assign description_html = product.description | split: '<p><strong>Top Notes:</strong>' | first
+    if top_notes == blank
+      assign top_notes = product.description | split: '<strong>Top Notes:</strong>' | last | split: '<br' | first | strip_html | strip
+    endif
+    if heart_notes == blank and product.description contains '<strong>Heart Notes:</strong>'
+      assign heart_notes = product.description | split: '<strong>Heart Notes:</strong>' | last | split: '<br' | first | strip_html | strip
+    endif
+    if base_notes == blank and product.description contains '<strong>Base Notes:</strong>'
+      assign base_notes = product.description | split: '<strong>Base Notes:</strong>' | last | split: '</p>' | first | strip_html | strip
+    endif
+  endif
   capture concentration
     render 'product-concentration', product: product
   endcapture
@@ -23,154 +42,205 @@
 {%- if is_internal_addon_product -%}
   <!-- INTERNAL_ADDON_GUARD_COPY_START -->
   <section class="artifact-product artifact-product--guard">
-    <a class="artifact-product__back" href="{{ routes.all_products_collection_url }}">← All fragrances</a>
-    <div class="artifact-product__guard" data-internal-addon-route-guard><p class="artifact-product__eyebrow">Subscriber add-on</p><h1>This item is added from your scent queue.</h1><p>Choose a fragrance from the collection to start.</p><button type="button" disabled>Available inside your scent queue</button><a href="/collections/fragrances">Shop fragrances</a></div>
+    <div class="artifact-product__guard" data-internal-addon-route-guard><p class="artifact-product__eyebrow">Additional fragrance</p><h1>Choose the scent that goes in your vial.</h1><p>This item is configured when you add a fragrance to your order.</p><button type="button" disabled>Choose a fragrance first</button><a href="/collections/fragrances">Shop fragrances</a></div>
   </section>
   <!-- INTERNAL_ADDON_GUARD_COPY_END -->
 {%- endif -%}
 {%- unless is_internal_addon_product -%}
 <!-- INTERNAL_ADDON_PURCHASE_UI_START -->
-<artifact-product class="artifact-product" data-vial-id="{{ vial_variant.id }}" data-vial-price="{{ vial_variant.price }}" data-bottle-id="{{ bottle_variant.id }}" data-bottle-price="{{ bottle_variant.price | default: 36000 }}" data-bottle-available="{{ bottle_variant.available }}" data-plan-id="{{ vial_plan.id }}">
+<artifact-product class="artifact-product" data-product-handle="{{ product.handle }}" data-product-title="{{ product.title | escape }}">
   <div class="artifact-product__shell">
     <a class="artifact-product__back" href="/collections/fragrances">← All fragrances</a>
     <div class="artifact-product__top">
-      <div class="artifact-product__visual" aria-label="5ml atomizer shown next to a full bottle, true to scale">
-        <svg class="artifact-product__scale" viewBox="0 0 520 600" role="img" aria-labelledby="ArtifactScaleTitle-{{ section.id }}">
-          <title id="ArtifactScaleTitle-{{ section.id }}">Base Note 5ml vial and 100ml full bottle size comparison</title>
-          <defs><linearGradient id="ArtifactGlass-{{ section.id }}" x1="0" x2="1"><stop stop-color="#fff" stop-opacity=".92"/><stop offset=".52" stop-color="#d7ddd9" stop-opacity=".34"/><stop offset="1" stop-color="#7d9189" stop-opacity=".52"/></linearGradient></defs>
-          <g transform="translate(72 255)"><rect x="40" y="0" width="42" height="36" fill="none" stroke="#ac9159"/><rect x="31" y="36" width="60" height="25" rx="5" fill="#f4efe3" stroke="#ac9159"/><rect x="13" y="61" width="96" height="190" rx="25" fill="url(#ArtifactGlass-{{ section.id }})" stroke="#ac9159"/><path d="M21 156h80v70c0 13-10 22-22 22H43c-12 0-22-9-22-22Z" fill="#22392b"/><rect x="26" y="98" width="70" height="70" fill="#f4efe3"/><text x="61" y="124" text-anchor="middle" font-size="10" fill="#22392b">BASE NOTE</text><text x="61" y="145" text-anchor="middle" font-size="7" fill="#5c574d">{{ display_title | upcase | truncate: 16 | escape }}</text><text x="61" y="285" text-anchor="middle" font-size="11" fill="#5c574d">5ML</text></g>
-          <g transform="translate(250 70)"><rect x="76" y="0" width="74" height="64" fill="none" stroke="#ac9159"/><rect x="57" y="64" width="112" height="37" rx="7" fill="#f4efe3" stroke="#ac9159"/><path d="M21 101h184l21 386H0Z" fill="#22392b" stroke="#ac9159"/><rect x="45" y="205" width="136" height="116" fill="none" stroke="#ac9159"/><text x="113" y="529" text-anchor="middle" font-size="11" fill="#5c574d">100ML</text></g>
-          <text x="260" y="580" text-anchor="middle" font-size="11" fill="#7a756d">5ml atomizer shown next to the full 100ml bottle, true to scale</text>
-        </svg>
+      <div class="artifact-product__media">
+        <div class="artifact-product__visual{% unless current_variant.id == vial_variant.id %} artifact-product__visual--single{% endunless %}" data-product-comparison>
+          <div class="artifact-product__comparison">
+            {%- if vial_variant -%}
+              <figure class="artifact-product__reference artifact-product__reference--vial" data-product-vial-reference {% unless current_variant.id == vial_variant.id %}hidden{% endunless %}>
+                <div class="artifact-product__vial-object">{% render 'vial-illustration', product: product, concentration: concentration %}</div>
+                <figcaption class="artifact-product__reference-label">Your 5ml vial</figcaption>
+              </figure>
+            {%- endif -%}
+            <figure class="artifact-product__reference artifact-product__reference--original">
+              <div class="artifact-product__photo-object">
+                {%- if primary_image -%}
+                  {%- assign image_alt = primary_image.alt | default: product.title -%}
+                  {{ primary_image | image_url: width: 1000 | image_tag: class: 'artifact-product__image', widths: '400, 600, 800, 1000', sizes: '(min-width: 850px) 320px, 65vw', loading: 'eager', fetchpriority: 'high', alt: image_alt, data-product-main-image: '' }}
+                {%- else -%}
+                  {% render 'vial-illustration', product: product %}
+                {%- endif -%}
+              </div>
+              <figcaption class="artifact-product__reference-label">Original fragrance</figcaption>
+            </figure>
+          </div>
+        </div>
+        {%- if product.images.size > 1 -%}
+          <div class="artifact-product__thumbnails" aria-label="Product photographs">
+            {%- for product_image in product.images limit: 5 -%}
+              <button type="button" class="artifact-product__thumbnail" data-product-image="{{ product_image | image_url: width: 1000 }}" data-alt="{{ product_image.alt | default: product.title | escape }}" aria-label="View {{ product.title | escape }} photograph {{ forloop.index }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">{{ product_image | image_url: width: 120 | image_tag: loading: 'lazy', width: 56, height: 56, alt: '' }}</button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+        <p class="artifact-product__caption">5ml orders arrive in the labeled Base Note spray atomizer. Original bottle shown for fragrance identification.</p>
       </div>
 
       <div class="artifact-product__info">
-        <p class="artifact-product__eyebrow">{{ product.vendor }}</p>
-        <h1>{{ display_title | default: product.title }}</h1>
-        <p class="artifact-product__meta">{{ concentration | strip }} <span aria-hidden="true">·</span> {{ product.metafields.custom.made_in | default: 'Decanted to 5ml' }}</p>
-        {% render 'product-review-badge', product: product, surface: 'product' %}
+        <p class="artifact-product__eyebrow">{{ product.vendor | escape }}</p>
+        <h1>{{ display_title | default: product.title | escape }}</h1>
+        <p class="artifact-product__meta">{{ concentration | strip }}{% if vial_variant %} <span aria-hidden="true">·</span> Decanted to 5ml{% endif %}</p>
+        {%- if product.metafields.reviews.count.value > 0 or product.metafields.judgeme.review_count > 0 -%}{% render 'product-review-badge', product: product, surface: 'product' %}{%- endif -%}
         <div class="artifact-product__pills" aria-label="Fragrance character">
           {%- assign pills_shown = 0 -%}
           {%- for pill in product.tags -%}
             {%- assign pill_down = pill | downcase -%}
-            {%- if pill contains ':' or pill_down == 'date night' or pill_down == 'everyday wear' or pill_down == 'signature' or pill_down == 'wedding/formal' -%}{%- continue -%}{%- endif -%}
-            <span>{{ pill | strip }}</span>{%- assign pills_shown = pills_shown | plus: 1 -%}
+            {%- if pill contains ':' or pill_down == 'date night' or pill_down == 'everyday wear' or pill_down == 'signature' or pill_down == 'wedding/formal' or pill_down contains 'gender' -%}{%- continue -%}{%- endif -%}
+            <span>{{ pill | escape }}</span>{%- assign pills_shown = pills_shown | plus: 1 -%}
             {%- if pills_shown == 5 -%}{%- break -%}{%- endif -%}
           {%- endfor -%}
-          {%- if pills_shown == 0 -%}<span>Authentic</span><span>Travel ready</span><span>Signature scent</span>{%- endif -%}
         </div>
 
-        <fieldset class="artifact-product__sizes">
-          <legend class="visually-hidden">Choose a size</legend>
-          <button type="button" class="artifact-product__size artifact-product__size--active" data-artifact-size="vial" aria-pressed="true">5ml</button>
-          <button type="button" class="artifact-product__size" data-artifact-size="bottle" aria-pressed="false">Full bottle <span>(3.3oz)</span></button>
-        </fieldset>
-
-        <p class="artifact-product__price" data-artifact-product-price aria-label="Price {{ vial_variant.price | money }}">{{ vial_variant.price | money }}</p>
         {%- form 'product', product, class: 'artifact-product__form', data-product-form: '', data-artifact-product-form: '' -%}
-          <input type="hidden" name="id" value="{{ vial_variant.id }}" data-artifact-variant>
-          <input type="hidden" name="selling_plan" value="" data-artifact-plan disabled>
-          <div class="artifact-product__quantity">
-            <button type="button" data-artifact-qty="minus" aria-label="Decrease quantity">−</button>
-            <label class="visually-hidden" for="ArtifactQuantity-{{ section.id }}">Quantity</label>
-            <input id="ArtifactQuantity-{{ section.id }}" type="number" name="quantity" value="1" min="1" inputmode="numeric" data-artifact-quantity>
-            <button type="button" data-artifact-qty="plus" aria-label="Increase quantity">+</button>
+          <fieldset class="artifact-product__sizes">
+            <legend class="visually-hidden">Choose a size</legend>
+            {%- for variant in product.variants -%}
+              <label class="artifact-product__size"><input type="radio" name="id" value="{{ variant.id }}" class="visually-hidden" data-artifact-size {% if variant.id == current_variant.id %}checked{% endif %}>{% if variant.title == 'Default Title' %}{{ product.title | escape }}{% else %}{{ variant.title | escape }}{% endif %}</label>
+            {%- endfor -%}
+            {%- if vial_variant and bottle_variant == blank -%}<label class="artifact-product__size artifact-product__size--request"><input type="radio" name="id" value="unavailable" class="visually-hidden" data-artifact-size data-request="true" disabled>Full bottle</label>{%- endif -%}
+          </fieldset>
+          <p class="artifact-product__price" data-artifact-product-price aria-label="Price {{ current_variant.price | money }}">{{ current_variant.price | money }}</p>
+          <p class="artifact-product__price-note" data-artifact-price-note>{% if current_variant.id == vial_variant.id and current_variant.price == 2000 %}{{ current_variant.price | money }} first vial · $18 each additional vial in your order.{% endif %}</p>
+          <div data-artifact-purchase-controls>
+            <div class="artifact-product__quantity">
+              <button type="button" data-artifact-qty="minus" aria-label="Decrease quantity" hidden>−</button>
+              <label class="visually-hidden" for="ArtifactQuantity-{{ section.id }}">Quantity</label>
+              <input id="ArtifactQuantity-{{ section.id }}" type="number" name="quantity" value="1" min="1" max="99" inputmode="numeric" data-artifact-quantity>
+              <button type="button" data-artifact-qty="plus" aria-label="Increase quantity" hidden>+</button>
+            </div>
+            {%- if vial_variant.selling_plan_allocations.size > 0 -%}
+              <div class="artifact-product__rotation" id="monthly-rotation" hidden>
+                <label for="ArtifactOrder-{{ section.id }}">How would you like to order?</label>
+                <select id="ArtifactOrder-{{ section.id }}" data-artifact-rotation>
+                  <option value="">One-time purchase</option>
+                  <option value="subscription">Monthly Rotation subscription</option>
+                </select>
+                <input type="hidden" name="selling_plan" value="" data-artifact-plan disabled>
+              </div>
+              <div class="artifact-product__rotation-note" data-artifact-rotation-note hidden>
+                <p><strong>This is a recurring monthly subscription.</strong> First shipment <span data-plan-first>{{ current_allocation.price | money }}</span>, then <span data-plan-renewal>{{ current_allocation.price_adjustments.last.price | default: current_variant.price | money }}</span> every month until cancelled. Skip, swap, or cancel in your account.</p>
+                <label class="artifact-product__consent"><input type="checkbox" data-artifact-consent disabled> <span>I agree to the recurring charges and <a href="/pages/subscription-terms">subscription terms</a>.</span></label>
+              </div>
+            {%- endif -%}
+            <button id="addToCartButton" class="artifact-product__add" type="submit" data-artifact-submit {% unless current_variant.available %}disabled{% endunless %}>{% if current_variant.available %}Add to cart{% else %}Sold out{% endif %}</button>
           </div>
-          <button id="addToCartButton" class="artifact-product__add" type="submit" data-artifact-submit>Add to cart</button>
+          <div class="artifact-product__request" data-bottle-request hidden><p>A full bottle of this fragrance is not currently listed for checkout.</p><a class="artifact-product__add" href="/pages/full-bottles?fragrance={{ product.title | url_encode }}#BottleEnquiry">Ask about a full bottle</a></div>
+          <noscript><p class="artifact-product__size-note">Choose a size and add it to your cart. Regular prices apply without JavaScript. For Monthly Rotation or full-bottle availability, <a href="/pages/contact">contact us</a>.</p></noscript>
         {%- endform -%}
-        <p class="artifact-product__size-note" data-artifact-size-note>5ml holds about 60 sprays — roughly a month of regular wear.</p>
-        <p class="artifact-product__shipping">▱ Ships within 1–3 business days</p>
-        {%- if vial_plan != blank -%}
-          <button id="monthly-rotation" type="button" class="artifact-product__rotation" data-artifact-rotation aria-pressed="false">Prefer a subscription? Choose Monthly Rotation</button>
-          <p class="artifact-product__rotation-note" data-artifact-rotation-note hidden>Monthly Rotation is a recurring subscription. First shipment {{ vial_variant.selling_plan_allocations.first.price | money }}, then {{ vial_variant.price | money }} monthly. Swap, pause, or cancel anytime.</p>
-        {%- endif -%}
+        <p class="artifact-product__size-note" data-artifact-size-note>{% if vial_variant %}5ml in a portable spray atomizer. Try it on your skin before committing to a bottle.{% else %}Original full bottle. Size and price shown are for the selected variant.{% endif %}</p>
+        <p class="artifact-product__shipping"><a href="/pages/shipping">Shipping &amp; delivery details</a></p>
+        <p class="artifact-product__status" data-artifact-product-status role="status" aria-live="polite"></p>
       </div>
     </div>
 
     <div class="artifact-product__story">
-      <div class="artifact-product__description">{{ product.description }}</div>
+      <div class="artifact-product__description">{{ description_html }}</div>
       <div class="artifact-product__details">
-        <section><h2>Key notes</h2><div class="artifact-product__notes">
-          <div><span>Top</span><p>{{ product.metafields.custom.top_notes | default: 'See fragrance details' }}</p></div>
-          <div><span>Heart</span><p>{{ product.metafields.custom.heart_notes | default: 'Authentic house composition' }}</p></div>
-          <div><span>Base</span><p>{{ product.metafields.custom.base_notes | default: 'Long-lasting drydown' }}</p></div>
-        </div></section>
-        <section><h2>Best for</h2><ul><li>Everyday signature scent</li><li>Work, evenings, and weekends</li><li>Trying on skin before a full bottle</li></ul></section>
+        {%- if top_notes != blank or heart_notes != blank or base_notes != blank -%}
+          <section><h2>Key notes</h2><div class="artifact-product__notes">
+            {%- if top_notes != blank -%}<div><span>Top</span><p>{{ top_notes | escape }}</p></div>{%- endif -%}
+            {%- if heart_notes != blank -%}<div><span>Heart</span><p>{{ heart_notes | escape }}</p></div>{%- endif -%}
+            {%- if base_notes != blank -%}<div><span>Base</span><p>{{ base_notes | escape }}</p></div>{%- endif -%}
+          </div></section>
+        {%- endif -%}
+        {%- capture occasions -%}
+          {%- for tag in product.tags -%}
+            {%- if tag contains 'event:' -%}<li>{{ tag | remove: 'event:' | replace: '-', ' ' | capitalize | escape }}</li>{%- elsif tag == 'everyday wear' or tag == 'signature' or tag == 'wedding/formal' -%}<li>{{ tag | capitalize | escape }}</li>{%- endif -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+        {%- if occasions != blank -%}<section><h2>Best for</h2><ul>{{ occasions }}</ul></section>{%- endif -%}
       </div>
     </div>
   </div>
-  <p class="artifact-product__status" data-artifact-product-status role="status" aria-live="polite"></p>
+  <script type="application/json" data-artifact-variants>[
+    {%- for variant in product.variants -%}
+      {%- assign allocation = variant.selling_plan_allocations.first -%}
+      {"id":{{ variant.id | json }},"title":{{ variant.title | json }},"price":{{ variant.price | json }},"available":{{ variant.available | json }},"isVial":{% if variant.id == vial_variant.id %}true{% else %}false{% endif %},"planId":{% if variant.id == vial_variant.id and variant.price == 2000 %}{{ allocation.selling_plan.id | json }}{% else %}null{% endif %},"planPrice":{{ allocation.price | json }},"renewalPrice":{{ allocation.price_adjustments.last.price | default: variant.price | json }}}{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]</script>
 </artifact-product>
 <!-- INTERNAL_ADDON_PURCHASE_UI_END -->
 {%- endunless -%}
 
 {% stylesheet %}
-  .artifact-product { --ap-green:#22392b; --ap-cream:#f4efe3; --ap-gold:#ac9159; --ap-ink:#242320; --ap-muted:#5c574d; --ap-line:rgb(34 57 43 / 18%); display:block; min-height:70dvh; color:var(--ap-ink); background:var(--ap-cream); }
-  .artifact-product__shell { width:min(100% - 3rem,68rem); margin-inline:auto; padding-block:2.1rem 5rem; }
-  .artifact-product__back { display:inline-block; margin-block-end:2rem; padding-block-end:.2rem; border-block-end:.0625rem solid var(--ap-gold); color:var(--ap-green); font:.72rem/1.3 'Jost',sans-serif; }
-  .artifact-product__top { display:grid; grid-template-columns:minmax(0,1fr) minmax(22rem,.92fr); gap:3.75rem; align-items:center; }
-  .artifact-product__visual { display:grid; min-height:31rem; place-items:center; border:.0625rem solid var(--ap-line); border-radius:.2rem; }
-  .artifact-product__scale { width:min(88%,30rem); height:auto; }
-  .artifact-product__info { min-width:0; }
-  .artifact-product__eyebrow { margin:0 0 .8rem; color:var(--ap-gold); font:500 .7rem/1.2 'Jost',sans-serif; letter-spacing:.16em; text-transform:uppercase; }
-  .artifact-product__info h1 { margin:0; font:700 clamp(2.6rem,5vw,4rem)/1 'Playfair Display',serif; letter-spacing:-.035em; }
-  .artifact-product__meta { margin:.7rem 0 1rem; color:var(--ap-muted); font:.75rem/1.5 'Jost',sans-serif; }
+  .artifact-product { --ap-green:#22392b; --ap-cream:#f4efe3; --ap-gold:#8c7037; --ap-ink:#242320; --ap-muted:#5c574d; --ap-line:rgb(34 57 43 / 20%); --ap-serif:'EB Garamond',serif; --ap-sans:'Jost',sans-serif; display:block; min-height:70dvh; color:var(--ap-ink); background:var(--ap-cream); }
+  .artifact-product [hidden] { display:none; }
+  .artifact-product__shell { width:min(100% - 3rem,66rem); margin-inline:auto; padding-block:2rem 5rem; }
+  .artifact-product__back { display:inline-flex; align-items:center; min-height:2.75rem; margin-block-end:1.3rem; color:var(--ap-green); font:.78rem/1.3 var(--ap-sans); text-decoration:underline; text-underline-offset:.3rem; text-decoration-color:var(--ap-gold); }
+  .artifact-product__top { display:grid; grid-template-columns:minmax(0,1fr) minmax(22rem,1.04fr); gap:3.75rem; align-items:start; }
+  .artifact-product__media,.artifact-product__info { min-width:0; }
+  .artifact-product__visual { display:grid; aspect-ratio:4 / 4.7; padding:1.5rem; place-items:center; border:.0625rem solid var(--ap-line); border-radius:.2rem; }
+  .artifact-product__comparison { display:grid; grid-template-columns:minmax(0,.65fr) minmax(0,1.35fr); align-items:end; gap:.5rem; width:100%; }
+  .artifact-product__reference { min-width:0; margin:0; text-align:center; }
+  .artifact-product__vial-object { display:flex; align-items:flex-end; justify-content:center; height:7rem; margin-block-end:2.6rem; }
+  .artifact-product__vial-object .bn-vial { display:block; width:3.5rem; height:7rem; }
+  .artifact-product__photo-object { aspect-ratio:1; }
+  .artifact-product__reference-label { margin-block-start:.65rem; color:var(--ap-muted); font:.67rem/1.4 var(--ap-sans); letter-spacing:.035em; }
+  .artifact-product__visual--single .artifact-product__comparison { grid-template-columns:minmax(0,1fr); }
+  .artifact-product__image,.artifact-product__photo-object svg { display:block; width:100%; height:100%; max-height:28rem; object-fit:contain; }
+  .artifact-product__image { mix-blend-mode:multiply; }
+  .artifact-product__thumbnails { display:flex; justify-content:center; flex-wrap:wrap; gap:.6rem; margin-block-start:.75rem; }
+  .artifact-product__thumbnail { display:grid; width:3.5rem; height:3.5rem; padding:.25rem; place-items:center; border:.0625rem solid var(--ap-line); background:transparent; cursor:pointer; }
+  .artifact-product__thumbnail[aria-pressed="true"] { border-color:var(--ap-gold); }
+  .artifact-product__thumbnail img { width:100%; height:100%; object-fit:contain; }
+  .artifact-product__caption { margin:.75rem auto 0; max-width:40ch; color:var(--ap-muted); font:.68rem/1.5 var(--ap-sans); text-align:center; }
+  .artifact-product__eyebrow { margin:0 0 .7rem; color:var(--ap-gold); font:500 .73rem/1.2 var(--ap-sans); letter-spacing:.16em; text-transform:uppercase; }
+  .artifact-product__info h1 { margin:0; font:700 clamp(2.5rem,4.2vw,3.5rem)/1.08 'Playfair Display',serif; letter-spacing:-.025em; overflow-wrap:anywhere; }
+  .artifact-product__meta { margin:.7rem 0 1rem; color:var(--ap-muted); font:.78rem/1.5 var(--ap-sans); }
   .artifact-product .product-review-badge { margin-block:0 1rem; }
-  .artifact-product__pills { display:flex; flex-wrap:wrap; gap:.45rem; margin-block-end:1.3rem; }
-  .artifact-product__pills span { padding:.42rem .7rem; border:.0625rem solid var(--ap-gold); border-radius:99rem; color:var(--ap-green); font:500 .62rem/1 'Jost',sans-serif; letter-spacing:.06em; text-transform:uppercase; }
-  .artifact-product__sizes { display:grid; grid-template-columns:7rem minmax(10rem,1fr); width:min(100%,25rem); margin:0 0 1.2rem; padding:0; border:0; }
-  .artifact-product__size { min-height:3.1rem; padding:.75rem; border:.0625rem solid var(--ap-green); color:var(--ap-green); background:transparent; font:500 .7rem/1 'Jost',sans-serif; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
-  .artifact-product__size + .artifact-product__size { border-inline-start:0; }
-  .artifact-product__size--active { color:var(--ap-cream); background:var(--ap-green); }
-  .artifact-product__price { margin:0 0 1.1rem; font:500 2.1rem/1 'Jost',sans-serif; }
-  .artifact-product__quantity { display:grid; grid-template-columns:2.8rem 2.8rem 2.8rem; width:max-content; margin-block-end:1rem; border:.0625rem solid var(--ap-line); }
-  .artifact-product__quantity button,.artifact-product__quantity input { width:2.8rem; height:2.8rem; border:0; color:var(--ap-ink); background:transparent; text-align:center; font:500 .85rem/1 'Jost',sans-serif; }
+  .artifact-product__pills { display:flex; flex-wrap:wrap; gap:.45rem; margin-block-end:1.4rem; }
+  .artifact-product__pills:empty { display:none; }
+  .artifact-product__pills span { padding:.42rem .7rem; border:.0625rem solid var(--ap-gold); border-radius:99rem; color:var(--ap-green); font:500 .65rem/1 var(--ap-sans); text-transform:uppercase; }
+  .artifact-product__sizes { display:flex; flex-wrap:wrap; width:min(100%,27rem); margin:0 0 1.15rem; padding:0; border:0; }
+  .artifact-product__size { display:flex; min-width:5rem; min-height:2.8rem; padding:.75rem 1.1rem; border:.0625rem solid var(--ap-green); align-items:center; justify-content:center; color:var(--ap-green); background:transparent; font:500 .75rem/1.3 var(--ap-sans); text-transform:uppercase; cursor:pointer; }
+  .artifact-product__size:has(input:checked) { color:var(--ap-cream); background:var(--ap-green); }
+  .artifact-product__size:has(input:focus-visible) { outline:.125rem solid var(--ap-gold); outline-offset:.2rem; }
+  .artifact-product__price { margin:0; font:500 1.8rem/1.2 var(--ap-sans); }
+  .artifact-product__price-note { min-height:1rem; margin:.5rem 0 1.2rem; color:var(--ap-muted); font:.73rem/1.5 var(--ap-sans); }
+  .artifact-product__quantity { display:flex; width:max-content; margin-block-end:1rem; border:.0625rem solid var(--ap-line); }
+  .artifact-product__quantity button,.artifact-product__quantity input { width:2.8rem; height:2.8rem; padding:0; border:0; color:var(--ap-ink); background:transparent; text-align:center; font:500 1rem/1 var(--ap-sans); }
   .artifact-product__quantity button { cursor:pointer; }
   .artifact-product__quantity input { appearance:textfield; }
-  .artifact-product__add { width:min(100%,25rem); min-height:3.65rem; border:.0625rem solid var(--ap-green); color:var(--ap-cream); background:var(--ap-green); font:500 .76rem/1 'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:color 160ms ease,background 160ms ease; }
-  .artifact-product__add:hover,.artifact-product__add:focus-visible { color:var(--ap-green); background:transparent; }
+  .artifact-product__quantity input::-webkit-inner-spin-button { appearance:none; }
+  .artifact-product__add { display:flex; align-items:center; justify-content:center; width:min(100%,27rem); min-height:3.4rem; padding:.9rem 1rem; border:.0625rem solid var(--ap-green); color:var(--ap-cream); background:var(--ap-green); font:500 .78rem/1.4 var(--ap-sans); letter-spacing:.09em; text-transform:uppercase; cursor:pointer; }
+  .artifact-product__add:hover { color:var(--ap-green); background:transparent; }
   .artifact-product__add[disabled] { cursor:not-allowed; opacity:.55; }
-  .artifact-product__size-note,.artifact-product__shipping { margin:.8rem 0 0; color:var(--ap-muted); font:.72rem/1.45 'Jost',sans-serif; }
-  .artifact-product__rotation { margin-block-start:1.15rem; padding:0 0 .2rem; border:0; border-block-end:.0625rem solid var(--ap-gold); color:var(--ap-green); background:transparent; font:.72rem/1.4 'Jost',sans-serif; cursor:pointer; }
-  .artifact-product__rotation-note { max-width:29rem; margin:.75rem 0 0; color:var(--ap-muted); font:.72rem/1.5 'Jost',sans-serif; }
-  .artifact-product__story { margin-block-start:3rem; padding-block-start:2.5rem; border-block-start:.0625rem solid var(--ap-line); }
-  .artifact-product__description { max-width:57rem; color:var(--ap-muted); font:italic 1rem/1.7 'EB Garamond',serif; }
+  .artifact-product__size-note,.artifact-product__shipping { max-width:47ch; margin:.8rem 0 0; color:var(--ap-muted); font:.73rem/1.5 var(--ap-sans); }
+  .artifact-product__shipping a,.artifact-product__status a,.artifact-product__consent a { text-decoration:underline; text-underline-offset:.2em; }
+  .artifact-product__rotation { display:flex; flex-wrap:wrap; align-items:center; gap:.4rem .8rem; width:min(100%,27rem); margin-block:0 1rem; color:var(--ap-muted); font:.72rem/1.4 var(--ap-sans); }
+  .artifact-product__rotation select { width:100%; min-height:2.8rem; padding:.6rem 2rem .6rem .7rem; border:.0625rem solid var(--ap-line); border-radius:0; color:var(--ap-green); background:transparent; font:.8rem/1.4 var(--ap-sans); }
+  .artifact-product__rotation-note { max-width:27rem; margin:0 0 1.1rem; padding:.9rem; border:.0625rem solid var(--ap-gold); color:var(--ap-ink); font:.82rem/1.5 var(--ap-sans); }
+  .artifact-product__rotation-note p { margin:0 0 .8rem; }
+  .artifact-product__consent { display:flex; gap:.6rem; align-items:flex-start; }
+  .artifact-product__consent input { min-width:1.2rem; min-height:1.2rem; margin-block-start:.2rem; accent-color:var(--ap-green); }
+  .artifact-product__request { max-width:27rem; color:var(--ap-muted); font:.85rem/1.5 var(--ap-sans); }
+  .artifact-product__story { margin-block-start:2.75rem; padding-block-start:2rem; border-block-start:.0625rem solid var(--ap-line); }
+  .artifact-product__description { color:var(--ap-muted); font:italic 1.15rem/1.7 var(--ap-serif); }
   .artifact-product__description p { margin-block:0 1rem; }
-  .artifact-product__details { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; margin-block-start:2.25rem; }
-  .artifact-product__details h2 { margin:0 0 .8rem; padding-block-end:.6rem; border-block-end:.0625rem solid var(--ap-line); font:600 .72rem/1.2 'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; }
-  .artifact-product__notes { display:grid; grid-template-columns:repeat(3,1fr); }
+  .artifact-product__details { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; margin-block-start:2rem; }
+  .artifact-product__details h2 { margin:0 0 .8rem; padding-block-end:.6rem; border-block-end:.0625rem solid var(--ap-line); font:600 .78rem/1.2 var(--ap-sans); letter-spacing:.08em; text-transform:uppercase; }
+  .artifact-product__notes { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
   .artifact-product__notes div { min-width:0; padding-inline:.8rem; border-inline-start:.125rem solid var(--ap-gold); }
-  .artifact-product__notes span { color:var(--ap-gold); font:500 .6rem/1 'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; }
-  .artifact-product__notes p,.artifact-product__details li { margin:.5rem 0 0; color:var(--ap-muted); font:.85rem/1.45 'EB Garamond',serif; }
+  .artifact-product__notes span { color:var(--ap-gold); font:500 .65rem/1 var(--ap-sans); letter-spacing:.1em; text-transform:uppercase; }
+  .artifact-product__notes p,.artifact-product__details li { margin:.5rem 0 0; color:var(--ap-muted); font:1rem/1.45 var(--ap-serif); }
   .artifact-product__details ul { margin:0; padding-inline-start:1.1rem; }
   .artifact-product__details li::marker { color:var(--ap-gold); }
-  .artifact-product__status { position:fixed; z-index:5; inset:auto 1rem 1rem auto; margin:0; padding:.8rem 1rem; color:var(--ap-cream); background:var(--ap-green); font:.78rem/1.4 'Jost',sans-serif; opacity:0; pointer-events:none; transition:opacity 180ms ease; }
-  .artifact-product__status--visible { opacity:1; }
+  .artifact-product__status { min-height:1.5rem; margin:1rem 0 0; color:var(--ap-green); font:.85rem/1.5 var(--ap-sans); }
   .artifact-product__guard { width:min(100% - 3rem,40rem); margin-inline:auto; padding-block:7rem; text-align:center; }
   .artifact-product__guard h1 { font:700 3rem/1.05 'Playfair Display',serif; }
-  .artifact-product__guard a { display:inline-block; margin-block-start:1.5rem; padding:.9rem 1.4rem; color:var(--ap-cream); background:var(--ap-green); font:.75rem/1 'Jost',sans-serif; text-transform:uppercase; }
-  @media (max-width:52rem) { .artifact-product__top { grid-template-columns:1fr; gap:2rem; } .artifact-product__visual { min-height:25rem; } .artifact-product__info { width:min(100%,34rem); margin-inline:auto; } }
-  @media (max-width:40rem) { .artifact-product__shell { width:min(100% - 2rem,68rem); padding-block-start:1.35rem; } .artifact-product__top { gap:1.5rem; } .artifact-product__visual { min-height:21rem; } .artifact-product__scale { width:min(90%,22rem); } .artifact-product__details { grid-template-columns:1fr; } .artifact-product__sizes,.artifact-product__add { width:100%; } .artifact-product__quantity input { font-size:1rem; } }
-  @media (prefers-reduced-motion:reduce) { .artifact-product__add,.artifact-product__status { transition:none; } }
+  .artifact-product__guard a { display:block; margin-block-start:1.5rem; padding:.9rem 1.4rem; color:var(--ap-cream); background:var(--ap-green); font:.75rem/1 var(--ap-sans); text-transform:uppercase; }
+  @media(max-width:52rem) { .artifact-product__top { grid-template-columns:1fr; gap:2rem; } .artifact-product__media,.artifact-product__info { width:min(100%,34rem); margin-inline:auto; } .artifact-product__visual { aspect-ratio:1.1; } }
+  @media(max-width:40rem) { .artifact-product__shell { width:min(100% - 2rem,66rem); padding-block-start:1rem; } .artifact-product__top { gap:1.5rem; } .artifact-product__details { grid-template-columns:1fr; } .artifact-product__sizes,.artifact-product__add,.artifact-product__rotation { width:100%; } .artifact-product__rotation select { font-size:1rem; } }
 {% endstylesheet %}
 
-{% javascript %}
-  if (!customElements.get('artifact-product')) {
-    customElements.define('artifact-product', class extends HTMLElement {
-      connectedCallback() {
-        this.variant=this.querySelector('[data-artifact-variant]'); this.plan=this.querySelector('[data-artifact-plan]'); this.price=this.querySelector('[data-artifact-product-price]'); this.submit=this.querySelector('[data-artifact-submit]'); this.note=this.querySelector('[data-artifact-size-note]'); this.quantity=this.querySelector('[data-artifact-quantity]'); this.rotation=false;
-        this.querySelectorAll('[data-artifact-size]').forEach((button)=>button.addEventListener('click',()=>this.setSize(button.dataset.artifactSize)));
-        this.querySelectorAll('[data-artifact-qty]').forEach((button)=>button.addEventListener('click',()=>{const delta=button.dataset.artifactQty==='plus'?1:-1; this.quantity.value=Math.max(1,Number(this.quantity.value||1)+delta);}));
-        this.querySelector('[data-artifact-rotation]')?.addEventListener('click',(event)=>{this.rotation=!this.rotation; event.currentTarget.setAttribute('aria-pressed',String(this.rotation)); event.currentTarget.textContent=this.rotation?'Monthly Rotation selected':'Prefer a subscription? Choose Monthly Rotation'; this.plan.disabled=!this.rotation; this.plan.value=this.rotation?this.dataset.planId:''; this.querySelector('[data-artifact-rotation-note]').hidden=!this.rotation;});
-        this.querySelector('[data-artifact-product-form]')?.addEventListener('submit',(event)=>this.add(event));
-      }
-      money(cents){return new Intl.NumberFormat(document.documentElement.lang||'en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(Number(cents)/100);}
-      setSize(size){const bottle=size==='bottle'; this.querySelectorAll('[data-artifact-size]').forEach((button)=>{const active=button.dataset.artifactSize===size; button.classList.toggle('artifact-product__size--active',active); button.setAttribute('aria-pressed',String(active));}); this.rotation=false; if(this.plan){this.plan.disabled=true;this.plan.value='';} this.variant.value=bottle?this.dataset.bottleId:this.dataset.vialId; this.price.textContent=this.money(bottle?this.dataset.bottlePrice:this.dataset.vialPrice); this.note.textContent=bottle?'Authentic full bottle, priced below regular retail.': '5ml holds about 60 sprays — roughly a month of regular wear.'; const available=!bottle||this.dataset.bottleAvailable==='true'; this.submit.disabled=!available; this.submit.textContent=available?'Add to cart':'Request full bottle'; if(!available){this.submit.type='button';this.submit.onclick=()=>{window.location.href='mailto:hello@basenotescent.com?subject='+encodeURIComponent('Full bottle request: '+document.querySelector('h1')?.textContent.trim());};}else{this.submit.type='submit';this.submit.onclick=null;} }
-      async add(event){event.preventDefault(); if(this.submit.disabled)return; this.submit.disabled=true; const data=new FormData(event.currentTarget); try{const response=await fetch('/cart/add.js',{method:'POST',headers:{Accept:'application/json'},body:data});if(!response.ok)throw new Error('add failed');const status=this.querySelector('[data-artifact-product-status]');status.textContent='Added to your cart.';status.classList.add('artifact-product__status--visible');setTimeout(()=>status.classList.remove('artifact-product__status--visible'),2200);document.dispatchEvent(new CustomEvent('cart:refresh',{bubbles:true}));}catch(error){event.currentTarget.submit();}finally{this.submit.disabled=false;}}
-    });
-  }
-{% endjavascript %}
-
 {% schema %}
-{"name":"Claude artifact product","settings":[],"presets":[{"name":"Claude artifact product"}]}
+{"name":"Fragrance product","settings":[],"presets":[{"name":"Fragrance product"}]}
 {% endschema %}

@@ -20,10 +20,11 @@ require_literal() {
 # route must be non-indexable and must never advertise an unverified price.
 require_literal "product.handle == 'extra-5ml-vial-add-on'" layout/theme.liquid
 require_literal '<meta name="robots" content="noindex, follow">' layout/theme.liquid
-require_literal "assign is_internal_addon_page = true" snippets/meta-tags.liquid
-require_literal "template.name == 'product' and is_internal_addon_page == false" snippets/meta-tags.liquid
+require_literal "assign is_internal_addon_page = true" layout/theme.liquid
+require_literal "assign is_commercial_product = false" snippets/meta-tags.liquid
+require_literal "product.handle != 'extra-5ml-vial-add-on'" snippets/meta-tags.liquid
 
-metadata_guard_count=$(rg -F -c "template.name == 'product' and is_internal_addon_page == false" snippets/meta-tags.liquid)
+metadata_guard_count=$(rg -F -c "if is_commercial_product" snippets/meta-tags.liquid)
 [ "$metadata_guard_count" -eq 2 ] || fail 'the add-on must be excluded from both OG price tags and Product offer JSON-LD'
 
 guard_markup=$(sed -n '/INTERNAL_ADDON_GUARD_COPY_START/,/INTERNAL_ADDON_GUARD_COPY_END/p' sections/main-product.liquid)

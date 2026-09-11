@@ -6,10 +6,10 @@
 {
   "sections": {
     "jeff-storefront": {
-      "type": "jeff-storefront",
+      "type": "scent-studio-home",
       "settings": {
         "collection": "fragrances",
-        "products_to_show": 8
+        "campaign_image": "shopify://shop_images/gLmqu.jpg"
       }
     }
   },

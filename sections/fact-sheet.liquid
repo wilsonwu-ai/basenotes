@@ -101,11 +101,11 @@
     <div class="bnfs__hero">
       <div class="bnfs__hero-img">
         {%- if section.settings.product_image != blank -%}
-          <img src="{{ section.settings.product_image | image_url: width: 600 }}" alt="{{ section.settings.title }}">
+          <img src="{{ section.settings.product_image | image_url: width: 600 }}" alt="{{ section.settings.title | escape }}" width="{{ section.settings.product_image.width }}" height="{{ section.settings.product_image.height }}">
         {%- elsif section.settings.product != blank -%}
           {%- assign p = section.settings.product -%}
           {%- if p.featured_image -%}
-            <img src="{{ p.featured_image | image_url: width: 600 }}" alt="{{ p.title }}">
+            <img src="{{ p.featured_image | image_url: width: 600 }}" alt="{{ p.title | escape }}" width="{{ p.featured_image.width }}" height="{{ p.featured_image.height }}">
           {%- endif -%}
         {%- endif -%}
       </div>
@@ -182,7 +182,7 @@
       </div>
       {%- if section.settings.qr_image != blank -%}
         <div>
-          <div class="bnfs__cta-qr"><img src="{{ section.settings.qr_image | image_url: width: 220 }}" alt="Scan to shop"></div>
+          <div class="bnfs__cta-qr"><img src="{{ section.settings.qr_image | image_url: width: 220 }}" alt="Scan to shop" width="{{ section.settings.qr_image.width }}" height="{{ section.settings.qr_image.height }}"></div>
           <p class="bnfs__cta-qr-label">SCAN TO SHOP</p>
         </div>
       {%- endif -%}
