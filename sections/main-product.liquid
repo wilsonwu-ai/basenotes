@@ -174,22 +174,28 @@
 {% stylesheet %}
   .artifact-product { --ap-green:#22392b; --ap-cream:#f4efe3; --ap-gold:#8c7037; --ap-ink:#242320; --ap-muted:#5c574d; --ap-line:rgb(34 57 43 / 20%); --ap-serif:'EB Garamond',serif; --ap-sans:'Jost',sans-serif; display:block; min-height:70dvh; color:var(--ap-ink); background:var(--ap-cream); }
   .artifact-product [hidden] { display:none; }
-  .artifact-product__shell { width:min(100% - 3rem,66rem); margin-inline:auto; padding-block:2rem 5rem; }
+  .artifact-product__shell { width:min(100% - 3rem,74rem); margin-inline:auto; padding-block:2rem 5rem; }
   .artifact-product__back { display:inline-flex; align-items:center; min-height:2.75rem; margin-block-end:1.3rem; color:var(--ap-green); font:.78rem/1.3 var(--ap-sans); text-decoration:underline; text-underline-offset:.3rem; text-decoration-color:var(--ap-gold); }
-  .artifact-product__top { display:grid; grid-template-columns:minmax(0,1fr) minmax(22rem,1.04fr); gap:3.75rem; align-items:start; }
+  .artifact-product__top { display:grid; grid-template-columns:minmax(0,1.12fr) minmax(22rem,1fr); gap:3.5rem; align-items:start; }
   .artifact-product__media,.artifact-product__info { min-width:0; }
-  .artifact-product__visual { display:grid; aspect-ratio:4 / 4.7; padding:1.5rem; place-items:center; border:.0625rem solid var(--ap-line); border-radius:.2rem; }
-  .artifact-product__comparison { display:grid; grid-template-columns:minmax(0,.65fr) minmax(0,1.35fr); align-items:end; gap:.5rem; width:100%; }
+  /* Big square photo block (Jeff 2026-09-11: the old site's large product images), bottle fully visible; the 5ml vial sits as a corner badge. */
+  .artifact-product__visual { position:relative; display:block; aspect-ratio:1; padding:0; overflow:hidden; border:.0625rem solid var(--ap-line); border-radius:.2rem; background:#faf7f0; }
+  .artifact-product__comparison { position:relative; display:block; width:100%; height:100%; }
   .artifact-product__reference { min-width:0; margin:0; text-align:center; }
-  .artifact-product__vial-object { display:flex; align-items:flex-end; justify-content:center; height:7rem; margin-block-end:2.6rem; }
-  .artifact-product__vial-object .bn-vial { display:block; width:3.5rem; height:7rem; }
-  .artifact-product__photo-object { aspect-ratio:1; }
+  .artifact-product__vial-object { display:flex; align-items:flex-end; justify-content:center; height:5.5rem; }
+  .artifact-product__vial-object .bn-vial { display:block; width:2.75rem; height:5.5rem; }
+  .artifact-product__photo-object { position:absolute; inset:0; padding:7%; }
   .artifact-product__reference-label { margin-block-start:.65rem; color:var(--ap-muted); font:.67rem/1.4 var(--ap-sans); letter-spacing:.035em; }
-  .artifact-product__visual--single .artifact-product__comparison { grid-template-columns:minmax(0,1fr); }
-  .artifact-product__image,.artifact-product__photo-object svg { display:block; width:100%; height:100%; max-height:28rem; object-fit:contain; }
+  .artifact-product__visual--single .artifact-product__reference--vial { display:none; }
+  .artifact-product__image,.artifact-product__photo-object svg { display:block; width:100%; height:100%; max-height:none; object-fit:contain; }
   .artifact-product__image { mix-blend-mode:multiply; }
+  .artifact-product__reference--original { position:absolute; inset:0; margin:0; }
+  .artifact-product__reference--original .artifact-product__reference-label { position:absolute; right:.9rem; bottom:.75rem; margin:0; }
+  .artifact-product__reference--vial { position:absolute; left:1rem; bottom:1rem; z-index:1; display:grid; justify-items:center; gap:.35rem; padding:.7rem .8rem .55rem; border:.0625rem solid var(--ap-line); border-radius:.2rem; background:rgb(244 239 227 / 92%); }
+  .artifact-product__reference--vial .artifact-product__reference-label { margin:0; }
+  @media(min-width:52.01rem) { .artifact-product__media { position:sticky; top:6rem; } }
   .artifact-product__thumbnails { display:flex; justify-content:center; flex-wrap:wrap; gap:.6rem; margin-block-start:.75rem; }
-  .artifact-product__thumbnail { display:grid; width:3.5rem; height:3.5rem; padding:.25rem; place-items:center; border:.0625rem solid var(--ap-line); background:transparent; cursor:pointer; }
+  .artifact-product__thumbnail { display:grid; width:4.25rem; height:4.25rem; padding:.25rem; place-items:center; border:.0625rem solid var(--ap-line); background:transparent; cursor:pointer; }
   .artifact-product__thumbnail[aria-pressed="true"] { border-color:var(--ap-gold); }
   .artifact-product__thumbnail img { width:100%; height:100%; object-fit:contain; }
   .artifact-product__caption { margin:.75rem auto 0; max-width:40ch; color:var(--ap-muted); font:.68rem/1.5 var(--ap-sans); text-align:center; }
@@ -241,7 +247,8 @@
   .artifact-product__guard { width:min(100% - 3rem,40rem); margin-inline:auto; padding-block:7rem; text-align:center; }
   .artifact-product__guard h1 { font:700 3rem/1.05 'Playfair Display',serif; }
   .artifact-product__guard a { display:block; margin-block-start:1.5rem; padding:.9rem 1.4rem; color:var(--ap-cream); background:var(--ap-green); font:.75rem/1 var(--ap-sans); text-transform:uppercase; }
-  @media(max-width:52rem) { .artifact-product__top { grid-template-columns:1fr; gap:2rem; } .artifact-product__media,.artifact-product__info { width:min(100%,34rem); margin-inline:auto; } .artifact-product__visual { aspect-ratio:1.1; } }
+  @media(max-width:52rem) { .artifact-product__top { grid-template-columns:1fr; gap:2rem; } .artifact-product__media,.artifact-product__info { width:min(100%,34rem); margin-inline:auto; } .artifact-product__visual { aspect-ratio:1; } }
+  @media(max-width:40rem) { .artifact-product__reference--vial { left:.6rem; bottom:.6rem; padding:.5rem .55rem .4rem; } .artifact-product__vial-object { height:4.25rem; } .artifact-product__vial-object .bn-vial { width:2.1rem; height:4.25rem; } }
   @media(max-width:40rem) { .artifact-product__shell { width:min(100% - 2rem,66rem); padding-block-start:1rem; } .artifact-product__top { gap:1.5rem; } .artifact-product__details { grid-template-columns:1fr; } .artifact-product__sizes,.artifact-product__add,.artifact-product__rotation { width:100%; } .artifact-product__rotation select { font-size:1rem; } }
 {% endstylesheet %}
 
