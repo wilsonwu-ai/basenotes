@@ -1,18 +1,86 @@
 {{ 'scent-storefront.css' | asset_url | stylesheet_tag }}
 {{ 'fragrance-reference.css' | asset_url | stylesheet_tag }}
+{%- comment -%}
+  Fragrance page, rebuilt 2026-09-12 from Jeff's "Fragrance Page Updates - JT" brief (WhatsApp 00:32).
+  His order, top to bottom: preference tabs, ONE-LINE hero, filter row, count + sort, then the grid.
+  The old tall cream block (eyebrow + "Find scents that work for you." + italic intro + a separate
+  $20/$18 purchase note) is deliberately gone: "Cut the tall cream block so bottles show immediately."
+{%- endcomment -%}
 {%- paginate collection.products by 48 -%}
+{%- liquid
+  assign brand_list = ''
+  for product in collection.products
+    if product.handle == 'extra-5ml-vial-add-on' or product.price == 0
+      continue
+    endif
+    assign vendor_token = product.vendor | strip
+    unless vendor_token == blank or brand_list contains vendor_token
+      assign brand_list = brand_list | append: vendor_token | append: '|'
+    endunless
+  endfor
+  assign brands = brand_list | split: '|' | sort
+  assign is_fragrance_index = false
+  if collection.handle == 'fragrances' or collection.handle == 'all'
+    assign is_fragrance_index = true
+  endif
+-%}
 <scent-catalog class="fragrance-catalog" data-source="Fragrance collection">
   <nav class="fragrance-catalog__tabs" aria-label="Fragrance preference"><button class="is-active" type="button" data-gender-filter="all" aria-pressed="true">All</button><button type="button" data-gender-filter="him" aria-pressed="false">For him</button><button type="button" data-gender-filter="her" aria-pressed="false">For her</button><button type="button" data-gender-filter="unisex" aria-pressed="false">Unisex</button></nav>
-  <header class="fragrance-catalog__hero"><p class="scent-eyebrow">Start with $20</p><h1>{% if collection.handle == 'fragrances' or collection.handle == 'all' %}Find scents that work for you.{% else %}{{ collection.title }}{% endif %}</h1><p class="fragrance-catalog__intro">{{ 'fragrance_reference.intro' | t }}</p><a href="{{ routes.root_url }}#how-it-works">New to decants? Here’s how this works</a></header>
+  <header class="fragrance-catalog__hero">
+    <h1>{% if is_fragrance_index %}Any 5ml for $20 <span aria-hidden="true">/</span> $18 after{% else %}{{ collection.title }}{% endif %}</h1>
+    <p class="fragrance-catalog__intro">Authentic designer and niche. One-time purchase. Free US shipping on orders over $50.</p>
+    {%- comment -%} Jeff: "'How decants work' stays on this page - modal or accordion, not a new URL."
+      <details> needs no JavaScript, so it cannot break the way a modal can. {%- endcomment -%}
+    <details class="fragrance-catalog__decants">
+      <summary>How decants work</summary>
+      <div class="fragrance-catalog__decants-body">
+        <p>{{ 'fragrance_reference.format' | t }}</p>
+        <p>Every bottle we decant is the real fragrance, bought from the brand or an authorised retailer. A 5ml atomizer holds roughly 60 sprays, which is enough to wear a scent for a few weeks before you commit to a full bottle.</p>
+        <p>Your first 5ml vial in a cart is $20. Each additional vial in the same order is $18.</p>
+      </div>
+    </details>
+  </header>
   <div class="fragrance-catalog__body">
-    <div class="fragrance-catalog__purchase-note"><p class="fragrance-catalog__pricing">$20 for your first fragrance <span aria-hidden="true">·</span> $18 for each one after</p><p class="fragrance-catalog__trust">Authentic fragrance. One-time purchase. No subscription required.</p></div>
-    <p class="visually-hidden" data-scent-count aria-live="polite">{{ collection.products_count }} fragrances</p>
+    <div class="fragrance-catalog__toolbar">
+      <label class="fragrance-catalog__field fragrance-catalog__field--search" for="ScentSearch-{{ section.id }}">
+        <span class="visually-hidden">{{ 'fragrance_reference.search_label' | t }}</span>
+        <input id="ScentSearch-{{ section.id }}" type="search" placeholder="Search scents..." data-scent-search autocomplete="off">
+      </label>
+      <label class="fragrance-catalog__field" for="ScentBrand-{{ section.id }}">
+        <span class="visually-hidden">Brand</span>
+        <select id="ScentBrand-{{ section.id }}" data-scent-brand>
+          <option value="">Brand</option>
+          {%- for brand in brands -%}
+            {%- unless brand == blank -%}<option value="{{ brand | escape }}">{{ brand | escape }}</option>{%- endunless -%}
+          {%- endfor -%}
+        </select>
+      </label>
+      <label class="fragrance-catalog__field" for="ScentFamily-{{ section.id }}">
+        <span class="visually-hidden">Scent family</span>
+        <select id="ScentFamily-{{ section.id }}" data-scent-family>
+          <option value="">Scent family</option>
+          <option value="fresh">Fresh</option>
+          <option value="woody">Woody</option>
+          <option value="sweet">Sweet</option>
+          <option value="spicy">Spicy</option>
+        </select>
+      </label>
+    </div>
+    <div class="fragrance-catalog__resultbar">
+      <p class="fragrance-catalog__count" data-scent-count aria-live="polite">{{ collection.products_count }} scents</p>
+      <label class="fragrance-catalog__sort" for="ScentSort-{{ section.id }}">
+        <span class="visually-hidden">Sort by</span>
+        <select id="ScentSort-{{ section.id }}" data-scent-sort>
+          <option value="best">Best sellers</option>
+          <option value="az">A to Z</option>
+        </select>
+      </label>
+    </div>
     <div class="scent-grid">{%- for product in collection.products -%}{% render 'studio-fragrance-card', product: product, section_id: section.id, compact: true %}{%- endfor -%}</div>
     <div class="fragrance-catalog__empty" data-scent-empty hidden><h2>No scents in this selection.</h2><p>Try a different name or explore the full collection.</p><button type="button" class="scent-button" data-clear-filters>View all fragrances</button></div>
     {% if paginate.pages > 1 %}<nav class="scent-pagination" aria-label="Fragrance pages">{{ paginate | default_pagination }}</nav>{% endif %}
     <p class="scent-feedback" data-scent-status role="status" aria-live="polite"></p>
     <p class="fragrance-catalog__format">{{ 'fragrance_reference.format' | t }}</p>
-    <details class="fragrance-catalog__search"><summary>{{ 'fragrance_reference.search' | t }}</summary><div class="fragrance-catalog__toolbar"><label for="ScentSearch-{{ section.id }}">{{ 'fragrance_reference.search_label' | t }}<input id="ScentSearch-{{ section.id }}" type="search" placeholder="{{ 'fragrance_reference.search_placeholder' | t }}" data-scent-search autocomplete="off"></label></div></details>
     {% assign collection_description_text = collection.description | strip_html | strip %}{% if collection_description_text != blank and collection_description_text != 'List Showing the Fragrances Offered' %}<div class="fragrance-catalog__description">{{ collection.description }}</div>{% endif %}
   </div>
 </scent-catalog>

@@ -57,16 +57,34 @@
       this.feedback = document.querySelector('cart-feedback');
       if (this.feedback && this.status) this.status.setAttribute('aria-live', 'off');
       this.gender = 'all';
+      this.brand = '';
+      this.family = '';
       this.search = this.querySelector('[data-scent-search]');
       this.search?.addEventListener('input', () => this.filter());
+      // Jeff 2026-09-12: Brand + Scent family + Sort alongside the existing preference tabs.
+      this.brandSelect = this.querySelector('[data-scent-brand]');
+      this.familySelect = this.querySelector('[data-scent-family]');
+      this.sortSelect = this.querySelector('[data-scent-sort]');
+      this.grid = this.querySelector('.scent-grid');
+      // Shopify already returns the collection in "Best selling" order, so the rendered DOM order
+      // IS best sellers. Keep a copy of it to restore when the shopper switches back.
+      this.bestSellerOrder = this.grid ? [...this.grid.children] : [];
+      this.brandSelect?.addEventListener('change', () => { this.brand = this.brandSelect.value; this.filter(); });
+      this.familySelect?.addEventListener('change', () => { this.family = this.familySelect.value; this.filter(); });
+      this.sortSelect?.addEventListener('change', () => this.applySort());
       this.querySelectorAll('[data-gender-filter]').forEach(button => button.addEventListener('click', () => {
         this.gender = button.dataset.genderFilter;
         this.filter();
       }));
       this.querySelector('[data-clear-filters]')?.addEventListener('click', () => {
         this.gender = 'all';
+        this.brand = '';
+        this.family = '';
         if (this.search) this.search.value = '';
-        this.filter();
+        if (this.brandSelect) this.brandSelect.value = '';
+        if (this.familySelect) this.familySelect.value = '';
+        if (this.sortSelect) this.sortSelect.value = 'best';
+        this.applySort();
       });
       this.addEventListener('submit', event => this.add(event));
       this.addEventListener('click', event => this.selectSize(event));
@@ -128,6 +146,17 @@
       }
       if (option.dataset.kind === 'vial') this.refreshPrices();
     }
+    applySort() {
+      // Reorder the real nodes, then re-filter so the count and empty state stay honest.
+      if (this.grid && this.bestSellerOrder.length) {
+        const azMode = this.sortSelect?.value === 'az';
+        const order = azMode
+          ? [...this.bestSellerOrder].sort((a, b) => (a.dataset.name || '').localeCompare(b.dataset.name || '', undefined, { sensitivity: 'base' }))
+          : this.bestSellerOrder;
+        order.forEach(card => this.grid.appendChild(card));
+      }
+      this.filter();
+    }
     filter() {
       const term = (this.search?.value || '').trim().toLocaleLowerCase();
       let count = 0;
@@ -135,7 +164,10 @@
         // Unisex is compatible with either preference, without inventing classifications.
         const genderMatches = this.gender === 'all' || card.dataset.gender === this.gender || (this.gender !== 'unisex' && card.dataset.gender === 'unisex');
         const nameMatches = `${card.dataset.name} ${card.dataset.tags}`.toLocaleLowerCase().includes(term);
-        card.hidden = !(genderMatches && nameMatches);
+        const brandMatches = !this.brand || card.dataset.brand === this.brand;
+        // data-family holds every family a scent belongs to, space separated.
+        const familyMatches = !this.family || (card.dataset.family || '').split(' ').includes(this.family);
+        card.hidden = !(genderMatches && nameMatches && brandMatches && familyMatches);
         if (!card.hidden) count++;
       });
       this.querySelectorAll('[data-gender-filter]').forEach(button => {
@@ -144,7 +176,7 @@
         button.classList.toggle('is-active', active);
       });
       const counter = this.querySelector('[data-scent-count]');
-      if (counter) counter.textContent = `${count} fragrance${count === 1 ? '' : 's'}`;
+      if (counter) counter.textContent = `${count} scent${count === 1 ? '' : 's'}`;
       const empty = this.querySelector('[data-scent-empty]');
       if (empty) empty.hidden = count > 0;
     }

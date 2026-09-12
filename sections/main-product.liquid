@@ -88,7 +88,6 @@
         <p class="artifact-product__eyebrow">{{ product.vendor | escape }}</p>
         <h1>{{ display_title | default: product.title | escape }}</h1>
         <p class="artifact-product__meta">{{ concentration | strip }}{% if vial_variant %} <span aria-hidden="true">·</span> Decanted to 5ml{% endif %}</p>
-        {%- if product.metafields.reviews.count.value > 0 or product.metafields.judgeme.review_count > 0 -%}{% render 'product-review-badge', product: product, surface: 'product' %}{%- endif -%}
         <div class="artifact-product__pills" aria-label="Fragrance character">
           {%- assign pills_shown = 0 -%}
           {%- for pill in product.tags -%}
@@ -98,6 +97,17 @@
             {%- if pills_shown == 5 -%}{%- break -%}{%- endif -%}
           {%- endfor -%}
         </div>
+
+        {%- comment -%} Jeff 2026-09-12: "One-line rating next to the price / under the note chips —
+          '4.6 · 12 reviews' with a jump link." No minimum here: the >=3-review rule he set applies to the
+          collection grid, not the product page. {%- endcomment -%}
+        {%- assign pdp_review_count = product.metafields.reviews.rating_count.value | default: product.metafields.judgeme.review_count | default: product.metafields.reviews.count.value | default: 0 -%}
+        {%- if pdp_review_count > 0 -%}
+          <a class="artifact-product__rating-line" href="#judgeme_product_reviews">
+            {% render 'product-review-badge', product: product, surface: 'product' %}
+            <span class="artifact-product__rating-jump">Read {{ pdp_review_count }} review{% unless pdp_review_count == 1 %}s{% endunless %}</span>
+          </a>
+        {%- endif -%}
 
         {%- form 'product', product, class: 'artifact-product__form', data-product-form: '', data-artifact-product-form: '' -%}
           <fieldset class="artifact-product__sizes">
@@ -160,6 +170,24 @@
         {%- if occasions != blank -%}<section><h2>Best for</h2><ul>{{ occasions }}</ul></section>{%- endif -%}
       </div>
     </div>
+
+    {%- comment -%} Jeff 2026-09-12: "Full reviews below the scent story and pyramid, above related vials."
+      Judge.me v3 (code-splitting on) mounts into a .jdgm-review-widget container. Verified live 2026-09-12:
+      NO such container existed on any PDP, so the account page's "Rate it" deep link
+      (/products/<handle>#judgeme_product_reviews) and review-scroll-assist.liquid both pointed at an
+      anchor that was never rendered. This adds it. Do NOT set data-from-snippet="true" — Judge.me's own
+      CSS hides any widget carrying that attribute. {%- endcomment -%}
+    <section class="artifact-product__reviews" aria-labelledby="ArtifactReviewsTitle">
+      <h2 id="ArtifactReviewsTitle">Reviews</h2>
+      <div style="clear:both"></div>
+      <div
+        id="judgeme_product_reviews"
+        class="jdgm-widget jdgm-review-widget"
+        data-product-title="{{ product.title | escape }}"
+        data-id="{{ product.id }}"
+      >{{ product.metafields.judgeme.widget }}</div>
+    </section>
+    {% render 'review-scroll-assist' %}
   </div>
   <script type="application/json" data-artifact-variants>[
     {%- for variant in product.variants -%}
@@ -206,6 +234,12 @@
   .artifact-product__info h1 { margin:0; font:700 clamp(2.5rem,4.2vw,3.5rem)/1.08 'Playfair Display',serif; letter-spacing:-.025em; overflow-wrap:anywhere; }
   .artifact-product__meta { margin:.7rem 0 1rem; color:var(--ap-muted); font:.78rem/1.5 var(--ap-sans); }
   .artifact-product .product-review-badge { margin-block:0 1rem; }
+  /* One-line rating + jump link (Jeff 2026-09-12). */
+  .artifact-product__rating-line { display:inline-flex; flex-wrap:wrap; align-items:center; gap:.5rem; min-height:2.75rem; margin-block:0 1rem; color:var(--ap-ink); text-decoration:none; }
+  .artifact-product__rating-line .product-review-badge { margin:0; }
+  .artifact-product__rating-jump { color:var(--ap-green); font:.73rem/1.4 var(--ap-sans); text-decoration:underline; text-underline-offset:.2em; text-decoration-color:var(--ap-gold); }
+  .artifact-product__reviews { margin-block-start:2.75rem; padding-block-start:2rem; border-block-start:.0625rem solid var(--ap-line); }
+  .artifact-product__reviews > h2 { margin:0 0 1.2rem; padding-block-end:.6rem; border-block-end:.0625rem solid var(--ap-line); font:600 .78rem/1.2 var(--ap-sans); letter-spacing:.08em; text-transform:uppercase; }
   .artifact-product__pills { display:flex; flex-wrap:wrap; gap:.45rem; margin-block-end:1.4rem; }
   .artifact-product__pills:empty { display:none; }
   .artifact-product__pills span { padding:.42rem .7rem; border:.0625rem solid var(--ap-gold); border-radius:99rem; color:var(--ap-green); font:500 .65rem/1 var(--ap-sans); text-transform:uppercase; }

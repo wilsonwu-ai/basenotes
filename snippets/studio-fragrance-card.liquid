@@ -13,17 +13,10 @@
       break
     endif
   endfor
-  assign bottle = blank
-  for variant in product.variants
-    if variant.id != vial.id
-      assign variant_compact = variant.title | downcase | remove: ' '
-      if variant_compact contains 'ml' or variant_compact contains 'oz' or variant_compact contains 'fullbottle'
-        assign bottle = variant
-        break
-      endif
-    endif
-  endfor
-  assign scent_name = product.title | split: ' — ' | first | remove_first: product.vendor | strip
+  assign scent_name = product.title | remove_first: product.vendor | remove: 'EDP' | remove: 'Eau de Parfum' | strip
+  if scent_name == blank
+    assign scent_name = product.title
+  endif
   assign gender = 'unclassified'
   assign tags_down = product.tags | join: '|' | downcase
   assign title_down = product.title | downcase
@@ -34,17 +27,45 @@
   elsif tags_down contains 'masculine' or title_down contains 'for him' or title_down contains 'pour homme'
     assign gender = 'him'
   endif
+
+  comment
+    Scent family for Jeff's filter dropdown, derived from the tags already on the products
+    (verified 2026-09-12: all 32 fragrances match at least one family, so nothing falls out of
+    the grid when a family is selected).
+  endcomment
+  assign family = ''
+  if tags_down contains 'fresh' or tags_down contains 'citrus' or tags_down contains 'clean' or tags_down contains 'aromatic' or tags_down contains 'green' or tags_down contains 'tropical'
+    assign family = family | append: 'fresh '
+  endif
+  if tags_down contains 'woody' or tags_down contains 'woodsy' or tags_down contains 'oud' or tags_down contains 'leather' or tags_down contains 'smoky'
+    assign family = family | append: 'woody '
+  endif
+  if tags_down contains 'sweet' or tags_down contains 'vanilla' or tags_down contains 'gourmand' or tags_down contains 'fruity' or tags_down contains 'boozy' or tags_down contains 'powdery' or tags_down contains 'floral' or tags_down contains 'flowery'
+    assign family = family | append: 'sweet '
+  endif
+  if tags_down contains 'spicy' or tags_down contains 'amber' or tags_down contains 'oriental' or tags_down contains 'benzoin'
+    assign family = family | append: 'spicy '
+  endif
+  assign family = family | strip
+
+  comment
+    Jeff 2026-09-12: "Show ratings only if a scent has at least 3 reviews... If most of the 32 have
+    zero reviews, leave stars off the grid so cards stay even." Verified live the same day: the five
+    rated fragrances have 1, 2, 1, 1 and 1 reviews, so nothing clears the bar and the grid stays clean.
+    This is a threshold, not a switch - the stars appear on their own once a scent reaches 3.
+  endcomment
+  assign review_count = product.metafields.reviews.rating_count.value | default: product.metafields.judgeme.review_count | default: product.metafields.reviews.count.value | default: 0
 -%}
 {%- unless product.handle == 'extra-5ml-vial-add-on' or product.price == 0 or vial == blank -%}
-<article class="scent-card{% if compact %} scent-card--reference{% endif %}" data-scent-card data-gender="{{ gender }}" data-tags="{{ tags_down | escape }}" data-name="{{ product.title | escape }}" aria-labelledby="ScentCard-{{ section_id }}-{{ product.id }}">
+<article class="scent-card{% if compact %} scent-card--reference{% endif %}" data-scent-card data-gender="{{ gender }}" data-family="{{ family }}" data-brand="{{ product.vendor | strip | escape }}" data-tags="{{ tags_down | escape }}" data-name="{{ product.title | escape }}" aria-labelledby="ScentCard-{{ section_id }}-{{ product.id }}">
   {%- if compact -%}
+  {%- comment -%} Jeff: "Original bottle only, same crop and scale... No atomizer as the hero shot."
+    grid-photo returns the uniformly framed bottle while the product still shows the photo it was
+    made from; otherwise the card falls back to the merchant photo. {%- endcomment -%}
   <a class="scent-card__media" href="{{ product.url }}" aria-label="{{ 'fragrance_reference.explore' | t: fragrance: product.title | escape }}">
+    <span class="scent-card__badge" aria-hidden="true">5ml</span>
     {%- liquid
-      # Products with a listed full bottle open on the 5ml photo so the size switch shows the right bottle; all other cards keep the product photo.
       assign card_image = product.featured_image
-      if bottle != blank and vial.featured_image
-        assign card_image = vial.featured_image
-      endif
       assign card_alt = card_image.alt | default: product.title
     -%}
     {%- capture grid_photo -%}{%- if card_image -%}{% render 'grid-photo', handle: product.handle, image_id: card_image.id %}{%- endif -%}{%- endcapture -%}
@@ -56,18 +77,10 @@
       <span class="scent-card__vial">{% render 'vial-illustration', product: product %}</span>
     {%- endif -%}
   </a>
-  <h2 id="ScentCard-{{ section_id }}-{{ product.id }}"><a href="{{ product.url }}">{{ product.title }}</a></h2>
-  {%- comment -%} Ratings render only from real Judge.me / review data; nothing is shown until reviews exist. {%- endcomment -%}
-  {%- if product.metafields.reviews.rating_count.value > 0 or product.metafields.reviews.count.value > 0 or product.metafields.judgeme.review_count > 0 -%}{% render 'product-review-badge', product: product, surface: 'card' %}{%- endif -%}
-  {%- if bottle != blank and bottle.available -%}
-  {%- comment -%} The 5ml / Full bottle switch shows only for fragrances with a stocked full bottle (Jeff 2026-09-11: "When we have full bottles, we can add the full bottle feature"). Everything else keeps the 8am "House · 5ml" line. {%- endcomment -%}
-  <div class="scent-card__sizes" role="group" aria-label="{{ 'Size for ' | append: product.title | escape }}">
-    <button type="button" class="scent-card__size" data-card-size data-kind="vial" data-variant-id="{{ vial.id }}" data-price="{{ vial.price }}" data-available="{{ vial.available }}" aria-pressed="true">5ml</button>
-      <button type="button" class="scent-card__size" data-card-size data-kind="bottle" data-variant-id="{{ bottle.id }}" data-price="{{ bottle.price }}" data-available="true" data-label="{{ bottle.title | escape }}"{% if bottle.featured_image %} data-image="{{ bottle.featured_image | image_url: width: 600 }}"{% endif %} aria-pressed="false" aria-label="Full bottle ({{ bottle.title | escape }})">Full bottle</button>
-  </div>
-  {%- else -%}
-  <p class="scent-card__brand">{{ product.vendor }} <span aria-hidden="true">·</span> 5ml</p>
-  {%- endif -%}
+  {%- comment -%} Card order is Jeff's: photo + 5ml badge, name, brand, stars (>=3 only), price, Add to cart. {%- endcomment -%}
+  <h2 id="ScentCard-{{ section_id }}-{{ product.id }}"><a href="{{ product.url }}">{{ scent_name }}</a></h2>
+  <p class="scent-card__brand">{{ product.vendor }}</p>
+  {%- if review_count >= 3 -%}{% render 'product-review-badge', product: product, surface: 'card' %}{%- endif -%}
   {%- else -%}
   <a class="scent-card__media" href="{{ product.url }}" aria-label="Explore {{ product.title | escape }} in a 5ml vial">
     <span class="scent-card__vial">{% render 'vial-illustration', product: product %}</span>
@@ -77,9 +90,12 @@
   <h2 id="ScentCard-{{ section_id }}-{{ product.id }}"><a href="{{ product.url }}">{{ scent_name }}</a></h2>
   <p class="scent-card__format">5ml travel atomizer</p>
   {%- endif -%}
+  {%- comment -%} Jeff: "One price per card... No $20 on the button." The price stays INSIDE the form so
+    the cart-wide $18 add-on quote can still rewrite [data-scent-price] after the first vial is added. {%- endcomment -%}
   <form method="post" action="{{ routes.cart_add_url }}" data-scent-add data-kind="vial" data-variant-id="{{ vial.id }}" data-handle="{{ product.handle }}" data-title="{{ product.title | escape }}" data-price="{{ vial.price }}" data-add-label="{% if compact %}{{ 'fragrance_reference.add' | t | escape }}{% else %}Add vial{% endif %}" data-sold-out-label="{{ 'products.product.sold_out' | t | escape }}">
     <input type="hidden" name="id" value="{{ vial.id }}"><input type="hidden" name="quantity" value="1">
-    <button type="submit" {% unless vial.available %}disabled{% endunless %}>{% if vial.available %}{% if compact %}{{ 'fragrance_reference.add' | t }}{% else %}Add vial{% endif %} <span aria-hidden="true">·</span> <span data-scent-price>{{ vial.price | money_without_trailing_zeros }}</span>{% else %}{{ 'products.product.sold_out' | t }}{% endif %}</button>
+    <p class="scent-card__price"><span data-scent-price>{{ vial.price | money_without_trailing_zeros }}</span></p>
+    <button type="submit" {% unless vial.available %}disabled{% endunless %}>{% if vial.available %}{% if compact %}{{ 'fragrance_reference.add' | t }}{% else %}Add vial{% endif %}{% else %}{{ 'products.product.sold_out' | t }}{% endif %}</button>
   </form>
 </article>
 {%- endunless -%}
