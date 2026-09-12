@@ -149,10 +149,14 @@
     applySort() {
       // Reorder the real nodes, then re-filter so the count and empty state stay honest.
       if (this.grid && this.bestSellerOrder.length) {
-        const azMode = this.sortSelect?.value === 'az';
-        const order = azMode
-          ? [...this.bestSellerOrder].sort((a, b) => (a.dataset.name || '').localeCompare(b.dataset.name || '', undefined, { sensitivity: 'base' }))
-          : this.bestSellerOrder;
+        const mode = this.sortSelect?.value || 'best';
+        let order = this.bestSellerOrder;
+        if (mode === 'az') {
+          order = [...this.bestSellerOrder].sort((a, b) => (a.dataset.name || '').localeCompare(b.dataset.name || '', undefined, { sensitivity: 'base' }));
+        } else if (mode === 'new') {
+          // Newest first. Cards carry the product's created_at as a unix timestamp.
+          order = [...this.bestSellerOrder].sort((a, b) => Number(b.dataset.created || 0) - Number(a.dataset.created || 0));
+        }
         order.forEach(card => this.grid.appendChild(card));
       }
       this.filter();

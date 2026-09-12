@@ -1,0 +1,114 @@
+{% doc %}
+  "If you like this" — up to three other 5ml vials, chosen by shared scent family.
+
+  Wilson 2026-09-12 chose tag-derived selection. Worth knowing: this reproduces Jeff's own mock
+  picks for Aventus 0 of 3 times (1 of 3 within the top six), because his picks were editorial,
+  not tag maths. It is deterministic, needs no app, and costs nothing — but it will not always
+  agree with what a human would have paired.
+
+  Scoring: 2 points per shared scent family, +1 if the gender matches. Matching is on the bare
+  family word, which hits both the old lowercase tags and Jeff's new Family_* taxonomy, so this
+  works before and after the CSV import.
+
+  @param {object} product - The product being viewed.
+  @param {object} [collection_source] - Collection to pick from. Defaults to collections.fragrances.
+
+  @example
+  {% render 'related-vials', product: product %}
+{% enddoc %}
+
+{%- liquid
+  assign source = collection_source | default: collections.fragrances
+  assign this_tags = product.tags | join: '|' | downcase
+
+  assign this_gender = 'x'
+  if this_tags contains 'unisex'
+    assign this_gender = 'unisex'
+  elsif this_tags contains 'gender_her' or this_tags contains 'feminine'
+    assign this_gender = 'her'
+  elsif this_tags contains 'gender_him' or this_tags contains 'masculine'
+    assign this_gender = 'him'
+  endif
+
+  assign families = 'fresh,fruity,smoky,sweet,woody,green,clean,spicy,citrus,aquatic' | split: ','
+-%}
+
+{%- capture ranked -%}
+  {%- for candidate in source.products -%}
+    {%- if candidate.id == product.id or candidate.handle == 'extra-5ml-vial-add-on' or candidate.price == 0 -%}{%- continue -%}{%- endif -%}
+    {%- assign cand_tags = candidate.tags | join: '|' | downcase -%}
+    {%- assign score = 0 -%}
+    {%- for fam in families -%}
+      {%- comment -%} Bare family name on purpose: it matches the old lowercase tag ("woody") AND
+        the new taxonomy ("Family_Woody" downcases to "family_woody", which contains "woody"),
+        so related vials work both before and after the tag import. {%- endcomment -%}
+      {%- if this_tags contains fam and cand_tags contains fam -%}
+        {%- assign score = score | plus: 2 -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- assign cand_gender = 'x' -%}
+    {%- if cand_tags contains 'unisex' -%}{%- assign cand_gender = 'unisex' -%}
+    {%- elsif cand_tags contains 'gender_her' or cand_tags contains 'feminine' -%}{%- assign cand_gender = 'her' -%}
+    {%- elsif cand_tags contains 'gender_him' or cand_tags contains 'masculine' -%}{%- assign cand_gender = 'him' -%}
+    {%- endif -%}
+    {%- if cand_gender == this_gender and this_gender != 'x' -%}{%- assign score = score | plus: 1 -%}{%- endif -%}
+    {%- if score > 0 -%}{{ score }}:{{ candidate.handle }},{%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- liquid
+  assign pairs = ranked | split: ',' | sort | reverse
+  assign picked = ''
+  assign taken = 0
+  for pair in pairs
+    if taken >= 3
+      break
+    endif
+    assign handle = pair | split: ':' | last
+    if handle != blank
+      assign picked = picked | append: handle | append: ','
+      assign taken = taken | plus: 1
+    endif
+  endfor
+  assign picked_handles = picked | split: ','
+-%}
+
+{%- if picked_handles.size > 0 -%}
+<section class="artifact-product__related" aria-labelledby="RelatedVialsTitle">
+  <h2 id="RelatedVialsTitle">If you like this</h2>
+  <p class="artifact-product__related-note">Add another 5ml in this order for $18.</p>
+  <div class="artifact-product__related-grid">
+    {%- for handle in picked_handles -%}
+      {%- assign rel = all_products[handle] -%}
+      {%- if rel != blank and rel.available -%}
+        {%- assign rel_vial = blank -%}
+        {%- for variant in rel.variants -%}
+          {%- assign vt = variant.title | downcase | remove: ' ' -%}
+          {%- if vt contains '5ml' -%}{%- assign rel_vial = variant -%}{%- break -%}{%- endif -%}
+        {%- endfor -%}
+        {%- if rel_vial != blank -%}
+          {%- assign rel_name = rel.title | remove_first: rel.vendor | remove: 'EDP' | remove: 'Eau de Parfum' | strip -%}
+          <article class="artifact-product__related-card">
+            <a href="{{ rel.url }}" class="artifact-product__related-media">
+              {%- capture rel_photo -%}{%- if rel.featured_image -%}{% render 'grid-photo', handle: rel.handle, image_id: rel.featured_image.id %}{%- endif -%}{%- endcapture -%}
+              {%- if rel_photo != blank -%}
+                <img src="{{ rel_photo | strip }}" width="300" height="300" loading="lazy" alt="{{ rel.title | escape }}">
+              {%- elsif rel.featured_image -%}
+                {{ rel.featured_image | image_url: width: 300 | image_tag: loading: 'lazy', widths: '150, 220, 300', sizes: '150px', alt: rel.title }}
+              {%- endif -%}
+            </a>
+            <h3><a href="{{ rel.url }}">{{ rel_name | default: rel.title }}</a></h3>
+            <p class="artifact-product__related-brand">{{ rel.vendor }}</p>
+            <p class="artifact-product__related-price">{{ rel_vial.price | money_without_trailing_zeros }}</p>
+            <form method="post" action="{{ routes.cart_add_url }}">
+              <input type="hidden" name="id" value="{{ rel_vial.id }}">
+              <input type="hidden" name="quantity" value="1">
+              <button type="submit">Add to cart</button>
+            </form>
+          </article>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</section>
+{%- endif -%}

@@ -57,7 +57,7 @@
   assign review_count = product.metafields.reviews.rating_count.value | default: product.metafields.judgeme.review_count | default: product.metafields.reviews.count.value | default: 0
 -%}
 {%- unless product.handle == 'extra-5ml-vial-add-on' or product.price == 0 or vial == blank -%}
-<article class="scent-card{% if compact %} scent-card--reference{% endif %}" data-scent-card data-gender="{{ gender }}" data-family="{{ family }}" data-brand="{{ product.vendor | strip | escape }}" data-tags="{{ tags_down | escape }}" data-name="{{ product.title | escape }}" aria-labelledby="ScentCard-{{ section_id }}-{{ product.id }}">
+<article class="scent-card{% if compact %} scent-card--reference{% endif %}" data-scent-card data-gender="{{ gender }}" data-family="{{ family }}" data-brand="{{ product.vendor | strip | escape }}" data-created="{{ product.created_at | date: '%s' }}" data-tags="{{ tags_down | escape }}" data-name="{{ product.title | escape }}" aria-labelledby="ScentCard-{{ section_id }}-{{ product.id }}">
   {%- if compact -%}
   {%- comment -%} Jeff: "Original bottle only, same crop and scale... No atomizer as the hero shot."
     grid-photo returns the uniformly framed bottle while the product still shows the photo it was

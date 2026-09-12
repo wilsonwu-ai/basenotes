@@ -89,14 +89,36 @@
         <h1>{{ display_title | default: product.title | escape }}</h1>
         <p class="artifact-product__meta">{{ concentration | strip }}{% if vial_variant %} <span aria-hidden="true">·</span> Decanted to 5ml{% endif %}</p>
         <div class="artifact-product__pills" aria-label="Fragrance character">
+          {%- comment -%} Jeff's tag CSV (2026-09-12) introduces Family_/Season_/Occasion_/Conc_/Origin_.
+            Raw taxonomy tokens must never reach a chip, so everything except the scent family is
+            filtered out here. The older lowercase tags still pass through unchanged, which is what
+            keeps this page correct BEFORE the CSV is imported as well as after. {%- endcomment -%}
           {%- assign pills_shown = 0 -%}
           {%- for pill in product.tags -%}
             {%- assign pill_down = pill | downcase -%}
             {%- if pill contains ':' or pill_down == 'date night' or pill_down == 'everyday wear' or pill_down == 'signature' or pill_down == 'wedding/formal' or pill_down contains 'gender' -%}{%- continue -%}{%- endif -%}
-            <span>{{ pill | escape }}</span>{%- assign pills_shown = pills_shown | plus: 1 -%}
+            {%- if pill_down contains 'conc_' or pill_down contains 'origin_' or pill_down contains 'season_' or pill_down contains 'occasion_' -%}{%- continue -%}{%- endif -%}
+            {%- assign pill_label = pill | remove_first: 'Family_' | remove_first: 'family_' -%}
+            <span>{{ pill_label | escape }}</span>{%- assign pills_shown = pills_shown | plus: 1 -%}
             {%- if pills_shown == 5 -%}{%- break -%}{%- endif -%}
           {%- endfor -%}
         </div>
+
+        {%- comment -%} Seasonality, derived from the Season_ tags Jeff authored (falling back to the
+          older season: tags). His mock also said "go light in humidity" — dropped: nothing on the
+          store backs it. Four seasons means year-round, which is no signal, so the line is omitted. {%- endcomment -%}
+        {%- assign season_acc = '' -%}
+        {%- for tag in product.tags -%}
+          {%- assign tl = tag | downcase -%}
+          {%- if tl contains 'season_' or tl contains 'season:' -%}
+            {%- assign sname = tl | remove: 'season_' | remove: 'season:' | replace: 'autumn', 'fall' | strip -%}
+            {%- unless season_acc contains sname -%}{%- assign season_acc = season_acc | append: sname | append: ',' -%}{%- endunless -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {%- assign season_list = season_acc | split: ',' -%}
+        {%- if season_list.size > 0 and season_list.size < 4 -%}
+          <p class="artifact-product__season">Best in{% for s in season_list %}{% if forloop.first %} {% elsif forloop.last %} and {% else %}, {% endif %}{{ s }}{% endfor %}.</p>
+        {%- endif -%}
 
         {%- comment -%} Jeff 2026-09-12: "One-line rating next to the price / under the note chips —
           '4.6 · 12 reviews' with a jump link." No minimum here: the >=3-review rule he set applies to the
@@ -147,6 +169,28 @@
         {%- endform -%}
         <p class="artifact-product__size-note" data-artifact-size-note>{% if vial_variant %}5ml in a portable spray atomizer. Try it on your skin before committing to a bottle.{% else %}Original full bottle. Size and price shown are for the selected variant.{% endif %}</p>
         <p class="artifact-product__shipping"><a href="/pages/shipping">Shipping &amp; delivery details</a></p>
+        {%- comment -%} Jeff's FULL BOTTLE block, both states from his mock. The in-stock state renders
+          from the real variant and its real price, so it can never claim stock we do not hold, and his
+          mock's "retail typically around $395" is deliberately absent — we have no source for it.
+          The waitlist state points at the EXISTING contact form; no new email capture was built. {%- endcomment -%}
+        {%- if bottle_variant != blank and bottle_variant.available -%}
+          <aside class="artifact-product__bottle artifact-product__bottle--stocked">
+            <p class="artifact-product__bottle-label">Full bottle &mdash; in stock</p>
+            <p>{{ bottle_variant.title | escape }} original bottle. The same fragrance as this 5ml.</p>
+            <p class="artifact-product__bottle-price">{{ bottle_variant.price | money }}</p>
+            <form method="post" action="{{ routes.cart_add_url }}">
+              <input type="hidden" name="id" value="{{ bottle_variant.id }}">
+              <input type="hidden" name="quantity" value="1">
+              <button type="submit" class="artifact-product__add">Add the {{ bottle_variant.title | escape }} bottle to cart</button>
+            </form>
+          </aside>
+        {%- else -%}
+          <aside class="artifact-product__bottle">
+            <p class="artifact-product__bottle-label">Full bottle</p>
+            <p>We decant this from the original bottle. When we stock the full size, it will appear here.</p>
+            <a class="artifact-product__bottle-notify" href="/pages/full-bottles?fragrance={{ product.title | url_encode }}#BottleEnquiry">Notify me when the full bottle is in</a>
+          </aside>
+        {%- endif -%}
         {% render 'product-journal-link', product: product %}
         <p class="artifact-product__status" data-artifact-product-status role="status" aria-live="polite"></p>
       </div>
@@ -164,10 +208,28 @@
         {%- endif -%}
         {%- capture occasions -%}
           {%- for tag in product.tags -%}
-            {%- if tag contains 'event:' -%}<li>{{ tag | remove: 'event:' | replace: '-', ' ' | capitalize | escape }}</li>{%- elsif tag == 'everyday wear' or tag == 'signature' or tag == 'wedding/formal' -%}<li>{{ tag | capitalize | escape }}</li>{%- endif -%}
+            {%- if tag contains 'Occasion_' -%}
+              {%- assign occ = tag | remove: 'Occasion_' -%}
+              {%- case occ -%}
+                {%- when 'DateNight' -%}<li>Date night</li>
+                {%- when 'Everyday' -%}<li>Everyday</li>
+                {%- when 'Office' -%}<li>Office</li>
+                {%- when 'Signature' -%}<li>Signature</li>
+                {%- when 'Evening' -%}<li>Evening</li>
+                {%- else -%}<li>{{ occ | escape }}</li>
+              {%- endcase -%}
+            {%- elsif tag contains 'event:' -%}<li>{{ tag | remove: 'event:' | replace: '-', ' ' | capitalize | escape }}</li>{%- elsif tag == 'everyday wear' or tag == 'signature' or tag == 'wedding/formal' -%}<li>{{ tag | capitalize | escape }}</li>{%- endif -%}
           {%- endfor -%}
         {%- endcapture -%}
         {%- if occasions != blank -%}<section><h2>Best for</h2><ul>{{ occasions }}</ul></section>{%- endif -%}
+        {%- comment -%} Wilson 2026-09-12 dropped Jeff's "HOW IT WEARS" (a 6-10 hour longevity claim with
+          no source on the store). This is the anchored replacement: it states what is actually in the
+          box, which is the thing a first-time decant buyer is unsure about. {%- endcomment -%}
+        <section><h2>What you get</h2><ul>
+          <li>A 5ml glass spray atomizer, about 60 sprays</li>
+          <li>Decanted from the original bottle{% if concentration != blank %}, {{ concentration | strip | downcase }}{% endif %}</li>
+          <li>First vial $20, each extra vial in the same order $18</li>
+        </ul></section>
       </div>
     </div>
 
@@ -187,6 +249,7 @@
         data-id="{{ product.id }}"
       >{{ product.metafields.judgeme.widget }}</div>
     </section>
+    {% render 'related-vials', product: product %}
     {% render 'review-scroll-assist' %}
   </div>
   <script type="application/json" data-artifact-variants>[
@@ -240,6 +303,27 @@
   .artifact-product__rating-jump { color:var(--ap-green); font:.73rem/1.4 var(--ap-sans); text-decoration:underline; text-underline-offset:.2em; text-decoration-color:var(--ap-gold); }
   .artifact-product__reviews { margin-block-start:2.75rem; padding-block-start:2rem; border-block-start:.0625rem solid var(--ap-line); }
   .artifact-product__reviews > h2 { margin:0 0 1.2rem; padding-block-end:.6rem; border-block-end:.0625rem solid var(--ap-line); font:600 .78rem/1.2 var(--ap-sans); letter-spacing:.08em; text-transform:uppercase; }
+  .artifact-product__season { margin:0 0 1.1rem; color:var(--ap-muted); font:.85rem/1.5 var(--ap-sans); }
+  .artifact-product__bottle { max-width:27rem; margin-block-start:1.1rem; padding:1rem; border:.0625rem solid var(--ap-line); border-radius:.2rem; background:rgb(255 255 255 / 45%); }
+  .artifact-product__bottle p { margin:0 0 .5rem; color:var(--ap-muted); font:.82rem/1.55 var(--ap-sans); }
+  .artifact-product__bottle-label { color:var(--ap-ink)!important; font:600 .68rem/1.2 var(--ap-sans)!important; letter-spacing:.1em; text-transform:uppercase; }
+  .artifact-product__bottle-price { color:var(--ap-ink)!important; font:500 1.3rem/1.2 var(--ap-sans)!important; }
+  .artifact-product__bottle-notify { display:inline-flex; align-items:center; min-height:2.75rem; color:var(--ap-green); font:.78rem/1.4 var(--ap-sans); text-decoration:underline; text-underline-offset:.25em; text-decoration-color:var(--ap-gold); }
+  .artifact-product__bottle .artifact-product__add { width:100%; }
+  .artifact-product__related { margin-block-start:2.75rem; padding-block-start:2rem; border-block-start:.0625rem solid var(--ap-line); }
+  .artifact-product__related > h2 { margin:0 0 .3rem; font:600 1.5rem/1.2 'Playfair Display',serif; }
+  .artifact-product__related-note { margin:0 0 1.2rem; color:var(--ap-muted); font:.8rem/1.5 var(--ap-sans); }
+  .artifact-product__related-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; }
+  .artifact-product__related-card { display:flex; flex-direction:column; min-width:0; padding:.9rem; border:.0625rem solid var(--ap-line); border-radius:.2rem; background:rgb(255 255 255 / 45%); }
+  .artifact-product__related-media { display:block; aspect-ratio:1; margin-block-end:.6rem; padding:8%; background:#faf7f0; }
+  .artifact-product__related-media img { width:100%; height:100%; object-fit:contain; mix-blend-mode:multiply; }
+  .artifact-product__related-card h3 { margin:0; font:400 1rem/1.3 var(--ap-serif); }
+  .artifact-product__related-brand { margin:.2rem 0 .4rem; color:var(--ap-muted); font:.65rem/1.4 var(--ap-sans); letter-spacing:.08em; text-transform:uppercase; }
+  .artifact-product__related-price { margin:0 0 .6rem; font:500 .95rem/1.2 var(--ap-sans); }
+  .artifact-product__related-card form { margin-block-start:auto; }
+  .artifact-product__related-card button { width:100%; min-height:2.75rem; border:.0625rem solid var(--ap-green); background:var(--ap-green); color:#fff; font:500 .7rem/1.4 var(--ap-sans); letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
+  .artifact-product__related-card button:hover { background:#2d4a38; }
+  @media(max-width:40rem) { .artifact-product__related-grid { grid-template-columns:1fr; } }
   .artifact-product__pills { display:flex; flex-wrap:wrap; gap:.45rem; margin-block-end:1.4rem; }
   .artifact-product__pills:empty { display:none; }
   .artifact-product__pills span { padding:.42rem .7rem; border:.0625rem solid var(--ap-gold); border-radius:99rem; color:var(--ap-green); font:500 .65rem/1 var(--ap-sans); text-transform:uppercase; }

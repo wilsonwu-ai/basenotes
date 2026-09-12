@@ -70,13 +70,14 @@
   else
     for tag in product.tags
       assign tag_lower = tag | downcase
-      if tag_lower contains 'season:spring' or tag_lower == 'spring'
+      # Matches season:spring (old), Season_Spring (Jeff's 2026-09-12 taxonomy) and a bare tag.
+      if tag_lower contains 'spring'
         assign season_spring = true
-      elsif tag_lower contains 'season:summer' or tag_lower == 'summer'
+      elsif tag_lower contains 'summer'
         assign season_summer = true
-      elsif tag_lower contains 'season:fall' or tag_lower contains 'season:autumn' or tag_lower == 'fall' or tag_lower == 'autumn'
+      elsif tag_lower contains 'fall' or tag_lower contains 'autumn'
         assign season_fall = true
-      elsif tag_lower contains 'season:winter' or tag_lower == 'winter'
+      elsif tag_lower contains 'winter'
         assign season_winter = true
       endif
     endfor
@@ -208,6 +209,8 @@
       {%- for tag in product.tags -%}
         {%- if tag contains 'origin:' -%}
           {%- assign origin_country = tag | split: ':' | last | strip -%}
+        {%- elsif tag contains 'Origin_' -%}
+          {%- assign origin_country = tag | remove: 'Origin_' | strip -%}
         {%- endif -%}
       {%- endfor -%}
       {%- if origin_country != '' -%}

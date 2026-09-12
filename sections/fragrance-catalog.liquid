@@ -34,9 +34,14 @@
     <details class="fragrance-catalog__decants">
       <summary>How decants work</summary>
       <div class="fragrance-catalog__decants-body">
-        <p>{{ 'fragrance_reference.format' | t }}</p>
-        <p>Every bottle we decant is the real fragrance, bought from the brand or an authorised retailer. A 5ml atomizer holds roughly 60 sprays, which is enough to wear a scent for a few weeks before you commit to a full bottle.</p>
-        <p>Your first 5ml vial in a cart is $20. Each additional vial in the same order is $18.</p>
+        <h3>What you get</h3>
+        <p>{{ 'fragrance_reference.format' | t }} About 60 sprays &mdash; enough to wear it on skin, not just paper.</p>
+        <h3>What you pay</h3>
+        <p>First vial is $20. Each extra vial in the same order is $18. One-time purchase. No subscription required.</p>
+        <h3>Shipping</h3>
+        <p>Free US shipping on orders over $50. Under that, standard checkout rates apply.</p>
+        <h3>Full bottles</h3>
+        <p>Want the full size later? Those are on each scent&rsquo;s page when we have them. This grid is 5ml only.</p>
       </div>
     </details>
   </header>
@@ -72,7 +77,8 @@
         <span class="visually-hidden">Sort by</span>
         <select id="ScentSort-{{ section.id }}" data-scent-sort>
           <option value="best">Best sellers</option>
-          <option value="az">A to Z</option>
+          <option value="az">Name A&ndash;Z</option>
+          <option value="new">Newest</option>
         </select>
       </label>
     </div>

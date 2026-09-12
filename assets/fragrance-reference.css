@@ -70,6 +70,14 @@
   border-left: 2px solid var(--scent-gold);
   background: rgba(255, 255, 255, .42);
 }
+.fragrance-catalog__decants-body h3 {
+  margin: .9rem 0 .3rem;
+  color: var(--reference-ink);
+  font: 600 .7rem/1.4 var(--reference-sans);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.fragrance-catalog__decants-body h3:first-child { margin-top: 0; }
 .fragrance-catalog__decants-body p {
   margin: 0 0 .6rem;
   color: var(--reference-muted);
