@@ -138,8 +138,8 @@
               <label class="artifact-product__size"><input type="radio" name="id" value="{{ variant.id }}" class="visually-hidden" data-artifact-size {% if variant.id == current_variant.id %}checked{% endif %}>{% if variant.title == 'Default Title' %}{{ product.title | escape }}{% else %}{{ variant.title | escape }}{% endif %}</label>
             {%- endfor -%}
           </fieldset>
-          <p class="artifact-product__price" data-artifact-product-price aria-label="Price {{ current_variant.price | money }}">{{ current_variant.price | money }}</p>
-          <p class="artifact-product__price-note" data-artifact-price-note>{% if current_variant.id == vial_variant.id and current_variant.price == 2000 %}{{ current_variant.price | money }} first vial · $18 each additional vial in your order.{% endif %}</p>
+          <p class="artifact-product__price" data-artifact-product-price aria-label="Price {{ current_variant.price | money_without_trailing_zeros }}">{{ current_variant.price | money_without_trailing_zeros }}</p>
+          <p class="artifact-product__price-note" data-artifact-price-note>{% if current_variant.id == vial_variant.id and current_variant.price == 2000 %}{{ current_variant.price | money_without_trailing_zeros }} first vial · $18 each additional vial in your order.{% endif %}</p>
           <div data-artifact-purchase-controls>
             <div class="artifact-product__quantity">
               <button type="button" data-artifact-qty="minus" aria-label="Decrease quantity" hidden>−</button>
@@ -157,7 +157,7 @@
                 <input type="hidden" name="selling_plan" value="" data-artifact-plan disabled>
               </div>
               <div class="artifact-product__rotation-note" data-artifact-rotation-note hidden>
-                <p><strong>This is a recurring monthly subscription.</strong> First shipment <span data-plan-first>{{ current_allocation.price | money }}</span>, then <span data-plan-renewal>{{ current_allocation.price_adjustments.last.price | default: current_variant.price | money }}</span> every month until cancelled. Skip, swap, or cancel in your account.</p>
+                <p><strong>This is a recurring monthly subscription.</strong> First shipment <span data-plan-first>{{ current_allocation.price | money_without_trailing_zeros }}</span>, then <span data-plan-renewal>{{ current_allocation.price_adjustments.last.price | default: current_variant.price | money_without_trailing_zeros }}</span> every month until cancelled. Skip, swap, or cancel in your account.</p>
                 <label class="artifact-product__consent"><input type="checkbox" data-artifact-consent disabled> <span>I agree to the recurring charges and <a href="/pages/subscription-terms">subscription terms</a>.</span></label>
               </div>
             {%- endif -%}
@@ -175,7 +175,7 @@
           <aside class="artifact-product__bottle artifact-product__bottle--stocked">
             <p class="artifact-product__bottle-label">Full bottle &mdash; in stock</p>
             <p>{{ bottle_variant.title | escape }} original bottle. The same fragrance as this 5ml.</p>
-            <p class="artifact-product__bottle-price">{{ bottle_variant.price | money }}</p>
+            <p class="artifact-product__bottle-price">{{ bottle_variant.price | money_without_trailing_zeros }}</p>
             <form method="post" action="{{ routes.cart_add_url }}">
               <input type="hidden" name="id" value="{{ bottle_variant.id }}">
               <input type="hidden" name="quantity" value="1">
