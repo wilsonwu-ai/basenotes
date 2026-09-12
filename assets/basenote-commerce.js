@@ -300,7 +300,7 @@
 
   async function prepareCart() { return exclusive(async () => publish(await normalizeCart(await getCart()))); }
   function money(cents, currency = window.Shopify?.currency?.active || 'USD') {
-    return new Intl.NumberFormat(document.documentElement.lang || 'en-US', { style: 'currency', currency }).format(Number(cents) / 100);
+    return new Intl.NumberFormat(document.documentElement.lang || 'en-US', { style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(Number(cents) / 100);
   }
 
   window.BaseNoteCommerce = Object.freeze({ addVial, quoteVial, getCart, changeQuantity, setOrderMode, prepareCart, money });
@@ -358,7 +358,11 @@
       if (vialReference) vialReference.hidden = !showVial;
       this.querySelector('[data-product-comparison]')?.classList.toggle('artifact-product__visual--single', !showVial);
       this.submit.hidden = missing;
-      this.querySelector('[data-bottle-request]').hidden = !missing;
+      // The bottle-request div was replaced by the FULL BOTTLE aside (2026-09-12), so it may
+      // not exist. Guard rather than assume: an unguarded null here throws and takes the
+      // whole purchase-controls update down with it.
+      const bottleRequest = this.querySelector('[data-bottle-request]');
+      if (bottleRequest) bottleRequest.hidden = !missing;
       this.querySelector('[data-artifact-purchase-controls]').hidden = missing;
       if (this.current) this.form.elements.id.value = this.current.id;
       if (this.rotation) { this.rotation.value = ''; this.rotation.disabled = missing || !this.current?.planId; }

@@ -137,7 +137,6 @@
             {%- for variant in product.variants -%}
               <label class="artifact-product__size"><input type="radio" name="id" value="{{ variant.id }}" class="visually-hidden" data-artifact-size {% if variant.id == current_variant.id %}checked{% endif %}>{% if variant.title == 'Default Title' %}{{ product.title | escape }}{% else %}{{ variant.title | escape }}{% endif %}</label>
             {%- endfor -%}
-            {%- if vial_variant and bottle_variant == blank -%}<label class="artifact-product__size artifact-product__size--request"><input type="radio" name="id" value="unavailable" class="visually-hidden" data-artifact-size data-request="true" disabled>Full bottle</label>{%- endif -%}
           </fieldset>
           <p class="artifact-product__price" data-artifact-product-price aria-label="Price {{ current_variant.price | money }}">{{ current_variant.price | money }}</p>
           <p class="artifact-product__price-note" data-artifact-price-note>{% if current_variant.id == vial_variant.id and current_variant.price == 2000 %}{{ current_variant.price | money }} first vial · $18 each additional vial in your order.{% endif %}</p>
@@ -164,7 +163,6 @@
             {%- endif -%}
             <button id="addToCartButton" class="artifact-product__add" type="submit" data-artifact-submit {% unless current_variant.available %}disabled{% endunless %}>{% if current_variant.available %}Add to cart{% else %}Sold out{% endif %}</button>
           </div>
-          <div class="artifact-product__request" data-bottle-request hidden><p>A full bottle of this fragrance is not currently listed for checkout.</p><a class="artifact-product__add" href="/pages/full-bottles?fragrance={{ product.title | url_encode }}#BottleEnquiry">Ask about a full bottle</a></div>
           <noscript><p class="artifact-product__size-note">Choose a size and add it to your cart. Regular prices apply without JavaScript. For Monthly Rotation or full-bottle availability, <a href="/pages/contact">contact us</a>.</p></noscript>
         {%- endform -%}
         <p class="artifact-product__size-note" data-artifact-size-note>{% if vial_variant %}5ml in a portable spray atomizer. Try it on your skin before committing to a bottle.{% else %}Original full bottle. Size and price shown are for the selected variant.{% endif %}</p>
@@ -239,7 +237,7 @@
       (/products/<handle>#judgeme_product_reviews) and review-scroll-assist.liquid both pointed at an
       anchor that was never rendered. This adds it. Do NOT set data-from-snippet="true" — Judge.me's own
       CSS hides any widget carrying that attribute. {%- endcomment -%}
-    <section class="artifact-product__reviews" aria-labelledby="ArtifactReviewsTitle">
+    <section class="artifact-product__reviews" aria-labelledby="ArtifactReviewsTitle" data-reviews-section>
       <h2 id="ArtifactReviewsTitle">Reviews</h2>
       <div style="clear:both"></div>
       <div
@@ -249,6 +247,39 @@
         data-id="{{ product.id }}"
       >{{ product.metafields.judgeme.widget }}</div>
     </section>
+    <script>
+    (function () {
+      'use strict';
+      /* Judge.me mounts late AND, on this store, frequently renders nothing at all: the
+         judgeme.widget metafield is empty and only reviews.rating_count is populated.
+         Verified live 2026-09-12 on Y Intense, which HAS a review — the container was still
+         0px after 3s. A "Reviews" heading over blank space reads as broken, so hide the chrome
+         when nothing arrives.
+
+         What this must never do is remove the container: #judgeme_product_reviews is the anchor
+         the account page's "Rate it" link and review-scroll-assist.liquid both target, and that
+         journey was broken until today. Hiding the section keeps the node in the DOM.
+
+         A MutationObserver re-shows it if Judge.me populates late or after a review is left, so
+         this cannot permanently suppress real reviews. */
+      var sec = document.querySelector('[data-reviews-section]');
+      var box = document.getElementById('judgeme_product_reviews');
+      if (!sec || !box) return;
+      var MIN = 40;
+      function sync() {
+        if (box.offsetHeight > MIN) { sec.removeAttribute('data-reviews-empty'); return true; }
+        return false;
+      }
+      if (!sync()) sec.setAttribute('data-reviews-empty', '');
+      var waited = 0, STEP = 250, DEADLINE = 8000;
+      var timer = setInterval(function () {
+        if (sync() || (waited += STEP) >= DEADLINE) clearInterval(timer);
+      }, STEP);
+      try {
+        new MutationObserver(sync).observe(box, { childList: true, subtree: true });
+      } catch (e) { /* older browsers simply keep the polled result */ }
+    })();
+    </script>
     {% render 'related-vials', product: product %}
     {% render 'review-scroll-assist' %}
   </div>
@@ -302,6 +333,9 @@
   .artifact-product__rating-line .product-review-badge { margin:0; }
   .artifact-product__rating-jump { color:var(--ap-green); font:.73rem/1.4 var(--ap-sans); text-decoration:underline; text-underline-offset:.2em; text-decoration-color:var(--ap-gold); }
   .artifact-product__reviews { margin-block-start:2.75rem; padding-block-start:2rem; border-block-start:.0625rem solid var(--ap-line); }
+  /* Empty widget: collapse the chrome, keep #judgeme_product_reviews in the DOM as the anchor. */
+  .artifact-product__reviews[data-reviews-empty] { margin:0; padding:0; border:0; }
+  .artifact-product__reviews[data-reviews-empty] > h2 { display:none; }
   .artifact-product__reviews > h2 { margin:0 0 1.2rem; padding-block-end:.6rem; border-block-end:.0625rem solid var(--ap-line); font:600 .78rem/1.2 var(--ap-sans); letter-spacing:.08em; text-transform:uppercase; }
   .artifact-product__season { margin:0 0 1.1rem; color:var(--ap-muted); font:.85rem/1.5 var(--ap-sans); }
   .artifact-product__bottle { max-width:27rem; margin-block-start:1.1rem; padding:1rem; border:.0625rem solid var(--ap-line); border-radius:.2rem; background:rgb(255 255 255 / 45%); }
