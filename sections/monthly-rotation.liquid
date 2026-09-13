@@ -78,18 +78,23 @@
     </section>
 
     {%- comment -%}
-      TWO OPTIONS. The one-time card states only the price the theme can actually read
-      (rotation_variant.price). Jeff's mock also claims "$18 each extra in that order"; that
-      number has no selling-plan, variant, metafield or setting behind it anywhere in the theme,
-      so printing it would mean hardcoding a price. Left out on purpose. See the handoff note.
+      TWO OPTIONS. Jeff's mock says "$18 each extra in that order", and that claim IS backed - an
+      earlier note here said it was not, which was wrong and is corrected. Established on live
+      2026-09-13: normalizeCart() in assets/basenote-commerce.js replaces the extra eligible unit
+      with the extra-5ml-vial-add-on helper (priced 1800) and records the chosen scent on it. Two
+      real $20 vials read $40 through cart.js but become $38 the moment /cart actually renders,
+      because the normalisation is client-side. So the figure is real - and it is still read from an
+      object here, never typed as a literal, so it cannot drift from what the shopper is charged.
+      If that product is ever removed the sentence simply does not render.
     {%- endcomment -%}
+    {%- assign extra_vial_variant = all_products['extra-5ml-vial-add-on'].variants | first -%}
     <section class="rotation__block" aria-labelledby="RotationOptionsTitle">
       <h2 class="rotation__h2" id="RotationOptionsTitle">Two options</h2>
       <div class="rotation__options">
         <article class="rotation__option">
           <h3 class="rotation__option-title">One-time vial</h3>
           {%- if rotation_variant -%}
-            <p class="rotation__option-price">{{ rotation_variant.price | money_without_trailing_zeros }} per vial.</p>
+            <p class="rotation__option-price">{{ rotation_variant.price | money_without_trailing_zeros }} per vial{% if extra_vial_variant and extra_vial_variant.available %}, then {{ extra_vial_variant.price | money_without_trailing_zeros }} for each extra vial in the same order{% endif %}.</p>
           {%- endif -%}
           <p class="rotation__option-copy">Buy when you want. No renewal.</p>
           <a class="rotation__option-link" href="{{ rotation_url }}">Shop one-time vials <span aria-hidden="true">&rarr;</span></a>
