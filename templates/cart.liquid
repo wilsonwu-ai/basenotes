@@ -88,7 +88,7 @@
                     <input id="CartQuantity-{{ forloop.index }}" type="number" name="updates[]" min="0" max="99" value="{{ item.quantity }}" inputmode="numeric" data-cart-quantity>
                     <button type="button" data-cart-step="1" aria-label="Increase {{ item_label | escape }} quantity" hidden>+</button>
                   </div>
-                  <strong class="artifact-cart__line-price" aria-label="Line total {{ item.final_line_price | money }}">{{ item.final_line_price | money }}</strong>
+                  <strong class="artifact-cart__line-price" aria-label="Line total {{ item.final_line_price | money_without_trailing_zeros }}">{{ item.final_line_price | money_without_trailing_zeros }}</strong>
                 </article>
               {%- endfor -%}
             </div>
@@ -102,7 +102,7 @@
               </label>
               <label class="artifact-cart__mode{% if has_subscription %} artifact-cart__mode--active{% endif %}">
                 <input type="radio" name="artifact_order_mode" value="subscription" disabled {% if rotation_variant == blank %}data-unavailable="true"{% endif %} {% if has_subscription %}checked{% endif %}>
-                <span><strong>Monthly Rotation <em>Subscription</em></strong><small>{% if rotation_variant != blank %}{{ rotation_variant.selling_plan_allocations.first.price | money }} for the first shipment, then {{ rotation_variant.selling_plan_allocations.first.price_adjustments.last.price | default: rotation_variant.price | money }} monthly for one 5ml vial of {{ rotation_product.title | escape }}.{% endif %} Extra vials and full bottles stay one-time purchases. Skip, swap, or cancel anytime.</small></span>
+                <span><strong>Monthly Rotation <em>Subscription</em></strong><small>{% if rotation_variant != blank %}{{ rotation_variant.selling_plan_allocations.first.price | money_without_trailing_zeros }} for the first shipment, then {{ rotation_variant.selling_plan_allocations.first.price_adjustments.last.price | default: rotation_variant.price | money_without_trailing_zeros }} monthly for one 5ml vial of {{ rotation_product.title | escape }}.{% endif %} Extra vials and full bottles stay one-time purchases. Skip, swap, or cancel anytime.</small></span>
               </label>
               <a href="/pages/subscription-terms">What does the subscription actually include?</a>
               <noscript><p>To change your purchase option, visit the <a href="/pages/monthly-rotation">Monthly Rotation page</a>.</p></noscript>
@@ -112,13 +112,13 @@
           <aside class="artifact-cart__summary" aria-labelledby="ArtifactSummaryTitle">
             <h2 id="ArtifactSummaryTitle">Order summary</h2>
             <dl class="artifact-cart__summary-lines">
-              {%- for item in cart.items -%}<div><dt>{% if item.product.handle == 'extra-5ml-vial-add-on' %}{{ item.properties['Selected scent'] | default: 'Additional vial' | escape }}{% else %}{{ item.product.title | escape }}{% endif %}{% if item.quantity > 1 %} × {{ item.quantity }}{% endif %}</dt><dd>{{ item.final_line_price | money }}</dd></div>{%- endfor -%}
+              {%- for item in cart.items -%}<div><dt>{% if item.product.handle == 'extra-5ml-vial-add-on' %}{{ item.properties['Selected scent'] | default: 'Additional vial' | escape }}{% else %}{{ item.product.title | escape }}{% endif %}{% if item.quantity > 1 %} × {{ item.quantity }}{% endif %}</dt><dd>{{ item.final_line_price | money_without_trailing_zeros }}</dd></div>{%- endfor -%}
               <div><dt>Shipping &amp; taxes</dt><dd>Calculated at checkout</dd></div>
             </dl>
-            <div class="artifact-cart__total"><span>Subtotal today</span><strong>{{ cart.total_price | money }}</strong></div>
-            {%- if cart_savings > 0 -%}<div class="artifact-cart__savings"><span>You’re saving</span><strong>{{ cart_savings | money }}</strong></div>{%- endif -%}
+            <div class="artifact-cart__total"><span>Subtotal today</span><strong>{{ cart.total_price | money_without_trailing_zeros }}</strong></div>
+            {%- if cart_savings > 0 -%}<div class="artifact-cart__savings"><span>You’re saving</span><strong>{{ cart_savings | money_without_trailing_zeros }}</strong></div>{%- endif -%}
             {%- if has_subscription -%}
-              <div class="artifact-cart__disclosure"><strong>This is a recurring subscription.</strong>{% for item in cart.items %}{% if item.selling_plan_allocation %}<p>{{ item.product.title | escape }}: {{ item.selling_plan_allocation.price | times: item.quantity | money }} for this shipment, then {{ item.selling_plan_allocation.price_adjustments.last.price | default: item.variant.price | times: item.quantity | money }} every month until cancelled.</p>{% endif %}{% endfor %}<p>Skip, swap, or cancel in your account. Any one-time extras do not renew.</p></div>
+              <div class="artifact-cart__disclosure"><strong>This is a recurring subscription.</strong>{% for item in cart.items %}{% if item.selling_plan_allocation %}<p>{{ item.product.title | escape }}: {{ item.selling_plan_allocation.price | times: item.quantity | money_without_trailing_zeros }} for this shipment, then {{ item.selling_plan_allocation.price_adjustments.last.price | default: item.variant.price | times: item.quantity | money_without_trailing_zeros }} every month until cancelled.</p>{% endif %}{% endfor %}<p>Skip, swap, or cancel in your account. Any one-time extras do not renew.</p></div>
               <label class="artifact-cart__consent"><input type="checkbox" required data-cart-consent> <span>I agree to the recurring subscription and <a href="/pages/subscription-terms">subscription terms</a>.</span></label>
             {%- else -%}
               <p class="artifact-cart__disclosure">One-time purchase. No subscription, no recurring charges.</p>

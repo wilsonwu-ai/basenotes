@@ -280,7 +280,19 @@
       } catch (e) { /* older browsers simply keep the polled result */ }
     })();
     </script>
-    {% render 'related-vials', product: product %}
+    {%- comment -%} App blocks (Judge.me's Review Widget goes here once placed in the theme editor).
+      Its JS loads from a theme app extension and waits for its own block; a hand-rolled div is
+      never hydrated, which is why #judgeme_product_reviews stayed empty. {%- endcomment -%}
+    {%- if section.blocks.size > 0 -%}
+      <div class="artifact-product__app-blocks">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when '@app' -%}
+              <div {{ block.shopify_attributes }}>{% render block %}</div>
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
     {% render 'review-scroll-assist' %}
   </div>
   <script type="application/json" data-artifact-variants>[
@@ -344,6 +356,7 @@
   .artifact-product__bottle-price { color:var(--ap-ink)!important; font:500 1.3rem/1.2 var(--ap-sans)!important; }
   .artifact-product__bottle-notify { display:inline-flex; align-items:center; min-height:2.75rem; color:var(--ap-green); font:.78rem/1.4 var(--ap-sans); text-decoration:underline; text-underline-offset:.25em; text-decoration-color:var(--ap-gold); }
   .artifact-product__bottle .artifact-product__add { width:100%; }
+  .artifact-product__app-blocks:empty { display:none; }
   .artifact-product__related { margin-block-start:2.75rem; padding-block-start:2rem; border-block-start:.0625rem solid var(--ap-line); }
   .artifact-product__related > h2 { margin:0 0 .3rem; font:600 1.5rem/1.2 'Playfair Display',serif; }
   .artifact-product__related-note { margin:0 0 1.2rem; color:var(--ap-muted); font:.8rem/1.5 var(--ap-sans); }
@@ -408,5 +421,5 @@
 {% endstylesheet %}
 
 {% schema %}
-{"name":"Fragrance product","settings":[],"presets":[{"name":"Fragrance product"}]}
+{"name":"Fragrance product","settings":[],"blocks":[{"type":"@app"}],"presets":[{"name":"Fragrance product"}]}
 {% endschema %}

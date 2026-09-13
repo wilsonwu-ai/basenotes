@@ -1,0 +1,102 @@
+{% comment %}
+  "If you like this" — Shopify's native product recommendations.
+
+  Wilson 2026-09-12 switched this from tag-derived to native. Tag maths reproduced Jeff's own
+  Aventus picks 0 of 3 times because his were editorial; native is behaviour-based (real orders
+  and co-views) and returned 3 results for 8 of 8 products tested, with no empties.
+
+  Progressive enhancement, deliberately:
+    - First paint has recommendations.performed? == false, so the tag-derived snippet renders.
+      The shopper always sees something, even with JS off or slow.
+    - The fetch below re-requests THIS section through routes.product_recommendations_url, which
+      populates recommendations.products, and swaps the result in.
+    - If native returns nothing (cold-start product, no order history), the fetched markup is
+      empty and the tag-derived fallback is left exactly where it is.
+
+  Styles live in main-product.liquid's {% stylesheet %}; both sections render on the product page,
+  and a fetched replacement lands in a DOM that already has them.
+{% endcomment %}
+
+<div
+  data-product-recommendations
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=3&intent=related"
+>
+  {%- if recommendations.performed? -%}
+    {%- if recommendations.products_count > 0 -%}
+      <section class="artifact-product__related" aria-labelledby="RelatedVialsTitle">
+        <h2 id="RelatedVialsTitle">If you like this</h2>
+        <p class="artifact-product__related-note">Add another 5ml in this order for $18.</p>
+        <div class="artifact-product__related-grid">
+          {%- for rec in recommendations.products -%}
+            {%- if rec.handle == 'extra-5ml-vial-add-on' or rec.price == 0 -%}{%- continue -%}{%- endif -%}
+            {%- assign rec_vial = blank -%}
+            {%- for variant in rec.variants -%}
+              {%- assign vt = variant.title | downcase | remove: ' ' -%}
+              {%- if vt contains '5ml' -%}{%- assign rec_vial = variant -%}{%- break -%}{%- endif -%}
+            {%- endfor -%}
+            {%- if rec_vial != blank and rec_vial.available -%}
+              {%- assign rec_name = rec.title | remove_first: rec.vendor | remove: 'EDP' | remove: 'Eau de Parfum' | strip -%}
+              <article class="artifact-product__related-card">
+                <a href="{{ rec.url }}" class="artifact-product__related-media">
+                  {%- capture rec_photo -%}{%- if rec.featured_image -%}{% render 'grid-photo', handle: rec.handle, image_id: rec.featured_image.id %}{%- endif -%}{%- endcapture -%}
+                  {%- if rec_photo != blank -%}
+                    <img src="{{ rec_photo | strip }}" width="300" height="300" loading="lazy" alt="{{ rec.title | escape }}">
+                  {%- elsif rec.featured_image -%}
+                    {{ rec.featured_image | image_url: width: 300 | image_tag: loading: 'lazy', widths: '150, 220, 300', sizes: '150px', alt: rec.title }}
+                  {%- endif -%}
+                </a>
+                <h3><a href="{{ rec.url }}">{{ rec_name | default: rec.title }}</a></h3>
+                <p class="artifact-product__related-brand">{{ rec.vendor }}</p>
+                <p class="artifact-product__related-price">{{ rec_vial.price | money_without_trailing_zeros }}</p>
+                <form method="post" action="{{ routes.cart_add_url }}">
+                  <input type="hidden" name="id" value="{{ rec_vial.id }}">
+                  <input type="hidden" name="quantity" value="1">
+                  <button type="submit">Add to cart</button>
+                </form>
+              </article>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- endif -%}
+  {%- else -%}
+    {% render 'related-vials', product: product %}
+  {%- endif -%}
+</div>
+
+<script>
+  (function () {
+    'use strict';
+    var host = document.querySelector('[data-product-recommendations]');
+    if (!host || !host.dataset.url) return;
+    function load() {
+      fetch(host.dataset.url)
+        .then(function (r) { return r.ok ? r.text() : Promise.reject(r.status); })
+        .then(function (text) {
+          var parsed = document.createElement('div');
+          parsed.innerHTML = text;
+          var fresh = parsed.querySelector('[data-product-recommendations]');
+          // Only replace when native actually returned something; otherwise keep the
+          // tag-derived fallback already on the page.
+          if (fresh && fresh.querySelector('.artifact-product__related-card')) {
+            host.innerHTML = fresh.innerHTML;
+          }
+        })
+        .catch(function () { /* keep the fallback */ });
+    }
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries, obs) {
+        if (!entries[0].isIntersecting) return;
+        obs.unobserve(host);
+        load();
+      }, { rootMargin: '0px 0px 300px 0px' });
+      io.observe(host);
+    } else {
+      load();
+    }
+  })();
+</script>
+
+{% schema %}
+{"name":"Product recommendations","settings":[],"presets":[{"name":"Product recommendations"}]}
+{% endschema %}

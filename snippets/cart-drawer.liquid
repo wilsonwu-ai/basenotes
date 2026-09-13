@@ -130,9 +130,9 @@
 
                 <div class="cart-drawer-item__price">
                   {%- if item.original_line_price != item.final_line_price -%}
-                    <span class="cart-drawer-item__price-original">{{ item.original_line_price | money }}</span>
+                    <span class="cart-drawer-item__price-original">{{ item.original_line_price | money_without_trailing_zeros }}</span>
                   {%- endif -%}
-                  <span class="cart-drawer-item__price-current">{{ item.final_line_price | money }}</span>
+                  <span class="cart-drawer-item__price-current">{{ item.final_line_price | money_without_trailing_zeros }}</span>
                 </div>
               </div>
             </div>
@@ -195,7 +195,7 @@
         <div class="cart-drawer__summary">
           <div class="cart-drawer__summary-line">
             <span>Subtotal</span>
-            <span class="cart-drawer__subtotal-price">{{ cart.total_price | money }}</span>
+            <span class="cart-drawer__subtotal-price">{{ cart.total_price | money_without_trailing_zeros }}</span>
           </div>
           <div class="cart-drawer__summary-line">
             <span>Shipping</span>
@@ -214,7 +214,7 @@
           </div>
           <div class="cart-drawer__summary-line cart-drawer__summary-line--total">
             <span>{% if drawer_has_plan_line and drawer_all_plan %}Total{% else %}Total before shipping{% endif %}</span>
-            <span class="cart-drawer__subtotal-price">{{ cart.total_price | money }}</span>
+            <span class="cart-drawer__subtotal-price">{{ cart.total_price | money_without_trailing_zeros }}</span>
           </div>
         </div>
 
