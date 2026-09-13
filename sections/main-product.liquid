@@ -34,14 +34,28 @@
     nested <strong>), so any tag-based cut breaks. Verified against all 24 products carrying notes:
     24 clean, 0 leaking a label into a neighbouring field.
   endcomment
-  assign description_html = product.description
-  if description_html contains 'Top Notes:'
+  comment
+    FAULT 3, found on live 2026-09-13 after the first fix shipped: 7 of 32 descriptions label the
+    notes in the SINGULAR - 'Top Note:', 'Heart Note:', 'Base Note:' - and bond-no-9-bleecker-street
+    mixes both ('Top Note:' with 'Heart Notes:'). The gate below tested for 'Top Notes:' exactly, so
+    for those 7 the whole block was skipped: no Key notes rendered AND the story keeper never ran,
+    leaving raw 'Heart Notes:' / 'Base Notes:' labels visible to customers on bleecker-street.
+
+    Normalising once, up front, is safer than loosening every split: 'Top Notes:' does not contain
+    'Top Note:' (the 's' precedes the colon), so these replacements are idempotent and cannot
+    double-apply to descriptions that were already plural. Everything downstream keeps matching one
+    canonical label. Only Title Case is normalised on purpose - a lowercase 'note:' occurs inside
+    ordinary prose (xerjoff-erba-pura) and must not be treated as a label.
+  endcomment
+  assign notes_source = product.description | replace: 'Top Note:', 'Top Notes:' | replace: 'Heart Note:', 'Heart Notes:' | replace: 'Base Note:', 'Base Notes:'
+  assign description_html = notes_source
+  if notes_source contains 'Top Notes:'
     comment
       Story = everything before the notes, trimmed back to the last COMPLETE </p> so no dangling
       '<p dir="auto"><strong>' opener is left behind. Falls back to the raw cut when the notes
       follow a <br> inside the same paragraph rather than in their own block.
     endcomment
-    assign story_before = product.description | split: 'Top Notes:' | first
+    assign story_before = notes_source | split: 'Top Notes:' | first
     assign story_parts = story_before | split: '</p>'
     if story_parts.size > 1
       assign keep_count = story_parts.size | minus: 1
@@ -54,13 +68,13 @@
     endif
 
     if top_notes == blank
-      assign top_notes = product.description | split: 'Top Notes:' | last | strip_html | split: 'Heart Notes:' | first | split: 'Base Notes:' | first | strip
+      assign top_notes = notes_source | split: 'Top Notes:' | last | strip_html | split: 'Heart Notes:' | first | split: 'Base Notes:' | first | strip
     endif
-    if heart_notes == blank and product.description contains 'Heart Notes:'
-      assign heart_notes = product.description | split: 'Heart Notes:' | last | strip_html | split: 'Base Notes:' | first | strip
+    if heart_notes == blank and notes_source contains 'Heart Notes:'
+      assign heart_notes = notes_source | split: 'Heart Notes:' | last | strip_html | split: 'Base Notes:' | first | strip
     endif
-    if base_notes == blank and product.description contains 'Base Notes:'
-      assign base_notes = product.description | split: 'Base Notes:' | last | strip_html | strip
+    if base_notes == blank and notes_source contains 'Base Notes:'
+      assign base_notes = notes_source | split: 'Base Notes:' | last | strip_html | strip
     endif
   endif
   capture concentration
