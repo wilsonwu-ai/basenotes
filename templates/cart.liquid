@@ -8,6 +8,7 @@
   assign rotation_variant = nil
   assign rotation_product = nil
   assign cart_savings = 0
+  assign cart_all_plan = true
   for item in cart.items
     assign item_title_down = item.variant.title | downcase
     assign compact_title = item_title_down | remove: ' '
@@ -25,6 +26,8 @@
     endif
     if item.selling_plan_allocation
       assign has_subscription = true
+    else
+      assign cart_all_plan = false
     endif
     if item.variant.compare_at_price > item.final_price
       assign compare_line = item.variant.compare_at_price | times: item.quantity
@@ -32,6 +35,12 @@
       assign cart_savings = cart_savings | plus: line_savings
     endif
   endfor
+  comment
+    Hoisted out of the summary aside so the order-mode fieldset can read it too. Both the
+    "standard US rate applies" sentence and the progress line must agree about whether THIS
+    order clears the $50.00 (5000 cent) free-shipping threshold.
+  endcomment
+  assign ship_remaining = 5000 | minus: cart.total_price
 -%}
 
 <artifact-cart class="artifact-cart" data-has-subscription="{{ has_subscription }}">
@@ -104,9 +113,24 @@
                 <input type="radio" name="artifact_order_mode" value="subscription" disabled {% if rotation_variant == blank %}data-unavailable="true"{% endif %} {% if has_subscription %}checked{% endif %}>
                 <span><strong>Monthly Rotation <em>Subscription</em></strong><small>{% if rotation_variant != blank %}{{ rotation_variant.selling_plan_allocations.first.price | money_without_trailing_zeros }} for the first shipment, then {{ rotation_variant.selling_plan_allocations.first.price_adjustments.last.price | default: rotation_variant.price | money_without_trailing_zeros }} monthly for one 5ml vial of {{ rotation_product.title | escape }}.{% endif %} Extra vials and full bottles stay one-time purchases. Skip, swap, or cancel anytime.</small></span>
               </label>
-              <a href="/pages/subscription-terms">What does the subscription actually include?</a>
+              {%- comment -%}
+                Subscription free-shipping incentive. The free-shipping discount (1500466643162)
+                is subscription purchase type, so Shopify VOIDS it for the whole order the moment
+                any one-time line shares the checkout: a Rotation vial plus an $18 add-on is
+                charged $4.99. The promise is therefore scoped to an all-Rotation order, and a
+                cart that already mixes in one-time lines gets an explicit second sentence so it
+                is never told THIS order ships free. Hidden on a pure subscription cart, where it
+                would only tell the shopper to do what they have already done. Same gate as the
+                shipping line in the summary aside, so the two can never contradict each other.
+              {%- endcomment -%}
+              {%- unless has_subscription and cart_all_plan -%}
+                <p class="artifact-cart__ship-perk">Free US shipping when every item in your order is on Monthly Rotation. No minimum.{% if has_subscription and ship_remaining > 0 %} This cart also has one-time items, so the standard US rate applies to this order.{% endif %}</p>
+              {%- endunless -%}
+              <a id="CartRotationExplainerOpener" href="/pages/subscription-terms" aria-haspopup="dialog" aria-controls="cartRotationModal">What does the subscription actually include?</a>
               <noscript><p>To change your purchase option, visit the <a href="/pages/monthly-rotation">Monthly Rotation page</a>.</p></noscript>
-            </fieldset>{% endif %}
+            </fieldset>
+            {%- comment -%} Shared explainer dialog: the snippet owns its own markup, style and script, scoped to modal_id/opener_id. The anchor above keeps its href as the no-JS fallback. {%- endcomment -%}
+            {% render 'rotation-explainer', modal_id: 'cartRotationModal', opener_id: 'CartRotationExplainerOpener', show_cta: false %}{% endif %}
           </div>
 
           <aside class="artifact-cart__summary" aria-labelledby="ArtifactSummaryTitle">
@@ -117,6 +141,30 @@
             </dl>
             <div class="artifact-cart__total"><span>Subtotal today</span><strong>{{ cart.total_price | money_without_trailing_zeros }}</strong></div>
             {%- if cart_savings > 0 -%}<div class="artifact-cart__savings"><span>You’re saving</span><strong>{{ cart_savings | money_without_trailing_zeros }}</strong></div>{%- endif -%}
+            {%- comment -%}
+              Free-shipping progress. Same gating rule as snippets/cart-drawer.liquid (lines
+              169-192, 263-269): has_plan_line = any line on a selling plan, cart_all_plan =
+              every line on one. The subscription free-shipping discount is subscription
+              purchase type, so it survives only on a PURE subscription order; any one-time
+              line in the checkout drops the order back to the US Domestic profile, which is
+              $4.99 from $0.00 to $49.99 and free from $50.00 (5000 cents). Express ($15) is
+              never part of this claim. The text carries the meaning (role=status); the bar is
+              decorative and hidden from assistive tech.
+            {%- endcomment -%}
+            {%- liquid
+              assign ship_pct = cart.total_price | times: 100 | divided_by: 5000
+              if ship_pct > 100
+                assign ship_pct = 100
+              endif
+            -%}
+            <div class="artifact-cart__shipping">
+              {%- if has_subscription and cart_all_plan -%}
+                <p role="status" aria-live="polite">Free US shipping is already included on this Monthly Rotation order.</p>
+              {%- else -%}
+                <p role="status" aria-live="polite">{% if ship_remaining > 0 %}Spend {{ ship_remaining | money_without_trailing_zeros }} more for free US shipping.{% else %}You’ve unlocked free US shipping on this order.{% endif %}</p>
+                <div class="artifact-cart__shipping-track" aria-hidden="true"><span style="inline-size:{{ ship_pct }}%"></span></div>
+              {%- endif -%}
+            </div>
             {%- if has_subscription -%}
               <div class="artifact-cart__disclosure"><strong>This is a recurring subscription.</strong>{% for item in cart.items %}{% if item.selling_plan_allocation %}<p>{{ item.product.title | escape }}: {{ item.selling_plan_allocation.price | times: item.quantity | money_without_trailing_zeros }} for this shipment, then {{ item.selling_plan_allocation.price_adjustments.last.price | default: item.variant.price | times: item.quantity | money_without_trailing_zeros }} every month until cancelled.</p>{% endif %}{% endfor %}<p>Skip, swap, or cancel in your account. Any one-time extras do not renew.</p></div>
               <label class="artifact-cart__consent"><input type="checkbox" required data-cart-consent> <span>I agree to the recurring subscription and <a href="/pages/subscription-terms">subscription terms</a>.</span></label>
@@ -191,5 +239,10 @@
   .artifact-cart__consent input { min-width:1.2rem; min-height:1.2rem; }
   @media(max-width:52rem){.artifact-cart__layout{grid-template-columns:1fr}.artifact-cart__summary{position:static}.artifact-cart__item{grid-template-columns:4.5rem minmax(0,1fr) auto}.artifact-cart__line-price{grid-column:2;text-align:start}.artifact-cart__quantity{grid-column:3;grid-row:1 / span 2}}
   @media(max-width:35rem){.artifact-cart__shell{width:min(100% - 2rem,68rem)}.artifact-cart__item{grid-template-columns:3rem minmax(0,1fr);gap:.7rem}.artifact-cart__image{width:3rem}.artifact-cart__quantity{grid-column:2;grid-row:auto;width:max-content}.artifact-cart__line-price{grid-column:2}.artifact-cart__order-mode{padding:1rem}.artifact-cart__mode{padding:.85rem}}
-  @media(prefers-reduced-motion:reduce){.artifact-cart__status{transition:none}}
+  .artifact-cart__shipping { margin-block:1rem; padding:.8rem .85rem; border:.0625rem solid var(--ac-line); background:rgb(255 255 255 / 55%); }
+  .artifact-cart__shipping p { margin:0; color:var(--ac-green); font:.78rem/1.45 'Jost',sans-serif; text-wrap:pretty; }
+  .artifact-cart__shipping-track { overflow:hidden; block-size:.3rem; margin-block-start:.65rem; background:var(--ac-line); }
+  .artifact-cart__shipping-track span { display:block; block-size:100%; background:var(--ac-gold); transition:inline-size .35s ease; }
+  .artifact-cart__ship-perk { margin:1rem 0 0; padding:.75rem .85rem; border-inline-start:.15rem solid var(--ac-gold); background:rgb(255 255 255 / 55%); color:var(--ac-green); font:.78rem/1.5 'Jost',sans-serif; text-wrap:pretty; }
+  @media(prefers-reduced-motion:reduce){.artifact-cart__status,.artifact-cart__shipping-track span{transition:none}}
 </style>
