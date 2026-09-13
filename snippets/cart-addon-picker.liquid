@@ -4,10 +4,19 @@
 
   Renders a card + a giveaway-style picker modal on the cart page, ONLY when the
   cart already holds a subscription line. Each pick is added as a ONE-TIME line
-  (no selling plan): the "Add-on vials $18" automatic discount (10% off one-time
-  fragrances at a $33+ subtotal) turns the $20 vial into $18 in cart and at
-  checkout. The card states the $20 base and the $18 outcome so the price claim
-  stays honest even if the discount is ever paused.
+  (no selling plan).
+
+  WHERE THE $18 COMES FROM (corrected 2026-09-13 — the note here was stale and
+  would have misled the next reader): it is the add-on product's OWN variant
+  price, not a discount. `extra-5ml-vial-add-on` variant 48547911696602 is priced
+  1800 with compare_at 2000, verified against a real live cart: the line renders
+  $18.00 with an empty `discounts` array.
+
+  This comment previously said the $18 came from the "Add-on vials $18" automatic
+  discount (10% off one-time fragrances at a $33+ subtotal). That discount was
+  DEACTIVATED 2026-09-11 because it also took 10% off full bottles. The $18 claim
+  survived precisely because the price had been moved onto the variant, so the
+  card's wording is honest — but the stated reason was wrong.
 
   Usage (templates/cart.liquid):
     {% render 'cart-addon-picker', cart: cart, exclude_handle: 'mont-blanc-legend-eau-de-parfum-one-time' %}

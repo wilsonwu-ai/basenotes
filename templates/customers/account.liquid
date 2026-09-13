@@ -207,7 +207,19 @@
             </div>
             {%- endif -%}
 
+            {%- comment -%}
+              The one-time add-on vial, rendered from Liquid so neither queue renderer has to carry
+              a hardcoded variant id or a hardcoded "$18". Verified live 2026-09-13: this variant is
+              priced 1800 with compare_at 2000 and adds to cart at $18.00 with an EMPTY discounts
+              array, so the $18 is the variant's own price and does NOT depend on the "Add-on vials
+              $18" automatic discount, which was deactivated 2026-09-11. If the product ever goes
+              away these attributes are blank and the Add button simply does not render, rather than
+              promising a price nothing backs.
+            {%- endcomment -%}
+            {%- assign queue_addon_variant = all_products['extra-5ml-vial-add-on'].variants | first -%}
             <div class="bq-strip" id="bqStrip" role="list" aria-label="Your upcoming fragrance shipments"
+                 data-addon-variant="{% if queue_addon_variant and queue_addon_variant.available %}{{ queue_addon_variant.id }}{% endif %}"
+                 data-addon-price="{% if queue_addon_variant and queue_addon_variant.available %}{{ queue_addon_variant.price | money_without_trailing_zeros }}{% endif %}"
                  data-shipped-through="{%- if latest_shipped_sub_order -%}{{ latest_shipped_sub_order.created_at | date: '%Y-%m' }}{%- endif -%}">
               <!-- Hydrated client-side by queue-scheduler.js -->
             </div>
@@ -690,6 +702,13 @@
   .bq-card__swap { display: inline-flex; align-items: center; justify-content: center; gap: 4px; margin-top: 4px; padding: 6px 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: transparent; border: 1px solid #EEE9DF; border-radius: 6px; color: #2D4641; cursor: pointer; font-family: inherit; transition: border-color 0.15s, color 0.15s, background 0.15s; }
   .bq-card__swap:hover { border-color: #C9A962; color: #C9A962; background: #FAF8F5; }
   .bq-card__swap svg { color: currentColor; }
+  /* One-time add-on upsell, directly under Swap per Jeff 2026-09-13. Gold-led so it reads as the
+     revenue action next to Swap's neutral outline, without shouting over the card. */
+  .bq-card__add { display: inline-flex; align-items: center; justify-content: center; gap: 4px; margin-top: 6px; padding: 6px 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: #FAF8F5; border: 1px solid #C9A962; border-radius: 6px; color: #8a6d2f; cursor: pointer; font-family: inherit; transition: border-color 0.15s, color 0.15s, background 0.15s; }
+  .bq-card__add:hover:not([disabled]) { background: #C9A962; border-color: #C9A962; color: #fff; }
+  .bq-card__add:focus-visible { outline: 2px solid #C9A962; outline-offset: 2px; }
+  .bq-card__add[disabled] { cursor: default; opacity: 0.85; }
+  .bq-card__add--done { background: #2D4641; border-color: #2D4641; color: #fff; }
   .bq-card__remove { position: absolute; top: 10px; left: 10px; width: 24px; height: 24px; background: rgba(255,255,255,0.9); border: 1px solid #EEE9DF; border-radius: 50%; cursor: pointer; color: #8a918e; display: flex; align-items: center; justify-content: center; padding: 0; transition: color 0.15s, border-color 0.15s; opacity: 0; }
   .bq-card:hover .bq-card__remove { opacity: 1; }
   .bq-card__remove:hover { color: #c62828; border-color: #c62828; }
@@ -1184,7 +1203,16 @@
                 (entry.family ? '<p class="bq-card__family">' + esc(entry.family) + '</p>' : '') + '</div>' +
                 '<p class="bq-card__month-label"><span class="bq-card__month">' + esc(monthLabel) + '</span>' +
                 '<span class="bq-card__ship-status' + (isImmediate ? ' bq-card__ship-status--immediate' : '') + '">' + esc(shipStatus) + '</span></p>' +
-                '<button type="button" class="bq-card__swap" data-queue-swap-month="' + esc(monthStr) + '">Swap</button>';
+                '<button type="button" class="bq-card__swap" data-queue-swap-month="' + esc(monthStr) + '">Swap</button>' +
+                // Jeff 2026-09-13: "Under swap - Add $18 or Add Scent $18". One-time upsell: adds the
+                // add-on vial to the cart NOW without touching the queue slot, so the copy must not
+                // imply the month changes. Renders only when the strip carries a real add-on variant.
+                (strip.getAttribute('data-addon-variant')
+                  ? '<button type="button" class="bq-card__add" data-queue-add-title="' + esc(entry.title || '') + '"' +
+                    ' aria-label="Add ' + esc(entry.title || 'this fragrance') + ' now as a one-time vial, ' + esc(strip.getAttribute('data-addon-price') || '') + '">' +
+                    'Add now &middot; ' + esc(strip.getAttribute('data-addon-price') || '') +
+                    '</button>'
+                  : '');
             } else {
               card.innerHTML =
                 '<div class="bq-card__empty-slot">' +
@@ -1214,6 +1242,29 @@
           if (rm) { e.preventDefault(); BQ.clearSlot(rm.getAttribute('data-queue-remove')); render(); return; }
           if (sw) { e.preventDefault(); window.__bqPendingTargetMonth = sw.getAttribute('data-queue-swap-month'); document.dispatchEvent(new Event('fragrance-selector:open')); return; }
           if (pk) { e.preventDefault(); window.__bqPendingTargetMonth = pk.getAttribute('data-queue-pick-month'); document.dispatchEvent(new Event('fragrance-selector:open')); return; }
+          var ad = e.target.closest && e.target.closest('[data-queue-add-title]');
+          if (ad) {
+            e.preventDefault();
+            e.stopPropagation();
+            var vid = strip.getAttribute('data-addon-variant');
+            if (!vid || ad.disabled) return;
+            var label = ad.innerHTML;
+            ad.disabled = true;
+            ad.textContent = 'Adding…';
+            fetch('/cart/add.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ items: [{ id: Number(vid), quantity: 1, properties: { 'Selected scent': ad.getAttribute('data-queue-add-title') || '' } }] })
+            }).then(function (r) {
+              if (!r.ok) throw new Error('add failed');
+              ad.textContent = 'Added to cart';
+              ad.classList.add('bq-card__add--done');
+            }).catch(function () {
+              ad.disabled = false;
+              ad.innerHTML = label;
+            });
+            return;
+          }
         });
 
         BQ.on('change', render);
@@ -2246,7 +2297,16 @@ document.addEventListener('DOMContentLoaded', function() {
               '<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>' +
             '</svg>' +
             'Swap' +
-          '</button>';
+          '</button>' +
+          // Jeff 2026-09-13: "Under swap - Add $18". Same control as the other queue renderer in
+          // this file, kept identical on purpose: BOTH renderers target #bqStrip and both re-render
+          // on BQ 'change', so whichever wins the race must show the same button.
+          (strip.getAttribute('data-addon-variant')
+            ? '<button type="button" class="bq-card__add" data-queue-add-title="' + escapeAttr(entry.title || '') + '"' +
+              ' aria-label="Add ' + escapeAttr(entry.title || 'this fragrance') + ' now as a one-time vial, ' + escapeAttr(strip.getAttribute('data-addon-price') || '') + '">' +
+              'Add now &middot; ' + escapeHtml(strip.getAttribute('data-addon-price') || '') +
+              '</button>'
+            : '');
 
         var removeBtn = card.querySelector('.bq-card__remove');
         removeBtn.addEventListener('click', function(e) {
@@ -2263,6 +2323,31 @@ document.addEventListener('DOMContentLoaded', function() {
           window.__bqPendingTargetMonth = monthStr;
           document.dispatchEvent(new Event('fragrance-selector:open'));
         });
+
+        var addBtn = card.querySelector('.bq-card__add');
+        if (addBtn) {
+          addBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var vid = strip.getAttribute('data-addon-variant');
+            if (!vid || addBtn.disabled) return;
+            var label = addBtn.innerHTML;
+            addBtn.disabled = true;
+            addBtn.textContent = 'Adding…';
+            fetch('/cart/add.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ items: [{ id: Number(vid), quantity: 1, properties: { 'Selected scent': addBtn.getAttribute('data-queue-add-title') || '' } }] })
+            }).then(function (r) {
+              if (!r.ok) throw new Error('add failed');
+              addBtn.textContent = 'Added to cart';
+              addBtn.classList.add('bq-card__add--done');
+            }).catch(function () {
+              addBtn.disabled = false;
+              addBtn.innerHTML = label;
+            });
+          });
+        }
 
         return card;
       }
