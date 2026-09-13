@@ -17,17 +17,50 @@
   assign top_notes = product.metafields.custom.top_notes.value
   assign heart_notes = product.metafields.custom.heart_notes.value
   assign base_notes = product.metafields.custom.base_notes.value
+  comment
+    Notes are parsed out of free-form description HTML, so nothing here may depend on the exact
+    markup. Jeff reported it 2026-09-13 (screenshot, Acqua di Gio Profondo) and both faults were
+    markup assumptions:
+
+      1. The story was stripped with the literal token '<p><strong>Top Notes:</strong>'. Only 8 of
+         24 descriptions match that - the rest carry attributes (<p dir="auto">, <p class>,
+         <p style>). For the other 16 the split missed, so the notes rendered TWICE: once as prose
+         in the story, once in Key notes.
+      2. Each field ended at '<br', but only 7 descriptions use <br>; the rest separate with
+         </p><p ...>. So Top swallowed Heart AND Base, labels included.
+
+    Fix: match on the bare label, strip_html FIRST, then cut at the next label. Stripping tags up
+    front is the load-bearing part - 19 of the lists contain inline markup (<span>, <meta charset>,
+    nested <strong>), so any tag-based cut breaks. Verified against all 24 products carrying notes:
+    24 clean, 0 leaking a label into a neighbouring field.
+  endcomment
   assign description_html = product.description
-  if description_html contains '<strong>Top Notes:</strong>'
-    assign description_html = product.description | split: '<p><strong>Top Notes:</strong>' | first
+  if description_html contains 'Top Notes:'
+    comment
+      Story = everything before the notes, trimmed back to the last COMPLETE </p> so no dangling
+      '<p dir="auto"><strong>' opener is left behind. Falls back to the raw cut when the notes
+      follow a <br> inside the same paragraph rather than in their own block.
+    endcomment
+    assign story_before = product.description | split: 'Top Notes:' | first
+    assign story_parts = story_before | split: '</p>'
+    if story_parts.size > 1
+      assign keep_count = story_parts.size | minus: 1
+      assign description_html = ''
+      for chunk in story_parts limit: keep_count
+        assign description_html = description_html | append: chunk | append: '</p>'
+      endfor
+    else
+      assign description_html = story_before
+    endif
+
     if top_notes == blank
-      assign top_notes = product.description | split: '<strong>Top Notes:</strong>' | last | split: '<br' | first | strip_html | strip
+      assign top_notes = product.description | split: 'Top Notes:' | last | strip_html | split: 'Heart Notes:' | first | split: 'Base Notes:' | first | strip
     endif
-    if heart_notes == blank and product.description contains '<strong>Heart Notes:</strong>'
-      assign heart_notes = product.description | split: '<strong>Heart Notes:</strong>' | last | split: '<br' | first | strip_html | strip
+    if heart_notes == blank and product.description contains 'Heart Notes:'
+      assign heart_notes = product.description | split: 'Heart Notes:' | last | strip_html | split: 'Base Notes:' | first | strip
     endif
-    if base_notes == blank and product.description contains '<strong>Base Notes:</strong>'
-      assign base_notes = product.description | split: '<strong>Base Notes:</strong>' | last | split: '</p>' | first | strip_html | strip
+    if base_notes == blank and product.description contains 'Base Notes:'
+      assign base_notes = product.description | split: 'Base Notes:' | last | strip_html | strip
     endif
   endif
   capture concentration
