@@ -187,6 +187,10 @@
   .bn-hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr); gap: 2.5rem; align-items: center; width: min(100% - 3rem, var(--bn-max)); margin-inline: auto; padding-block: 3rem 1.75rem; }
   .bn-hero__copy { min-width: 0; }
   .bn-home .bn-hero h1 { margin: 0; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1.04; font-weight: 500; letter-spacing: -.03em; }
+  /* scent-storefront.css hides `.scent-home h1 br:last-of-type` under 749px. The old hero had two
+     <br>s so that only killed the second; this hero has one, so without the override the protected
+     headline collapses to "A little vial.A whole new feeling." on phones. */
+  .bn-home .bn-hero h1 br, .bn-home .bn-hero h1 br:last-of-type { display: inline !important; }
   .bn-hero__lede { max-width: 34em; margin: 1rem 0 1.4rem; color: var(--scent-muted); font: .98rem/1.65 'Jost', sans-serif; }
   .bn-hero__cta { min-height: 3.25rem; }
   .bn-hero__offer { margin: .9rem 0 0; color: var(--scent-muted); font: .84rem/1.6 'Jost', sans-serif; }
