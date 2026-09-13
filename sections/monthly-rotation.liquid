@@ -1,15 +1,253 @@
 {{ 'scent-storefront.css' | asset_url | stylesheet_tag }}
-{%- assign rotation_collection = collections.fragrances -%}
-{%- assign rotation_first = rotation_collection.products | first -%}
-{%- assign rotation_variant = rotation_first.variants | first -%}
-{%- assign rotation_plan = rotation_variant.selling_plan_allocations | first -%}
-{%- assign rotation_renewal = rotation_plan.price_adjustments.last.price | default: rotation_variant.price -%}
-<section class="scent-route" aria-labelledby="MonthlyRotationTitle">
-  <header class="scent-route__intro"><p class="scent-eyebrow">02 / Keep discovering</p><h1 id="MonthlyRotationTitle">Your Monthly Rotation.</h1><p>A fragrance subscription for a nose that likes to wander. One authentic 5ml fragrance vial, delivered monthly. Choose your first scent below.</p>{% if rotation_plan %}<p>{{ rotation_plan.price | money_without_trailing_zeros }} for your first shipment, then {{ rotation_renewal | money_without_trailing_zeros }} per month. Shipping and taxes, if applicable, are shown at checkout.</p>{% endif %}<a class="scent-button" href="#RotationScents">Choose your first scent <span aria-hidden="true">↓</span></a></header>
-  <div class="scent-route__content"><div class="scent-route__steps"><article><p class="scent-eyebrow">01 / Choose</p><h2>Start with a scent.</h2><p>Find a fragrance below, select Monthly Rotation on its product page, and review the recurring terms.</p></article><article><p class="scent-eyebrow">02 / Make it yours</p><h2>A little discovery.</h2><p>Your 5ml glass atomizer gives you time to experience the fragrance on your skin, in your life.</p></article><article><p class="scent-eyebrow">03 / Stay in control</p><h2>Keep your options open.</h2><p>Manage your scent, pause, or cancel through your subscription account. Changes must be made before the next renewal is processed.</p></article></div>
-    <p>Prefer to order whenever you like? <a href="/collections/fragrances"><u>Shop one-time vials instead</u></a>. No subscription is required.</p>
-    <div id="RotationScents" class="scent-grid">{%- for product in rotation_collection.products limit: 12 -%}{%- assign variant = product.variants | first -%}{%- assign allocation = variant.selling_plan_allocations | first -%}{%- if allocation and variant.available -%}<article class="scent-card"><a class="scent-card__media" href="{{ product.url }}?purchase=subscription#monthly-rotation"><span class="scent-card__vial">{% render 'vial-illustration', product: product %}</span></a><p class="scent-card__brand">{{ product.vendor }}</p><h2><a href="{{ product.url }}?purchase=subscription#monthly-rotation">{{ product.title | remove_first: product.vendor | strip }}</a></h2><p class="scent-card__format">{{ allocation.price | money_without_trailing_zeros }} first shipment, then {{ variant.price | money_without_trailing_zeros }}/month</p><a class="scent-button" href="{{ product.url }}?purchase=subscription#monthly-rotation">Choose this scent ↗</a></article>{%- endif -%}{%- endfor -%}</div>
-    <p style="margin-top:2.5rem;font-size:.85rem">Monthly Rotation is an automatically renewing subscription. By selecting it and accepting its terms, you authorize recurring charges until canceled. The product page and checkout show the specific plan, price, and renewal details. <a href="/pages/faq"><u>Read subscription FAQs</u></a>.</p>
+{%- liquid
+  assign rotation_collection = collections.fragrances
+  comment
+    Do not trust variant ORDER. Products carry a 5ml vial AND a full bottle (the PRD records Creed
+    Aventus with a 5ml at $20 alongside a 3.3 fl oz at $408), so "variants | first" can hand back
+    the bottle - the hero would print "$408 per vial" and rotation_plan would go nil at the same
+    time, wiping BOTH subscription prices off the subscription page. Scan for the plan-bearing $20
+    vial instead, the way main-product.liquid, studio-fragrance-card.liquid, vial-studio.liquid and
+    full-bottles.liquid all do, and skip the internal add-on helper and $0 products that nine other
+    surfaces already exclude - either could otherwise become the product the hero reads, and so
+    source every price on the page.
+  endcomment
+  assign rotation_variant = blank
+  assign rotation_plan = blank
+  for candidate in rotation_collection.products
+    if candidate.handle == 'extra-5ml-vial-add-on' or candidate.price == 0
+      continue
+    endif
+    for candidate_variant in candidate.variants
+      assign candidate_title = candidate_variant.title | downcase | remove: ' '
+      if candidate_title contains '5ml' and candidate_variant.price == 2000
+        assign candidate_plan = candidate_variant.selling_plan_allocations | first
+        if candidate_plan
+          assign rotation_variant = candidate_variant
+          assign rotation_plan = candidate_plan
+          break
+        endif
+      endif
+    endfor
+    if rotation_plan != blank
+      break
+    endif
+  endfor
+  assign rotation_renewal = rotation_plan.price_adjustments.last.price | default: rotation_variant.price
+  assign rotation_url = rotation_collection.url | default: '/collections/fragrances'
+-%}
+<section class="scent-route rotation" aria-labelledby="MonthlyRotationTitle">
+
+  {%- comment -%}
+    HERO. Jeff's mock, 2026-09-13 "Subscription page". Every price below comes from the real
+    selling plan / variant objects assigned above, never a literal: the mock's "$15" and "$20"
+    are illustrative and the live plan is the source of truth.
+  {%- endcomment -%}
+  <header class="scent-route__intro rotation__hero">
+    <p class="scent-eyebrow">Optional subscription</p>
+    <h1 id="MonthlyRotationTitle">Your Monthly Rotation.</h1>
+    <p class="rotation__lede">One 5ml spray a month. Choose your first scent to start. After that first shipment, plan up to five months ahead on your profile &mdash; or leave a month blank and we&rsquo;ll send that month&rsquo;s fragrance of the month. Same authentic fragrance as a one-time vial.</p>
+    {%- if rotation_plan -%}
+      <p class="rotation__price">{{ rotation_plan.price | money_without_trailing_zeros }} first shipment, then {{ rotation_renewal | money_without_trailing_zeros }}/month. Swap, skip, or cancel in your account. No calls, no fees.</p>
+    {%- endif -%}
+    <a class="scent-button" href="#RotationScents">Choose your first scent <span aria-hidden="true">&darr;</span></a>
+  </header>
+
+  <div class="rotation__inner">
+
+    {%- comment -%}
+      HOW ROTATION WORKS. This 01/02/03 spine is deliberately NOT the homepage's
+      (01 Pick / 02 We fill it / 03 Wear it, sections/scent-studio-home.liquid). The homepage
+      steps describe a one-time vial; these describe Rotation. Both are correct; do not merge them.
+    {%- endcomment -%}
+    <section class="rotation__block" aria-labelledby="RotationStepsTitle">
+      <h2 class="rotation__h2" id="RotationStepsTitle">How Rotation works</h2>
+      <ol class="rotation__steps" role="list">
+        <li class="rotation__step">
+          <p class="rotation__step-num">01 Start</p>
+          <p class="rotation__step-copy">Choose your first scent from the catalog. That&rsquo;s month one.</p>
+        </li>
+        <li class="rotation__step">
+          <p class="rotation__step-num">02 We ship</p>
+          <p class="rotation__step-copy">A 5ml atomizer every month. About 60 sprays. Authentic fragrance, from the original bottle.</p>
+        </li>
+        <li class="rotation__step">
+          <p class="rotation__step-num">03 Then plan</p>
+          <p class="rotation__step-copy">After month one, use your profile to plan up to five months ahead, leave a month blank for fragrance of the month, or swap, skip, or cancel. No calls, no fees.</p>
+        </li>
+      </ol>
+    </section>
+
+    {%- comment -%}
+      TWO OPTIONS. The one-time card states only the price the theme can actually read
+      (rotation_variant.price). Jeff's mock also claims "$18 each extra in that order"; that
+      number has no selling-plan, variant, metafield or setting behind it anywhere in the theme,
+      so printing it would mean hardcoding a price. Left out on purpose. See the handoff note.
+    {%- endcomment -%}
+    <section class="rotation__block" aria-labelledby="RotationOptionsTitle">
+      <h2 class="rotation__h2" id="RotationOptionsTitle">Two options</h2>
+      <div class="rotation__options">
+        <article class="rotation__option">
+          <h3 class="rotation__option-title">One-time vial</h3>
+          {%- if rotation_variant -%}
+            <p class="rotation__option-price">{{ rotation_variant.price | money_without_trailing_zeros }} per vial.</p>
+          {%- endif -%}
+          <p class="rotation__option-copy">Buy when you want. No renewal.</p>
+          <a class="rotation__option-link" href="{{ rotation_url }}">Shop one-time vials <span aria-hidden="true">&rarr;</span></a>
+        </article>
+
+        <article class="rotation__option rotation__option--featured">
+          <h3 class="rotation__option-title">Monthly Rotation</h3>
+          {%- if rotation_plan -%}
+            <p class="rotation__option-price">{{ rotation_plan.price | money_without_trailing_zeros }} first month, then {{ rotation_renewal | money_without_trailing_zeros }}/month.</p>
+          {%- endif -%}
+          <p class="rotation__option-copy">A vial shows up without you thinking about it. Same juice.</p>
+        </article>
+      </div>
+    </section>
+
+    {%- comment -%}
+      START WITH A SCENT. Unchanged data model: the same collection loop, filtered on
+      "allocation and variant.available", so only products that really carry the plan appear.
+    {%- endcomment -%}
+    <section class="rotation__block" aria-labelledby="RotationScentsTitle">
+      <div class="rotation__grid-head">
+        <h2 class="rotation__h2" id="RotationScentsTitle">Start with a scent</h2>
+        {%- if rotation_collection.products_count > 0 -%}
+          <a class="rotation__see-all" href="{{ rotation_url }}">See all {{ rotation_collection.products_count }} <span aria-hidden="true">&rarr;</span></a>
+        {%- endif -%}
+      </div>
+
+      <div id="RotationScents" class="scent-grid">
+        {%- for product in rotation_collection.products limit: 12 -%}
+          {%- comment -%} Same scan as the hero: never trust variant order, and never let the
+            internal add-on helper or a $0 product render as a subscribable card. {%- endcomment -%}
+          {%- if product.handle == 'extra-5ml-vial-add-on' or product.price == 0 -%}{%- continue -%}{%- endif -%}
+          {%- assign variant = blank -%}
+          {%- assign allocation = blank -%}
+          {%- for product_variant in product.variants -%}
+            {%- assign product_variant_title = product_variant.title | downcase | remove: ' ' -%}
+            {%- if product_variant_title contains '5ml' and product_variant.price == 2000 -%}
+              {%- assign product_allocation = product_variant.selling_plan_allocations | first -%}
+              {%- if product_allocation -%}
+                {%- assign variant = product_variant -%}
+                {%- assign allocation = product_allocation -%}
+                {%- break -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {%- comment -%}
+            Derive the recurring figure the way the whole theme does, not from the bare variant
+            price. variant.price is the ONE-TIME price; it only equals the renewal when the plan
+            carries no all-cycles adjustment. Without this the hero (line 6, plan-derived) and this
+            card could advertise two different "/month" figures for the same product, on the page
+            whose closing paragraph is the ROSCA disclosure. Canonical form also at
+            main-product.liquid:212, scent-studio-home.liquid:27, faq-page.liquid:5, cart.liquid:169.
+          {%- endcomment -%}
+          {%- assign card_renewal = allocation.price_adjustments.last.price | default: variant.price -%}
+          {%- if allocation and variant.available -%}
+            <article class="scent-card">
+              <a class="scent-card__media" href="{{ product.url }}?purchase=subscription#monthly-rotation" tabindex="-1" aria-hidden="true">
+                <span class="scent-card__vial">{% render 'vial-illustration', product: product %}</span>
+              </a>
+              <p class="scent-card__brand">{{ product.vendor }}</p>
+              <h3 class="rotation__card-title">
+                <a href="{{ product.url }}?purchase=subscription#monthly-rotation">{{ product.title | remove_first: product.vendor | strip }}</a>
+              </h3>
+              <p class="scent-card__format">{{ allocation.price | money_without_trailing_zeros }} first shipment, then {{ card_renewal | money_without_trailing_zeros }}/month</p>
+              <a class="scent-button rotation__card-cta" href="{{ product.url }}?purchase=subscription#monthly-rotation">Choose this scent <span aria-hidden="true">&nearr;</span></a>
+            </article>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </section>
+
+    {%- comment -%}
+      CLOSING DISCLOSURE. ROSCA-relevant. "until you cancel" and "renewal date" are load-bearing
+      and were both missing from the page that is live today. Treat this paragraph as frozen copy.
+    {%- endcomment -%}
+    <section class="rotation__block rotation__disclosure" aria-labelledby="RotationTermsTitle">
+      {%- comment -%}
+        VISIBLE heading, not visually-hidden. This is the store's subscription landing page, so its
+        auto-renewal terms must not be the quietest ROSCA notice in the theme — the cart drawer
+        renders subscription-renewal-disclosure.liquid, which states its own floor: "never smaller
+        than 13px detail / 14px headline (ROSCA: 'clear and conspicuous')" and "do not restyle
+        smaller". A hidden heading over 12.8px muted body text read as a footnote.
+      {%- endcomment -%}
+      <h2 class="rotation__disclosure-title" id="RotationTermsTitle">Subscription terms</h2>
+      <p>Monthly Rotation is an automatically renewing subscription. By starting it you authorize recurring charges until you cancel. Checkout shows the plan, price, and renewal date. Prefer not to subscribe? <a href="{{ rotation_url }}">Shop one-time vials</a> - no subscription is required. <a href="/pages/faq">Read subscription FAQs</a>.</p>
+    </section>
+
   </div>
 </section>
-{% schema %}{"name":"Monthly Rotation","settings":[]}{% endschema %}
+
+{% stylesheet %}
+  /* Scoped to .rotation so nothing here leaks into the other .scent-route pages, which share
+     scent-storefront.css. Colours are the LIVE tokens (--scent-green #22392b, --scent-cream
+     #f4efe3, --scent-line, --scent-muted) defined on .scent-route, not the mock's hexes, so this
+     page agrees with the homepage, collection and PDP that are already live. */
+  .rotation__inner { max-width: 1120px; margin-inline: auto; }
+  /* Specificity is load-bearing here. This section-level CSS block is emitted into
+     content_for_header, while this section links scent-storefront.css from the BODY, so that file
+     wins every EQUAL-specificity tie. `.scent-route__intro > p:not(.scent-eyebrow)` is (0,2,1), so
+     the lede/price rules need three classes to take effect, not a single `.rotation` prefix.
+     Same trap already documented in scent-studio-home.liquid:158-163. */
+  .rotation .rotation__hero { max-width: 44rem; }
+  .scent-route.rotation .rotation__lede { max-width: 38rem; margin-inline: auto; color: var(--scent-muted); }
+  .scent-route.rotation .rotation__price { max-width: 38rem; margin: 1.25rem auto 0; font-size: .84rem; line-height: 1.7; color: var(--scent-muted); }
+  .rotation__block { margin-top: clamp(3rem, 7vw, 4.75rem); }
+  .rotation__h2 { margin: 0 0 1.75rem; font: 500 clamp(1.9rem, 3vw, 2.6rem)/1.14 'Playfair Display', Georgia, serif; }
+
+  /* Steps. auto-fit + minmax(min(100%,...)) collapses to one column on its own, so there is no
+     width at which a track can be wider than its container. */
+  .rotation__steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 1.75rem; margin: 0; padding: 0; list-style: none; }
+  .rotation__step { min-width: 0; padding-top: 1.1rem; border-top: 1px solid var(--scent-line); }
+  .rotation__step-num { margin: 0 0 .7rem; font: 500 .7rem/1.4 'Jost', sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--scent-green); }
+  .rotation__step-copy { margin: 0; font-size: .88rem; line-height: 1.7; color: var(--scent-muted); }
+
+  /* Two options. */
+  .rotation__options { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: 1.25rem; }
+  .rotation__option { display: flex; flex-direction: column; min-width: 0; padding: 1.6rem 1.5rem; border: 1px solid var(--scent-line); background: #ebe6d9; }
+  .rotation__option--featured { border-color: var(--scent-green); border-width: 2px; }
+  .rotation__option-title { margin: 0 0 .8rem; font: 500 1.5rem/1.2 'EB Garamond', Georgia, serif; }
+  .rotation__option-price { margin: 0 0 .55rem; font: 500 .9rem/1.6 'Jost', sans-serif; }
+  .rotation__option-copy { margin: 0; font-size: .86rem; line-height: 1.7; color: var(--scent-muted); }
+  .rotation__option-link { display: inline-flex; align-items: center; gap: .6rem; align-self: flex-start; min-height: 44px; margin-top: 1.1rem; border-bottom: 1px solid var(--scent-gold); font-size: .78rem; font-weight: 500; }
+
+  /* Grid heading row. */
+  .rotation__grid-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+  .rotation__grid-head .rotation__h2 { margin-bottom: 0; }
+  .rotation__see-all { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; border-bottom: 1px solid var(--scent-gold); font-size: .78rem; font-weight: 500; }
+  .rotation .scent-grid { margin-top: 2rem; }
+
+  /* Card titles are h3 here (they sit under the "Start with a scent" h2), so they need the
+     styling scent-storefront.css gives .scent-card h2, including its 749px override. */
+  .rotation__card-title { margin: 0; font: 500 1.45rem/1.2 'EB Garamond', Georgia, serif; min-height: 1.7rem; letter-spacing: -.035em; }
+  .rotation__card-title a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  /* Beats .scent-button (0,1,0) from scent-storefront.css, which would otherwise size these. */
+  .rotation .rotation__card-cta { width: 100%; gap: 1rem; min-height: 44px; padding: .7rem 1rem; font-size: .72rem; }
+
+  /* ROSCA "clear and conspicuous". The theme sets its own floor in
+     snippets/subscription-renewal-disclosure.liquid — 14px headline / 13px detail, "do not restyle
+     smaller". .9rem = 14.4px on the 16px root pinned by base.css:77, and --scent-ink on cream is
+     ~11:1 contrast against the ~5:1 the muted token gave. Do not shrink these back. */
+  .rotation .rotation__disclosure { max-width: 44rem; padding-top: 1.25rem; border-top: 1px solid var(--scent-line); font-size: .9rem; line-height: 1.75; color: var(--scent-ink); }
+  .rotation .rotation__disclosure-title { margin: 0 0 .6rem; font: 500 1rem/1.3 'Jost', sans-serif; letter-spacing: .02em; color: var(--scent-ink); }
+  .rotation .rotation__disclosure a { text-decoration: underline; text-underline-offset: .2em; }
+
+  @media (max-width: 749px) {
+    /* Same specificity requirement as above: .scent-route__intro centres the hero and
+       .scent-route__intro > p:not(.scent-eyebrow) (0,2,1) sets the auto margins. */
+    .scent-route.rotation .rotation__hero { text-align: left; }
+    .scent-route.rotation .rotation__lede,
+    .scent-route.rotation .rotation__price { margin-inline: 0; }
+    .rotation .rotation__card-title { font-size: 1.3rem; min-height: 3.1rem; }
+    .rotation .rotation__option { padding: 1.35rem 1.25rem; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Monthly Rotation",
+  "settings": []
+}
+{% endschema %}

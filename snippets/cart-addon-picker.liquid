@@ -6,17 +6,30 @@
   cart already holds a subscription line. Each pick is added as a ONE-TIME line
   (no selling plan).
 
-  WHERE THE $18 COMES FROM (corrected 2026-09-13 — the note here was stale and
-  would have misled the next reader): it is the add-on product's OWN variant
-  price, not a discount. `extra-5ml-vial-add-on` variant 48547911696602 is priced
-  1800 with compare_at 2000, verified against a real live cart: the line renders
-  $18.00 with an empty `discounts` array.
+  WHERE THE $18 COMES FROM (established end to end on live, 2026-09-13). It is
+  NOT a discount, and it is NOT this snippet adding a cheaper SKU. This picker
+  adds the REAL fragrance variant at $20 (`pv = p.selected_or_first_available_variant`).
+  The $18 is produced afterwards by `normalizeCart()` in assets/basenote-commerce.js,
+  which runs on cart-page load via the artifact-cart connectedCallback -> prepareCart():
+  it replaces the extra eligible unit with the `extra-5ml-vial-add-on` helper line
+  (variant 48547911696602, priced 1800) and records the chosen scent on it as the
+  "Selected scent" property, which is what templates/cart.liquid then prints as the
+  line label. It also reverses the swap (line ~167: "A helper with no real qualifying
+  vial must be promoted back to its own original scent") so a lone first vial is
+  never charged $18.
 
-  This comment previously said the $18 came from the "Add-on vials $18" automatic
-  discount (10% off one-time fragrances at a $33+ subtotal). That discount was
-  DEACTIVATED 2026-09-11 because it also took 10% off full bottles. The $18 claim
-  survived precisely because the price had been moved onto the variant, so the
-  card's wording is honest — but the stated reason was wrong.
+  PROOF, so nobody re-derives this: two real $20 vials added by raw /cart/add.js sat
+  at $40.00 while only cart.js was read; loading /cart turned the cart into
+  `extra-5ml-vial-add-on @$18.00 [Creed Aventus EDP]` + a real vial @$20.00, total
+  $38.00. That is why a raw-API test reads $40 and a real shopper sees $38 — the
+  normalisation is CLIENT-SIDE on cart render.
+
+  Two consequences worth keeping: (1) never add the helper SKU directly — addVial()
+  throws on it by design, and an orphan helper DISABLES checkout with "An additional
+  vial needs a first fragrance in the cart"; (2) an earlier note here blamed the
+  "Add-on vials $18" automatic discount, which really was deactivated 2026-09-11 for
+  leaking 10% onto full bottles. The $18 outcome survived that deactivation because
+  it never depended on the discount in the first place.
 
   Usage (templates/cart.liquid):
     {% render 'cart-addon-picker', cart: cart, exclude_handle: 'mont-blanc-legend-eau-de-parfum-one-time' %}

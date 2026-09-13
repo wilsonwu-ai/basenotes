@@ -207,19 +207,7 @@
             </div>
             {%- endif -%}
 
-            {%- comment -%}
-              The one-time add-on vial, rendered from Liquid so neither queue renderer has to carry
-              a hardcoded variant id or a hardcoded "$18". Verified live 2026-09-13: this variant is
-              priced 1800 with compare_at 2000 and adds to cart at $18.00 with an EMPTY discounts
-              array, so the $18 is the variant's own price and does NOT depend on the "Add-on vials
-              $18" automatic discount, which was deactivated 2026-09-11. If the product ever goes
-              away these attributes are blank and the Add button simply does not render, rather than
-              promising a price nothing backs.
-            {%- endcomment -%}
-            {%- assign queue_addon_variant = all_products['extra-5ml-vial-add-on'].variants | first -%}
             <div class="bq-strip" id="bqStrip" role="list" aria-label="Your upcoming fragrance shipments"
-                 data-addon-variant="{% if queue_addon_variant and queue_addon_variant.available %}{{ queue_addon_variant.id }}{% endif %}"
-                 data-addon-price="{% if queue_addon_variant and queue_addon_variant.available %}{{ queue_addon_variant.price | money_without_trailing_zeros }}{% endif %}"
                  data-shipped-through="{%- if latest_shipped_sub_order -%}{{ latest_shipped_sub_order.created_at | date: '%Y-%m' }}{%- endif -%}">
               <!-- Hydrated client-side by queue-scheduler.js -->
             </div>
@@ -1204,13 +1192,16 @@
                 '<p class="bq-card__month-label"><span class="bq-card__month">' + esc(monthLabel) + '</span>' +
                 '<span class="bq-card__ship-status' + (isImmediate ? ' bq-card__ship-status--immediate' : '') + '">' + esc(shipStatus) + '</span></p>' +
                 '<button type="button" class="bq-card__swap" data-queue-swap-month="' + esc(monthStr) + '">Swap</button>' +
-                // Jeff 2026-09-13: "Under swap - Add $18 or Add Scent $18". One-time upsell: adds the
-                // add-on vial to the cart NOW without touching the queue slot, so the copy must not
-                // imply the month changes. Renders only when the strip carries a real add-on variant.
-                (strip.getAttribute('data-addon-variant')
-                  ? '<button type="button" class="bq-card__add" data-queue-add-title="' + esc(entry.title || '') + '"' +
-                    ' aria-label="Add ' + esc(entry.title || 'this fragrance') + ' now as a one-time vial, ' + esc(strip.getAttribute('data-addon-price') || '') + '">' +
-                    'Add now &middot; ' + esc(strip.getAttribute('data-addon-price') || '') +
+                // Jeff 2026-09-13: "Under swap - Add $18 or Add Scent $18". One-time upsell: adds this
+                // scent to the cart NOW without touching the queue slot, so the copy must not imply
+                // the month changes. NO price in the label on purpose: the marginal cost is $20 on an
+                // empty cart and $18 once an eligible vial anchors it (basenote-commerce.js
+                // normalizeCart swaps extra units to the add-on), so a static "$18" would be false
+                // for the first vial. The cart states the real figure.
+                (entry.url && entry.url.indexOf('/products/') === 0
+                  ? '<button type="button" class="bq-card__add" data-queue-add-handle="' + esc(entry.url.split('/products/')[1].split(/[?#]/)[0]) + '"' +
+                    ' aria-label="Add ' + esc(entry.title || 'this fragrance') + ' to your cart now as a one-time vial">' +
+                    'Add now' +
                     '</button>'
                   : '');
             } else {
@@ -1242,27 +1233,40 @@
           if (rm) { e.preventDefault(); BQ.clearSlot(rm.getAttribute('data-queue-remove')); render(); return; }
           if (sw) { e.preventDefault(); window.__bqPendingTargetMonth = sw.getAttribute('data-queue-swap-month'); document.dispatchEvent(new Event('fragrance-selector:open')); return; }
           if (pk) { e.preventDefault(); window.__bqPendingTargetMonth = pk.getAttribute('data-queue-pick-month'); document.dispatchEvent(new Event('fragrance-selector:open')); return; }
-          var ad = e.target.closest && e.target.closest('[data-queue-add-title]');
+          var ad = e.target.closest && e.target.closest('[data-queue-add-handle]');
           if (ad) {
             e.preventDefault();
             e.stopPropagation();
-            var vid = strip.getAttribute('data-addon-variant');
-            if (!vid || ad.disabled) return;
-            var label = ad.innerHTML;
+            // Route through BaseNoteCommerce, never a raw /cart/add.js of the helper SKU.
+            // addVial() throws on the helper by design ("Choose a fragrance from the collection
+            // first."), and adding it directly strands an orphan add-on that DISABLES checkout
+            // ("An additional vial needs a first fragrance in the cart"). addVial adds the real
+            // vial and normalizeCart converts it to the $18 add-on when one already qualifies.
+            var handle = ad.getAttribute('data-queue-add-handle');
+            var api = window.BaseNoteCommerce;
+            if (!handle || ad.disabled) return;
+            var original = ad.innerHTML;
             ad.disabled = true;
             ad.textContent = 'Adding…';
-            fetch('/cart/add.js', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ items: [{ id: Number(vid), quantity: 1, properties: { 'Selected scent': ad.getAttribute('data-queue-add-title') || '' } }] })
-            }).then(function (r) {
-              if (!r.ok) throw new Error('add failed');
-              ad.textContent = 'Added to cart';
-              ad.classList.add('bq-card__add--done');
-            }).catch(function () {
-              ad.disabled = false;
-              ad.innerHTML = label;
-            });
+            Promise.resolve()
+              .then(function () {
+                if (!api || typeof api.addVial !== 'function') throw new Error('commerce module unavailable');
+                return fetch('/products/' + encodeURIComponent(handle) + '.js');
+              })
+              .then(function (r) { if (!r.ok) throw new Error('product lookup failed'); return r.json(); })
+              .then(function (p) {
+                var v = (p.variants || []).filter(function (x) { return Number(x.price) === 2000 && x.available; })[0];
+                if (!v) throw new Error('no eligible 5ml vial');
+                return api.addVial({ handle: p.handle, variantId: v.id, quantity: 1 });
+              })
+              .then(function () {
+                ad.textContent = 'Added to cart';
+                ad.classList.add('bq-card__add--done');
+              })
+              .catch(function () {
+                ad.disabled = false;
+                ad.innerHTML = original;
+              });
             return;
           }
         });
@@ -2301,10 +2305,10 @@ document.addEventListener('DOMContentLoaded', function() {
           // Jeff 2026-09-13: "Under swap - Add $18". Same control as the other queue renderer in
           // this file, kept identical on purpose: BOTH renderers target #bqStrip and both re-render
           // on BQ 'change', so whichever wins the race must show the same button.
-          (strip.getAttribute('data-addon-variant')
-            ? '<button type="button" class="bq-card__add" data-queue-add-title="' + escapeAttr(entry.title || '') + '"' +
-              ' aria-label="Add ' + escapeAttr(entry.title || 'this fragrance') + ' now as a one-time vial, ' + escapeAttr(strip.getAttribute('data-addon-price') || '') + '">' +
-              'Add now &middot; ' + escapeHtml(strip.getAttribute('data-addon-price') || '') +
+          (entry.url && entry.url.indexOf('/products/') === 0
+            ? '<button type="button" class="bq-card__add" data-queue-add-handle="' + escapeAttr(entry.url.split('/products/')[1].split(/[?#]/)[0]) + '"' +
+              ' aria-label="Add ' + escapeAttr(entry.title || 'this fragrance') + ' to your cart now as a one-time vial">' +
+              'Add now' +
               '</button>'
             : '');
 
@@ -2329,23 +2333,33 @@ document.addEventListener('DOMContentLoaded', function() {
           addBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            var vid = strip.getAttribute('data-addon-variant');
-            if (!vid || addBtn.disabled) return;
-            var label = addBtn.innerHTML;
+            // Same contract as the other renderer: go through BaseNoteCommerce.addVial so the
+            // $18 add-on is produced by normalizeCart, never by adding the helper SKU directly.
+            var handle = addBtn.getAttribute('data-queue-add-handle');
+            var api = window.BaseNoteCommerce;
+            if (!handle || addBtn.disabled) return;
+            var original = addBtn.innerHTML;
             addBtn.disabled = true;
             addBtn.textContent = 'Adding…';
-            fetch('/cart/add.js', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ items: [{ id: Number(vid), quantity: 1, properties: { 'Selected scent': addBtn.getAttribute('data-queue-add-title') || '' } }] })
-            }).then(function (r) {
-              if (!r.ok) throw new Error('add failed');
-              addBtn.textContent = 'Added to cart';
-              addBtn.classList.add('bq-card__add--done');
-            }).catch(function () {
-              addBtn.disabled = false;
-              addBtn.innerHTML = label;
-            });
+            Promise.resolve()
+              .then(function () {
+                if (!api || typeof api.addVial !== 'function') throw new Error('commerce module unavailable');
+                return fetch('/products/' + encodeURIComponent(handle) + '.js');
+              })
+              .then(function (r) { if (!r.ok) throw new Error('product lookup failed'); return r.json(); })
+              .then(function (p) {
+                var v = (p.variants || []).filter(function (x) { return Number(x.price) === 2000 && x.available; })[0];
+                if (!v) throw new Error('no eligible 5ml vial');
+                return api.addVial({ handle: p.handle, variantId: v.id, quantity: 1 });
+              })
+              .then(function () {
+                addBtn.textContent = 'Added to cart';
+                addBtn.classList.add('bq-card__add--done');
+              })
+              .catch(function () {
+                addBtn.disabled = false;
+                addBtn.innerHTML = original;
+              });
           });
         }
 
