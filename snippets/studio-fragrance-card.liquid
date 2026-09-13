@@ -20,11 +20,14 @@
   assign gender = 'unclassified'
   assign tags_down = product.tags | join: '|' | downcase
   assign title_down = product.title | downcase
-  if tags_down contains 'unisex'
+  # Reads BOTH vocabularies: Jeff's Gender_* taxonomy (2026-09-12) and the older
+  # masculine/feminine tags. gender_unisex/gender_him/gender_her are checked explicitly —
+  # "contains 'masculine'" never matches "Gender_Him", which is what broke the tabs on import.
+  if tags_down contains 'gender_unisex' or tags_down contains 'unisex'
     assign gender = 'unisex'
-  elsif tags_down contains 'feminine' or title_down contains 'for her' or title_down contains 'pour femme'
+  elsif tags_down contains 'gender_her' or tags_down contains 'feminine' or title_down contains 'for her' or title_down contains 'pour femme'
     assign gender = 'her'
-  elsif tags_down contains 'masculine' or title_down contains 'for him' or title_down contains 'pour homme'
+  elsif tags_down contains 'gender_him' or tags_down contains 'masculine' or title_down contains 'for him' or title_down contains 'pour homme'
     assign gender = 'him'
   endif
 

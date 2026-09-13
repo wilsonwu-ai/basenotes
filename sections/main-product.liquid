@@ -107,13 +107,18 @@
         {%- comment -%} Seasonality, derived from the Season_ tags Jeff authored (falling back to the
           older season: tags). His mock also said "go light in humidity" — dropped: nothing on the
           store backs it. Four seasons means year-round, which is no signal, so the line is omitted. {%- endcomment -%}
+        {%- comment -%} Emit in calendar order, not tag order: Aventus stored Season_Fall before
+          Season_Spring and read "Best in fall and spring." Jeff's mock reads "spring and fall". {%- endcomment -%}
+        {%- assign all_tags_down = product.tags | join: '|' | downcase -%}
         {%- assign season_acc = '' -%}
-        {%- for tag in product.tags -%}
-          {%- assign tl = tag | downcase -%}
-          {%- if tl contains 'season_' or tl contains 'season:' -%}
-            {%- assign sname = tl | remove: 'season_' | remove: 'season:' | replace: 'autumn', 'fall' | strip -%}
-            {%- unless season_acc contains sname -%}{%- assign season_acc = season_acc | append: sname | append: ',' -%}{%- endunless -%}
-          {%- endif -%}
+        {%- assign season_order = 'spring,summer,fall,winter' | split: ',' -%}
+        {%- for sname in season_order -%}
+          {%- assign needle_new = 'season_' | append: sname -%}
+          {%- assign needle_old = 'season:' | append: sname -%}
+          {%- assign hit = false -%}
+          {%- if all_tags_down contains needle_new or all_tags_down contains needle_old -%}{%- assign hit = true -%}{%- endif -%}
+          {%- if sname == 'fall' and all_tags_down contains 'autumn' -%}{%- assign hit = true -%}{%- endif -%}
+          {%- if hit -%}{%- assign season_acc = season_acc | append: sname | append: ',' -%}{%- endif -%}
         {%- endfor -%}
         {%- assign season_list = season_acc | split: ',' -%}
         {%- if season_list.size > 0 and season_list.size < 4 -%}
