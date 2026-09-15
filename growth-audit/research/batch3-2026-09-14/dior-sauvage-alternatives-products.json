@@ -1,0 +1,119 @@
+{
+  "article": "Dior Sauvage Alternatives From Real Fragrance Houses, Not Clones",
+  "handle": "dior-sauvage-alternatives",
+  "run": "2026-09-14T19:45Z",
+  "lane": "products",
+  "demand_directional": {
+    "source": "Google autocomplete (suggestqueries.google.com), directional only - Keywords Everywhere unavailable",
+    "signals": [
+      "dior sauvage alternative reddit",
+      "dior sauvage alternative under 500",
+      "dior sauvage alternative cheap / in budget",
+      "fragrance/cologne/perfume similar to sauvage (+ dior, + elixir variants)"
+    ],
+    "takeaway": "High autocomplete volume around 'alternative' + price-anchored modifiers (cheap/under 500/budget) - the angle should lead with real-house alternatives at a range of price points, not just cheap clones (clones are explicitly out of scope per the title)."
+  },
+  "anchor_dior_sauvage_edp": {
+    "handle": "dior-sauvage",
+    "store_title": "Dior Sauvage EDP",
+    "official_url": "https://www.dior.com/en_us/beauty/products/sauvage-eau-de-parfum-Y0785220.html",
+    "fetch_method": "WebFetch blocked (403, Akamai bot wall) on dior.com directly; content below is sourced via WebSearch's direct extraction of the live dior.com page text (search engine cache of the official copy), not a manufacturer PDF or third-party database.",
+    "notes_quote_official": "Top: Calabrian bergamot. Heart: Sichuan pepper, lavender, star anise. Base: vanilla extract from Papua New Guinea, ambroxan.",
+    "maker_words_official": "\"a powerful and noble trail\"; \"at once bold and refined, it is the purest expression of the Sauvage collection - balanced and versatile, evoking the untamed spirit of the desert at twilight\"",
+    "base_note_store_notes": "Top: Bergamot. Heart: Sichuan Pepper, Lavender, Star Anise, Nutmeg. Base: Ambroxan, Vanilla.",
+    "store_mismatch": "Base Note's own listing adds Nutmeg to the heart, which does not appear in Dior's current official note list (bergamot / Sichuan pepper, lavender, star anise / ambroxan, vanilla). Minor addition, not a contradiction.",
+    "note": "This is the reference fragrance the whole article is set against - every other entry's shared_or_families and differs fields are measured against this note set and these maker words."
+  },
+  "skus": [
+    {
+      "handle": "ysl-y-intense",
+      "official_url": "https://www.yslbeautyus.com/fragrance/mens-fragrances/y/y-eau-de-parfum-intense/WW-51037YSL.html",
+      "fetched": true,
+      "notes_quote": "Top: Ginger, Juniper Berries, Bergamot. Middle: Sage, Lavender, Geranium. Base: Vetiver, Patchouli, Cedar. (yslbeautyus.com official note pyramid, via WebFetch/WebSearch extraction - direct WebFetch was 403'd, so this is the site's own listed structure as surfaced by search, not a screenshot)",
+      "maker_words": "\"a powerful and highly sensual interpretation\" of the Y signature, \"amplifies the iconic blend to the extreme\"; \"a deep blue sexy and clean scent with all-day long intensity\"",
+      "store_mismatch": "Base Note's description swaps in Green Apple (top) and Mint (heart) and Tonka Bean (base) - none of which appear on YSL's own note pyramid - while omitting YSL's Ginger, Sage, Patchouli and Cedar. This is a real mismatch, not just a paraphrase; flag before publishing a note claim.",
+      "character": "A sharpened, spicier reissue of the original Y - ginger and juniper up top instead of apple, patchouli-heavy base instead of tonka, pitched as the 'extreme' version of the house's signature.",
+      "shared_or_families": "shared: \"bergamot\" and \"lavender\" appear on both Y Intense's and Sauvage's official pages. differs: Y Intense's base carries patchouli, which Sauvage's official note list does not include."
+    },
+    {
+      "handle": "creed-green-irish-tweed",
+      "official_url": "https://creedboutique.com/products/green-irish-tweed",
+      "fetched": true,
+      "notes_quote": "Head Notes: \"Peppermint, Verbena, Lemon, Bergamot & Galbanum.\" Heart Notes: \"Geranium, Lavender & Violet.\" Base Notes: \"Sandalwood, Cedarwood, Ambroxan & Oakmoss.\" (Creed Boutique US, EDP listing)",
+      "maker_words": "\"a precision-crafted fougere inspired by The House of Creed's rich couturier legacy, as timeless as a sharp tailored suit that masterfully weaves together fresh and aromatic notes\"",
+      "store_mismatch": "Base Note's description lists Florentine Iris in the heart and swaps Creed's official 'Ambroxan' for 'Ambergris' in the base - a meaningful ingredient substitution (ambroxan is a synthetic amber molecule, ambergris a different raw material), and drops Creed's own Peppermint, Bergamot, Galbanum and Oakmoss entirely.",
+      "character": "A green, aromatic 1985 fougere built for old-money quiet elegance - grass and citrus over sandalwood - the reference point most 'clean' masculines get compared to.",
+      "shared_or_families": "shared: \"bergamot\" and \"lavender\" and \"ambroxan\" all appear on both official pages (Sauvage base carries ambroxan; GIT base carries ambroxan). differs: GIT's base carries oakmoss, absent from Sauvage's official note list."
+    },
+    {
+      "handle": "pdm-perseus",
+      "official_url": "https://us.parfums-de-marly.com/products/perseus",
+      "fetched": true,
+      "notes_quote": "Top notes: Bergamot, Grapefruit. Heart notes: Geranium, Blackcurrant Bud. Base notes: Vetiver, Amberwood, Grey Amber. (Parfums de Marly US official product page)",
+      "maker_words": "\"Bright, invigorating and refined\"; \"combines bright grapefruit, fresh geranium, and refined vetiver\"",
+      "store_mismatch": "Base Note's own description adds Green Apple (top) and Lavender plus Violet Leaf (heart) that do not appear on the official PdM page, and generalizes the official Vetiver/Amberwood/Grey Amber base down to 'Musk, Amber, Woody Notes.' Consistency check: this matches blog-post-51's framing of Perseus as 'the bright daily pick' - do not contradict that phrasing, and note it already covers the citrus-forward angle.",
+      "character": "A bright, citrus-and-vetiver daily wear built around a Chateau de Marly sunrise concept - grapefruit and blackcurrant up top, dry cashmere-soft woods underneath.",
+      "shared_or_families": "shared: \"bergamot\" appears on both Perseus's and Sauvage's official pages. differs: Perseus's base carries vetiver, which is not part of Sauvage's official note list."
+    },
+    {
+      "handle": "acqua-di-gio-profondo-parfum",
+      "official_url": "https://www.giorgioarmanibeauty-usa.com/fragrances/acqua-di-gio-profondo-parfum/A2772.html",
+      "fetched": true,
+      "notes_quote": "Key notes: Cardamom Essence, Green Mandarin, Lavender, Cypress; \"crafted around bergamot notes, balsamic cistus absolute, and the richness of everlasting [immortelle] essence, which lend it its depth and intensity.\" (Armani Beauty USA, Parfum concentration - direct WebFetch 403'd, content via WebSearch extraction of the live page)",
+      "maker_words": "\"captures the addictive and intense attraction of the sea's unknown depths, conveying a sensation of deep freshness and encapsulating the experience of being immersed in the ocean's mysteries\"",
+      "store_mismatch": "SIGNIFICANT MISMATCH, flag for the writer: Base Note's stored description (Top: Sea Notes, Green Mandarin, Bergamot, Aquozone; Heart: Rosemary, Lavender, Cypress, Mastic; Base: Mineral Notes, Musk, Patchouli, Amber) reads like the original 2020 Acqua di Gio Profondo EDT/EDP formula, not the current Parfum concentration Armani's own page describes (Cardamom Essence, balsamic cistus absolute, immortelle/everlasting essence). Store title says 'Parfum' but the note list looks like the wrong concentration - this is exactly the OLDER POSTS WARNING scenario; the manufacturer's current Parfum page should win over whatever note list is on file.",
+      "character": "The 'underwater' version of Acqua di Gio - same Pantelleria sea concept as the original, built around mineral/salt pressure rather than surface brightness; the Parfum concentration leans into cardamom and cistus/immortelle depth per Armani's own copy.",
+      "shared_or_families": "shared: \"lavender\" appears on both the Parfum's official key-notes list and Sauvage's official heart notes. differs: the Parfum's official copy names cistus absolute (labdanum-family), which is not part of Sauvage's official note list."
+    },
+    {
+      "handle": "creed-aventus",
+      "official_url": "https://creedboutique.com/products/aventus",
+      "fetched": true,
+      "notes_quote": "Head Notes: \"Calabrian Bergamot, Sicilian Lemon & Blackcurrant Leaf Accord.\" Heart Notes: \"Pineapple Accord, Pink Pepper & Jasmine Accord.\" Base Notes: \"Birch, Patchouli & Musk Accord.\" (Creed Boutique US, EDP listing)",
+      "maker_words": "\"bold, confident and timeless\"; \"unites fresh Calabrian bergamot, smoky birch and an iconic pineapple accord\"; \"defined by clarity, confidence and enduring craft\" that \"leaves a refined yet assertive lasting impression\"",
+      "store_mismatch": "Base Note's description places Birch, Jasmine and Patchouli in the heart, while Creed's own page puts Birch and Patchouli in the base and Jasmine (as an accord) in the heart. Base Note also adds Apple, Oakmoss, Ambergris and Vanilla, none of which appear on Creed's current official pyramid, and drops Creed's own Pink Pepper. Consistency check: creed-aventus-review-is-it-worth-500 is a LIVE post on this exact fragrance - do not restate its performance claims or reuse its sentences, and do not contradict anything it says accurately.",
+      "character": "A fruity-woody 'biography' fragrance built around Napoleon's life (blackcurrant from Corsica, birch from Louisiana) - smoky birch and pineapple over bergamot, the most imitated men's release of the last two decades.",
+      "shared_or_families": "shared: \"bergamot\" (both officially Calabrian bergamot) appears on Aventus's and Sauvage's official pages. differs: Aventus's base carries birch, absent from Sauvage's official note list."
+    },
+    {
+      "handle": "mont-blanc-legend-eau-de-parfum",
+      "official_url": "https://www.montblanc.com/en-us/fragrances/collection/legend",
+      "fetched": false,
+      "notes_quote": "NOT CONFIRMED against manufacturer copy. Direct WebFetch/curl to montblanc.com timed out on every attempt (60s) and the domain otherwise 403's bots. WebSearch surfaced conflicting third-party (Fragrantica) note sets for different Legend variants - the 'classic' original, the EDT, and a 2020 EDP relaunch with a violet-leaf/jasmine/leather profile - none of which is a montblanc.com verbatim quote, and none of which closely resembles Base Note's own stored profile (Top: Bergamot, Grapefruit, Lavender; Heart: Amber, Cedarwood, Tonka Bean; Base: Sandalwood, Musk, Vetiver).",
+      "maker_words": "NOT RETRIEVED - montblanc.com never returned content within budget/timeout limits.",
+      "store_mismatch": "UNRESOLVED - flag to the writer explicitly: do not assert Legend EDP's official notes without a successful fetch of montblanc.com (or a verified retailer scan of the actual box/PDP) first. The candidate third-party note sets found in this session vary too much between each other (fresh fougere vs. violet-jasmine-leather) to safely quote as 'official.'",
+      "character": "Positioned by Montblanc as the fragrance built around the Meisterstuck fountain pen concept (old-world craft vs. modern confidence); lavender and bergamot open it per Base Note's own copy, tonka and sandalwood carry it out - but this character line is sourced from Base Note's product description, not a confirmed manufacturer quote.",
+      "shared_or_families": "UNCONFIRMED pending a real fetch - Base Note's own note list includes bergamot and lavender, which would be shared with Sauvage's official notes if accurate, but this cannot be stated as verified official-vs-official overlap without montblanc.com content."
+    },
+    {
+      "handle": "prada-paradigme",
+      "official_url": "https://www.prada.com/us/en/pradasphere/fragrances/paradigme.html",
+      "fetched": true,
+      "notes_quote": "Top Notes: Calabrian bergamot and airy musks. Heart Notes: an iconic green bourbon geranium, reinvented with floral rosy facets. Base Notes: Peru Balm and Benzoin resin and vigorous Guaiac wood. (Prada official fragrance page, via WebSearch extraction - direct WebFetch to prada.com and prada-beauty.com both 403'd)",
+      "maker_words": "created by \"master perfumers Marie Salamagne, Bruno Jovanovic, and Nicolas Bonneville, who decided to open a new olfactive paradigm by inverting traditional fragrance composition architecture, tracing from the bottom up in a reversed pyramid\"",
+      "store_mismatch": "None found - Base Note's stored note list (Top: Calabrian Bergamot, Airy Musks; Heart: Green Bourbon Geranium, Rosy Facets; Base: Peru Balm, Benzoin, Guaiac Wood) matches Prada's official pyramid closely, including the same 'reversed pyramid' concept in the maker's own copy.",
+      "character": "A deliberately backward-built fragrance - base notes conceived first, bright bergamot and musk still on top by necessity of physics, but framed by Prada as an argument about structure, not just a scent.",
+      "shared_or_families": "shared: \"bergamot\" (both officially Calabrian bergamot) appears on Paradigme's and Sauvage's official pages. differs: Paradigme's base carries guaiac wood, absent from Sauvage's official note list. LOW STOCK item - do not use as the lead or first pick in the article."
+    },
+    {
+      "handle": "givenchy-gentleman",
+      "official_url": "https://www.givenchybeauty.com/us/p/gentleman-givenchy-F10100026.html",
+      "fetched": true,
+      "notes_quote": "Top notes: Black Pepper, Lavender and Bergamot. Middle notes: Orris (Iris), Cloves and Cinnamon. Base notes: Black Vanilla Husk, Tolu Balsam, Tonka Bean, Patchouli and Benzoin. (Givenchy Beauty official page, via WebSearch extraction - direct WebFetch 403'd)",
+      "maker_words": "\"An explosive fragrance clashing powerful Iris with spicy Black Pepper and deep Vanilla Wood and Patchouli. All of which is complemented by an aromatic accord of Lavender and warmed by smooth Peru Balsam\"; described elsewhere as \"a magnetic eau de parfum\" that \"plays a dynamic rhythm from the very first note\"",
+      "store_mismatch": "Base Note's stored notes (Top: Pepper Essence, Lavender; Heart: Orris (Iris), Tolu Balm; Base: Patchouli, Black Vanilla) omit Givenchy's own Bergamot (top), Cloves and Cinnamon (heart), and Tonka Bean and Benzoin (base) - a simplified subset rather than a contradiction, but incomplete.",
+      "character": "An iris-and-black-pepper fragrance named for Hubert de Givenchy's own 1969 menswear line - quiet, precise elegance sharpened into something 'explosive' per Givenchy's own copy.",
+      "shared_or_families": "shared: \"lavender\" and \"pepper\" (Black Pepper vs. Sauvage's Sichuan Pepper) both appear on the two official pages. differs: Gentleman's official notes carry orris/iris, absent from Sauvage's official note list. LOW STOCK item - do not use as the lead or first pick in the article."
+    },
+    {
+      "handle": "versace-eros",
+      "official_url": "https://www.versace.com/us/en-us/man/fragrances/eros/eros-eau-de-parfum",
+      "fetched": true,
+      "notes_quote": "Top notes: Mint, Candy Apple, Lemon and Mandarin Orange. Middle notes: Ambroxan, Geranium and Clary Sage. Base notes: Vanilla, Cedar, Sandalwood, Bitter Orange, Patchouli and Leather. (Versace.com Eau de Parfum listing, via WebSearch extraction - direct WebFetch to versace.com 403'd, so no verbatim maker prose was retrievable beyond the note list itself)",
+      "maker_words": "NOT RETRIEVED VERBATIM - versace.com's own descriptive copy could not be pulled through WebFetch (403) or WebSearch (search returned note lists and third-party review language, not a quoted Versace sentence). Do not attribute a quote to Versace for this SKU; character line below is Base Note's synthesis, not a manufacturer quote.",
+      "store_mismatch": "Base Note's stored notes (Top: Mint, Green Apple, Lemon; Heart: Tonka Bean, Ambroxan, Geranium; Base: Madagascar Vanilla, Cedar, Vetiver, Oakmoss) rename official 'Candy Apple' as 'Green Apple,' add Tonka Bean (heart) and Vetiver/Oakmoss (base) not on Versace's EDP list, and drop Versace's own Mandarin Orange, Clary Sage, Bitter Orange, Patchouli and Leather.",
+      "character": "Versace's Greek-mythology-themed men's flagship (Medusa-head cap, Mediterranean blue) - mint and apple-citrus opening over an ambroxan-driven, vanilla-cedar base; a louder, sweeter register than Sauvage's drier bergamot-ambroxan build.",
+      "shared_or_families": "shared: \"ambroxan\" and \"vanilla\" both appear on Eros's and Sauvage's official pages. differs: Eros's base carries cedar, absent from Sauvage's official note list. LOW STOCK item - do not use as the lead or first pick in the article."
+    }
+  ]
+}

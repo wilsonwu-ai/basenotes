@@ -1,0 +1,68 @@
+{
+  "run": "2026-09-14T16:40Z",
+  "article_handle": "what-does-oud-smell-like",
+  "lane": "products",
+  "products": [
+    {
+      "handle": "tom-ford-oud-wood",
+      "store_title": "Tom Ford Oud Wood EDP",
+      "official_url": "https://www.tomfordbeauty.com/products/oud-wood-eau-de-parfum",
+      "fetched": true,
+      "notes_quote": "\"Exotic rosewood and cardamom give way to a smoky blend of precious oud notes, sandalwood and vetiver. Tonka bean and amber add warmth and sensuality.\" Note list: Cardamom, Pink Pepper, Patchouli, Amber, Oud, Tonka Bean.",
+      "oud_on_official_page": true,
+      "store_mismatch": "Base Note's own note breakdown puts 'Agarwood (Oud)' in the Top Notes alongside amber; Tom Ford's official copy places oud in the second (smoky/heart) phase after the rosewood-cardamom opening, not at the top. Official copy also names patchouli, which Base Note's listing omits entirely.",
+      "character": "A cardamom-and-rosewood opening that resolves into a polished, smoky oud-sandalwood-vetiver core, closed out with tonka and amber so the oud reads warm rather than raw.",
+      "rung": "gentle",
+      "rung_reason": "Official copy explicitly frames this as oud 'polished' for a mainstream customer and buffers it on both sides (rosewood/cardamom opening, tonka/amber close) rather than letting it stand alone up front — matches Base Note's own 'gentle introduction to oud' framing (blog-post-51)."
+    },
+    {
+      "handle": "xerjoff-alexandria-ii",
+      "store_title": "Xerjoff Alexandria II EDP",
+      "official_url": "https://www.xerjoff.com/en-us/products/alexandria-ll-parfum",
+      "fetched": true,
+      "notes_quote": "Top Notes: Apple, Cinnamon, Lavender, Rosewood. Heart Notes: Cedarwood, Lily of the Valley, Bulgarian Rose. Base Notes: Amber, Laotian Oud, Musk, Sandalwood, Vanilla.",
+      "oud_on_official_page": true,
+      "store_mismatch": "Base Note's top notes ('Lavender, Bulgarian Rose, Cardamom, Cumin') don't match Xerjoff's official top notes ('Apple, Cinnamon, Lavender, Rosewood') — Bulgarian Rose is an official heart note, not a top note, and apple/cinnamon/rosewood are missing from Base Note's list.",
+      "character": "Spiced, fruited lavender opening over a rose-cedar heart, settling into a dense, resinous amber-oud-sandalwood base that Xerjoff itself calls the 'classic Arabian perfumery accord of rose and oud.'",
+      "rung": "bold",
+      "rung_reason": "Oud anchors a heavy five-note base (amber, Laotian oud, musk, sandalwood, vanilla) built for maximum density — official brand language and Base Note's own 'ceremony, not subtle' description agree this is oud pushed forward, not backgrounded."
+    },
+    {
+      "handle": "bond-no-9-nomad",
+      "store_title": "Bond No. 9 Nomad EDP",
+      "official_url": "https://www.bondno9.com/products/nomad",
+      "fetched": true,
+      "notes_quote": "Notes: Pear, Quince, Black Currant, Violet Leaves, Oud Accord, Rose, Amber, Vanilla. Top: Pear, Quince, Blackcurrant. Heart: Violet Leaves, Oud Accord, Orris, Rose. Base: Amber, Sandalwood, Vanilla.",
+      "oud_on_official_page": true,
+      "store_mismatch": "Base Note's heart notes ('Rose, Oud Accord, Violet Leaves, Orris') and top notes match Bond No. 9's official list closely (only the internal ordering differs) — no material contradiction.",
+      "character": "Fruity pear-quince opening giving way to a rose-and-violet-leaf heart carrying a deliberately sweetened, 'Americanized' oud accord, finished on amber, sandalwood and vanilla.",
+      "rung": "gentle",
+      "rung_reason": "Bond No. 9's own copy says the oud accord was built 'richer and sweeter than the traditional Middle Eastern material' specifically to feel modern rather than reverent — it's layered into the heart with fruit and rose rather than left to dominate."
+    },
+    {
+      "handle": "parfums-de-marly-haltane",
+      "store_title": "Parfums de Marly Haltane EDP",
+      "official_url": "https://www.parfums-de-marly.com/products/haltane",
+      "fetched": true,
+      "notes_quote": "Top Notes: Bergamot, Pink Peppercorn. Heart Notes: Saffron, Praline, Lavender, Clary Sage. Base Notes: Oud, Patchouli, Vetiver, Leather.",
+      "oud_on_official_page": true,
+      "store_mismatch": "None found — Base Note's top notes (Bergamot, Pink Peppercorn) and base notes (Oud, Patchouli, Vetiver, Leather) match Parfums de Marly's official listing exactly.",
+      "character": "A cold, sharp bergamot-pepper opening warming through a saffron-praline heart before settling into a dark, smoky oud-leather-patchouli base built for winter nights.",
+      "rung": "bold",
+      "rung_reason": "Oud sits in a four-note base with patchouli, vetiver and leather with no vanilla or sweetness to soften it, and the brand's own copy describes the drydown as 'intensifying into oud depth' — dark and smoky by design."
+    },
+    {
+      "handle": "bvlgari-le-gemme-orom",
+      "store_title": "Bvlgari Le Gemme Orom EDP",
+      "official_url": "https://www.bulgari.com/en-us/fragrances/bvlgari-le-gemme/le-gemme-orom-eau-de-parfum-42180",
+      "fetched": false,
+      "notes_quote": "Direct fetch returned HTTP 403 (bulgari.com blocks both WebFetch and curl with a browser user-agent). Reconstructed from Google's indexed content of the same official URL: Top Notes: Vanilla bourbon, Cedarwood. Heart Notes: Benzoin Siam, Blonde suede. Base Notes: Oud Assam, Sandalwood. Brand copy: 'vanilla bourbon caviar absolute intertwined with precious oud assam essence.'",
+      "oud_on_official_page": true,
+      "store_mismatch": "Base Note's single-note-per-stage listing (Top: Bourbon Vanilla / Heart: Siam Benzoin / Base: Agarwood (Oud)) is a simplified subset of Bulgari's official list — it omits cedarwood, blonde suede and sandalwood, but does not contradict the official notes; oud is base-note in both.",
+      "character": "A vanilla-caviar opening over a benzoin-and-suede heart, with oud assam and sandalwood underneath as structure rather than the headline note.",
+      "rung": "gentle",
+      "rung_reason": "Bulgari leads its own copy with vanilla bourbon and the labradorite/vanilla-caviar concept; oud assam is named as one of two base notes providing depth, not the note the fragrance is built to showcase — consistent with Base Note's own vanilla-colognes post calling it 'vanilla with leather and oud.'"
+    }
+  ],
+  "notes": "Search-volume/demand tools unavailable this run (Keywords Everywhere connection down); no demand signals were claimed. WebSearch used 5 of 8 allowed calls; WebFetch used 8 of 15 allowed calls (2 more attempted via curl for Bulgari, also blocked). Bulgari.com blocked both WebFetch and curl (403) for all three attempted URLs; the Orom entry is the only one not directly fetched, flagged via fetched:false and store_mismatch/notes_quote caveats."
+}

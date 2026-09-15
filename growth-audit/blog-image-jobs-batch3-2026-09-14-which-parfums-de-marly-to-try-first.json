@@ -1,0 +1,29 @@
+[
+  {
+    "handle": "which-parfums-de-marly-to-try-first",
+    "prompt": "Premium editorial still life for a fragrance house guide, five generic unbranded 5 ml clear-glass atomizers with plain silver caps standing in a loose row on a cream travertine surface, a softly folded natural linen cloth, a small round brass dish, and a plain brown leather riding glove with no logo or stitching marks resting beside them, deep forest-green linen accent at one edge, soft directional morning light from the left, realistic glass, stone, brass, leather and fabric textures, restrained luxury magazine photography, 16:9 landscape, generous center-safe composition, no people, no hands, no logos, no labels, no text or typography, no brand marks, no replica designer bottles, no horse imagery, no distorted caps",
+    "out": "growth-audit/ai-images/blog/which-parfums-de-marly-to-try-first/hero.jpg",
+    "aspect": "16:9",
+    "model": "fal-ai/nano-banana-2",
+    "resolution": "2K",
+    "fal_only": true
+  },
+  {
+    "handle": "which-parfums-de-marly-to-try-first",
+    "prompt": "Premium editorial ingredient still life on a cream travertine slab with a deep forest-green linen runner: one whole apple, a few fresh lavender sprigs, two dark vanilla pods, half a pink grapefruit with a curl of its peel, a small pile of whole almonds, two cinnamon sticks and a few green cardamom pods, arranged with space between each ingredient, soft natural window light, realistic textures, calm luxury food-magazine photography, 3:2 landscape, no bottles, no people, no hands, no logos, no labels, no text or typography, no brand marks, no replica designer bottles",
+    "out": "growth-audit/ai-images/blog/which-parfums-de-marly-to-try-first/fig-03.jpg",
+    "aspect": "3:2",
+    "model": "fal-ai/nano-banana-2",
+    "resolution": "2K",
+    "fal_only": true
+  },
+  {
+    "handle": "which-parfums-de-marly-to-try-first",
+    "prompt": "Premium editorial dressing-table still life, five generic unbranded 5 ml clear-glass atomizers with plain silver caps on a warm oak dressing table beside a plain brown leather watch strap with a simple brass buckle and no watch face branding, a small brass tray, a folded cream linen cloth and a deep forest-green ceramic dish, soft late-morning side light, realistic glass, leather, wood and brass textures, restrained luxury magazine photography, 3:2 landscape, no people, no hands, no logos, no labels, no text or typography, no brand marks, no replica designer bottles, no distorted caps",
+    "out": "growth-audit/ai-images/blog/which-parfums-de-marly-to-try-first/fig-04.jpg",
+    "aspect": "3:2",
+    "model": "fal-ai/nano-banana-2",
+    "resolution": "2K",
+    "fal_only": true
+  }
+]

@@ -1,0 +1,440 @@
+{
+  "handle": "dior-sauvage-alternatives",
+  "run": "2026-09-14T19:45Z",
+  "title": "Dior Sauvage Alternatives From Real Fragrance Houses, Not Clones",
+  "seo_title": "Dior Sauvage Alternatives From Real Houses | Base Note",
+  "seo_description": "Five fragrances that share official notes with Dior Sauvage Eau de Parfum, from Creed, YSL, Parfums de Marly, Prada and Versace. Alternatives, not clones.",
+  "summary": "Five fragrances from Creed, YSL, Parfums de Marly, Prada and Versace that share at least one official note with Dior Sauvage Eau de Parfum, each set against Dior's own note list. It also explains how an alternative differs from a clone and compares Sauvage with Creed Aventus note by note.",
+  "tags": [
+    "alternatives:dior-sauvage",
+    "dior sauvage alternatives",
+    "fragrances similar to dior sauvage",
+    "dior sauvage alternative not a clone",
+    "dior sauvage vs creed aventus",
+    "cologne like dior sauvage"
+  ],
+  "direct_answer": "Creed Green Irish Tweed shares the most official notes with Dior Sauvage Eau de Parfum: bergamot, lavender and ambroxan. YSL Y Eau de Parfum Intense shares lavender, Parfums de Marly Perseus and Prada Paradigme share bergamot, and Versace Eros Eau de Parfum shares vanilla. Each one is a separate fragrance with its own maker's note list, so treat them as alternatives, not copies.",
+  "house_format": {
+    "markup_from": "growth-audit/blog-post-50-best-everyday-cologne-men.html (article-disclosure div, table with caption and scope=col headers, FAQ as h2 + h3 + p, sources ul with rel=\"noopener noreferrer\" target=\"_blank\")",
+    "discipline_from": "growth-audit/blog-post-53-what-does-oud-smell-like.html (attribute every fact in the sentence that uses it, vary paragraph shapes, one price sentence only)",
+    "disclosure_text": "<div class=\"article-disclosure\" role=\"note\" aria-label=\"Commercial disclosure\">\n  <p><strong>Disclosure:</strong> Base Note sells 5&nbsp;ml atomizers of every fragrance in this guide, including Dior Sauvage Eau de Parfum, and benefits if you shop through the product links. The selection reflects products that were available on Base Note on September 14, 2026. Note descriptions come from the linked manufacturer pages; the choice of alternatives and the wearing suggestions are our editorial interpretation. We have not used unverified price, shipping, spray-count, or performance claims.</p>\n</div>",
+    "image_markers": "<!-- img:fig-01 --> directly under <h2>Explained simply</h2>; <!-- img:fig-02 --> directly under the 'Which fragrances are like Dior Sauvage?' h2; <!-- img:fig-03 --> between h3 number 3 (Perseus) and h3 number 4 (Paradigme); <!-- img:fig-04 --> directly before <h2>Frequently asked questions</h2>",
+    "length": "2,400 to 3,000 words of text with tags stripped, never above 3,200. Budget: direct answer 60, disclosure 70, explained simply 55, Sauvage 250, clone vs alternative 250, table section 230, five h3 blocks about 190 each, Aventus 190, side by side 180, FAQ about 360, closing 110, sources about 90."
+  },
+  "outline": [
+    {
+      "tag": "h1",
+      "text": "Dior Sauvage Alternatives From Real Fragrance Houses, Not Clones"
+    },
+    {
+      "tag": "p",
+      "text": "Direct answer paragraph, exactly the direct_answer field, starting <strong>Direct answer:</strong>."
+    },
+    {
+      "tag": "div",
+      "text": "article-disclosure div, exactly house_format.disclosure_text."
+    },
+    {
+      "tag": "h2",
+      "text": "Explained simply",
+      "marker": "<!-- img:fig-01 -->",
+      "points": [
+        "At most 60 words a 12-year-old follows. A fragrance is made from a recipe of smells.",
+        "A clone tries to copy another fragrance's recipe. An alternative is a different recipe that uses some of the same smells, such as bergamot or lavender in Sauvage.",
+        "No brand names other than Dior, no performance words."
+      ],
+      "sources": [
+        "https://www.dior.com/en_us/beauty/products/sauvage-eau-de-parfum-Y0785220.html",
+        "https://www.pairfum.com/should-you-buy-clone-perfume-dupes-and-copycat-fragrance/"
+      ]
+    },
+    {
+      "tag": "h2",
+      "text": "What does Dior Sauvage Eau de Parfum smell like?",
+      "points": [
+        "Dior's current page: Calabrian bergamot on top; Sichuan pepper, lavender and star anise in the heart; vanilla extract from Papua New Guinea and ambroxan in the base. Define note, and top, heart and base notes, the first time they appear (order only: first impression, then the defining heart, then the base; Creed's pages define the layers this way, cite Creed if the definition is attributed). Link the notes guide here.",
+        "Maker's descriptive words usable verbatim: the bergamot is 'fruitier than other bergamots and develops slightly peppery and zesty facets'; the vanilla has 'smoky accents'; the inspiration is 'the desert in the magical hour of twilight'; the product line reads 'Citrus and Vanilla Notes'. Do NOT quote 'powerful and noble trail', 'bold and refined', 'balanced and versatile', 'magnetic trail' or any hours or spray guidance from the same page.",
+        "Define ambroxan from Wikipedia: ambroxide, widely known by the brand name Ambroxan, is one of the key constituents responsible for the odor of ambergris, has woody, musky and slightly salty nuances, and is synthesized from sclareol, a component of clary sage oil. Do not use the word fixative.",
+        "Optional context, one sentence at most: WWD reports that the Sauvage line ranks first among all fragrances, masculine and feminine combined, a decade after its 2015 launch, and that the Eau de Parfum followed the Eau de Toilette in 2018. Never repeat WWD's unit counts or 'every 30 seconds' figure."
+      ],
+      "sources": [
+        "https://www.dior.com/en_us/beauty/products/sauvage-eau-de-parfum-Y0785220.html",
+        "https://en.wikipedia.org/wiki/Ambroxide",
+        "https://wwd.com/beauty-industry-news/fragrance/dior-sauvage-bestselling-scent-1238123549/",
+        "https://creedboutique.com/products/green-irish-tweed"
+      ],
+      "internal_link": "/blogs/hub/fragrance-notes-explained-top-heart-base-perfume-pyramid"
+    },
+    {
+      "tag": "h2",
+      "text": "What is the difference between a Sauvage alternative and a Sauvage clone?",
+      "points": [
+        "Clone, attributed to PairFum: 'a perfume that replicates, copies or imitates the scent of a well-known, popular and expensive luxury fragrance'. Say that PairFum treats clone, dupe and copycat as the same thing.",
+        "NPR: companies that make dupes 'openly advertise them as being \"inspired by\" more expensive alternatives' and they are not knock-offs claiming to be the brand-name perfume; fragrance makers use gas chromatography-mass spectrometry (GCMS) to identify the specific molecules in a competitor's fragrance, which NPR calls a crucial step to creating a believable dupe. Define GCMS in plain words (a lab test that separates a scent into its molecules and names them). Write 'gas chromatography mass spectrometry' without a hyphen if a dash-like join is a risk; a normal hyphen is allowed, no en dash.",
+        "Alternative, our editorial definition: a separate fragrance with its own published note list that shares some notes or a note family with Sauvage. Ground 'note family' in the Perfume Society: fougere fragrances 'almost invariably feature lavender, geranium, vetiver, bergamot, oakmoss and coumarin'; the fresh family features notes such as 'lemon, bergamot, orange, grapefruit, mandarin'. Sauvage's official list includes two of those fougere materials (bergamot, lavender); do not call Sauvage a fougere, no fetched source says so.",
+        "State plainly that this guide names no clone brands or clone products and makes no claim about how clones smell or compare. Do not use NPR's 'professionals would have difficulty telling them apart' line."
+      ],
+      "sources": [
+        "https://www.pairfum.com/should-you-buy-clone-perfume-dupes-and-copycat-fragrance/",
+        "https://www.npr.org/2025/05/07/nx-s1-5377539/fragrance-dupes-popular-how-to-buy",
+        "https://perfumesociety.org/fragrance-families/fougere/",
+        "https://perfumesociety.org/fragrance-family-friday-what-is-fresh/",
+        "https://en.wikipedia.org/wiki/Foug%C3%A8re"
+      ]
+    },
+    {
+      "tag": "h2",
+      "text": "Which fragrances are like Dior Sauvage?",
+      "marker": "<!-- img:fig-02 --> directly under the h2, before any paragraph",
+      "points": [
+        "One short paragraph: five fragrances from four houses, each chosen because its maker's current page names at least one note that Dior's page also names. Say once that the numbered order is not a quality ranking.",
+        "One sentence linking the designer vs niche explainer (see internal_links) without classifying any house.",
+        "Comparison table, 4 columns, caption 'Five alternatives to Dior Sauvage Eau de Parfum, compared using their manufacturers' current note descriptions.' Rows exactly as table_rows below; fragrance cell links to /products/<handle>."
+      ],
+      "table_rows": [
+        {
+          "fragrance": "Creed Green Irish Tweed",
+          "product": "/products/creed-green-irish-tweed",
+          "shares": "Bergamot, lavender, ambroxan",
+          "differs": "Peppermint and verbena on top, oakmoss in the base",
+          "try_it_if": "You like the lavender in Sauvage and want green herbs around it."
+        },
+        {
+          "fragrance": "YSL Y Eau de Parfum Intense",
+          "product": "/products/ysl-y-intense",
+          "shares": "Lavender",
+          "differs": "Blue juniper berries and patchouli from Bali",
+          "try_it_if": "Lavender is the part of Sauvage you notice most."
+        },
+        {
+          "fragrance": "Parfums de Marly Perseus",
+          "product": "/products/pdm-perseus",
+          "shares": "Bergamot",
+          "differs": "Grapefruit and blackcurrant bud over vetiver",
+          "try_it_if": "You want the citrus without the pepper and star anise."
+        },
+        {
+          "fragrance": "Prada Paradigme",
+          "product": "/products/prada-paradigme",
+          "shares": "Calabrian bergamot",
+          "differs": "Peru balsam, benzoin resin and guaiac wood",
+          "try_it_if": "You are curious about a fragrance built from the base up."
+        },
+        {
+          "fragrance": "Versace Eros Eau de Parfum",
+          "product": "/products/versace-eros",
+          "shares": "Vanilla",
+          "differs": "Mint oil and candied apple on top",
+          "try_it_if": "The vanilla in Sauvage is what draws you in."
+        }
+      ],
+      "sources": [
+        "https://www.dior.com/en_us/beauty/products/sauvage-eau-de-parfum-Y0785220.html",
+        "https://creedboutique.com/products/green-irish-tweed",
+        "https://www.yslbeauty.com/int/fragrance/masculine-fragrance/y/y--eau-de-parfum-intense/WW-51037YSL.html",
+        "https://us.parfums-de-marly.com/products/perseus",
+        "https://www.prada.com/us/en/pradasphere/fragrances/paradigme.html",
+        "https://www.versace.com/us/en/men/accessories/fragrances-body-care/eros/eros-edp-100-ml-blue/R740110-R100MLS_RNUL.html"
+      ],
+      "internal_link": "/blogs/hub/designer-vs-niche-fragrance-whats-the-difference"
+    },
+    {
+      "tag": "h3 blocks",
+      "text": "One h3 per pick in picks order, formatted 'N. Brand Name: what it is for' (h3_text below). Each block carries, in this order: a desire-first opening line; 'Smells like' with only the official notes and a link to the maker's page (rel=\"noopener noreferrer\" target=\"_blank\"); 'What it shares with Sauvage' using only words on both official pages; 'Where it goes its own way'; 'Wear it for' with the occasion line; a product link to /products/<handle>. Vary paragraph shapes between blocks (post 53 discipline). <!-- img:fig-03 --> goes after block 3.",
+      "points": [
+        "Occasion lines must each have a different grammatical shape and must not climb in temperature, formality or intensity down the list. Suggested lines (writer may reword while keeping these rules): 1 GIT 'a slow walk through a botanical garden'; 2 Y Intense 'cooking dinner for friends at home'; 3 Perseus 'a Saturday morning at the farmers' market'; 4 Paradigme 'an afternoon at an architecture exhibition, fitting for a scent built upside down'; 5 Eros 'a board-game night with old friends'.",
+        "Never describe any pick as stronger, softer, lighter, deeper, fresher, warmer, safer or more versatile than Sauvage or than another pick."
+      ],
+      "sources": [
+        "https://creedboutique.com/products/green-irish-tweed",
+        "https://www.yslbeauty.com/int/fragrance/masculine-fragrance/y/y--eau-de-parfum-intense/WW-51037YSL.html",
+        "https://us.parfums-de-marly.com/products/perseus",
+        "https://www.prada.com/us/en/pradasphere/fragrances/paradigme.html",
+        "https://www.versace.com/us/en/men/accessories/fragrances-body-care/eros/eros-edp-100-ml-blue/R740110-R100MLS_RNUL.html",
+        "https://perfumesociety.org/fragrance-families/fougere/"
+      ]
+    },
+    {
+      "tag": "h2",
+      "text": "How do Dior Sauvage and Creed Aventus compare?",
+      "why": "Questions lane: 'dior sauvage vs creed aventus' is the highest-volume head-to-head in autocomplete ('is dior sauvage or creed aventus better', 'creed aventus vs dior sauvage which is better').",
+      "points": [
+        "Creed's page: Calabrian bergamot, Sicilian lemon and blackcurrant leaf accord (head); pineapple accord, pink pepper and jasmine accord (heart); birch, patchouli and musk accord (base). Creed's words usable verbatim: 'fresh Calabrian bergamot, smoky birch and an iconic pineapple accord'. Define accord (a blend of materials built to smell like one thing).",
+        "Shared on both official pages: Calabrian bergamot, named identically. Both also name a pepper, but different ones: Sichuan pepper in Sauvage, pink pepper in Aventus. Say this plainly without calling it a shared note.",
+        "Where they part: Aventus has pineapple, blackcurrant leaf, jasmine, birch, patchouli and musk; Sauvage has lavender, star anise, vanilla and ambroxan, none of which appear on Creed's Aventus list.",
+        "Answer 'which is better' by refusing a ranking: the note lists show what each is built from; which one you prefer is for your skin to decide. Link the live Aventus review. Aventus is not one of the five picks and gets no h3."
+      ],
+      "sources": [
+        "https://creedboutique.com/products/aventus",
+        "https://www.dior.com/en_us/beauty/products/sauvage-eau-de-parfum-Y0785220.html"
+      ],
+      "internal_link": "/blogs/hub/creed-aventus-review-is-it-worth-500"
+    },
+    {
+      "tag": "h2",
+      "text": "How can you try these side by side?",
+      "points": [
+        "Compare two at a time: Sauvage on one wrist, one alternative on the other, rather than all five at once.",
+        "Before smelling, read both official note lists and look for the shared note (bergamot, lavender, ambroxan or vanilla). Then notice where the two go apart.",
+        "Smell again later in the day, because the first impression comes from the top notes and the base arrives last. No spray counts, no hours, no statements about how long anything stays or how far it reaches.",
+        "Keep a two-line note on your phone for each pairing. Link the sample-before-you-buy post."
+      ],
+      "sources": [
+        "https://creedboutique.com/products/green-irish-tweed"
+      ],
+      "internal_link": "/blogs/hub/sample-before-you-buy-full-bottle"
+    },
+    {
+      "tag": "marker",
+      "text": "<!-- img:fig-04 --> directly before the FAQ h2"
+    },
+    {
+      "tag": "h2",
+      "text": "Frequently asked questions",
+      "points": [
+        "Five or six h3 questions from the faq field, each answer self-contained in 40 to 90 words, using only facts sourced elsewhere in the article."
+      ],
+      "sources": [
+        "https://www.dior.com/en_us/beauty/products/sauvage-eau-de-parfum-Y0785220.html",
+        "https://creedboutique.com/products/green-irish-tweed",
+        "https://creedboutique.com/products/aventus",
+        "https://www.yslbeauty.com/int/fragrance/masculine-fragrance/y/y--eau-de-parfum-intense/WW-51037YSL.html",
+        "https://www.npr.org/2025/05/07/nx-s1-5377539/fragrance-dupes-popular-how-to-buy",
+        "https://www.pairfum.com/should-you-buy-clone-perfume-dupes-and-copycat-fragrance/"
+      ]
+    },
+    {
+      "tag": "h2",
+      "text": "Where should you start?",
+      "points": [
+        "Describe Base Note the way the live homepage does (fetched 2026-09-14): authentic designer and niche fragrance decanted from the original bottle into a 5 ml spray, so you can try it on your skin before you buy the bottle; one-time purchase is the default with no subscription required, and Monthly Rotation is separate and optional. Define decant as the homepage does.",
+        "Suggest starting with Dior Sauvage Eau de Parfum beside Creed Green Irish Tweed, the pair with the most shared official notes. Do not suggest a LOW STOCK product first.",
+        "The one price sentence allowed in the article: a single 5 ml atomizer of any fragrance in this guide is $20 as a one-time purchase (price 2000 cents read from https://basenotescent.com/products/<handle>.js for all ten in-scope handles on 2026-09-14). No other prices, no multi-vial pricing, no shipping threshold, no spray counts."
+      ],
+      "sources": [
+        "https://basenotescent.com/"
+      ]
+    },
+    {
+      "tag": "h2",
+      "text": "Sources",
+      "points": [
+        "A <ul> with every URL in the sources field, manufacturer pages first, each link with rel=\"noopener noreferrer\" target=\"_blank\". Do not list basenotescent.com or the .js price endpoints."
+      ]
+    }
+  ],
+  "picks": [
+    {
+      "n": 1,
+      "handle": "creed-green-irish-tweed",
+      "print_name": "Creed Green Irish Tweed",
+      "h3_text": "1. Creed Green Irish Tweed: green herbs around a familiar lavender",
+      "official_url": "https://creedboutique.com/products/green-irish-tweed",
+      "fetched": "curl 2026-09-14, HTTP 200, note pyramid read from page text",
+      "official_notes": "Head: peppermint, verbena, lemon, bergamot and galbanum. Heart: geranium, lavender and violet. Base: sandalwood, cedarwood, ambroxan and oakmoss.",
+      "maker_words_verbatim": [
+        "a precision-crafted fougère from Creed",
+        "fresh geranium are pitched against soothing lavender, while earthy oakmoss and woods entwine at the base, leaving a unique arboreal impression"
+      ],
+      "shared_with_sauvage": ["bergamot", "lavender", "ambroxan"],
+      "one_difference": "oakmoss in the base (also peppermint, verbena, galbanum and violet, none on Dior's list)",
+      "family_note": "Creed calls it a fougère; four of the Perfume Society's six typical fougère materials appear on Creed's list (lavender, geranium, bergamot, oakmoss).",
+      "do_not_reuse": "Post 50 already quotes 'as timeless as a sharp tailored suit' and 'precision-crafted fougere as timeless as a sharp tailored suit'; post 51 calls it 'the classic green fougère' and 'the classic green choice'; post 50 calls it 'the green aromatic standard'. Quote the oakmoss sentence instead."
+    },
+    {
+      "n": 2,
+      "handle": "ysl-y-intense",
+      "print_name": "YSL Y Eau de Parfum Intense",
+      "h3_text": "2. YSL Y Eau de Parfum Intense: lavender with juniper and patchouli",
+      "official_url": "https://www.yslbeauty.com/int/fragrance/masculine-fragrance/y/y--eau-de-parfum-intense/WW-51037YSL.html",
+      "fetched": "curl 2026-09-14, HTTP 200 on YSL Beauty International (the US page yslbeautyus.com returned 403 to curl and WebFetch)",
+      "official_notes": "YSL names a blend of blue juniper berries, a lavender heart from Provence and patchouli from Bali. Use only these three.",
+      "maker_words_verbatim": [
+        "a blend of blue juniper berries, fresh Diva lavender heart from Provence"
+      ],
+      "shared_with_sauvage": ["lavender"],
+      "one_difference": "patchouli from Bali (and blue juniper berries), neither on Dior's list",
+      "do_not_reuse": "Post 52 quotes 'highly cool, intensely sensual' and uses 'crisp herbs, darker woods' and 'Less universal than Sauvage'. The YSL page's 'overdose', 'all-day long intensity' and 'day-long intensity' are performance words: never use them."
+    },
+    {
+      "n": 3,
+      "handle": "pdm-perseus",
+      "print_name": "Parfums de Marly Perseus",
+      "h3_text": "3. Parfums de Marly Perseus: bergamot on a grapefruit and vetiver frame",
+      "official_url": "https://us.parfums-de-marly.com/products/perseus",
+      "fetched": "curl 2026-09-14, HTTP 200 (page and .js)",
+      "official_notes": "Top: bergamot, grapefruit. Heart: geranium, blackcurrant bud. Base: vetiver, amberwood, grey amber.",
+      "maker_words_verbatim": [
+        "Perseus combines bright grapefruit, fresh geranium, and refined vetiver."
+      ],
+      "shared_with_sauvage": ["bergamot"],
+      "one_difference": "vetiver in the base (also grapefruit and blackcurrant bud)",
+      "do_not_reuse": "Posts 50 and 51 both quote 'bright, invigorating and refined'; post 51 calls it 'the bright daily pick' and groups it as 'fresh and light'; post 50 heads it 'citrus with a vetiver spine'. Use the 'combines' sentence instead and do not restate any of those labels."
+    },
+    {
+      "n": 4,
+      "handle": "prada-paradigme",
+      "print_name": "Prada Paradigme",
+      "low_stock": true,
+      "h3_text": "4. Prada Paradigme: bergamot in a pyramid turned upside down",
+      "official_url": "https://www.prada.com/us/en/pradasphere/fragrances/paradigme.html",
+      "fetched": "curl 2026-09-14, HTTP 200, Eau de Parfum section of the page (ignore the Le Parfum paragraph above it)",
+      "official_notes": "Opens with a smoky blend of Peru balsam, benzoin resin and guaiac wood; at its heart a double geranium extract (aromatic, green and floral) with Calabrian bergamot and airy musks. Created by Marie Salamagne, Bruno Jovanovic and Nicolas Bonneville around 'the inverted fragrance pyramid'.",
+      "maker_words_verbatim": [
+        "the inverted fragrance pyramid",
+        "is illuminated by Calabrian bergamot and airy musks (quote only this fragment; the full sentence on Prada's page contains dash characters that must never be reproduced)"
+      ],
+      "shared_with_sauvage": ["Calabrian bergamot"],
+      "one_difference": "guaiac wood (also Peru balsam, benzoin resin, geranium and musks)",
+      "do_not_reuse": "Prada's 'intense smoky blend', 'radiant lightness', 'refined yet bold' and the Le Parfum 'hyper-lasting trail' are performance or hype words: never use them. Post 52 says 'You want a genuinely new structure'; do not reuse."
+    },
+    {
+      "n": 5,
+      "handle": "versace-eros",
+      "print_name": "Versace Eros Eau de Parfum",
+      "low_stock": true,
+      "h3_text": "5. Versace Eros Eau de Parfum: vanilla after a mint and apple opening",
+      "official_url": "https://www.versace.com/us/en/men/accessories/fragrances-body-care/eros/eros-edp-100-ml-blue/R740110-R100MLS_RNUL.html",
+      "fetched": "curl 2026-09-14, HTTP 200 (the research lane's URL /us/en-us/man/fragrances/eros/eros-eau-de-parfum now redirects to a 404)",
+      "official_notes": "Top: Italian lemon and mandarin, mint oil, candied apple. Heart: geranium flower, clary sage essence, AmberMax. Base: cedarwood Atlas and Virginia, vetiver, patchouli, sandalwood, vanilla. Olfactory family per Versace: woody, oriental and fresh.",
+      "maker_words_verbatim": [
+        "a unique note of candied apple",
+        "Decadent vanilla dares to flirt with leather in the final note"
+      ],
+      "shared_with_sauvage": ["vanilla"],
+      "one_difference": "candied apple on top (also mint oil, cedarwood and patchouli)",
+      "do_not_reuse": "Versace's 'sensuality and power', 'fatal and provocative weapon', 'intoxicating' and the longevity tip are banned. Post 52 says 'sweet and playful for going out' and 'something quiet for close quarters'. Do not write that Eros contains ambroxan: Versace lists AmberMax, a different trade-named material."
+    }
+  ],
+  "dropped_products": [
+    {
+      "handle": "acqua-di-gio-profondo-parfum",
+      "reason": "Armani's official page (giorgioarmanibeauty-usa.com A2772) returned 403 to curl with browser headers and to WebFetch, and armanibeauty.com served a Cloudflare challenge. Its notes were seen only as search-engine snippets, which is not a page fetched in this run, so it cannot carry official-note claims. Base Note's stored note list also looks like the older Profondo EDP formula rather than the Parfum."
+    },
+    {
+      "handle": "givenchy-gentleman",
+      "reason": "Givenchy's official page returned 403 or an Akamai bot challenge on every US, UK and international URL tried (curl and WebFetch). Search snippets disagree with the research lane's note list (bergamot, cloves, cinnamon and tonka could not be confirmed). Also LOW STOCK."
+    },
+    {
+      "handle": "mont-blanc-legend-eau-de-parfum",
+      "reason": "Montblanc's official Legend Eau de Parfum page (MB127070) loaded but carries no note list, only one descriptive sentence, so no official note overlap with Sauvage can be shown."
+    },
+    {
+      "handle": "creed-aventus",
+      "reason": "Not a numbered pick: covered in its own Sauvage vs Aventus h2 because that pairing leads the head-to-head demand. A separate h3 would repeat that section and crowd the live Aventus review."
+    },
+    {
+      "handle": "dior-sauvage",
+      "reason": "The reference fragrance, not an alternative. Linked in the Sauvage section and the closing section."
+    }
+  ],
+  "head_to_head": [
+    {
+      "pair": "Dior Sauvage Eau de Parfum vs Creed Aventus",
+      "where": "own h2",
+      "shared": "Calabrian bergamot (both pages). Each names a different pepper: Sichuan in Sauvage, pink in Aventus.",
+      "differs": "Aventus: pineapple accord, blackcurrant leaf accord, jasmine accord, birch, patchouli, musk accord. Sauvage: lavender, star anise, vanilla, ambroxan."
+    },
+    {
+      "pair": "Dior Sauvage Eau de Parfum vs YSL Y Eau de Parfum Intense",
+      "where": "FAQ",
+      "shared": "lavender",
+      "differs": "YSL: blue juniper berries, patchouli from Bali. Dior: Calabrian bergamot, Sichuan pepper, star anise, vanilla, ambroxan."
+    },
+    {
+      "pair": "Dior Sauvage Eau de Parfum vs Creed Green Irish Tweed",
+      "where": "h3 number 1 and FAQ",
+      "shared": "bergamot, lavender, ambroxan",
+      "differs": "Creed: peppermint, verbena, lemon, galbanum, geranium, violet, sandalwood, cedarwood, oakmoss. Dior: Sichuan pepper, star anise, vanilla."
+    }
+  ],
+  "faq": [
+    {
+      "q": "What smells like Dior Sauvage but is not a clone?",
+      "answer_points": "Separate fragrances whose official note lists share notes with Sauvage: Green Irish Tweed (bergamot, lavender, ambroxan), Y Eau de Parfum Intense (lavender), Perseus and Paradigme (bergamot), Eros Eau de Parfum (vanilla)."
+    },
+    {
+      "q": "What is the difference between a fragrance clone and an alternative?",
+      "answer_points": "PairFum's clone definition (replicates, copies or imitates a well-known luxury fragrance); an alternative is a different recipe with its own note list that shares some notes."
+    },
+    {
+      "q": "Is a fragrance dupe the same as a fake?",
+      "answer_points": "NPR: dupe makers openly advertise their products as 'inspired by' the original; they are not knock-offs claiming to be the brand-name perfume. No legal advice, no quality claims."
+    },
+    {
+      "q": "Is Dior Sauvage or Creed Aventus better?",
+      "answer_points": "No ranking. Both name Calabrian bergamot; Aventus builds on pineapple and birch, Sauvage on pepper, lavender, vanilla and ambroxan. Compare them on your own skin."
+    },
+    {
+      "q": "What is the difference between Dior Sauvage and YSL Y Intense?",
+      "answer_points": "Shared lavender; YSL adds blue juniper berries and patchouli from Bali, Dior has Calabrian bergamot, Sichuan pepper, star anise, vanilla and ambroxan. Nothing about versatility."
+    },
+    {
+      "q": "What is ambroxan, and which of these alternatives contain it?",
+      "answer_points": "Wikipedia definition (ambergris odor constituent; woody, musky, slightly salty; made from sclareol from clary sage). Of the five picks, only Creed Green Irish Tweed lists it; Aventus does not; Versace lists AmberMax, a different material, so do not equate them."
+    }
+  ],
+  "internal_links": [
+    {
+      "url": "/blogs/hub/fragrance-notes-explained-top-heart-base-perfume-pyramid",
+      "sentence": "In the Sauvage section, after defining top, heart and base notes: 'Our guide to top, heart and base notes explains how those layers fit together.' (reword; do not copy post 53's link sentence)"
+    },
+    {
+      "url": "/blogs/hub/designer-vs-niche-fragrance-whats-the-difference",
+      "sentence": "In the 'Which fragrances are like Dior Sauvage?' intro: 'These picks come from fashion houses and perfume houses alike; if that distinction is new, our explainer on designer versus niche fragrance covers it.' Do not label any specific house designer or niche."
+    },
+    {
+      "url": "/blogs/hub/creed-aventus-review-is-it-worth-500",
+      "sentence": "At the end of the Aventus section: 'Our Creed Aventus review looks at that fragrance on its own terms.' Do not restate the review's claims."
+    },
+    {
+      "url": "/blogs/hub/sample-before-you-buy-full-bottle",
+      "sentence": "In the side-by-side section: 'Our guide to sampling before you buy a full bottle goes through the reasons to test first.'"
+    }
+  ],
+  "sources": [
+    {"url": "https://www.dior.com/en_us/beauty/products/sauvage-eau-de-parfum-Y0785220.html", "label": "Dior: Sauvage Eau de Parfum", "fetched": "curl 200"},
+    {"url": "https://creedboutique.com/products/green-irish-tweed", "label": "Creed: Green Irish Tweed", "fetched": "curl 200"},
+    {"url": "https://www.yslbeauty.com/int/fragrance/masculine-fragrance/y/y--eau-de-parfum-intense/WW-51037YSL.html", "label": "YSL Beauty: Y Eau de Parfum Intense", "fetched": "curl 200"},
+    {"url": "https://us.parfums-de-marly.com/products/perseus", "label": "Parfums de Marly: Perseus", "fetched": "curl 200"},
+    {"url": "https://www.prada.com/us/en/pradasphere/fragrances/paradigme.html", "label": "Prada: Paradigme", "fetched": "curl 200"},
+    {"url": "https://www.versace.com/us/en/men/accessories/fragrances-body-care/eros/eros-edp-100-ml-blue/R740110-R100MLS_RNUL.html", "label": "Versace: Eros Eau de Parfum", "fetched": "curl 200"},
+    {"url": "https://creedboutique.com/products/aventus", "label": "Creed: Aventus", "fetched": "curl 200"},
+    {"url": "https://www.npr.org/2025/05/07/nx-s1-5377539/fragrance-dupes-popular-how-to-buy", "label": "NPR: fragrance dupes", "fetched": "curl 200"},
+    {"url": "https://www.pairfum.com/should-you-buy-clone-perfume-dupes-and-copycat-fragrance/", "label": "PairFum: clone perfume and copycat fragrance", "fetched": "curl 200"},
+    {"url": "https://wwd.com/beauty-industry-news/fragrance/dior-sauvage-bestselling-scent-1238123549/", "label": "WWD: Dior Sauvage", "fetched": "curl 200"},
+    {"url": "https://perfumesociety.org/fragrance-families/fougere/", "label": "The Perfume Society: Fougère", "fetched": "curl 200"},
+    {"url": "https://perfumesociety.org/fragrance-family-friday-what-is-fresh/", "label": "The Perfume Society: What is fresh?", "fetched": "curl 200"},
+    {"url": "https://en.wikipedia.org/wiki/Foug%C3%A8re", "label": "Wikipedia: Fougère", "fetched": "curl 200"},
+    {"url": "https://en.wikipedia.org/wiki/Ambroxide", "label": "Wikipedia: Ambroxide", "fetched": "curl 200"}
+  ],
+  "performance_traps": [
+    "lasts 8 to 10 hours / longer than most men's cologne / from morning to night (Dior page FAQ)",
+    "Spray 2 to 3 times onto pulse points (Dior page; spray counts are banned)",
+    "powerful and noble trail / smoky, magnetic trail (Dior)",
+    "bold and refined / balanced and versatile / the most versatile expression (Dior)",
+    "More intense than the Eau de Toilette / more refined than the ultra-concentrated Elixir (Dior)",
+    "Bold enough to make a statement, refined enough to wear anywhere / the ultimate signature scent (Dior)",
+    "one of the most popular gifting choices (Dior self-description; popularity puffery)",
+    "all-day long intensity / day-long intensity / overdose / amplifies to the extreme / highly cool, intensely sensual (YSL)",
+    "bold, confident and timeless / refined yet assertive lasting impression / leaves its mark (Creed Aventus)",
+    "fade first / develop slowly and endure on the skin (Creed layer definitions; describe order only)",
+    "intense smoky blend / radiant lightness / refined yet bold / hyper-lasting trail (Prada)",
+    "sensuality and power / fatal and provocative weapon / intoxicating / enhance the fragrance's longevity (Versace)",
+    "depth and intensity (Armani, research lane)",
+    "the one bottle that covers the most ground / works from a Monday morning to a Saturday night (post 52, Sauvage)",
+    "less universal than Sauvage / sweet and playful for going out / something quiet for close quarters / lighter profiles / applied lightly / the warmest (post 52)",
+    "genuinely well-constructed / fresh, inoffensive, universally presentable / performs impeccably / does its job (post 06)",
+    "the bright daily pick / fresh and light / favourites among Base Note members / the classic green choice (post 51)",
+    "the green aromatic standard / the low-effort default / works at the office (post 50)",
+    "quiet compliment-getter / compliments / projection / projects / sillage / longevity / beast mode / office-safe / crowd-pleaser / safe blind buy",
+    "so close even professionals would have difficulty telling them apart (NPR; clone closeness, do not use)",
+    "fixative (Wikipedia Ambroxide; implies staying power, do not use)",
+    "any comparison word between fragrances: stronger, softer, milder, quieter, lighter, heavier, deeper, fresher, warmer, bolder, safer, more versatile"
+  ],
+  "notes_for_writer": [
+    "The research lane's note lists for Y Intense (ginger, bergamot, sage, vetiver, cedar), Eros (ambroxan) and Gentleman could not be confirmed on the official pages fetched in this run. Use only the notes in picks[].official_notes.",
+    "Every Dior quote containing an em dash on the live page must be paraphrased or cut at the dash.",
+    "No free shipping threshold, no $18 add-on pricing, no Monthly Rotation price, no spray counts from the homepage."
+  ]
+}

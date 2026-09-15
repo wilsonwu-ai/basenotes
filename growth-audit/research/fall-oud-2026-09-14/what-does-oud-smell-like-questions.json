@@ -1,0 +1,104 @@
+{
+  "article": {
+    "title": "What Does Oud Smell Like? A Plain-English Guide to Fall's Most Divisive Note",
+    "handle": "what-does-oud-smell-like",
+    "run": "2026-09-14T16:40Z",
+    "lane": "questions"
+  },
+  "query_family": [
+    "what does oud smell like",
+    "what is oud in perfume",
+    "oud fragrance for beginners",
+    "real vs synthetic oud",
+    "is oud a fall scent"
+  ],
+  "observed_questions": [
+    {
+      "question": "What does oud smell like?",
+      "source": "WebSearch aggregate (Snif, Phlur, Frederic Malle, Al Shareef Oudh, Abu Zari, Eternal Perfume Oils results), directional",
+      "note": "The core query itself; near-universal top-of-page H1/H2 across every competitor found."
+    },
+    {
+      "question": "Why does oud smell like poop / barnyard / manure?",
+      "source": "WebSearch: ouddict.com forum thread 'The Association Issue', Substack 'ode to oud' and 'this smells like shit i love it' — directional, forum/blog chatter not a verified PAA box",
+      "note": "The animalic/barnyard association is the single most repeated objection across informal sources; people are searching to understand the smell before dismissing it."
+    },
+    {
+      "question": "What is oud in perfume / what is oud made from?",
+      "source": "WebSearch aggregate (Frederic Malle 'What is Oud? A Guide', Abu Zari 'What Is Oud?' H2, Eternal Perfume Oils), directional",
+      "note": "Ingredient-origin question (agarwood/Aquilaria tree, resin, mold defense response) that almost every competitor answers before the sensory description."
+    },
+    {
+      "question": "Is oud fragrance for beginners intimidating / where should a beginner start with oud?",
+      "source": "WebSearch: Kiss of Aroma 'Best Oud Fragrances for Beginners', Abu Zari 'How to Choose Your First Oud Fragrance', Al Shareef Oudh beginner/exploration/enthusiast tiers — directional",
+      "note": "Recurring framing: oud is approached as something to work up to, not jump into."
+    },
+    {
+      "question": "What's the difference between real oud and synthetic oud (and is synthetic oud bad)?",
+      "source": "WebSearch aggregate (Parfumane, Oudimentary, Parfum Central, The Perfume Stash, fragplace, scentchronicles), directional",
+      "note": "A defensive question — people want reassurance that a synthetic-oud fragrance (which is what almost every commercial cologne actually uses) isn't a lesser product."
+    },
+    {
+      "question": "Is oud a fall/autumn scent, or can you wear it year-round?",
+      "source": "WebSearch aggregate (Redfin 'Autumn Aromas', Gulf News autumn perfume roundups, general fall-fragrance listicles), directional",
+      "note": "Oud consistently appears bundled into fall/winter roundups for its warm, smoky weight; no competitor found explains WHY (cold air = slower, denser projection) rather than just asserting it."
+    },
+    {
+      "question": "Why does oud smell different in every bottle / why do two ouds smell nothing alike?",
+      "source": "WebSearch aggregate (Oudimentary 'no two ouds smell exactly alike', Abu Zari 'Why Does Oud Smell Different?', Al Shareef Oudh region/type breakdown), directional",
+      "note": "A close cousin of the real-vs-synthetic question — batch and origin variability is presented as a feature by oud specialty sites, but is confusing for a first-time buyer comparing designer bottles."
+    }
+  ],
+  "competitors": [
+    {
+      "url": "https://www.fredericmalle.co.uk/larevue/oud-perfume",
+      "strengths": "Authoritative niche-house voice on 'What is Oud? A Guide To This Luxury Scent' — strong on heritage and ingredient story (per search snippet; page returned HTTP 403 on direct fetch, so this is inferred from the search result title/summary only).",
+      "gaps": "No confirmed beginner ladder or sampling guidance (could not verify past the search snippet); Frederic Malle sells only its own catalog, so by construction it cannot offer a gentle-to-bold ladder across brands or a 5 ml-before-full-bottle argument the way a multi-brand retailer can."
+    },
+    {
+      "url": "https://www.alshareefoudh.com/what-does-oud-smell-like-deep-woody-scent/",
+      "strengths": "Best structure found: moves First Impression -> Emotional Feel -> Why It Smells That Way -> Types of Oud Smells -> Types by Region -> Cultural Significance -> Natural vs Synthetic. Names three specific products across a beginner/exploration/enthusiast tier (Leyte Classic, Oud Discovery, Al Malek Al Ceeni II).",
+      "gaps": "No sampling or trial-size option mentioned anywhere on the page — pushes straight to full-size purchase. All three tier picks are the retailer's own house line, not commercial/designer names a reader would recognize, so it doesn't help someone comparing Tom Ford or Bvlgari."
+    },
+    {
+      "url": "https://abuzarifragrances.com/blogs/what-does-oud-smell-like/what-does-oud-smell-like",
+      "strengths": "Cleanest beginner-to-bold logic found in this set: explicitly recommends starting with oud blended into 'amber, vanilla, musk, sandalwood, rose, or tonka bean' before moving to 'stronger woody, smoky, leathery, or animalic' interpretations. Clear H2 ladder (What Is Oud? / What Does It Smell Like? / Why Does It Smell Different? / Natural vs Modern / How It Evolves on Skin / How to Choose Your First Oud Fragrance).",
+      "gaps": "Zero sampling guidance — directs to 'the collection' with no mention of testing before a full bottle. Recommendations are all in-house, not a comparison across designer/niche houses, so a reader can't map the ladder onto brands they already know."
+    },
+    {
+      "url": "https://oudimentary.com/blogs/news/how-to-tell-if-your-oud-is-real-or-fake-a-beginner-s-guide",
+      "strengths": "Best real-vs-synthetic explainer found: frames synthetic oud neutrally (predictable, doesn't evolve the way natural oud does) rather than as fake or inferior. Approachable 4-point listicle + FAQ close.",
+      "gaps": "No product ladder, no specific brand names at all, no price guidance, and no chemistry/science of why natural oud varies batch to batch. Purely definitional — doesn't help a reader pick anything."
+    },
+    {
+      "url": "https://phlur.com/blogs/perfumery-dictionary/oud-scent-in-perfumery",
+      "strengths": "Positioned as a perfumery-dictionary entry inside a modern DTC fragrance brand's content hub (per search snippet; page returned HTTP 403 on direct fetch, so this is inferred from the search result title only, not verified content).",
+      "gaps": "Could not verify structure or specific claims past the search snippet; flagging as unverified rather than asserting gaps we didn't actually see."
+    }
+  ],
+  "competitor_pattern_summary": "Across the 5 pages reviewed, the strongest 2 (Al Shareef Oudh, Abu Zari) already do the sensory-description-plus-beginner-ladder job well, but every single one recommends only their own in-house products and none mentions trying a small size before a full bottle. That is the two-part gap Base Note can own: (1) a gentle-to-bold ladder built from recognizable designer/niche names a reader has actually heard of, not a private-label catalog, and (2) the explicit 'try a 5 ml atomizer before you spend $300+ on a full bottle' argument, which is Base Note's structural advantage as a multi-brand retailer and appears nowhere in this competitive set.",
+  "existing_claims": [
+    "blog-post-51-best-niche-fragrances-2026-ranked.html calls Tom Ford Oud Wood 'the gentle introduction to oud': 'Dry spice and smooth, smoky wood with a warm edge from tonka (a sweet, almond-like bean), for a quiet evening in a dark jacket.'",
+    "blog-post-19-fall-2026-fragrance-trends.html, section 'Woods, oud and leather are back — but sweetened': 'Spate reports growth in oud, amber and dark fruits, describing the overall move as \"warmer. Richer. More sensual\" ... Woods, oud and leather are also growing, but they are showing up sweetened and blended rather than austere.'",
+    "blog-post-20-best-winter-fragrances-men-2026-2027-guide.html describes Oud Wood as 'dry, smoky woods' and Xerjoff Alexandria II as 'apple, rose and oud (agarwood, a dark, resinous wood)' in the same comparison line",
+    "blog-post-48-best-vanilla-colognes-men.html on Bvlgari Le Gemme Orom: 'Bvlgari builds Orom around Vanilla Bourbon absolute and Oud Assam essence, with deep leather in the brand's description and a woody, amber family designation' — described elsewhere on the page as 'vanilla with leather and oud'",
+    "blog-post-14-best-fall-fragrances-men-2026-guide.html already answers 'Why does my fragrance suddenly seem stronger in cold weather?' with the volatility/evaporation-rate explanation ('In heat, volatile molecules evaporate quickly and intensely, then drop off fast. In cooler air, the release is more controlled') — this article must build on that explanation for the fall/oud pairing, not repeat it verbatim, and should link to it rather than re-argue it"
+  ],
+  "recommended_h2": [
+    "What does oud actually smell like?",
+    "Why does oud smell different from bottle to bottle?",
+    "Why do some people say oud smells like barnyard or manure — and is that a flaw?",
+    "Real oud vs. synthetic oud: what's actually in the bottle you're buying",
+    "Is oud really a fall scent, or does it wear year-round?",
+    "Where to start: a gentle-to-bold oud ladder (from Tom Ford Oud Wood to Xerjoff Alexandria II)"
+  ],
+  "recommended_faq": [
+    "What does oud smell like in one sentence?",
+    "Is oud a good scent for beginners, or should I wait?",
+    "What's the difference between real oud and synthetic oud, and does it matter which one I buy?",
+    "Why does my oud fragrance smell different than my friend's bottle of the same cologne?",
+    "Is oud too heavy to wear before winter, or is fall the right time to start?",
+    "What's the least intimidating oud fragrance to try first?"
+  ],
+  "notes": "Search-volume tools (Keywords Everywhere) were unavailable this run per the connection failure noted in the environment — every demand signal above is labeled directional and comes from WebSearch result aggregation (8 calls used) plus 5 WebFetch page reads (2 of 7 attempted URLs, Frederic Malle and Phlur, returned HTTP 403 and are flagged as unverified-past-snippet rather than asserted). The competitor-content-analysis SKILL.md at /Users/wilsonwu/.claude/plugins/marketplaces/ai-marketing-skills/skills/research/competitor-content-analysis/SKILL.md is built for full-site content-engine audits (sitemap crawls, comparison-page inventories); for a single explainer article the applicable piece was its strengths/gaps framing per competing page, which is what the competitors array above applies. Recommend the writer lane open with the sensory description, name the barnyard/animalic objection directly rather than avoid it (every informal source shows this is the real hesitation), then pivot to the real-vs-synthetic reassurance and the fall-timing hook, landing on the gentle-to-bold ladder (Tom Ford Oud Wood -> Bvlgari Le Gemme Orom -> Xerjoff Alexandria II, cross-checking Parfums de Marly Haltane and Bond No. 9 Nomad's actual oud content before including them) with a 5 ml-atomizer CTA before any full-bottle purchase — no competitor page found does the small-size-first argument at all."
+}

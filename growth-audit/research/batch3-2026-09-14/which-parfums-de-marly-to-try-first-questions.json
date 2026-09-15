@@ -1,0 +1,65 @@
+{
+  "run": "2026-09-14T19:45Z",
+  "article": "Which Parfums de Marly Should You Try First? Layton, Pegasus, Althair, Perseus and Haltane Compared",
+  "handle": "which-parfums-de-marly-to-try-first",
+  "lane": "questions-and-competitors",
+  "products_in_scope": ["pdm-layton", "pdm-pegasus", "pdm-althair", "pdm-perseus", "parfums-de-marly-haltane"],
+  "low_stock_note": "parfums-de-marly-haltane is low stock; never lead or first-pick it.",
+  "competitors": [
+    {
+      "url": "https://beautypert.com/best-parfums-de-marly/",
+      "strengths": "Ranked countdown of 12 PdM fragrances (#11 to #1) framed as tester-panel results across smell, seasonality, projection, longevity and 'compliment-generating ability.' Puts Layton at #1 as the most versatile/mass-appealing entry point and gives Althair its own strong case as a cool-weather 'compliment' pick. Gives concrete spray-count guidance (their words: recommends going light, not ours).",
+      "gaps": "Covers only Layton, Layton Exclusif, Althair, Sedley and Pegasus in real depth -- Haltane and Perseus are named only in reader comments, not reviewed in the body, so anyone who lands here wanting Perseus or Haltane guidance gets nothing. No side-by-side note-pyramid table across all five; the comparison is countdown-ranking, not a decision matrix. No structured FAQ block for AEO."
+    },
+    {
+      "url": "https://www.thelastspritz.com/best-parfums-de-marly-fragrances",
+      "strengths": "Uses a 'best in category' structure (Best Overall, Most Versatile, Best Sweet Pick) rather than a strict countdown, which maps well to a first-fragrance decision. Has an explicit Layton vs. Pegasus FAQ answer: Layton reads warmer/more date-night, Pegasus reads more restrained/office-appropriate, with a clear 'start with Layton, own both eventually' recommendation.",
+      "gaps": "Perseus and Haltane are absent from the piece entirely -- the query family we're targeting (which includes those two) is only half answered here. Scoring numbers (95/100, 90/100) are unsourced house opinion presented as if measured, which is the kind of unverifiable performance framing we should not copy."
+    },
+    {
+      "url": "https://scentchronicles.com/parfums-de-marly-buying-guide-for-men-choose-your-signature/",
+      "strengths": "The strongest single competitor for this exact topic: ranks all 19 PdM releases (16 core + 3 extraits), gives all five of our in-scope fragrances real coverage, includes a positioning chart and a decision framework, and explicitly recommends Layton as the entry point because it is 'the rotation anchor of the entire house.' Names real head-to-head pairs beyond our five (Layton vs. Percival, Althair vs. Carlisle, Pegasus vs. Pegasus Exclusif) which signals what comparison-shaped searches look like.",
+      "gaps": "Does not address how any of these wear in humid or hot climates even though it recommends a different PdM specifically for heat, which leaves a seasonal-honesty gap our fall-focused piece can fill. No sourced note pyramids (paraphrases the accords rather than quoting the house pyramid), and no explicit sampling-before-buying advice tied to a subscription/decant model the way our other live posts do."
+    }
+  ],
+  "head_to_head": [
+    "Layton vs. Pegasus -- the single most-searched pair by a wide margin (multiple autocomplete branches: 'layton vs pegasus', 'pdm layton vs pegasus', 'marly layton vs pegasus', 'layton vs pegasus exclusif', 'parfums de marly layton or pegasus'). This is also the pair Base Note's own Pegasus review (blog-post-42) already resolves head-to-head, so the new article can point to it rather than re-litigate.",
+    "Althair vs. Layton -- second-strongest pair, with a dedicated reddit-flavored autocomplete branch ('althair vs layton reddit', 'pdm althair vs layton reddit') signaling real forum demand, plus 'althair vs layton exclusif' and 'pdm althair vs layton' variants.",
+    "Haltane vs. Althair -- smaller but real volume ('haltane vs althair', 'althair vs haltane'); useful because it's the sweet-vs-dark-sweet decision inside the house, and it's the one pair where the low-stock Haltane can legitimately appear as the 'if you want more oud/leather' answer rather than the lead."
+  ],
+  "existing_claims": [
+    "blog-post-16 (Layton review, scheduled): defines Layton's note pyramid (top: apple, lavender, bergamot; heart: geranium, violet, jasmine; base: patchouli, vanilla, guaiac wood, ambermax), calls it a fall/winter fragrance that gets 'cloying and heavy' in high heat, and states it becomes 'a closer, warmer skin scent' after the opening. Also covers the 2021 Lilial reformulation and frames Layton vs. Layton Exclusif as 'try the standard EDP first, Exclusif is a lateral move.'",
+    "blog-post-42 (Pegasus review, scheduled): gives the definitive Base Note head-to-head language we should reuse in spirit, not sentence: 'Layton is the more complex fragrance. Pegasus is the more comfortable one.' Also states the single most common reason people bounce off Pegasus is the lavender, not the almond, and gives a full 5-fragrance side-by-side table (Pegasus, Layton, Althair, Haltane, Perseus) with 'pick it over Pegasus when...' logic that the new article must not contradict or duplicate verbatim.",
+    "blog-post-51 (32... best-niche-fragrances-2026-ranked, live): calls Layton 'the warm all-rounder' (rank #2) and Perseus 'the bright daily pick' (rank #6, 'the easiest daily wear from Parfums de Marly'); explicitly answers 'What is the best niche fragrance for a beginner?' with Creed Aventus or Perseus, and separately says Layton is 'the easier step' for people who already wear warm, sweet designer scents.",
+    "blog-post-20 (best winter fragrances guide, live): describes Althair as delivering 'vanilla warmth with a bright floral lift' and 'the cozy one: warm vanilla and praline, lifted by orange blossom so it glows rather than smothers'; flags Althair as sweeter than Layton and says 'if sweet is what you want, move it up.'",
+    "blog-post-34 (best date night colognes, live): profiles Althair as 'the one people ask about' -- passionfruit/bergamot opening into praline/heliotrope into vanilla/tonka/white musk, tagged 'very sweet, loud'; Pegasus as 'sweet without being sugar' with a marzipan-and-skin read; Layton as 'the formal one... the safest of the four' Marlys covered there (no Perseus or Haltane in that piece).",
+    "blog-post-26 (32 luxury fragrances ranked, live): ranks Layton #2 overall ('the easiest expensive smell to like'), lists real prices with sources (Layton $290/75ml, Parfums de Marly US 2026), ranks Pegasus #9 ('almond and vanilla; usefully polarizing'), Haltane #12 ('sweet and dark at once, a big evening scent'), Perseus #19 ('fresh and polite, the safest PdM'), Althair #27 ('the sweetest thing here, go in knowing'). Also groups a 'cold-weather rotation: Layton, then Oud Wood, then Haltane -- sweet to woody to dark.'"
+  ],
+  "performance_phrases_to_avoid": [
+    "'8-10+ hours' longevity or any specific hour-count claim (Beautypert's Layton longevity figure) -- unverifiable and not sourced to the house.",
+    "Any 0-100 point score (thelastspritz's '95/100', '90/100') presented as if measured rather than opinion.",
+    "'the easiest expensive-smelling scent to like' -- this exact phrasing belongs to blog-post-26, reuse the idea in new words only.",
+    "'the more complex fragrance... the more comfortable one' contrast -- this exact Layton/Pegasus formulation is blog-post-42's; paraphrase, don't lift.",
+    "'the warm all-rounder' / 'the bright daily pick' -- blog-post-51's exact tags for Layton and Perseus.",
+    "'vanilla warmth with a bright floral lift' / 'the cozy one... glows rather than smothers' -- blog-post-20's exact Althair phrasing.",
+    "Any 'compliment-generating' or compliment-frequency claim (Beautypert) -- per the topic sweep's own trap note, Base Note does not make compliment-frequency or projection-distance claims without a sourced test."
+  ],
+  "recommended_h2": [
+    "Which Parfums de Marly should you try first?",
+    "Layton vs. Pegasus: which one actually fits you?",
+    "Althair vs. Layton: how much sweetness do you actually want?",
+    "Is Perseus a Parfums de Marly, or is it the odd one out?",
+    "Where does Haltane fit once you already own one or two?",
+    "Is Parfums de Marly worth it compared to designer fragrances?",
+    "How to sample all five before buying a full bottle"
+  ],
+  "recommended_faq": [
+    "Which Parfums de Marly fragrance should I try first?",
+    "Is Layton or Pegasus better for a first Parfums de Marly bottle?",
+    "What is the difference between Althair and Layton?",
+    "Is Parfums de Marly Layton worth the money?",
+    "Is Parfums de Marly Pegasus too sweet or too polarizing?",
+    "What is the best Parfums de Marly for summer, since most of the lineup is fall/winter?"
+  ],
+  "notes": "Consistency check found no contradictions to flag on note lists -- the five CONSISTENCY posts agree with each other on notes and seasonality for all five fragrances (Layton = apple/lavender/vanilla/guaiac; Pegasus = bitter almond/heliotrope/lavender over vanilla/sandalwood/amber/guaiac; Althair = passionfruit or orange-blossom/praline/heliotrope over vanilla/tonka/white musk depending on the post's note-list version -- both versions appear across posts, worth a quick note-pyramid re-check against the official Parfums de Marly product pages before publishing since 'passionfruit, bergamot' (post 34) vs 'bergamot, mandarin, elemi' (post 20) for Althair's top notes are NOT the same list and one of them may be an older/outdated note set per the OLDER POSTS WARNING; verify against parfums-de-marly.com before the new article locks its own pyramid). Perseus notes also vary slightly: 'grapefruit, lavender, musk' (post 26) vs 'bergamot, geranium, blackcurrant bud / vetiver, amberwood, grey amber' (post 51) vs 'grapefruit over vetiver and amber' -- same fragrance, different levels of detail, not contradictory, but the new article should pull the fullest official pyramid rather than the shortest paraphrase. Demand signal is directional only (Keywords Everywhere MCP down; Google autocomplete used per budget). Strongest, cleanest autocomplete evidence: 'best parfums de marly fragrance' (9 modifiers, real breadth: men/women/summer/winter/reddit/cologne), 'parfums de marly ranked' (9 modifiers including 'reddit' and 'women'), 'layton vs pegasus' family (6 tight variants, no noise), 'althair vs layton' family (6 tight variants including a reddit-specific one). 'perseus vs' and 'layton vs' and 'pegasus vs' as bare 2-word stems returned mostly unrelated noise (Professor Layton the video game character, Pegasus the brand/mythology, Perseus vs. mythology/badminton opponents) and should not be read as fragrance demand -- only the fully-qualified PdM-prefixed queries are real signal. No Reddit access (blocked per prior run); no PAA boxes observed via WebSearch snippets, only autocomplete and organic result themes."
+}

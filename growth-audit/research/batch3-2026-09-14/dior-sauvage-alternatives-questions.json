@@ -1,0 +1,66 @@
+{
+  "article": "dior-sauvage-alternatives",
+  "run": "2026-09-14T19:45Z",
+  "competitors": [
+    {
+      "url": "https://www.fashionbeans.com/article/dior-sauvage-alternatives/",
+      "strengths": "Clean, accessible guide structure (anecdote, takeaways, product notes, comparison table, FAQ) that ranks 7 alternatives across price tiers with note breakdowns; easy to scan.",
+      "gaps": "Blurs dupe vs. legitimate-alternative: presents Armaf clones (Pride of Armaf, Ventana) as equivalent to real houses like Prada and Bvlgari without ever flagging which is a copy of Sauvage's formula and which is an independent composition. No mention of Creed, PdM, or Giorgio Armani lines. No note on sillage/longevity axis being unverifiable claims."
+    },
+    {
+      "url": "https://prosodylondon.com/blog/alternative-to-dior-sauvage/",
+      "strengths": "Explicitly calls out synthetic clone guides as a problem and argues for genuinely different (natural/botanical) compositions rather than ambroxan copies -- a real point of differentiation most competitors skip.",
+      "gaps": "Only recommends its own two house fragrances, so it is really a sales page dressed as a guide; ignores the broader market of established houses (Creed, YSL, Armani, Parfums de Marly) that Base Note actually stocks. No comparison table, no price context, no discussion of designer-tier real alternatives."
+    },
+    {
+      "url": "https://www.perfumedirect.com/blogs/news/dior-sauvage-alternatives-smell-the-same-for-less",
+      "strengths": "Positions itself around 'smell the same for less,' i.e. direct dupe/clone framing, which shows how strongly 'cheaper version' intent dominates this query -- useful signal for what NOT to do.",
+      "gaps": "Leans entirely on clone logic (dupe-for-less), doesn't distinguish real fragrance houses at all, and never explains what makes Sauvage's ambroxan-bergamot structure work so a reader could evaluate an alternative on its own merits rather than 'close enough.'"
+    }
+  ],
+  "existing_claims": [
+    "Post 52 (best-designer-colognes-2026-ranked, publishes Sep 17) ranks Dior Sauvage EDP #1 and calls it 'the one bottle that covers the most ground' with notes: Calabrian bergamot top; Sichuan pepper, lavender, star anise heart; vanilla and ambroxan base. It positions Acqua di Gio Profondo Parfum #2 (fresh, sea/resin), YSL Y Intense EDP #3 (herbal lavender + patchouli, 'less universal than Sauvage'), and notes Givenchy Gentleman and Born in Roma Intense as the 'warmer' lean in its FAQ.",
+    "Post 06 (designer-vs-niche-fragrance-whats-the-difference, live) states Sauvage is 'genuinely well-constructed' and calls it 'fresh, inoffensive, universally likeable' as an example of a designer fragrance that 'performs impeccably.'",
+    "Post 51 (best-niche-fragrances-2026-ranked) groups Parfums de Marly Perseus with Creed Silver Mountain Water as the 'fresh and light' starting picks, and separately lists PdM Perseus among fragrances that are 'favourites among Base Note members' alongside Creed Green Irish Tweed and others."
+  ],
+  "performance_phrases_to_avoid": [
+    "'the one bottle that covers the most ground' (post 52, re: Sauvage)",
+    "'covers the most ground' / 'works from a Monday morning to a Saturday night' (post 52 versatility framing)",
+    "'genuinely well-constructed' / 'fresh, inoffensive, universally likeable' / 'performs impeccably' (post 06, re: Sauvage)",
+    "'the fresh and light choice' / 'favourites among Base Note members' (post 51, re: Perseus)",
+    "any compliment-frequency, sillage-radius, or projection-hours claim -- Base Note's own trap log (topic sweep) flags these as unverifiable and to be avoided post-53"
+  ],
+  "head_to_head": [
+    "dior sauvage vs creed aventus (highest-volume pairing across autocomplete: 'dior sauvage vs creed aventus reddit', 'dior sauvage elixir vs creed aventus', 'is dior sauvage or creed aventus better', 'creed aventus vs dior sauvage which is better')",
+    "dior sauvage vs ysl y (edp/intense) ('dior sauvage vs ysl y edp', 'dior sauvage vs ysl y', 'ysl y intense vs edp')",
+    "dior sauvage vs acqua di gio (profondo) ('dior sauvage vs acqua di gio', 'acqua di gio profondo vs bleu de chanel' as adjacent proof of comparison intent)"
+  ],
+  "questions": [
+    "What are good Dior Sauvage alternatives from real fragrance houses (not clones)?",
+    "What fragrances smell like Dior Sauvage but aren't dupes?",
+    "Is Dior Sauvage or Creed Aventus better?",
+    "What should I wear instead of Sauvage if I want something more distinctive?",
+    "Is Dior Sauvage worth it compared to niche alternatives?",
+    "Dior Sauvage vs YSL Y Intense -- which is more versatile?",
+    "How is Creed Green Irish Tweed different from Dior Sauvage?",
+    "What's a good first niche fragrance for someone who wears Sauvage every day?"
+  ],
+  "recommended_h2": [
+    "What actually makes Dior Sauvage work (so you know what to look for in an alternative)",
+    "Dior Sauvage vs. Creed Aventus: which one earns its price?",
+    "Dior Sauvage vs. YSL Y Intense: fresh-and-safe vs. herbal-and-distinctive",
+    "Fresher and lighter than Sauvage: Acqua di Gio Profondo Parfum and Parfums de Marly Perseus",
+    "Greener and more classic than Sauvage: Creed Green Irish Tweed",
+    "Warmer and bolder than Sauvage: Givenchy Gentleman, Prada Paradigme, Versace Eros",
+    "Real alternative vs. clone: how to tell the difference before you buy"
+  ],
+  "recommended_faq": [
+    "What are the best Dior Sauvage alternatives from real fragrance houses?",
+    "Is Dior Sauvage or Creed Aventus better?",
+    "What smells similar to Dior Sauvage but isn't a clone?",
+    "What should I wear instead of Sauvage for something more distinctive?",
+    "Is Dior Sauvage worth it compared to designer and niche alternatives?",
+    "Dior Sauvage vs YSL Y Intense: which should I try first?"
+  ],
+  "notes": "Autocomplete confirms two distinct search intents inside this one topic: (1) 'clone/dupe/cheap alternative' seekers (all 3 fetched competitors default to this framing, none cleanly separates real houses from Middle-Eastern clone houses like Armaf/Lattafa) and (2) 'which one is objectively better' comparison seekers (dior sauvage vs creed aventus / vs ysl y / vs acqua di gio, dior sauvage or bleu de chanel). Base Note's article should lead with #2 and treat #1 only to explicitly disqualify clones, which is a real content gap none of the three competitors fill well. WebSearch surfaced a 4th-tier of pure-clone sites (dupeperfumehub, houseofmoksha, asiscents, perfumes.la, whatscent) reinforcing that almost the entire SERP for this query is dupe-focused -- confirms the topic-sweep's 'zero authority owns the real-houses angle' read. No note-list conflicts found between post 52/06/51 and manufacturer pages in the excerpts pulled (Sauvage notes match Dior's current EDP listing: Calabrian bergamot, Sichuan pepper, lavender, star anise, vanilla, ambroxan) -- flag for the writer to still verify current note lists for GIT, Perseus, Profondo Parfum, Y Intense, Gentleman, Paradigme and Eros directly against each house's site since those weren't independently re-verified in this lane. Reminder for the writer: Paradigme, Gentleman and Eros are LOW STOCK per the brief -- do not lead with them or make them the first pick in any head-to-head."
+}

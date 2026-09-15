@@ -1,0 +1,29 @@
+[
+  {
+    "handle": "dior-sauvage-alternatives",
+    "prompt": "Premium editorial still life for a fragrance alternatives guide, a halved fresh bergamot citrus showing its pale yellow flesh and a small scatter of cracked Sichuan peppercorns with their reddish open husks on a dark slate board resting on a cream travertine ledge, two whole star anise pods beside them, three generic unbranded 5 ml clear-glass atomizers with plain silver caps standing in a loose group to one side, a folded deep forest-green linen napkin as the only colour accent, clean airy composition with generous negative space, cool soft dawn light from the left, realistic glass, stone and citrus textures, restrained luxury magazine photography, 16:9 landscape, center-safe composition, no people, no hands, no logos, no labels, no text or typography, no brand marks, no replica designer bottles, no distorted caps",
+    "out": "growth-audit/ai-images/blog/dior-sauvage-alternatives/hero.jpg",
+    "aspect": "16:9",
+    "model": "fal-ai/nano-banana-2",
+    "resolution": "2K",
+    "fal_only": true
+  },
+  {
+    "handle": "dior-sauvage-alternatives",
+    "prompt": "Close macro photograph of cracked Sichuan peppercorns with split reddish husks and a curl of fresh bergamot citrus peel with visible oil glands, resting on cream travertine stone, shallow depth of field, cool soft natural light, crisp realistic textures, muted cream and deep forest-green palette with a hint of citrus yellow, restrained luxury editorial photography, 3:2 landscape, no people, no hands, no logos, no labels, no text or typography, no brand marks, no replica designer bottles, no bottles of any kind",
+    "out": "growth-audit/ai-images/blog/dior-sauvage-alternatives/fig-03.jpg",
+    "aspect": "3:2",
+    "model": "fal-ai/nano-banana-2",
+    "resolution": "2K",
+    "fal_only": true
+  },
+  {
+    "handle": "dior-sauvage-alternatives",
+    "prompt": "Minimal still life of five identical generic unbranded 5 ml clear-glass atomizers with plain silver caps standing in a straight row on a cream travertine surface, one atomizer set slightly apart from the other four, calm even spacing, soft cool daylight with gentle shadows, pale cream background with a thin deep forest-green linen strip along the lower edge, realistic glass and stone textures, restrained luxury magazine photography, 3:2 landscape, no people, no hands, no logos, no labels, no text or typography, no brand marks, no replica designer bottles, no distorted caps",
+    "out": "growth-audit/ai-images/blog/dior-sauvage-alternatives/fig-04.jpg",
+    "aspect": "3:2",
+    "model": "fal-ai/nano-banana-2",
+    "resolution": "2K",
+    "fal_only": true
+  }
+]

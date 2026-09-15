@@ -1,0 +1,138 @@
+{
+  "article": "which-parfums-de-marly-to-try-first",
+  "lane": "context",
+  "run": "2026-09-14T19:45Z",
+  "claims": [
+    {
+      "claim": "Parfums de Marly was established in 2009 by Julien Sprecher.",
+      "source_url": "https://en.wikipedia.org/wiki/Parfums_de_Marly",
+      "quote": "The house was established in 2009 by Julien Sprecher, who has had passion for history and perfumery since he was young.",
+      "source_type": "encyclopedia"
+    },
+    {
+      "claim": "Founder Julien Sprecher describes founding the house to express a personal vision of modern Haute Parfumerie inspired by 18th-century France.",
+      "source_url": "https://parfums-de-marly.com/pages/the-maison-our-story",
+      "quote": "I founded the Maison to express my own vision of modern Haute Parfumerie that disrupts the codes by taking inspiration freely from the spirit of 18th-century France.",
+      "source_type": "brand_official"
+    },
+    {
+      "claim": "The brand name is taken from the Château de Marly, the residence/pleasure palace of King Louis XV.",
+      "source_url": "https://en.wikipedia.org/wiki/Parfums_de_Marly",
+      "quote": "The name of the brand is inspired by 'Château de Marly', residence of King Louis XV.",
+      "source_type": "encyclopedia"
+    },
+    {
+      "claim": "The brand's horse imagery comes from the 'Chevaux de Marly' (Marly Horses), sculptures commissioned in 1743 by Louis XV from sculptor Guillaume Coustou to adorn the Château entrance.",
+      "source_url": "https://parfums-de-marly.com/pages/the-maison-our-story",
+      "quote": "Masterpieces commissioned in 1743 by Louis XV from the sculptor Guillaume Coustou to adorn the Château entrance.",
+      "source_type": "brand_official"
+    },
+    {
+      "claim": "Wikipedia corroborates that the brand logo bears the image of the 'Chevaux de Marly' created by Guillaume Coustou, referencing 1743, and that Louis XV led a 'perfumed court' and loved racehorses.",
+      "source_url": "https://en.wikipedia.org/wiki/Parfums_de_Marly",
+      "quote": "The brand logo bears the image of the 'Chevaux de Marly' created by Guillaume Coustou",
+      "source_type": "encyclopedia"
+    },
+    {
+      "claim": "Parfums de Marly's parent company (L.N.C.) is headquartered in Paris, France.",
+      "source_url": "https://parfums-de-marly.com/pages/the-maison-our-story",
+      "quote": "L.N.C.- 17 rue de la Paix 75002 Paris, France",
+      "source_type": "brand_official"
+    },
+    {
+      "claim": "Parfums de Marly states on its official product pages that all of its perfumes are made in France.",
+      "source_url": "https://us.parfums-de-marly.com/products/layton",
+      "quote": "All our perfumes are made in France",
+      "source_type": "brand_official"
+    },
+    {
+      "claim": "The 'made in France' manufacturing statement is repeated verbatim on other product pages, including Pegasus and Perseus.",
+      "source_url": "https://us.parfums-de-marly.com/products/pegasus",
+      "quote": "All our perfumes are made in France",
+      "source_type": "brand_official"
+    },
+    {
+      "claim": "Parfums de Marly's official site classifies Althaïr under the olfactive family 'Ambery Aromatic Vanilla.'",
+      "source_url": "https://us.parfums-de-marly.com/products/althair",
+      "quote": "Ambery Aromatic Vanilla",
+      "source_type": "brand_official"
+    },
+    {
+      "claim": "Parfums de Marly's official site lists Perseus's olfactive pyramid as bergamot/grapefruit top notes, geranium/blackcurrant bud heart notes, and vetiver/amberwood/grey amber base notes, under a 'Bright Citrus Woody' family label.",
+      "source_url": "https://us.parfums-de-marly.com/products/perseus",
+      "quote": "Bright Citrus Woody",
+      "source_type": "brand_official"
+    },
+    {
+      "claim": "Founder Julien Sprecher describes Haltane as created for a modern gentleman inspired by the guests of the Château de Marly, blending precious woods, leather and praline.",
+      "source_url": "https://us.parfums-de-marly.com/products/haltane",
+      "quote": "I wanted to create an exceptional masculine fragrance for a gentleman of today, inspired by the elegant lifestyle of the guests of the Château de Marly. A faceted scent blending precious woods, supple leather and a modern twist of praline.",
+      "source_type": "brand_official"
+    },
+    {
+      "claim": "Haltane's official olfactive pyramid: bergamot and pink peppercorn (top), saffron/praline/lavender/clary sage (heart), oud/patchouli/vetiver/leather (base).",
+      "source_url": "https://us.parfums-de-marly.com/products/haltane",
+      "quote": "Top: Bergamot, Pink Peppercorn; Heart: Saffron, Praline, Lavender, Clary Sage; Base: Oud, Patchouli, Vetiver, Leather",
+      "source_type": "brand_official"
+    },
+    {
+      "claim": "Layton's official olfactive pyramid: apple/bergamot/cardamom (top), lavender/violet/geranium (heart), patchouli/vanilla/guaiacwood/praline (base).",
+      "source_url": "https://us.parfums-de-marly.com/products/layton",
+      "quote": "Top: Apple, Bergamot, Cardamom; Heart: Lavender, Violet, Geranium; Base: Patchouli, Vanilla, Guaicwood, Praline",
+      "source_type": "brand_official"
+    },
+    {
+      "claim": "Pegasus's official olfactive pyramid: anise/bergamot/almond (top), cypress/violet leaves/orange blossom (heart), ambrox/vanilla/sandalwood (base).",
+      "source_url": "https://us.parfums-de-marly.com/products/pegasus",
+      "quote": "Anise, Bergamot, Almond (top notes); Cypress, Violet Leaves, Orange Blossom (heart notes); Ambrox, Vanilla, Sandalwood (base notes)",
+      "source_type": "brand_official"
+    },
+    {
+      "claim": "A gourmand fragrance is a perfume built primarily around edible ('gourmand') notes such as honey, chocolate, vanilla or candy.",
+      "source_url": "https://en.wikipedia.org/wiki/Gourmand_(fragrance)",
+      "quote": "A gourmand fragrance is a perfume consisting primarily of synthetic edible (gourmand) notes, such as honey, chocolate, vanilla or candy.",
+      "source_type": "encyclopedia"
+    },
+    {
+      "claim": "The woody fragrance family is defined by the depth of woods such as sandalwood, cedar, palo santo and guaiac wood.",
+      "source_url": "https://www.perfumelounge.eu/scent-stories/fragrance-families-explained",
+      "quote": "The splendor and depth of all woods. Full earthy notes of, for example, sandalwood, cedar, palo santo, and guaiac wood.",
+      "source_type": "trade_press"
+    },
+    {
+      "claim": "The citrus fragrance family is defined by bright, zesty notes such as bergamot, lemon, orange, grapefruit, yuzu and lime.",
+      "source_url": "https://www.perfumelounge.eu/scent-stories/fragrance-families-explained",
+      "quote": "Perfumes where the sunny sparkling scents of citrus fruits play the leading role. Bergamot, lemon, orange, grapefruit, yuzu, lime: zesty pleasure!",
+      "source_type": "trade_press"
+    },
+    {
+      "claim": "'Fougère' (the aromatic family used for most masculine aromatic fragrances) is one of the main olfactive families of perfumes, built on lavender top notes over woody, oakmoss and coumarin base notes, with an aromatic variant adding herbaceous, spiced and woody elements.",
+      "source_url": "https://en.wikipedia.org/wiki/Foug%C3%A8re",
+      "quote": "Fougère perfumes blend fragrances in distinctive layers: sweet top notes featuring lavender give way to woody, sharp base notes of oakmoss and coumarin",
+      "source_type": "encyclopedia"
+    }
+  ],
+  "dropped": [
+    {
+      "claim": "Althaïr is related to Haltane, or to any other Parfums de Marly fragrance (e.g. as a flanker or companion scent).",
+      "reason": "No source found — including Parfums de Marly's own official product pages for both Althaïr and Haltane — states any relationship between the two fragrances or ties Althaïr to another house fragrance. Fetched both official pages directly; neither contains comparative or relational language."
+    },
+    {
+      "claim": "Specific historic racehorses (e.g. Godolphin) owned or admired by Louis XV are the direct namesakes of specific Parfums de Marly fragrances (Godolphin, Herod, Pegasus, Percival).",
+      "reason": "This appeared only in an aggregated WebSearch summary, not confirmed by a direct source fetch. A direct fetch of a press article on the brand's history (Damiani Miami blog) covered Pegasus and Herod but did not corroborate the racehorse-naming claim or name any specific historical horse. Fragrantica's dedicated equine-history article could not be fetched (403 Forbidden), so this claim could not be verified against a reliable source and is dropped rather than asserted."
+    },
+    {
+      "claim": "Named perfumer(s) for Layton, Pegasus, Perseus and Althaïr.",
+      "reason": "Official product pages for these four fragrances do not name a perfumer (only Haltane's page carries an attributed quote, from founder Julien Sprecher, not a perfumer credit)."
+    },
+    {
+      "claim": "Explicit olfactive-family label (e.g. 'woody', 'aromatic') for Layton and Pegasus.",
+      "reason": "Official product pages for Layton and Pegasus list only the top/heart/base note pyramid; no explicit family name is stated on the page as it is for Althaïr ('Ambery Aromatic Vanilla') and Perseus ('Bright Citrus Woody')."
+    },
+    {
+      "claim": "Any performance claims (longevity, projection, sillage, compliments) for Layton, Pegasus, Althaïr, Perseus or Haltane.",
+      "reason": "Excluded per instructions — performance claims are subjective/marketing and were not recorded as facts even where sources (forums, retailer blogs) asserted them."
+    }
+  ],
+  "notes": "Budget used: 4 WebSearch calls (of 8), 14 WebFetch calls (of 15) — 4 of the 14 returned HTTP 403 (Fragrantica product/news pages, CandleScience) and were excluded from claims. No curl or Google-autocomplete demand check was needed for this context-only lane. No browser MCP tools used. Only the specified output file was written."
+}

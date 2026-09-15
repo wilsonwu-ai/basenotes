@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How a tree makes oud</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=EB+Garamond:ital@0;1&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --paper:#faf6ec;
+    --ink:#1b2f22;
+    --muted:#5c574d;
+    --gold:#b8904f;
+    --font-display:'Playfair Display', Georgia, serif;
+    --font-serif:'EB Garamond', Georgia, serif;
+    --font-sans:'Jost', system-ui, sans-serif;
+  }
+  body{
+    font-family:var(--font-sans);
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:3rem 1.5rem;
+  }
+  .frame{max-width:1180px;width:100%;}
+  .eyebrow{
+    font-family:var(--font-sans);
+    font-size:.72rem;
+    font-weight:500;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:.6rem;
+  }
+  h1{
+    font-family:var(--font-display);
+    font-size:clamp(1.6rem,2.4vw + .8rem,2.1rem);
+    font-weight:700;
+    letter-spacing:-.01em;
+    line-height:1.15;
+    color:var(--ink);
+    margin-bottom:1.75rem;
+  }
+  svg{width:100%;min-width:640px;display:block;}
+</style>
+</head>
+<body>
+<div class="frame">
+  <p class="eyebrow">How Oud Forms</p>
+  <h1>How a tree makes oud</h1>
+  <svg viewBox="0 0 1360 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="oud-formation-title oud-formation-desc">
+    <title id="oud-formation-title">How a tree makes oud</title>
+    <desc id="oud-formation-desc">Four step picture: an Aquilaria tree is wounded, mold gets inside, the tree makes dark resin to fight back, and the resin soaked heartwood becomes oud.</desc>
+    <defs>
+      <marker id="arrow-gold" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+        <polygon points="0 0, 9 4, 0 8" fill="#b8904f"/>
+      </marker>
+    </defs>
+
+    <rect width="100%" height="100%" fill="#faf6ec"/>
+
+    <!-- connecting arrows drawn first -->
+    <line x1="316" y1="248" x2="360" y2="248" stroke="#b8904f" stroke-width="2.5" marker-end="url(#arrow-gold)"/>
+    <line x1="656" y1="248" x2="700" y2="248" stroke="#b8904f" stroke-width="2.5" marker-end="url(#arrow-gold)"/>
+    <line x1="996" y1="248" x2="1040" y2="248" stroke="#b8904f" stroke-width="2.5" marker-end="url(#arrow-gold)"/>
+
+    <!-- panel dividers (subtle) -->
+    <line x1="340" y1="60" x2="340" y2="436" stroke="rgba(27,47,34,0.10)" stroke-width="1"/>
+    <line x1="680" y1="60" x2="680" y2="436" stroke="rgba(27,47,34,0.10)" stroke-width="1"/>
+    <line x1="1020" y1="60" x2="1020" y2="436" stroke="rgba(27,47,34,0.10)" stroke-width="1"/>
+
+    <!-- ===== PANEL 1: tree wounded ===== -->
+    <g>
+      <!-- ground -->
+      <line x1="60" y1="360" x2="280" y2="360" stroke="#1b2f22" stroke-width="3" stroke-linecap="round"/>
+      <!-- trunk, pale -->
+      <rect x="150" y="140" width="40" height="220" rx="16" fill="#e9dfc6" stroke="#1b2f22" stroke-width="2.5"/>
+      <!-- canopy -->
+      <circle cx="170" cy="112" r="56" fill="#e9dfc6" stroke="#1b2f22" stroke-width="2.5"/>
+      <!-- the cut -->
+      <path d="M156 220 L184 236 L156 252 Z" fill="#1b2f22"/>
+      <text x="170" y="420" text-anchor="middle" font-family="var(--font-sans)" font-size="19" font-weight="600" fill="#1b2f22">1</text>
+      <text x="170" y="448" text-anchor="middle" font-family="var(--font-serif)" font-style="italic" font-size="20" fill="#1b2f22">A tree gets wounded</text>
+    </g>
+
+    <!-- ===== PANEL 2: mold enters ===== -->
+    <g>
+      <line x1="400" y1="360" x2="620" y2="360" stroke="#1b2f22" stroke-width="3" stroke-linecap="round"/>
+      <rect x="490" y="140" width="40" height="220" rx="16" fill="#e9dfc6" stroke="#1b2f22" stroke-width="2.5"/>
+      <circle cx="510" cy="112" r="56" fill="#e9dfc6" stroke="#1b2f22" stroke-width="2.5"/>
+      <path d="M496 220 L524 236 L496 252 Z" fill="#1b2f22"/>
+      <!-- mold specks entering the cut -->
+      <circle cx="470" cy="222" r="5" fill="#b8904f"/>
+      <circle cx="458" cy="236" r="4" fill="#b8904f"/>
+      <circle cx="472" cy="250" r="4.5" fill="#b8904f"/>
+      <circle cx="484" cy="206" r="3.5" fill="#b8904f"/>
+      <text x="510" y="420" text-anchor="middle" font-family="var(--font-sans)" font-size="19" font-weight="600" fill="#1b2f22">2</text>
+      <text x="510" y="448" text-anchor="middle" font-family="var(--font-serif)" font-style="italic" font-size="20" fill="#1b2f22">Mold gets inside</text>
+    </g>
+
+    <!-- ===== PANEL 3: resin spreads ===== -->
+    <g>
+      <line x1="740" y1="360" x2="960" y2="360" stroke="#1b2f22" stroke-width="3" stroke-linecap="round"/>
+      <rect x="830" y="140" width="40" height="220" rx="16" fill="#e9dfc6" stroke="#1b2f22" stroke-width="2.5"/>
+      <circle cx="850" cy="112" r="56" fill="#e9dfc6" stroke="#1b2f22" stroke-width="2.5"/>
+      <!-- dark resin spreading through the trunk -->
+      <path d="M834 356 C830 300, 846 280, 838 250 C832 226, 846 210, 840 180 L866 180 C860 210, 872 226, 866 250 C860 280, 866 300, 866 356 Z" fill="#1b2f22" opacity="0.85"/>
+      <text x="850" y="420" text-anchor="middle" font-family="var(--font-sans)" font-size="19" font-weight="600" fill="#1b2f22">3</text>
+      <text x="850" y="448" text-anchor="middle" font-family="var(--font-serif)" font-style="italic" font-size="20" fill="#1b2f22">It makes resin to fight back</text>
+    </g>
+
+    <!-- ===== PANEL 4: cross section, oud ===== -->
+    <g>
+      <line x1="1080" y1="360" x2="1300" y2="360" stroke="#1b2f22" stroke-width="3" stroke-linecap="round"/>
+      <!-- cross section disc -->
+      <circle cx="1190" cy="246" r="86" fill="#e9dfc6" stroke="#1b2f22" stroke-width="2.5"/>
+      <circle cx="1190" cy="246" r="60" fill="none" stroke="#1b2f22" stroke-width="1" opacity="0.35"/>
+      <!-- dark streaked centre -->
+      <path d="M1190 200 C1210 214, 1214 236, 1194 246 C1216 254, 1210 278, 1190 292 C1170 278, 1164 254, 1186 246 C1166 236, 1170 214, 1190 200 Z" fill="#1b2f22"/>
+      <!-- soft smoke curl -->
+      <path d="M1190 150 C1200 130, 1180 118, 1192 100 C1202 86, 1186 70, 1196 54" fill="none" stroke="#b8904f" stroke-width="3" stroke-linecap="round" opacity="0.85"/>
+      <text x="1190" y="420" text-anchor="middle" font-family="var(--font-sans)" font-size="19" font-weight="600" fill="#1b2f22">4</text>
+      <text x="1190" y="448" text-anchor="middle" font-family="var(--font-serif)" font-style="italic" font-size="20" fill="#1b2f22">Dark heartwood becomes oud</text>
+    </g>
+  </svg>
+</div>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Picking your first fragrance</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=EB+Garamond:ital@0;1&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #faf6ec;
+    --card: #fffdf7;
+    --green: #1b2f22;
+    --green-soft: rgba(27, 47, 34, .55);
+    --gold: #b8904f;
+    --line: rgba(27, 47, 34, .18);
+    --serif: 'EB Garamond', Georgia, serif;
+    --display: 'Playfair Display', Georgia, serif;
+    --sans: 'Jost', 'Helvetica Neue', Arial, sans-serif;
+  }
+  body {
+    background: var(--cream);
+    color: var(--green);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 32px;
+  }
+  .frame { max-width: 1320px; width: 100%; }
+  .eyebrow {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(28px, 3vw, 40px);
+    letter-spacing: -.01em;
+    line-height: 1.15;
+    color: var(--green);
+    margin-bottom: 32px;
+  }
+  svg { width: 100%; display: block; }
+  .caption {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--green-soft);
+    margin-top: 22px;
+    max-width: 900px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">How to choose · Base Note</p>
+    <h1>Picking your first fragrance</h1>
+
+    <svg viewBox="0 0 1440 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pdm-first-fragrance-title pdm-first-fragrance-desc">
+      <title id="pdm-first-fragrance-title">Picking your first fragrance</title>
+      <desc id="pdm-first-fragrance-desc">Three step picture: pick a smell you already like, such as apple; find that smell in the fragrance note lists; try the fragrance that lists it first.</desc>
+
+      <rect width="100%" height="100%" fill="#faf6ec"/>
+
+      <!-- Arrows between panels (drawn first) -->
+      <g stroke="#b8904f" stroke-width="3" fill="none" stroke-linecap="round">
+        <line x1="440" y1="280" x2="512" y2="280"/>
+        <line x1="912" y1="280" x2="952" y2="280"/>
+      </g>
+      <g fill="#b8904f">
+        <polygon points="512,268 536,280 512,292"/>
+        <polygon points="952,268 976,280 952,292"/>
+      </g>
+
+      <!-- Panel 1 -->
+      <g>
+        <rect x="40" y="60" width="400" height="440" rx="12" fill="#fffdf7" stroke="#1b2f22" stroke-opacity="0.18" stroke-width="1.5"/>
+        <circle cx="240" cy="132" r="26" fill="none" stroke="#1b2f22" stroke-width="2.5"/>
+        <text x="240" y="140" text-anchor="middle" font-family="'Playfair Display', Georgia, serif" font-weight="700" font-size="24" fill="#1b2f22">1</text>
+
+        <!-- icon: nose profile + apple -->
+        <g transform="translate(240,300)">
+          <path d="M -70 -60 C -70 -20 -50 20 -30 40 C -10 60 20 60 40 40" fill="none" stroke="#1b2f22" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M -30 40 C -14 56 14 56 30 42" fill="none" stroke="#1b2f22" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="66" cy="8" r="34" fill="none" stroke="#b8904f" stroke-width="4"/>
+          <path d="M 66 -26 C 62 -40 76 -46 84 -44" fill="none" stroke="#1b2f22" stroke-width="4" stroke-linecap="round"/>
+          <path d="M 78 -46 C 90 -52 100 -46 98 -36" fill="none" stroke="#1b2f22" stroke-width="4" stroke-linecap="round"/>
+        </g>
+
+        <text x="240" y="452" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="22" fill="#1b2f22">Pick a smell you</text>
+        <text x="240" y="480" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="22" fill="#1b2f22">already like</text>
+      </g>
+
+      <!-- Panel 2 -->
+      <g>
+        <rect x="520" y="60" width="400" height="440" rx="12" fill="#fffdf7" stroke="#1b2f22" stroke-opacity="0.18" stroke-width="1.5"/>
+        <circle cx="720" cy="132" r="26" fill="none" stroke="#1b2f22" stroke-width="2.5"/>
+        <text x="720" y="140" text-anchor="middle" font-family="'Playfair Display', Georgia, serif" font-weight="700" font-size="24" fill="#1b2f22">2</text>
+
+        <!-- icon: list card with one circled line -->
+        <g transform="translate(720,300)">
+          <rect x="-80" y="-80" width="160" height="160" rx="8" fill="none" stroke="#1b2f22" stroke-width="4"/>
+          <line x1="-56" y1="-44" x2="56" y2="-44" stroke="#1b2f22" stroke-width="4" stroke-linecap="round"/>
+          <line x1="-56" y1="8" x2="56" y2="8" stroke="#1b2f22" stroke-width="4" stroke-linecap="round"/>
+          <line x1="-56" y1="60" x2="30" y2="60" stroke="#1b2f22" stroke-width="4" stroke-linecap="round"/>
+          <ellipse cx="-4" cy="8" rx="66" ry="20" fill="none" stroke="#b8904f" stroke-width="4"/>
+        </g>
+
+        <text x="720" y="452" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="22" fill="#1b2f22">Find it in the</text>
+        <text x="720" y="480" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="22" fill="#1b2f22">note lists</text>
+      </g>
+
+      <!-- Panel 3 -->
+      <g>
+        <rect x="1000" y="60" width="400" height="440" rx="12" fill="#fffdf7" stroke="#1b2f22" stroke-opacity="0.18" stroke-width="1.5"/>
+        <circle cx="1200" cy="132" r="26" fill="none" stroke="#1b2f22" stroke-width="2.5"/>
+        <text x="1200" y="140" text-anchor="middle" font-family="'Playfair Display', Georgia, serif" font-weight="700" font-size="24" fill="#1b2f22">3</text>
+
+        <!-- icon: plain unlabeled glass atomizer -->
+        <g transform="translate(1200,300)">
+          <rect x="-30" y="-20" width="60" height="110" rx="8" fill="none" stroke="#1b2f22" stroke-width="4"/>
+          <rect x="-16" y="-50" width="32" height="34" rx="4" fill="none" stroke="#1b2f22" stroke-width="4"/>
+          <rect x="-8" y="-74" width="16" height="26" rx="3" fill="none" stroke="#1b2f22" stroke-width="4"/>
+          <path d="M 12 -74 L 34 -84" stroke="#b8904f" stroke-width="4" stroke-linecap="round"/>
+          <path d="M 16 -64 L 40 -68" stroke="#b8904f" stroke-width="4" stroke-linecap="round"/>
+          <path d="M 16 -54 L 40 -52" stroke="#b8904f" stroke-width="4" stroke-linecap="round"/>
+        </g>
+
+        <text x="1200" y="452" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="22" fill="#1b2f22">Try that fragrance</text>
+        <text x="1200" y="480" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="22" fill="#1b2f22">first</text>
+      </g>
+    </svg>
+
+    <p class="caption">Start from a smell you already enjoy, then find it in each fragrance&#8217;s note list.</p>
+  </div>
+</body>
+</html>

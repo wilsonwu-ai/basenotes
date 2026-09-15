@@ -1,0 +1,136 @@
+{
+  "article": "which-parfums-de-marly-to-try-first",
+  "run": "2026-09-14T19:45Z",
+  "lane": "products",
+  "products": [
+    {
+      "handle": "pdm-layton",
+      "store_title": "Parfums de Marly Layton EDP",
+      "house": "Parfums de Marly",
+      "product_link": "/products/pdm-layton",
+      "base_note_description_quote": "Every Parfums de Marly release is named after a horse bred for the aristocracy... mostly on the strength of a vanilla-and-apple opening most people don't expect from something this polished.",
+      "base_note_notes_listed": {
+        "top": ["Apple", "Lavender", "Bergamot"],
+        "heart": ["Jasmine", "Violet", "Geranium"],
+        "base": ["Vanilla", "Cardamom", "Sandalwood", "Pepper", "Guaiac Wood"]
+      },
+      "official_url": "https://www.parfums-de-marly.com/products/layton",
+      "official_notes_quote": {
+        "top": "Top Notes Apple, Bergamot, Cardamom",
+        "heart": "Heart Notes Lavender, Violet, Geranium",
+        "base": "Base Notes Patchouli, Vanilla, Guaicwood, Praline"
+      },
+      "maker_words": "Layton blends the freshness of apple with calming lavender, wrapped in the earthy depth of patchouli. Elegant, sensual and flamboyant.",
+      "character_line": "Elegant, sensual and flamboyant.",
+      "families": ["Fougere", "Ambery", "Fruity"],
+      "store_mismatch": "Base Note lists Bergamot as top/Lavender as top and Cardamom as base; the official pyramid puts Cardamom in the top and Lavender in the heart. Base Note's heart lists Jasmine (not on the current official pyramid at all) and its base adds Sandalwood and Pepper while dropping Patchouli and Praline, both of which the manufacturer names as base notes.",
+      "fetched": true
+    },
+    {
+      "handle": "pdm-pegasus",
+      "store_title": "Parfums de Marly Pegasus EDP",
+      "house": "Parfums de Marly",
+      "product_link": "/products/pdm-pegasus",
+      "base_note_description_quote": "Pegasus goes back further than most Parfums de Marly names... it opens with an unusual pairing of bitter almond and cumin against bergamot, before settling into amber, vanilla, and sandalwood.",
+      "base_note_notes_listed": {
+        "top": ["Bitter Almond", "Bergamot", "Heliotrope"],
+        "heart": ["Lavender", "Jasmine"],
+        "base": ["Vanilla", "Sandalwood", "Amber", "Guaiac Wood"]
+      },
+      "official_url": "https://www.parfums-de-marly.com/products/pegasus",
+      "official_notes_quote": {
+        "top": "Top Notes Anise, Bergamot, Almond",
+        "heart": "Heart Notes Cypress, Violet Leaves, Orange Blossom",
+        "base": "Base Notes Ambrox, Vanilla, Sandalwood"
+      },
+      "maker_words": "Pegasus opens with radiant bergamot, softened by the smoothness of almond, and unfolds into a warm, captivating vanilla base. Vibrant, addictive and sensual.",
+      "character_line": "Vibrant, addictive and sensual.",
+      "families": ["Fougere", "Ambery", "Powdery"],
+      "store_mismatch": "Base Note's top notes (Bitter Almond, Heliotrope) don't match the official pyramid's Anise and Almond; Base Note's heart (Lavender, Jasmine) doesn't appear on the current official pyramid at all, which lists Cypress, Violet Leaves and Orange Blossom instead. Base Note also names Guaiac Wood in the base where the manufacturer names Ambrox.",
+      "fetched": true
+    },
+    {
+      "handle": "pdm-althair",
+      "store_title": "Parfums de Marly Althair EDP",
+      "house": "Parfums de Marly",
+      "product_link": "/products/pdm-althair",
+      "base_note_description_quote": "By the time Althaïr launched, Parfums de Marly had run through most of its stock of noble horse names... Cinnamon and orange blossom open it, praline and candied almond close it out.",
+      "base_note_notes_listed": {
+        "top": ["Passionfruit", "Bergamot"],
+        "heart": ["Praline", "Heliotrope"],
+        "base": ["Vanilla", "Tonka Bean", "White Musk"]
+      },
+      "official_url": "https://www.parfums-de-marly.com/products/althair",
+      "official_notes_quote": {
+        "top": "Top Notes Bergamot, Mandarin, Elemi",
+        "heart": "Heart Notes Orange Blossom, Cinnamon, Cardamom",
+        "base": "Base Notes Bourbon Vanilla, Guaicwood, Praline"
+      },
+      "maker_words": "Althaïr combines the smoothness of vanilla, the indulgence of praline, and the brightness of orange blossom. Elegant, generous and charismatic.",
+      "character_line": "Elegant, generous and charismatic.",
+      "families": ["Ambery", "Aromatic", "Vanilla"],
+      "store_mismatch": "Base Note lists Passionfruit as a top note and Heliotrope in the heart, neither of which appears on the official pyramid, which instead opens with Bergamot/Mandarin/Elemi and hearts Orange Blossom/Cinnamon/Cardamom. Base Note also places Praline in the heart while the manufacturer names it a base note, and Base Note's base (Tonka Bean, White Musk) doesn't match the official base (Bourbon Vanilla, Guaicwood, Praline).",
+      "fetched": true
+    },
+    {
+      "handle": "pdm-perseus",
+      "store_title": "Parfums de Marly Perseus EDP",
+      "house": "Parfums de Marly",
+      "product_link": "/products/pdm-perseus",
+      "base_note_description_quote": "Perseus is built around a very specific image: sunrise at the Château de Marly... it opens bright with grapefruit and blackcurrant, then pivots hard into dry, cashmere-soft woods.",
+      "base_note_notes_listed": {
+        "top": ["Grapefruit", "Bergamot", "Green Apple"],
+        "heart": ["Lavender", "Geranium", "Violet Leaf"],
+        "base": ["Musk", "Amber", "Woody Notes"]
+      },
+      "official_url": "https://www.parfums-de-marly.com/products/perseus",
+      "official_notes_quote": {
+        "top": "Top notes Bergamot, Grapefruit",
+        "heart": "Heart notes Geranium, Blackcurrant Bud",
+        "base": "Base notes Vetiver, Amberwood, Grey Amber"
+      },
+      "maker_words": "Perseus combines bright grapefruit, fresh geranium, and refined vetiver. Bright, invigorating and refined.",
+      "character_line": "Bright, invigorating and refined.",
+      "families": [],
+      "store_mismatch": "Base Note adds Green Apple to the top notes and Lavender/Violet Leaf to the heart, none of which appear on the official pyramid; the official heart instead names Blackcurrant Bud (which Base Note's prose mentions but leaves off its formal note list), and the official base leads with Vetiver, which Base Note's base list omits in favor of generic 'Woody Notes.' Note: the manufacturer's own product page does not display an olfactive-family tag for Perseus the way it does for the other four (those were cross-referenced from related-product cards on sibling pages), so families is left empty rather than guessed.",
+      "fetched": true
+    },
+    {
+      "handle": "parfums-de-marly-haltane",
+      "store_title": "Parfums de Marly Haltane EDP",
+      "house": "Parfums de Marly",
+      "product_link": "/products/parfums-de-marly-haltane",
+      "low_stock": true,
+      "base_note_description_quote": "Every Parfums de Marly fragrance takes its name from a horse bred for nobility... a cold, sharp opening that gives way to warmth, then settles into something dark and smoky, the kind of depth built for winter nights and old stone rooms.",
+      "base_note_notes_listed": {
+        "top": ["Bergamot", "Pink Peppercorn"],
+        "heart": ["Saffron", "Praline", "Lavender", "Clary Sage"],
+        "base": ["Oud", "Patchouli", "Vetiver", "Leather"]
+      },
+      "official_url": "https://www.parfums-de-marly.com/products/haltane",
+      "official_notes_quote": {
+        "top": "Top Notes Bergamot, Pink Peppercorn",
+        "heart": "Heart Notes Saffron, Praline, Lavender, Clary Sage",
+        "base": "Base Notes Oud, Patchouli, Vetiver, Leather"
+      },
+      "maker_words": "Haltane opens with the aromatic freshness of bergamot and lavender, reveals a subtle gourmand praline heart, then intensifies into the depth of oud. Sophisticated, audacious and powerful.",
+      "character_line": "Sophisticated, audacious and powerful.",
+      "families": ["Woody", "Aromatic", "Oud"],
+      "store_mismatch": "None found — Base Note's top/heart/base notes match the official pyramid exactly.",
+      "fetched": true
+    }
+  ],
+  "consistency_notes": [
+    "blog-post-16 (Layton review, scheduled) and blog-post-42 (Pegasus review, scheduled) both cover house background and PdM-family comparisons — do not restate their sentences.",
+    "blog-post-51 (live) calls Layton 'the warm all-rounder' and Perseus 'the bright daily pick' — reuse these positioning slots, don't contradict them.",
+    "blog-post-20 (live) describes Althair as 'vanilla warmth with a bright floral lift' — consistent with the official praline/vanilla/orange-blossom profile; safe to echo the sentiment without reusing the phrase.",
+    "blog-post-34 (live, best-date-night-colognes-2026) already has entries for Althair and Pegasus — check before duplicating positioning.",
+    "blog-post-26 (live, 32-luxury-fragrances-ranked) ranks Layton second — consistent with treating Layton as the flagship pick.",
+    "Haltane is LOW STOCK: may appear in the roundup but must not be the lead recommendation or the first pick."
+  ],
+  "budget_used": {
+    "web_search_calls": 0,
+    "web_fetch_calls": 5,
+    "curl_calls": 12
+  }
+}

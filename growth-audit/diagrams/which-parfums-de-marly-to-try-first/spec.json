@@ -1,0 +1,148 @@
+{
+  "handle": "which-parfums-de-marly-to-try-first",
+  "run": "2026-09-14T19:45Z",
+  "instructions": "Draw exactly what is listed here and nothing else. Palette: cream background, deep forest green and brass accents, dark ink text. No brand logos, no bottle designs, no horse imagery, no prices, no numbers other than the step numbers in fig-01. No axes, scales, arrows that imply more or less of anything, and no words about strength, boldness, gentleness, intensity, projection or season. No dash characters in any text. Print fragrance names exactly as given in name_in_article.",
+  "figures": {
+    "fig-01": {
+      "file": "fig-01.png",
+      "type": "eli5-illustration",
+      "title": "Picking your first fragrance",
+      "layout": "Three panels left to right joined by simple arrows, each with one icon and one short label. Same cream card style in every panel.",
+      "steps": [
+        {
+          "step": 1,
+          "icon": "a simple nose with a small apple beside it",
+          "label": "Pick a smell you already like"
+        },
+        {
+          "step": 2,
+          "icon": "a short list card with one line circled",
+          "label": "Find it in the note lists"
+        },
+        {
+          "step": 3,
+          "icon": "one small plain unlabeled glass atomizer",
+          "label": "Try that fragrance first"
+        }
+      ],
+      "word_count": "Title 4 words plus labels 16 words: 20 words.",
+      "fact_basis": "Definitional: Wikipedia defines notes as descriptors of scents sensed after applying a perfume, grouped into top, heart and base. Apple is used as the example because it appears on the official Layton pyramid (Top Notes: Apple, Bergamot, Cardamom).",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Note_(perfumery)",
+        "https://www.parfums-de-marly.com/products/layton"
+      ],
+      "caption": "Start from a smell you already enjoy, then find it in each fragrance's note list.",
+      "alt": "Three step picture: pick a smell you already like, such as apple; find that smell in the note lists; try that fragrance first."
+    },
+    "fig-02": {
+      "file": "fig-02.png",
+      "type": "decision-chart",
+      "title": "Which Parfums de Marly should you try first?",
+      "layout": "One start box at the top reading the start_label. Below it, five 'If you like...' boxes in one row on desktop (a single column on mobile), in the order given, all the same size and the same colour, all at the same level. A single straight line runs from each 'If you like...' box down to its own fragrance box. No box is larger, darker, higher or emphasised. Under each fragrance box, one small line of type reading 'Official notes include:' followed by the notes_shown list. Below the five columns, one full width footnote box with the shared_note_footnote text. Caption under the figure.",
+      "start_label": "Which of these smells do you already like?",
+      "branches": [
+        {
+          "order": 1,
+          "if_you_like_label": "If you like apple and lavender",
+          "name_in_article": "Parfums de Marly Layton",
+          "handle": "pdm-layton",
+          "label_notes_used": [
+            "Apple (top)",
+            "Lavender (heart)"
+          ],
+          "notes_shown": [
+            "Apple",
+            "Lavender",
+            "Vanilla",
+            "Praline"
+          ],
+          "official_pyramid": "Top Notes Apple, Bergamot, Cardamom; Heart Notes Lavender, Violet, Geranium; Base Notes Patchouli, Vanilla, Guaicwood, Praline",
+          "why_this_label_points_here": "Apple appears on no other of the five official lists.",
+          "notes_source": "https://www.parfums-de-marly.com/products/layton"
+        },
+        {
+          "order": 2,
+          "if_you_like_label": "If you like cinnamon and orange blossom over vanilla",
+          "name_in_article": "Parfums de Marly Althair",
+          "handle": "pdm-althair",
+          "label_notes_used": [
+            "Cinnamon (heart)",
+            "Orange Blossom (heart)",
+            "Bourbon Vanilla (base)"
+          ],
+          "notes_shown": [
+            "Mandarin",
+            "Cinnamon",
+            "Orange blossom",
+            "Bourbon vanilla"
+          ],
+          "official_pyramid": "Top Notes Bergamot, Mandarin, Elemi; Heart Notes Orange Blossom, Cinnamon, Cardamom; Base Notes Bourbon Vanilla, Guaicwood, Praline",
+          "why_this_label_points_here": "Cinnamon appears on no other of the five official lists.",
+          "notes_source": "https://www.parfums-de-marly.com/products/althair"
+        },
+        {
+          "order": 3,
+          "if_you_like_label": "If you like praline and leather",
+          "name_in_article": "Parfums de Marly Haltane",
+          "handle": "parfums-de-marly-haltane",
+          "label_notes_used": [
+            "Praline (heart)",
+            "Leather (base)"
+          ],
+          "notes_shown": [
+            "Saffron",
+            "Praline",
+            "Oud",
+            "Leather"
+          ],
+          "official_pyramid": "Top Notes Bergamot, Pink Peppercorn; Heart Notes Saffron, Praline, Lavender, Clary Sage; Base Notes Oud, Patchouli, Vetiver, Leather",
+          "why_this_label_points_here": "Leather appears on no other of the five official lists. Low stock product: third in the chart, never first.",
+          "notes_source": "https://www.parfums-de-marly.com/products/haltane"
+        },
+        {
+          "order": 4,
+          "if_you_like_label": "If you like grapefruit and vetiver",
+          "name_in_article": "Parfums de Marly Perseus",
+          "handle": "pdm-perseus",
+          "label_notes_used": [
+            "Grapefruit (top)",
+            "Vetiver (base)"
+          ],
+          "notes_shown": [
+            "Grapefruit",
+            "Blackcurrant bud",
+            "Vetiver",
+            "Amberwood"
+          ],
+          "official_pyramid": "Top notes Bergamot, Grapefruit; Heart notes Geranium, Blackcurrant Bud; Base notes Vetiver, Amberwood, Grey Amber",
+          "why_this_label_points_here": "Grapefruit appears on no other of the five official lists.",
+          "notes_source": "https://www.parfums-de-marly.com/products/perseus"
+        },
+        {
+          "order": 5,
+          "if_you_like_label": "If you like almond and anise",
+          "name_in_article": "Parfums de Marly Pegasus",
+          "handle": "pdm-pegasus",
+          "label_notes_used": [
+            "Almond (top)",
+            "Anise (top)"
+          ],
+          "notes_shown": [
+            "Anise",
+            "Almond",
+            "Orange blossom",
+            "Sandalwood"
+          ],
+          "official_pyramid": "Top Notes Anise, Bergamot, Almond; Heart Notes Cypress, Violet Leaves, Orange Blossom; Base Notes Ambrox, Vanilla, Sandalwood",
+          "why_this_label_points_here": "Almond and anise appear on no other of the five official lists.",
+          "notes_source": "https://www.parfums-de-marly.com/products/pegasus"
+        }
+      ],
+      "shared_note_footnote": "Bergamot is on all five lists, so it cannot choose for you.",
+      "shared_note_basis": "Bergamot appears on all five official pyramids: Layton (top), Pegasus (top), Althair (top), Perseus (top), Haltane (top).",
+      "order_basis": "Not a quality ranking. The chart asks about the fragrance that shares the most official notes with the other four first, so later boxes are easier to tell apart: Layton shares 8 of its 10 listed notes (bergamot, cardamom, lavender, geranium, patchouli, vanilla, guaiacwood, praline), Althair 6 of 9 (bergamot, orange blossom, cardamom, vanilla, guaiacwood, praline), Haltane 5 of 10 (bergamot, praline, lavender, patchouli, vetiver), Perseus 3 of 7 (bergamot, geranium, vetiver) and Pegasus 3 of 9 (bergamot, orange blossom, vanilla). Perseus comes before Pegasus because it shares two notes with Haltane, the box before it (bergamot, vetiver), where Pegasus shares one (bergamot). Violet (Layton) and violet leaves (Pegasus) are counted as different notes; bourbon vanilla (Althair) is counted as vanilla.",
+      "caption": "Built only from each official note list. The order follows shared notes and is not a quality ranking.",
+      "alt": "A decision chart that starts with the question: which of these smells do you already like? Five equal boxes each lead to one fragrance. Apple and lavender lead to Parfums de Marly Layton. Cinnamon and orange blossom over vanilla lead to Parfums de Marly Althair. Praline and leather lead to Parfums de Marly Haltane. Grapefruit and vetiver lead to Parfums de Marly Perseus. Almond and anise lead to Parfums de Marly Pegasus. A footnote says bergamot is on all five lists, so it cannot choose for you."
+    }
+  }
+}

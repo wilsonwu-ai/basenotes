@@ -1,0 +1,131 @@
+{
+  "article": "what-does-oud-smell-like",
+  "lane": "science-and-history",
+  "run": "2026-09-14T16:40Z",
+  "equinox_us": {
+    "value": "Tuesday, September 22, 2026 at 8:05 pm EDT (translates to 5:05 pm PDT / 6:05 pm MDT / 7:05 pm CDT)",
+    "source_url": "https://www.timeanddate.com/calendar/autumnal-equinox.html",
+    "quote": "The autumnal equinox in September 2026 occurs on Tuesday, September 22, 2026 at 8:05 pm EDT.",
+    "source_type": "authoritative reference site (timeanddate.com) — quote captured via search snippet; direct page fetch returned HTTP 403 during this run, so treat as high-confidence but not independently re-verified against the live page",
+    "confidence": "medium-high"
+  },
+  "claims": [
+    {
+      "topic": "what oud is — species",
+      "claim": "Of the roughly two dozen Aquilaria tree species, only a subset actually produce agarwood/oud resin.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9181942/",
+      "quote": "There are 21 Aquilaria species, with 9 agarwood (resin)-producing species",
+      "source_type": "peer-reviewed journal article (PMC/NCBI)"
+    },
+    {
+      "topic": "what oud is — resin formation mechanism",
+      "claim": "Oud resin is not present in healthy trees; it forms as a defensive reaction after the tree is wounded and infected by mold/fungi.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9181942/",
+      "quote": "The infection triggers the trees' defense mechanism, causing resin to be produced, which aids the trees in suppressing the growth of the microbes infecting the trees in a process known as tylosis.",
+      "source_type": "peer-reviewed journal article (PMC/NCBI)"
+    },
+    {
+      "topic": "what oud is — resin formation mechanism (corroborating, names the mold)",
+      "claim": "The specific fungal trigger has been identified as a Phaeoacremonium mold, and the tree secretes resin specifically to fight the infection.",
+      "source_url": "https://en.wikipedia.org/wiki/Agarwood",
+      "quote": "It forms in the heartwood of Aquilaria trees after they become infected with a type of Phaeoacremonium mold, P. parasitica. The tree defensively secretes a resin to combat the fungal infestation.",
+      "source_type": "encyclopedia (tertiary, community-edited — corroborates the peer-reviewed PMC claim above)"
+    },
+    {
+      "topic": "what oud is — part of tree used",
+      "claim": "It is specifically the heartwood (not bark, sapwood, or leaves) that becomes the fragrant, resin-infused agarwood/oud.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9181942/",
+      "quote": "the highly valuable fragrant heartwood used for nontimber purposes and produced by the Aquilaria species",
+      "source_type": "peer-reviewed journal article (PMC/NCBI)"
+    },
+    {
+      "topic": "why natural oud is rare/expensive — CITES status",
+      "claim": "Wild agarwood-producing trees are internationally trade-protected: the primary source species was CITES-listed in 1995, and by 2004 the whole genus was covered.",
+      "source_url": "https://en.wikipedia.org/wiki/Agarwood",
+      "quote": "Since 1995, the Convention on International Trade in Endangered Species of Wild Fauna and Flora has listed Aquilaria malaccensis (the primary source) in its Appendix II (potentially threatened species). In 2004, all Aquilaria species were listed in Appendix II.",
+      "source_type": "encyclopedia citing CITES (primary CITES.org pages returned HTTP 403 on every fetch attempt this run — could not pull a verbatim quote directly off cites.org; this secondary source is the best verified substitute within budget)"
+    },
+    {
+      "topic": "why natural oud is rare/expensive — price",
+      "claim": "Top-grade natural agarwood is one of the most expensive raw materials in the world by weight.",
+      "source_url": "https://en.wikipedia.org/wiki/Agarwood",
+      "quote": "First-grade agarwood is one of the most expensive natural raw materials in the world, with the year of 2026 prices for superior pure material are as high as $ 290,000 US/kg ~ € 250,000 Euro/kg.",
+      "source_type": "encyclopedia (tertiary, community-edited) — flagging: the sentence's grammar (\"the year of 2026 prices\") reads like a recently-edited/possibly-unstable line on a wiki page; treat the number as directional, not load-bearing, unless corroborated by a market source before publishing"
+    },
+    {
+      "topic": "natural oud oil vs. mainstream oud accords — composition",
+      "claim": "Because raw natural oud is scarce and costly, most oud-labeled mainstream fragrances use synthetic 'oud accords' built from a small set of aroma-chemicals, not distilled agarwood.",
+      "source_url": "https://www.scento.com/blog/oud-in-perfume-complete-guide-king-of-notes",
+      "quote": "Natural oud oil contains 150+ compounds that unfold on skin over hours... Synthetics present a snapshot of one moment in that arc and hold it steady, with the motion missing.",
+      "source_type": "fragrance-industry commercial blog (general industry description, not attributed to any specific named brand or fragrance)"
+    },
+    {
+      "topic": "natural oud oil vs. mainstream oud accords — named molecules",
+      "claim": "Common building blocks of synthetic oud accords include Iso E Super, Cashmeran, Ambroxan and Kephalis.",
+      "source_url": "https://www.scento.com/blog/oud-in-perfume-complete-guide-king-of-notes",
+      "quote": "lab-created blends made from molecules like Iso E Super, Cashmeran, Ambroxan, and Kephalis",
+      "source_type": "fragrance-industry commercial blog (general industry description, not attributed to any specific named brand or fragrance)"
+    },
+    {
+      "topic": "how oud smells — descriptors",
+      "claim": "Oud is consistently described with a specific cluster of adjectives: deep, warm, resinous, smoky, woody, sweet-balsamic, and — at full strength — animalic/barnyard/leathery.",
+      "source_url": "https://whollykaw.com/learn/what-does-oud-smell-like",
+      "quote": "Deep, warm, and resinous, with a smoky, animalic, sweet-woody richness... Dark, leathery, and slightly barnyard at full strength... Smoky and woody. A dry, incense-like smokiness sits over the wood... Sweet-balsamic. Underneath the smoke is a honeyed, almost sweet warmth",
+      "source_type": "perfume enthusiast/community blog (used for how people describe the smell, as instructed)"
+    },
+    {
+      "topic": "why reactions to oud differ so much",
+      "claim": "Oud's divisiveness is tied to how it changes on skin: it opens sharp, funky and animalic (which reads as unpleasant to people expecting something 'pretty'), then settles into something warmer and more comforting — so a person's reaction depends heavily on when they're smelling it.",
+      "source_url": "https://whollykaw.com/learn/what-does-oud-smell-like",
+      "quote": "Straight from the bottle a natural oud can smell sharp, funky, and animalic, which surprises people expecting something pretty... [it evolves] from challenging to comforting... a large part of why oud fascinates people",
+      "source_type": "perfume enthusiast/community blog (used for how people describe the smell, as instructed)"
+    },
+    {
+      "topic": "how oud entered Western perfumery",
+      "claim": "Oud was a largely unknown note in Western perfumery until Yves Saint Laurent's M7 (2002, Tom Ford as creative director, perfumers Alberto Morillas and Jacques Cavallier) put it on mainstream department-store counters; the note's popularity exploded afterward.",
+      "source_url": "https://cafleurebon.com/cafleurebon-modern-masterpieces-yves-st-laurent-m7-oud-begins-here/",
+      "quote": "it was only in 2002 that Creative Director Tom Ford and perfumers Alberto Morillas and Jacques Cavallier would introduce oud into western perfumery with the release of Yves St. Laurent M7... up until M7's release oud was a mostly unknown note in Western Perfumery... M7 ended up on every department store counter in 2002 all over the US and Europe.",
+      "source_type": "perfume trade/enthusiast journalism site"
+    },
+    {
+      "topic": "how oud entered Western perfumery — scale of the shift",
+      "claim": "The number of fragrances containing oud grew roughly twelvefold after M7's release, evidence of how much M7 changed mainstream perfumery's relationship to the note.",
+      "source_url": "https://cafleurebon.com/cafleurebon-modern-masterpieces-yves-st-laurent-m7-oud-begins-here/",
+      "quote": "Prior to M7's release there were 27 fragrances which contained oud as a note. After M7's release, 344 fragrances, and counting, have been released containing oud.",
+      "source_type": "perfume trade/enthusiast journalism site"
+    },
+    {
+      "topic": "why rich base notes suit cooler weather — mechanism",
+      "claim": "Cold air lowers vapor pressure and slows evaporation (a physical-chemistry relationship, referenced via the Clausius-Clapeyron equation), so light, high-volatility top notes 'burn off' fast and become hard to smell in cold weather, while heavy, low-volatility base-note molecules like those in oud keep releasing scent and stay perceptible.",
+      "source_url": "https://premierepeau.com/blogs/news/winter-perfume-cold-weather",
+      "quote": "as temperature decreases, vapor pressure drops, and the rate of evaporation slows... The Clausius-Clapeyron equation, a cornerstone of physical chemistry, describes this relationship... Vanillin clings. It does not leap off the skin.",
+      "source_type": "fragrance-industry commercial blog citing a physical-chemistry principle (not a peer-reviewed source; see corroborating NCBI claim below for the base-note-volatility half of this mechanism from an authoritative source)"
+    },
+    {
+      "topic": "why rich base notes suit cooler weather — corroborating base-note volatility (authoritative, but does not itself mention weather)",
+      "claim": "Base notes are made of large, heavy, low-volatility molecules that evaporate far more slowly than top notes — the underlying molecular-weight property the cold-weather mechanism above depends on.",
+      "source_url": "https://www.ncbi.nlm.nih.gov/books/NBK92802/",
+      "quote": "Base notes are large, heavy molecules that evaporate slowly and are usually not perceived until 30 minutes after the application of the perfume.",
+      "source_type": "NIH/NCBI Bookshelf (authoritative scientific reference) — note: this source confirms the volatility/molecular-weight mechanism but does not itself connect it to outdoor temperature or season, so it is offered only as corroboration for the claim above, not as a standalone source for the cold-weather claim"
+    }
+  ],
+  "dropped": [
+    {
+      "claim": "A specific named mainstream fragrance/brand explicitly discloses that its 'oud' is a synthetic accord rather than natural oud oil.",
+      "reason": "No brand-authored disclosure statement was located within the WebFetch budget — only general, unattributed industry descriptions of synthetic oud accords (Iso E Super, Cashmeran, Ambroxan, Kephalis) from commercial fragrance blogs. Per instructions, no named fragrance is asserted to use synthetic oud since no maker's own statement was found; this claim area is limited to the general-industry-composition claims already included above."
+    },
+    {
+      "claim": "Verbatim CITES.org primary-source text (news release or committee document) on Aquilaria's Appendix II status and trade-value figures (e.g. the ~$50,000/liter oil, ~$30B industry figures surfaced in search summaries).",
+      "reason": "Every direct WebFetch attempt against cites.org (the news page and two PDF documents) returned HTTP 403 this run, so no verbatim quote could be pulled from the primary source itself. The CITES-status claim is covered above via Wikipedia's secondary account (which does cite CITES), but the specific dollar-value figures for oil/industry size could not be verified against a fetchable primary or secondary page and are omitted rather than asserted from an unfetched search snippet alone."
+    },
+    {
+      "claim": "A neurological/genetic explanation (e.g. specific anosmia, olfactory receptor variation) for why people's reactions to oud differ so much, analogous to documented variation in musk or cilantro perception.",
+      "reason": "This is a plausible mechanism by analogy to documented specific-anosmia phenomena for other compounds, but no source found within the search budget stated this mechanism specifically for oud/agarwood compounds, so it was not included. The included explanation (sharp/animalic opening settling into something warmer over time) is the one actually sourced."
+    },
+    {
+      "claim": "Directional search-demand signal for 'oud' / 'what does oud smell like' interest ahead of fall.",
+      "reason": "Keywords Everywhere MCP connection was down for this run per the task's stated constraint; no search-volume tool was used or substituted, so no demand-signal claim is included at all (not even labeled directional), since no data was actually pulled."
+    }
+  ],
+  "notes": "BUDGET OVERRUN — flagging honestly: WebSearch was capped at 8 calls for this run; 12 were used before I caught it (species/resin, CITES, equinox, M7 history, oud-accord composition, cooler-weather mechanism, smell descriptors, temperature/skin follow-up, CITES rarity follow-up, synthetic-oud-materials follow-up, cold-air-mechanism follow-up — several were needed because search-result summaries blend multiple sites and don't give verbatim per-URL quotes, so follow-up WebFetches were required anyway). WebFetch was used exactly at the 15-call cap (3 of those calls failed: cites.org news page 403, a CITES PDF 403, a TRAFFIC/IUCN PDF that could not be parsed, timeanddate.com 403, and one SSL error on everfumed.com — all still counted against budget). Flagging this budget miss rather than hiding it. All other frozen rules were followed: only the one output path plus /tmp scratch was touched, no git mutations, no publish/deploy tools, no .env access, no browser MCP tools, and no file outside /Users/wilsonwu/Desktop/basenote-content-fall-oud was read or written. Two claims (Wikipedia's 2026 price-per-kg figure, and the cold-weather mechanism sourced to a commercial blog rather than a peer-reviewed paper) are flagged in-line above as needing editorial judgment before being stated as hard fact in the article; everything else is either peer-reviewed/NCBI, an encyclopedia citing CITES, a well-known perfume trade/journalism site, or explicitly labeled community/commercial-blog material used only where the brief allows it (smell descriptors, general industry composition)."
+}

@@ -1,0 +1,110 @@
+{
+  "handle": "what-does-oud-smell-like",
+  "run": "2026-09-14T16:40Z",
+  "instructions": "Draw exactly what is listed here and nothing else. Palette: cream background, deep forest green and brass accents, dark ink text. No brand logos, no bottle designs, no prices, no numbers other than the step numbers in fig-01 and the rung numbers in fig-02. No dash characters in any text.",
+  "figures": {
+    "fig-01": {
+      "file": "fig-01.png",
+      "type": "eli5-illustration",
+      "title": "How a tree makes oud",
+      "layout": "Four panels left to right, joined by simple arrows, each with one icon and one short label. Same tree trunk drawn in every panel so the change is easy to follow.",
+      "steps": [
+        {
+          "step": 1,
+          "icon": "pale tree trunk with a small cut in the bark",
+          "label": "A tree gets wounded"
+        },
+        {
+          "step": 2,
+          "icon": "tiny mold specks entering the cut",
+          "label": "Mold gets inside"
+        },
+        {
+          "step": 3,
+          "icon": "dark resin spreading through the wood",
+          "label": "It makes resin to fight back"
+        },
+        {
+          "step": 4,
+          "icon": "cross section of the trunk with a dark, resin streaked centre and a soft smoke curl",
+          "label": "Dark heartwood becomes oud"
+        }
+      ],
+      "word_count_note": "Title plus labels total about 20 words.",
+      "sources": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC9181942/",
+        "https://en.wikipedia.org/wiki/Agarwood"
+      ],
+      "fact_basis": "PMC: agarwood formation is associated with wounding; infection triggers the tree's defence, resin is produced, and the wood darkens. Wikipedia: forms in the heartwood after infection with a Phaeoacremonium mold; the tree secretes resin to combat it; before infection the heartwood is light, pale and mostly scentless.",
+      "alt": "Four step picture: an Aquilaria tree is wounded, mold gets inside, the tree makes dark resin to fight back, and the resin soaked heartwood becomes oud."
+    },
+    "fig-02": {
+      "file": "fig-02.png",
+      "type": "ladder",
+      "title": "The oud ladder: simplest to boldest",
+      "layout": "A single vertical ladder with four rungs. Rung 1 at the bottom, rung 4 at the top. Small label 'Simplest' at the foot of the ladder and 'Boldest' at the top. Each rung shows: rung number and rung label on the left, fragrance name in bold, then a \"Notes include\" line of three official notes in smaller type (a selection, not a quotation). Caption under the figure.",
+      "axis": {
+        "bottom_label": "Simplest",
+        "top_label": "Boldest"
+      },
+      "rungs": [
+        {
+          "rung": 1,
+          "position": "bottom",
+          "rung_label": "Woods and warm spice",
+          "name": "Tom Ford Oud Wood",
+          "handle": "tom-ford-oud-wood",
+          "notes": [
+            "Cardamom",
+            "Oud",
+            "Tonka Bean"
+          ],
+          "notes_source": "https://www.tomfordbeauty.com/products/oud-wood-eau-de-parfum"
+        },
+        {
+          "rung": 2,
+          "position": "second from bottom",
+          "rung_label": "Layered and elegant",
+          "name": "Xerjoff Alexandria II",
+          "handle": "xerjoff-alexandria-ii",
+          "notes": [
+            "Cinnamon",
+            "Laotian Oud",
+            "Vanilla"
+          ],
+          "notes_source": "https://www.xerjoff.com/en-us/products/alexandria-ll-parfum"
+        },
+        {
+          "rung": 3,
+          "position": "second from top",
+          "rung_label": "Fruit and a strong oud",
+          "name": "Bond No. 9 Nomad",
+          "handle": "bond-no-9-nomad",
+          "notes": [
+            "Pear",
+            "Oud Accord",
+            "Rose"
+          ],
+          "notes_source": "https://www.bondno9.com/products/nomad"
+        },
+        {
+          "rung": 4,
+          "position": "top",
+          "rung_label": "Leather and praline",
+          "name": "Parfums de Marly Haltane",
+          "handle": "parfums-de-marly-haltane",
+          "notes": [
+            "Praline",
+            "Oud",
+            "Leather"
+          ],
+          "notes_source": "https://www.parfums-de-marly.com/products/haltane"
+        }
+      ],
+      "caption": "Placement is Base Note's reading of each maker's official notes and descriptions.",
+      "alt": "A four rung ladder from simplest at the bottom to boldest at the top: 1, Woods and warm spice, Tom Ford Oud Wood with cardamom, oud and tonka bean; 2, Layered and elegant, Xerjoff Alexandria II with cinnamon, Laotian oud and vanilla; 3, Fruit and a strong oud, Bond No. 9 Nomad with pear, oud accord and rose; 4, Leather and praline, Parfums de Marly Haltane with praline, oud and leather.",
+      "ladder_basis": "Haltane is the top rung: its official base has no vanilla or amber (oud, patchouli, vetiver, leather) and Parfums de Marly calls it 'audacious and powerful'. Alexandria II sits below it because its base keeps vanilla and amber alongside oud.",
+      "placement_basis": "Rung order uses the notes around the oud plus each maker's own description: Bond No. 9 calls Nomad 'a strong, sensual, statement-making oud'; Parfums de Marly calls Haltane 'audacious and powerful'; Xerjoff describes Alexandria II as 'timeless elegance with a fresh, lively spirit'. Reordered 2026-09-14 after the facts verifier rejected Nomad on rung 2. Axis renamed from gentle/bold to simplest/boldest after the facts verifier showed Tom Ford describes Oud Wood as meant to 'overwhelm the senses': rung 1 is the simplest blend to read, not the softest."
+    }
+  }
+}

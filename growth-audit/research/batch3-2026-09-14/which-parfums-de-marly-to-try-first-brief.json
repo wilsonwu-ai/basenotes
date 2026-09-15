@@ -1,0 +1,466 @@
+{
+  "handle": "which-parfums-de-marly-to-try-first",
+  "run": "2026-09-14T19:45Z",
+  "title": "Which Parfums de Marly Should You Try First? Layton, Pegasus, Althair, Perseus and Haltane Compared",
+  "title_note": "Working title kept. The questions lane shows 'which parfums de marly' and 'layton vs pegasus' as the strongest query families and the working title already carries both the question and all five names.",
+  "seo_title": "Which Parfums de Marly to Try First? 5 Compared | Base Note",
+  "seo_description": "Pick your first Parfums de Marly by a note you already like: apple and lavender, vanilla and cinnamon, grapefruit, almond or leather. Official notes compared.",
+  "summary": "A decision guide to five Parfums de Marly fragrances that sends you from a smell you already like to the one to try first, using only the notes on each maker page. It also compares three pairs by their official notes and explains where the house name comes from.",
+  "tags": [
+    "house-guide:parfums-de-marly",
+    "which parfums de marly to try first",
+    "best parfums de marly fragrance",
+    "layton vs pegasus",
+    "althair vs layton",
+    "haltane vs althair"
+  ],
+  "direct_answer": "Start with a note you already enjoy. Apple and lavender lead to Layton; cinnamon and orange blossom over vanilla, to Althair; praline with leather, to Haltane; grapefruit and vetiver, to Perseus; almond and anise, to Pegasus. Bergamot sits on all five official note lists, so it cannot decide for you. The order follows those lists and is not a quality ranking.",
+  "house_format": {
+    "markup_from": "growth-audit/blog-post-50-best-everyday-cologne-men.html: article-disclosure div (role=\"note\" aria-label=\"Commercial disclosure\"), table with caption and scope=\"col\" headers, FAQ as h2 plus h3 questions each followed by one p, sources ul whose links carry rel=\"noopener noreferrer\" target=\"_blank\".",
+    "discipline_from": "growth-audit/blog-post-53-what-does-oud-smell-like.html: every factual sentence traceable to a listed source, paragraph shapes varied (not every paragraph opens with the fragrance name), exactly one price sentence in the closing section. Do not copy its topic or its ladder framing: this article has no ladder.",
+    "disclosure_text_guide": "Disclosure: Base Note sells 5 ml atomizers of every fragrance in this guide and benefits if you shop through the product links. The selection reflects Parfums de Marly fragrances available on Base Note on September 14, 2026. Notes and descriptive words come from the linked Parfums de Marly pages; the decision chart, its order and the wearing suggestions are our editorial interpretation, and the order is not a quality ranking. We have not used unverified price, shipping, spray-count or performance claims. (Use &nbsp; between 5 and ml as post 50 does.)",
+    "order": [
+      "h1 title",
+      "p strong Direct answer: use direct_answer above (61 words)",
+      "article-disclosure div",
+      "h2 Explained simply, then <!-- img:fig-01 -->, then at most 60 words",
+      "h2 Which Parfums de Marly should you try first?, then <!-- img:fig-02 --> directly under it, one short paragraph, the table, then five h3 entries in pick order",
+      "h2 How do three of these pairs differ on their notes?, with one h3 per pair",
+      "<!-- img:fig-03 --> after the pairs section, before the house section (middle of the article)",
+      "h2 Where does the Parfums de Marly name come from?",
+      "h2 How can you try these five side by side?, ending with <!-- img:fig-04 --> just before the FAQ",
+      "h2 Frequently asked questions, h3 questions",
+      "h2 Where should you start with Parfums de Marly?",
+      "h2 Sources, ul"
+    ],
+    "length_words": "2,400 to 3,000 words with tags stripped; hard ceiling 3,200. Rough budget: direct answer and disclosure 130, Explained simply 60, main section 1,000 (intro 90, table 150, five h3 at about 150 each), pairs 450, house 220, side by side 250, FAQ 420, closing 120, sources 150."
+  },
+  "outline": [
+    {
+      "h2": "Explained simply",
+      "marker_after_h2": "<!-- img:fig-01 -->",
+      "max_words": 60,
+      "points": [
+        "A perfume house makes many fragrances, and each comes with a short list of notes: the smells the house says you will notice after you spray it, such as apple or vanilla (define note here, in child-level words).",
+        "Think of a smell you already like, find it in the lists, and try the fragrance that has it first.",
+        "If every list has that smell (bergamot is on all five here), pick a different smell to decide."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Note_(perfumery)",
+        "https://www.parfums-de-marly.com/products/layton",
+        "https://www.parfums-de-marly.com/products/pegasus",
+        "https://www.parfums-de-marly.com/products/althair",
+        "https://www.parfums-de-marly.com/products/perseus",
+        "https://www.parfums-de-marly.com/products/haltane"
+      ]
+    },
+    {
+      "h2": "Which Parfums de Marly should you try first?",
+      "marker_after_h2": "<!-- img:fig-02 -->",
+      "points": [
+        "One short paragraph: the chart starts from a smell you already like and sends you to one fragrance. Say once, plainly, that the order of the five entries follows the chart and is not a quality ranking. Explain the order in one sentence in note terms: the chart asks first about the fragrance that shares the most listed notes with the other four, so each later choice is easier to tell apart (see picks[].order_reason). Define top, heart and base notes here (Wikipedia: groups of notes sensed at different times after application) and link the notes pyramid post.",
+        "Table: <caption>Five Parfums de Marly fragrances on Base Note, in decision-chart order (not a quality ranking), with notes from each maker's current official page.</caption> Columns, scope=\"col\", exactly four: Fragrance | If you already like | Official notes (top; heart; base) | Shares the most notes with. Use the table_row values in picks[]. The fragrance cell links to /products/<handle>.",
+        "Then one h3 per fragrance, in picks order, using picks[].h3 exactly. Each h3 block has three labelled lines in this order: 'Smells like' (official notes only, grouped top, heart, base, with a link to the maker page, optional verbatim maker words from picks[].quotable_maker_words in quotation marks), 'Wear it for' (picks[].wear_it_for; each has a different sentence shape), 'How it differs from the other four' (picks[].differs_from_other_four; note structure only, no feel or strength language), and a link line to /products/<handle>.",
+        "Do not add any sentence about how any of the five wears, lasts, carries, projects or is received by other people."
+      ],
+      "sources": [
+        "https://www.parfums-de-marly.com/products/layton",
+        "https://www.parfums-de-marly.com/products/althair",
+        "https://www.parfums-de-marly.com/products/haltane",
+        "https://www.parfums-de-marly.com/products/perseus",
+        "https://www.parfums-de-marly.com/products/pegasus",
+        "https://en.wikipedia.org/wiki/Note_(perfumery)",
+        "https://en.wikipedia.org/wiki/Praline_(nut_confection)",
+        "https://en.wikipedia.org/wiki/Anise",
+        "https://en.wikipedia.org/wiki/Elemi",
+        "https://en.wikipedia.org/wiki/Vetiver",
+        "https://en.wikipedia.org/wiki/Ribes_nigrum",
+        "https://en.wikipedia.org/wiki/Salvia_sclarea",
+        "https://en.wikipedia.org/wiki/Bulnesia_sarmientoi",
+        "https://en.wikipedia.org/wiki/Agarwood",
+        "https://en.wikipedia.org/wiki/Saffron",
+        "https://en.wikipedia.org/wiki/Vanilla",
+        "https://en.wikipedia.org/wiki/Bergamot_orange",
+        "https://en.wikipedia.org/wiki/Gourmand_(fragrance)"
+      ]
+    },
+    {
+      "h2": "How do three of these pairs differ on their notes?",
+      "points": [
+        "One sentence of setup: these are the three Parfums de Marly pairings that come up most in search. Do not state search volumes or cite competitor pages.",
+        "h3 'Layton vs Pegasus': use head_to_head[0]. Shared notes are only bergamot and vanilla. Layton has apple and cardamom on top, lavender, violet and geranium in the heart, and patchouli, guaiacwood and praline beside the vanilla. Pegasus has anise and almond on top, cypress, violet leaves and orange blossom in the heart, and ambrox and sandalwood beside the vanilla. Optional: the Parfums de Marly site tags Layton 'Fougere Ambery Fruity' and Pegasus 'Fougere Ambery Powdery' on its product cards (quote exactly, cite https://www.parfums-de-marly.com/products/althair, where both cards appear); if used, define fougère from Wikipedia (lavender top notes over oakmoss and coumarin) and do not claim either fragrance contains oakmoss or coumarin.",
+        "h3 'Althair vs Layton': use head_to_head[1]. The most shared pair of the five: bergamot, cardamom, vanilla (Althair lists it as bourbon vanilla), guaiacwood and praline. Cardamom sits in Layton's top notes but Althair's heart. Layton alone adds apple, lavender, violet, geranium and patchouli; Althair alone adds mandarin, elemi, orange blossom and cinnamon.",
+        "h3 'Haltane vs Althair': use head_to_head[2]. They share only bergamot and praline, and praline sits in Haltane's heart but Althair's base. Haltane adds pink peppercorn, saffron, lavender, clary sage, oud, patchouli, vetiver and leather and lists no vanilla; Althair adds mandarin, elemi, orange blossom, cinnamon, cardamom, bourbon vanilla and guaiacwood.",
+        "Each pair ends with one 'Pick by this' sentence phrased as a note preference (for example: if almond appeals more than apple, start with Pegasus). Never phrase it as sweeter, darker, stronger, easier or more versatile."
+      ],
+      "sources": [
+        "https://www.parfums-de-marly.com/products/layton",
+        "https://www.parfums-de-marly.com/products/pegasus",
+        "https://www.parfums-de-marly.com/products/althair",
+        "https://www.parfums-de-marly.com/products/haltane",
+        "https://en.wikipedia.org/wiki/Foug%C3%A8re"
+      ],
+      "marker_after_section": "<!-- img:fig-03 -->"
+    },
+    {
+      "h2": "Where does the Parfums de Marly name come from?",
+      "points": [
+        "Wikipedia describes Parfums de Marly as a French niche perfume house founded in 2009 by Julien Sprecher and headquartered in Paris. Link the live designer vs niche post where the word niche appears.",
+        "The name is inspired by the Château de Marly, a residence of King Louis XV (Wikipedia). Wikipedia also says Louis XV was famed for leading the 'perfumed court' and was known for his love of racehorses.",
+        "The horse emblem: the house's own story page calls its emblems a tribute to the horses of Marly, 'Masterpieces commissioned in 1743 by Louis XV from the sculptor Guillaume Coustou to adorn the Château entrance.' Use the house page for the 1743 fact (Wikipedia words the 1743 date differently; do not merge the two).",
+        "Sprecher's own words, quoted verbatim from the house story page: 'I founded the Maison to express my own vision of modern Haute Parfumerie that disrupts the codes by taking inspiration freely from the spirit of 18th-century France.' Each of the five official product pages states 'All our perfumes are made in France'. Do NOT say each fragrance is named after a particular horse (unsourced), do not name perfumers (not on the pages), and do not reuse post 16's 'What is Parfums de Marly?' sentences or its biography details (birth year, father, Guerlain), which were not fetched this run."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Parfums_de_Marly",
+        "https://parfums-de-marly.com/pages/the-maison-our-story",
+        "https://www.parfums-de-marly.com/products/layton"
+      ]
+    },
+    {
+      "h2": "How can you try these five side by side?",
+      "points": [
+        "Compare two at a time, and choose pairs that share notes so the differences are easier to name: Layton with Althair (five shared notes), Layton with Haltane (four), Pegasus with Althair (three). Use one wrist for each and write down which is which.",
+        "Smell them at the start and again later the same day, because top, heart and base notes are the groups you notice at different times after spraying (Wikipedia). Say nothing about hours, fading speed or how far a scent reaches.",
+        "Keep to one pair per day and write one note-based line about each (for example: 'I kept noticing the almond'). Link the live sample-before-you-buy post on the reason to wear a small amount on real days before buying a bottle.",
+        "No spray counts, no application quantities, no claims that skin chemistry changes a scent (not sourced this run). End the section with <!-- img:fig-04 --> directly before the FAQ h2."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Note_(perfumery)",
+        "https://www.parfums-de-marly.com/products/layton",
+        "https://www.parfums-de-marly.com/products/althair",
+        "https://www.parfums-de-marly.com/products/haltane",
+        "https://www.parfums-de-marly.com/products/pegasus"
+      ],
+      "marker_after_section": "<!-- img:fig-04 -->"
+    },
+    {
+      "h2": "Frequently asked questions",
+      "points": [
+        "Use the faq array. Each answer is self-contained (names the fragrance and the house, never says 'as above'), 40 to 90 words, official notes only, no performance language."
+      ],
+      "sources": []
+    },
+    {
+      "h2": "Where should you start with Parfums de Marly?",
+      "points": [
+        "Invite the reader to take the smell they already like from the chart and start with that one fragrance; if two boxes both appeal, try that pair side by side.",
+        "Describe Base Note the way the live homepage (fetched this run) does, paraphrased: authentic designer and niche fragrance decanted from the original bottle into a 5 ml spray, so you can try it on your skin before you buy the bottle; a one-time purchase is the default and no subscription is required; an optional Monthly Rotation lets you swap, skip or cancel from your account.",
+        "Price, exactly one sentence, this section only: 'A single one-time 5 ml atomizer of any of these five is $20.' Evidence: basenotescent.com/products/<handle>.js price 2000 cents for all five handles, fetched this run.",
+        "Do NOT mention the $18 extra-vial price, any free-shipping threshold, the homepage's spray count, box sets, stock, reviews or urgency. Optionally link the live how-to-build-a-fragrance-wardrobe post for what to add after a first pick."
+      ],
+      "sources": [
+        "https://basenotescent.com/"
+      ]
+    },
+    {
+      "h2": "Sources",
+      "points": [
+        "ul; each li is a link with rel=\"noopener noreferrer\" target=\"_blank\". Order: the five Parfums de Marly product pages in picks order, the Parfums de Marly story page, then the other sources in the order of the sources array. List only sources the article actually cites. Do not list basenotescent.com pages or internal Base Note links."
+      ],
+      "sources": []
+    }
+  ],
+  "picks": [
+    {
+      "order": 1,
+      "handle": "pdm-layton",
+      "product_link": "/products/pdm-layton",
+      "name_in_article": "Parfums de Marly Layton",
+      "h3": "1. Parfums de Marly Layton: for people who like apple with lavender",
+      "official_url": "https://www.parfums-de-marly.com/products/layton",
+      "official_notes": {
+        "top": ["Apple", "Bergamot", "Cardamom"],
+        "heart": ["Lavender", "Violet", "Geranium"],
+        "base": ["Patchouli", "Vanilla", "Guaicwood", "Praline"]
+      },
+      "spelling_note": "The house prints 'Guaicwood'. In prose write guaiacwood; in a verbatim quote keep the house spelling.",
+      "maker_description_verbatim": "Layton blends the freshness of apple with calming lavender, wrapped in the earthy depth of patchouli. Elegant, sensual and flamboyant.",
+      "quotable_maker_words": ["wrapped in the earthy depth of patchouli", "Elegant, sensual and flamboyant"],
+      "table_row": {
+        "if_you_already_like": "Apple and lavender",
+        "official_notes": "Apple, bergamot, cardamom; lavender, violet, geranium; patchouli, vanilla, guaiacwood, praline",
+        "shares_most_with": "Althair (five notes)"
+      },
+      "wear_it_for": "A long Sunday lunch with friends that drifts into the evening.",
+      "differs_from_other_four": "The only one of the five with apple. It puts cardamom in the top notes (Althair has it in the heart) and is the only list with violet (Pegasus lists violet leaves, a different note). Its base pairs patchouli with vanilla and praline; Haltane has patchouli but no vanilla.",
+      "order_reason": "Shares 8 of its 10 listed notes with at least one of the other four (bergamot, cardamom, lavender, geranium, patchouli, vanilla, guaiacwood, praline), the most of any, so it is the reference point the chart asks about first. Not a quality ranking.",
+      "consistency": "Post 26 ranks Layton second and post 51 calls it 'the warm all-rounder'; this article neither ranks it nor reuses that tag. Post 20 (live) lists the same official pyramid. Posts 16, 26 and 34 list jasmine, sandalwood, pepper or top-note lavender, which the current official page does not; use the official list only."
+    },
+    {
+      "order": 2,
+      "handle": "pdm-althair",
+      "product_link": "/products/pdm-althair",
+      "name_in_article": "Parfums de Marly Althair",
+      "h3": "2. Parfums de Marly Althair: for people who like cinnamon and orange blossom over vanilla",
+      "official_url": "https://www.parfums-de-marly.com/products/althair",
+      "official_notes": {
+        "top": ["Bergamot", "Mandarin", "Elemi"],
+        "heart": ["Orange Blossom", "Cinnamon", "Cardamom"],
+        "base": ["Bourbon Vanilla", "Guaicwood", "Praline"]
+      },
+      "spelling_note": "The house spells it Althaïr. Print 'Althair' everywhere (store title and older posts use it) and mention the house spelling once in this h3 block.",
+      "maker_description_verbatim": "Althaïr combines the smoothness of vanilla, the indulgence of praline, and the brightness of orange blossom. Elegant, generous and charismatic.",
+      "quotable_maker_words": ["the smoothness of vanilla, the indulgence of praline, and the brightness of orange blossom", "Elegant, generous and charismatic"],
+      "table_row": {
+        "if_you_already_like": "Cinnamon and orange blossom over vanilla",
+        "official_notes": "Bergamot, mandarin, elemi; orange blossom, cinnamon, cardamom; bourbon vanilla, guaiacwood, praline",
+        "shares_most_with": "Layton (five notes)"
+      },
+      "wear_it_for": "The afternoon you finally spend in that bookshop café.",
+      "differs_from_other_four": "The only one with mandarin, elemi (a resin from the Canarium luzonicum tree) or cinnamon, and the only one whose vanilla is named bourbon vanilla (vanilla named after Île Bourbon, the former name of Réunion). It shares orange blossom with Pegasus and shares guaiacwood and praline in the base with Layton.",
+      "order_reason": "Shares 6 of its 9 listed notes with the others (bergamot, orange blossom, cardamom, vanilla, guaiacwood, praline), second most, so it is the second question. Not a quality ranking.",
+      "consistency": "Post 20 (live) uses the same official pyramid and the phrase 'vanilla warmth with a bright floral lift'; do not reuse it or 'glows rather than smothers'. Posts 26, 34 and 42 list passionfruit, heliotrope, tonka bean and white musk, which the current official page does not; do not use them. Do not call it 'the sweetest' (post 26 phrasing and a comparison)."
+    },
+    {
+      "order": 3,
+      "handle": "parfums-de-marly-haltane",
+      "product_link": "/products/parfums-de-marly-haltane",
+      "name_in_article": "Parfums de Marly Haltane",
+      "low_stock": true,
+      "h3": "3. Parfums de Marly Haltane: for people who like praline with leather",
+      "official_url": "https://www.parfums-de-marly.com/products/haltane",
+      "official_notes": {
+        "top": ["Bergamot", "Pink Peppercorn"],
+        "heart": ["Saffron", "Praline", "Lavender", "Clary Sage"],
+        "base": ["Oud", "Patchouli", "Vetiver", "Leather"]
+      },
+      "maker_description_verbatim": "Haltane opens with the aromatic freshness of bergamot and lavender, reveals a subtle gourmand praline heart, then intensifies into the depth of oud. Sophisticated, audacious and powerful.",
+      "quotable_maker_words": ["the aromatic freshness of bergamot and lavender", "gourmand praline heart"],
+      "do_not_quote": ["subtle", "intensifies", "audacious and powerful"],
+      "table_row": {
+        "if_you_already_like": "Praline and leather",
+        "official_notes": "Bergamot, pink peppercorn; saffron, praline, lavender, clary sage; oud, patchouli, vetiver, leather",
+        "shares_most_with": "Layton (four notes)"
+      },
+      "wear_it_for": "Dinner at the wine bar you have been meaning to try.",
+      "differs_from_other_four": "The only one with pink peppercorn, saffron, clary sage, oud (agarwood) or leather, and the only one with four heart notes. Its list has no vanilla. Praline sits in its heart, where Layton and Althair list praline in the base. It shares vetiver with Perseus and lavender and patchouli with Layton.",
+      "order_reason": "Shares 5 of its 10 listed notes with the others (bergamot, praline, lavender, patchouli, vetiver), third most. Low stock: it may appear, but never as the lead or first pick, and this order keeps it third. Not a quality ranking.",
+      "consistency": "Store notes match the official page. Post 26 calls it 'Sweet and dark at once' and post 42 calls it 'the house's dark one' with smoke; the official page uses neither 'dark' nor 'smoky', so do not use those words. If gourmand is used, define it from Wikipedia (a perfume built mainly on edible notes such as honey, chocolate, vanilla or candy) and quote the maker's 'gourmand praline heart'."
+    },
+    {
+      "order": 4,
+      "handle": "pdm-perseus",
+      "product_link": "/products/pdm-perseus",
+      "name_in_article": "Parfums de Marly Perseus",
+      "h3": "4. Parfums de Marly Perseus: for people who like grapefruit and vetiver",
+      "official_url": "https://www.parfums-de-marly.com/products/perseus",
+      "official_notes": {
+        "top": ["Bergamot", "Grapefruit"],
+        "heart": ["Geranium", "Blackcurrant Bud"],
+        "base": ["Vetiver", "Amberwood", "Grey Amber"]
+      },
+      "maker_description_verbatim": "Perseus combines bright grapefruit, fresh geranium, and refined vetiver. Bright, invigorating and refined.",
+      "quotable_maker_words": ["bright grapefruit, fresh geranium, and refined vetiver"],
+      "do_not_quote": ["invigorating"],
+      "table_row": {
+        "if_you_already_like": "Grapefruit and vetiver",
+        "official_notes": "Bergamot, grapefruit; geranium, blackcurrant bud; vetiver, amberwood, grey amber",
+        "shares_most_with": "Layton and Haltane (two notes each)"
+      },
+      "wear_it_for": "When the plan is a morning walk to the farmers market.",
+      "differs_from_other_four": "The shortest list of the five, at seven notes. The only one with grapefruit, blackcurrant bud (unopened blackcurrant buds are distilled for a perfumery oil), amberwood or grey amber. Its list has no vanilla, praline or lavender. It shares geranium with Layton and vetiver (a grass whose roots are used in perfume) with Haltane.",
+      "order_reason": "Shares 3 of its 7 listed notes (bergamot, geranium, vetiver). It ties with Pegasus on shared notes and comes before it because it shares two notes with Haltane, the box before it (bergamot, vetiver), where Pegasus shares one. Not a quality ranking.",
+      "consistency": "Post 51 calls it 'the bright daily pick' and 'the easiest daily wear'; post 42 tags it for the office; post 26 calls it 'Fresh and polite, the safest PdM'. Reuse none of these and make no office or ease claim. Posts 26 and 42 list green apple, lavender, violet leaf and musk, which the current official page does not. The context lane's family label 'Bright Citrus Woody' was NOT found on any page fetched this run (the product card on the Althair page reads 'Woody Green Citrus'); do not use a family label for Perseus."
+    },
+    {
+      "order": 5,
+      "handle": "pdm-pegasus",
+      "product_link": "/products/pdm-pegasus",
+      "name_in_article": "Parfums de Marly Pegasus",
+      "h3": "5. Parfums de Marly Pegasus: for people who like almond and anise",
+      "official_url": "https://www.parfums-de-marly.com/products/pegasus",
+      "official_notes": {
+        "top": ["Anise", "Bergamot", "Almond"],
+        "heart": ["Cypress", "Violet Leaves", "Orange Blossom"],
+        "base": ["Ambrox", "Vanilla", "Sandalwood"]
+      },
+      "maker_description_verbatim": "Pegasus opens with radiant bergamot, softened by the smoothness of almond, and unfolds into a warm, captivating vanilla base. Vibrant, addictive and sensual.",
+      "quotable_maker_words": ["radiant bergamot", "a warm, captivating vanilla base"],
+      "do_not_quote": ["softened", "addictive"],
+      "table_row": {
+        "if_you_already_like": "Almond and anise",
+        "official_notes": "Anise, bergamot, almond; cypress, violet leaves, orange blossom; ambrox, vanilla, sandalwood",
+        "shares_most_with": "Althair (three notes)"
+      },
+      "wear_it_for": "Gallery openings.",
+      "differs_from_other_four": "The only one with anise (a herb with a licorice-like flavour), almond, cypress, violet leaves, ambrox or sandalwood. Its list has no praline and no lavender. It shares orange blossom with Althair and vanilla with Layton and Althair.",
+      "order_reason": "Shares 3 of its 9 listed notes (bergamot, orange blossom, vanilla), tied with Perseus and placed after it by the tie-break in the Perseus entry. Last in the chart, not last in quality.",
+      "consistency": "The current official page lists NO lavender, jasmine, heliotrope, bitter almond, amber or guaiac wood. Posts 34 and 42 (and Base Note's own store listing) build Pegasus around a lavender heart; do not repeat that. Post 51 (live) describes 'Licorice-like anise and almond', consistent with the official page; do not reuse its wording. Post 26's 'usefully polarizing' and post 42's 'the more complex fragrance... the more comfortable one' must not be reused."
+    }
+  ],
+  "picks_order_statement": "The five entries follow the decision chart: Layton, Althair, Haltane, Perseus, Pegasus. The chart asks first about the fragrance whose official note list overlaps most with the other four and moves toward the ones with the fewest shared notes, so each choice is easier to tell apart. It is not a quality ranking, and the article says so once in the main section.",
+  "wear_it_for_rule": "The five lines have different sentence shapes (noun phrase with clause, 'the afternoon you...', a place-based dinner, a 'when the plan is...' clause, a bare plural noun) and do not climb or fall in temperature, formality or intensity down the list. The writer may rephrase them but must keep them free of season, strength, office, weather and compliment reasoning.",
+  "dropped_products": [],
+  "dropped_products_note": "None dropped. All five in-scope products had their official Parfums de Marly product pages fetched this run (HTTP 200 on www.parfums-de-marly.com and us.parfums-de-marly.com, notes read from the 'Olfactive pyramid' block), and all five Base Note product .js files returned a 5ml variant at 2000 cents with available true. Out of scope and not to be named as Base Note products: Layton Exclusif, Percival, Sedley, Greenley, Castley, Galloway, Godolphin, Kalan and any other Parfums de Marly fragrance seen on the maker's related-product cards.",
+  "head_to_head": [
+    {
+      "pair": "Layton vs Pegasus",
+      "h3": "Layton vs Pegasus",
+      "why": "The most searched Parfums de Marly pair in the questions lane (several autocomplete variants).",
+      "shared_notes": ["Bergamot", "Vanilla"],
+      "layton_only": ["Apple", "Cardamom", "Lavender", "Violet", "Geranium", "Patchouli", "Guaicwood", "Praline"],
+      "pegasus_only": ["Anise", "Almond", "Cypress", "Violet Leaves", "Orange Blossom", "Ambrox", "Sandalwood"],
+      "pick_by_this": "If apple and lavender appeal more than almond and anise, start with Layton; the reverse points to Pegasus.",
+      "trap": "Post 42 already answers this pair with 'Layton is the more complex fragrance. Pegasus is the more comfortable one.' and a shared lavender heart. Do not reuse it; the official Pegasus list has no lavender.",
+      "sources": ["https://www.parfums-de-marly.com/products/layton", "https://www.parfums-de-marly.com/products/pegasus"]
+    },
+    {
+      "pair": "Althair vs Layton",
+      "h3": "Althair vs Layton",
+      "why": "Second strongest pair in the questions lane, including forum-flavoured autocomplete variants.",
+      "shared_notes": ["Bergamot", "Cardamom", "Vanilla (Althair: Bourbon Vanilla)", "Guaicwood", "Praline"],
+      "althair_only": ["Mandarin", "Elemi", "Orange Blossom", "Cinnamon"],
+      "layton_only": ["Apple", "Lavender", "Violet", "Geranium", "Patchouli"],
+      "placement_difference": "Cardamom is a top note in Layton and a heart note in Althair.",
+      "pick_by_this": "If cinnamon and orange blossom appeal more than apple and lavender, start with Althair.",
+      "trap": "Do not say either one is sweeter; post 20 and post 26 make that comparison and it is a strength ladder under this run's rules.",
+      "sources": ["https://www.parfums-de-marly.com/products/althair", "https://www.parfums-de-marly.com/products/layton"]
+    },
+    {
+      "pair": "Haltane vs Althair",
+      "h3": "Haltane vs Althair",
+      "why": "Smaller but real search pair in the questions lane; the one place the low-stock Haltane appears as an answer rather than a lead.",
+      "shared_notes": ["Bergamot", "Praline"],
+      "haltane_only": ["Pink Peppercorn", "Saffron", "Lavender", "Clary Sage", "Oud", "Patchouli", "Vetiver", "Leather"],
+      "althair_only": ["Mandarin", "Elemi", "Orange Blossom", "Cinnamon", "Cardamom", "Bourbon Vanilla", "Guaicwood"],
+      "placement_difference": "Praline is a heart note in Haltane and a base note in Althair.",
+      "pick_by_this": "If saffron and leather appeal more than cinnamon and orange blossom, start with Haltane.",
+      "trap": "No 'dark', 'smoky', 'bold' or 'evening only' framing, and do not quote Haltane's 'intensifies' or 'audacious and powerful'.",
+      "sources": ["https://www.parfums-de-marly.com/products/haltane", "https://www.parfums-de-marly.com/products/althair"]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Which Parfums de Marly fragrance should I try first?",
+      "answer_points": "Start from a note you already like: apple and lavender for Layton, cinnamon and orange blossom over vanilla for Althair, praline and leather for Haltane, grapefruit and vetiver for Perseus, almond and anise for Pegasus. All five list bergamot, so it does not help you choose. Say the order is not a quality ranking. 40 to 90 words.",
+      "sources": ["https://www.parfums-de-marly.com/products/layton", "https://www.parfums-de-marly.com/products/althair", "https://www.parfums-de-marly.com/products/haltane", "https://www.parfums-de-marly.com/products/perseus", "https://www.parfums-de-marly.com/products/pegasus"]
+    },
+    {
+      "q": "Is Layton or Pegasus the better first Parfums de Marly?",
+      "answer_points": "Neither is better; they share only bergamot and vanilla. Layton lists apple, cardamom, lavender, violet, geranium, patchouli, guaiacwood and praline; Pegasus lists anise, almond, cypress, violet leaves, orange blossom, ambrox and sandalwood. Choose by which of those notes you already enjoy. No comfort, complexity or crowd-pleasing claims.",
+      "sources": ["https://www.parfums-de-marly.com/products/layton", "https://www.parfums-de-marly.com/products/pegasus"]
+    },
+    {
+      "q": "What is the difference between Althair and Layton?",
+      "answer_points": "They share five listed notes (bergamot, cardamom, vanilla, guaiacwood, praline), more than any other pair of the five. Althair adds mandarin, elemi, orange blossom and cinnamon and names its vanilla bourbon vanilla; Layton adds apple, lavender, violet, geranium and patchouli. Cardamom is a top note in Layton and a heart note in Althair. No sweetness comparison.",
+      "sources": ["https://www.parfums-de-marly.com/products/althair", "https://www.parfums-de-marly.com/products/layton"]
+    },
+    {
+      "q": "Which Parfums de Marly fragrances have vanilla in them?",
+      "answer_points": "Of these five, Layton and Pegasus list vanilla in their base notes and Althair lists bourbon vanilla (define: vanilla named after Île Bourbon, the former name of Réunion). Haltane and Perseus do not list vanilla on their official pages. Layton, Althair and Haltane list praline (define: a confection of nuts, usually almonds, pecans or hazelnuts, and sugar).",
+      "sources": ["https://www.parfums-de-marly.com/products/layton", "https://www.parfums-de-marly.com/products/pegasus", "https://www.parfums-de-marly.com/products/althair", "https://www.parfums-de-marly.com/products/haltane", "https://www.parfums-de-marly.com/products/perseus", "https://en.wikipedia.org/wiki/Vanilla", "https://en.wikipedia.org/wiki/Praline_(nut_confection)"]
+    },
+    {
+      "q": "How is Perseus different from the other Parfums de Marly fragrances here?",
+      "answer_points": "By its note list: seven notes, the shortest of the five, with no vanilla, praline or lavender. It is the only one with grapefruit, blackcurrant bud, amberwood and grey amber, and it shares geranium with Layton and vetiver with Haltane. Quote the maker's 'bright grapefruit, fresh geranium, and refined vetiver'. No daily, easy, office, safe or season claims.",
+      "sources": ["https://www.parfums-de-marly.com/products/perseus", "https://www.parfums-de-marly.com/products/layton", "https://www.parfums-de-marly.com/products/haltane"]
+    },
+    {
+      "q": "Is Parfums de Marly a niche brand, and where are its perfumes made?",
+      "answer_points": "Wikipedia describes Parfums de Marly as a French niche perfume house, founded in 2009 by Julien Sprecher and headquartered in Paris. Its official product pages state 'All our perfumes are made in France'. The name comes from the Château de Marly, a residence of Louis XV. Do not define niche beyond linking; no price-tier claims.",
+      "sources": ["https://en.wikipedia.org/wiki/Parfums_de_Marly", "https://www.parfums-de-marly.com/products/layton"]
+    }
+  ],
+  "internal_links": [
+    {
+      "href": "/blogs/hub/fragrance-notes-explained-top-heart-base-perfume-pyramid",
+      "status": "live",
+      "section": "Which Parfums de Marly should you try first?",
+      "supports": "Each Parfums de Marly page splits its notes into top, heart and base, the groups you notice at different times after spraying."
+    },
+    {
+      "href": "/blogs/hub/designer-vs-niche-fragrance-whats-the-difference",
+      "status": "live",
+      "section": "Where does the Parfums de Marly name come from?",
+      "supports": "Wikipedia describes Parfums de Marly as a French niche perfume house, founded in 2009 by Julien Sprecher."
+    },
+    {
+      "href": "/blogs/hub/sample-before-you-buy-full-bottle",
+      "status": "live",
+      "section": "How can you try these five side by side?",
+      "supports": "Wearing a small amount on ordinary days tells you more about a note list than reading it, which is the case for trying before buying a full bottle."
+    },
+    {
+      "href": "/blogs/hub/how-to-build-a-fragrance-wardrobe",
+      "status": "live",
+      "section": "Where should you start with Parfums de Marly?",
+      "supports": "Once one of the five becomes the bottle you reach for, a second pick can come from a box on the chart with different notes."
+    }
+  ],
+  "definitions_first_use": [
+    {"term": "note (top, heart, base)", "definition": "Descriptors of scents sensed after applying a perfume, grouped by when they are noticed after application.", "source": "https://en.wikipedia.org/wiki/Note_(perfumery)"},
+    {"term": "bergamot", "definition": "A citrus fruit, the bergamot orange, whose extracts are used in perfumes.", "source": "https://en.wikipedia.org/wiki/Bergamot_orange"},
+    {"term": "praline", "definition": "A confection of nuts, usually almonds, pecans and hazelnuts, and sugar.", "source": "https://en.wikipedia.org/wiki/Praline_(nut_confection)"},
+    {"term": "anise", "definition": "A herb with a licorice-like flavour.", "source": "https://en.wikipedia.org/wiki/Anise"},
+    {"term": "elemi", "definition": "A resin harvested from Canarium luzonicum, a tree native to the Philippines.", "source": "https://en.wikipedia.org/wiki/Elemi"},
+    {"term": "vetiver", "definition": "A perennial bunchgrass that has been used to produce perfumes.", "source": "https://en.wikipedia.org/wiki/Vetiver"},
+    {"term": "blackcurrant bud", "definition": "Unopened blackcurrant buds are distilled for an essential oil used in perfumery.", "source": "https://en.wikipedia.org/wiki/Ribes_nigrum"},
+    {"term": "clary sage", "definition": "A herb in the sage genus whose distilled oil is used in perfumes.", "source": "https://en.wikipedia.org/wiki/Salvia_sclarea"},
+    {"term": "guaiacwood", "definition": "Wood of the Bulnesia sarmientoi tree, which yields oil of guaiac used in soaps and perfumes.", "source": "https://en.wikipedia.org/wiki/Bulnesia_sarmientoi"},
+    {"term": "oud", "definition": "Agarwood: a fragrant, dark and resinous wood used in incense and perfume.", "source": "https://en.wikipedia.org/wiki/Agarwood"},
+    {"term": "saffron", "definition": "A spice from the crocus flower with a hay-like fragrance.", "source": "https://en.wikipedia.org/wiki/Saffron"},
+    {"term": "bourbon vanilla", "definition": "Vanilla planifolia, named after Île Bourbon, the former name of Réunion.", "source": "https://en.wikipedia.org/wiki/Vanilla"},
+    {"term": "gourmand", "definition": "A perfume built mainly on edible notes such as honey, chocolate, vanilla or candy.", "source": "https://en.wikipedia.org/wiki/Gourmand_(fragrance)"},
+    {"term": "fougère (only if the family labels are used)", "definition": "A perfume family with sweet lavender top notes over oakmoss and coumarin.", "source": "https://en.wikipedia.org/wiki/Foug%C3%A8re"},
+    {"term": "patchouli", "definition": "Use the maker's own words: 'the earthy depth of patchouli' (Layton page). No other definition.", "source": "https://www.parfums-de-marly.com/products/layton"},
+    {"term": "ambrox, amberwood, grey amber, cypress, violet leaves", "definition": "Print as the house lists them. Do not explain what they are made of or how they smell; no source for these house note names was fetched this run.", "source": null},
+    {"term": "atomizer / decant", "definition": "Base Note homepage: authentic fragrance transferred from the original bottle into a smaller spray.", "source": "https://basenotescent.com/"}
+  ],
+  "sources": [
+    {"url": "https://www.parfums-de-marly.com/products/layton", "label": "Parfums de Marly: Layton", "type": "manufacturer", "fetched": "2026-09-14, HTTP 200; Olfactive pyramid and description read; 'All our perfumes are made in France' present"},
+    {"url": "https://www.parfums-de-marly.com/products/althair", "label": "Parfums de Marly: Althaïr", "type": "manufacturer", "fetched": "2026-09-14, HTTP 200; pyramid and description read; product cards show Layton 'Fougere Ambery Fruity', Pegasus 'Fougere Ambery Powdery', Haltane 'Woody Aromatic Oud', Perseus 'Woody Green Citrus'"},
+    {"url": "https://www.parfums-de-marly.com/products/haltane", "label": "Parfums de Marly: Haltane", "type": "manufacturer", "fetched": "2026-09-14, HTTP 200; pyramid and description read"},
+    {"url": "https://www.parfums-de-marly.com/products/perseus", "label": "Parfums de Marly: Perseus", "type": "manufacturer", "fetched": "2026-09-14, HTTP 200; pyramid and description read"},
+    {"url": "https://www.parfums-de-marly.com/products/pegasus", "label": "Parfums de Marly: Pegasus", "type": "manufacturer", "fetched": "2026-09-14, HTTP 200; pyramid and description read"},
+    {"url": "https://parfums-de-marly.com/pages/the-maison-our-story", "label": "Parfums de Marly: The Maison, our story", "type": "manufacturer", "fetched": "2026-09-14, HTTP 200; Sprecher quote and 1743 Coustou horses sentence present"},
+    {"url": "https://en.wikipedia.org/wiki/Parfums_de_Marly", "label": "Wikipedia: Parfums de Marly", "type": "encyclopedia", "fetched": "2026-09-14, HTTP 200; founded 2009, Julien Sprecher, Paris, French niche perfume house, Château de Marly residence of Louis XV, perfumed court, racehorses"},
+    {"url": "https://en.wikipedia.org/wiki/Note_(perfumery)", "label": "Wikipedia: Note (perfumery)", "type": "definition", "fetched": "2026-09-14, HTTP 200"},
+    {"url": "https://en.wikipedia.org/wiki/Gourmand_(fragrance)", "label": "Wikipedia: Gourmand (fragrance)", "type": "definition", "fetched": "2026-09-14, HTTP 200"},
+    {"url": "https://en.wikipedia.org/wiki/Foug%C3%A8re", "label": "Wikipedia: Fougère", "type": "definition", "fetched": "2026-09-14, HTTP 200"},
+    {"url": "https://en.wikipedia.org/wiki/Praline_(nut_confection)", "label": "Wikipedia: Praline (nut confection)", "type": "definition", "fetched": "2026-09-14, HTTP 200"},
+    {"url": "https://en.wikipedia.org/wiki/Anise", "label": "Wikipedia: Anise", "type": "definition", "fetched": "2026-09-14, HTTP 200"},
+    {"url": "https://en.wikipedia.org/wiki/Elemi", "label": "Wikipedia: Elemi (Canarium luzonicum)", "type": "definition", "fetched": "2026-09-14, HTTP 200"},
+    {"url": "https://en.wikipedia.org/wiki/Vetiver", "label": "Wikipedia: Vetiver", "type": "definition", "fetched": "2026-09-14, HTTP 200"},
+    {"url": "https://en.wikipedia.org/wiki/Ribes_nigrum", "label": "Wikipedia: Blackcurrant (perfumery use of the buds)", "type": "definition", "fetched": "2026-09-14, HTTP 200"},
+    {"url": "https://en.wikipedia.org/wiki/Salvia_sclarea", "label": "Wikipedia: Clary sage", "type": "definition", "fetched": "2026-09-14, HTTP 200"},
+    {"url": "https://en.wikipedia.org/wiki/Bulnesia_sarmientoi", "label": "Wikipedia: Bulnesia sarmientoi (guaiac wood oil)", "type": "definition", "fetched": "2026-09-14, HTTP 200"},
+    {"url": "https://en.wikipedia.org/wiki/Agarwood", "label": "Wikipedia: Agarwood (oud)", "type": "definition", "fetched": "2026-09-14, HTTP 200"},
+    {"url": "https://en.wikipedia.org/wiki/Saffron", "label": "Wikipedia: Saffron", "type": "definition", "fetched": "2026-09-14, HTTP 200"},
+    {"url": "https://en.wikipedia.org/wiki/Vanilla", "label": "Wikipedia: Vanilla (Bourbon vanilla)", "type": "definition", "fetched": "2026-09-14, HTTP 200"},
+    {"url": "https://en.wikipedia.org/wiki/Bergamot_orange", "label": "Wikipedia: Bergamot orange", "type": "definition", "fetched": "2026-09-14, HTTP 200"}
+  ],
+  "price_facts": {
+    "one_time_5ml_price_usd": 20,
+    "evidence": "https://basenotescent.com/products/<handle>.js fetched 2026-09-14: 5ml variant price 2000 cents for pdm-layton, pdm-pegasus, pdm-althair, pdm-perseus, parfums-de-marly-haltane.",
+    "free_shipping_threshold": null,
+    "free_shipping_note": "The homepage says 'Free US shipping over $50', but the run rules say the homepage and shipping policy disagree. Omit any threshold.",
+    "excluded_prices": "The homepage's '$18 each extra in the same order' and Monthly Rotation prices are not the one-time single atomizer price; leave them out. No full-bottle prices, even though the maker pages show euro bottle prices."
+  },
+  "performance_traps": [
+    "Maker words not to quote: 'intensifies', 'audacious and powerful', 'subtle' (Haltane); 'softened', 'addictive' (Pegasus); 'invigorating' (Perseus); 'calming' (Layton, an effect claim).",
+    "Post 51 tags: 'the warm all-rounder', 'the bright daily pick', 'the easiest daily wear', 'the soft almond gourmand', 'less flexible by day'.",
+    "Post 20 phrasing: 'vanilla warmth with a bright floral lift', 'glows rather than smothers', 'the cozy one', 'works at the office', 'most office-friendly'.",
+    "Post 26 phrasing: 'The easiest expensive smell to like', 'usefully polarizing', 'Sweet and dark at once', 'Fresh and polite', 'the safest PdM', 'The sweetest thing here', 'sweet to woody to dark'.",
+    "Post 34 phrasing: 'the one people ask about', 'very sweet, loud', 'sweet without being sugar', 'the formal one', 'the safest of the four'.",
+    "Post 42 phrasing: 'Layton is the more complex fragrance. Pegasus is the more comfortable one.', 'the house's dark one', 'buries it under smoke', 'the harder wear', any lavender claim for Pegasus, 'daytime, office' for Perseus.",
+    "Post 16 phrasing: 'crowd-pleasing', 'cloying and heavy', 'a closer, warmer skin scent', 'lateral move', any hours or sprays per day.",
+    "Competitor framing from the questions lane: longevity hours ('8-10+ hours'), 0 to 100 scores, 'compliment-generating', 'most versatile', 'mass-appealing', 'rotation anchor', 'office-appropriate', 'restrained', 'go light'.",
+    "Generic banned framings: stronger, softer, milder, quieter, lighter, heavier, bolder, darker, safer, easier, more versatile, beast mode, projects, sillage, lasts all day, fills a room, close to the skin, for hot weather, for cold weather, because it is strong, beginner-friendly, crowd-pleaser, signature scent claims.",
+    "Ranking words for the five entries: best, top pick, number one, winner, runner-up. The numbers 1 to 5 in the h3s are chart order only."
+  ],
+  "banned_reminders": [
+    "No em dash or en dash characters or their entities anywhere, including title, captions, alt text and table cells. Write 'vs' not a dash between names.",
+    "No medical or health claims, no star ratings, review counts, order counts, sales numbers or stock levels (Haltane's low stock is never mentioned), no scarcity or urgency language.",
+    "Never mention the extra vial helper product or the free-trial product. No competitor prices, no full-bottle prices, no clone or dupe brand names, no competitor site names.",
+    "Every note named for a fragrance must appear on that fragrance's official pyramid above; never use Base Note's store note lists or older posts for notes."
+  ],
+  "consistency": [
+    "Post 16 (scheduled Layton review) owns the house biography and Layton Exclusif discussion; this article's house section uses only the facts in its outline and new sentences.",
+    "Post 42 (scheduled Pegasus review) has a five-fragrance table built on outdated store notes; this article's table uses official notes and must not reuse its 'Pick it over Pegasus when' column logic or wording.",
+    "Post 51 (live) calls Layton 'the warm all-rounder' and Perseus 'the bright daily pick'; this article does not contradict those (it makes no counter-claim) and does not reuse them.",
+    "Post 20 (live) describes Althair with orange blossom, vanilla and praline, consistent with the official list used here.",
+    "Post 34 (live) has Althair and Pegasus entries built on older note lists; this article does not mention that post's notes.",
+    "Post 26 (live) ranks Layton second; this article's order is chart order, not a ranking, so there is no conflict."
+  ],
+  "notes": "Conflicts found (manufacturer page wins): (1) Base Note's own live product pages list outdated notes for Layton (jasmine, sandalwood, pepper; no patchouli or praline), Pegasus (bitter almond, heliotrope, lavender, jasmine, amber, guaiac wood), Althair (passionfruit, heliotrope, tonka bean, white musk) and Perseus (green apple, lavender, violet leaf, musk, amber); the article links to those product pages, so readers will see a mismatch until the store listings are updated to the official pyramids. Haltane's store notes match. (2) Posts 16, 26, 34 and 42 carry the same outdated lists; posts 20 and 51 match the official pages. (3) The context lane reported Perseus's family as 'Bright Citrus Woody' and Althair's as appearing on its own page; neither label sits beside the pyramid on any page fetched this run. Family labels appear only on related-product cards, and Perseus's card reads 'Woody Green Citrus'. (4) Wikipedia ties 1743 to the restoration of the Château de Marly while the house story page says the horses were commissioned in 1743; the brief uses the house wording. (5) Base Note store descriptions say every Parfums de Marly release is named after a horse bred for the aristocracy; no fetched source confirms it, so the article must not say it. (6) The Base Note homepage states a $50 free-shipping threshold and a spray count; both are excluded by run rules. Decision-chart order is computed from shared official notes (Layton 8/10, Althair 6/9, Haltane 5/10, Perseus 3/7, Pegasus 3/9, tie broken by overlap with the preceding box) so Haltane is never first and the entries do not run from fresh to warm or back. Demand signals are directional only (Keywords Everywhere unavailable in the questions lane)."
+}

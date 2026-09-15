@@ -1,0 +1,29 @@
+[
+  {
+    "handle": "what-does-oud-smell-like",
+    "prompt": "Premium editorial still life for a fall guide to oud, several dark resin-streaked agarwood pieces beside three generic unbranded clear-glass 5 ml atomizers with plain silver caps on a cream travertine ledge, folded cream linen and a small brass dish, warm low autumn light raking from one side, cream and deep forest-green palette, realistic wood grain, glass, stone and metal textures, restrained luxury magazine photography, 16:9 landscape, generous center-safe composition, no people, no hands, no logos, no labels, no text or typography, no brand marks, no replica designer bottles, no distorted caps",
+    "out": "growth-audit/ai-images/blog/what-does-oud-smell-like/hero.jpg",
+    "aspect": "16:9",
+    "model": "fal-ai/nano-banana-2",
+    "resolution": "2K",
+    "fal_only": true
+  },
+  {
+    "handle": "what-does-oud-smell-like",
+    "prompt": "Premium editorial macro photograph of dark agarwood texture, deep brown resin streaks running through pale wood grain, a thin wisp of smoke rising from one edge, soft cream linen out of focus behind, warm low autumn light, cream and deep forest-green palette with a single brass highlight, shallow depth of field, realistic wood and resin detail, restrained luxury magazine photography, 3:2 landscape, no people, no hands, no logos, no labels, no text or typography, no brand marks, no replica designer bottles",
+    "out": "growth-audit/ai-images/blog/what-does-oud-smell-like/fig-03.jpg",
+    "aspect": "3:2",
+    "model": "fal-ai/nano-banana-2",
+    "resolution": "2K",
+    "fal_only": true
+  },
+  {
+    "handle": "what-does-oud-smell-like",
+    "prompt": "Premium editorial autumn still life on a dark wooden tray, a folded cream wool scarf, a few fallen oak and maple leaves, and two generic unbranded clear-glass 5 ml atomizers with plain silver caps, a small brass accent, warm low autumn light, cream and deep forest-green palette, realistic wool, leaf, wood, glass and metal textures, restrained luxury magazine photography, 3:2 landscape, no people, no hands, no logos, no labels, no text or typography, no brand marks, no replica designer bottles, no distorted caps",
+    "out": "growth-audit/ai-images/blog/what-does-oud-smell-like/fig-04.jpg",
+    "aspect": "3:2",
+    "model": "fal-ai/nano-banana-2",
+    "resolution": "2K",
+    "fal_only": true
+  }
+]

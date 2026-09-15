@@ -1,0 +1,95 @@
+{
+  "handle": "dior-sauvage-alternatives",
+  "run": "2026-09-14T19:45Z",
+  "rules": [
+    "No axes, scales, gradients or ordering that implies strength, boldness, gentleness, projection, similarity score or rank.",
+    "No dash characters anywhere (use commas and the word 'and').",
+    "Notes come only from the official pages listed per node; note words are not in quotation marks because none is a full verbatim sentence.",
+    "No bottles, logos or brand marks drawn; fragrance names appear as plain text only."
+  ],
+  "figures": [
+    {
+      "id": "fig-01",
+      "type": "ELI5 two-panel picture",
+      "marker": "<!-- img:fig-01 -->",
+      "layout": "Two side-by-side panels of equal size. Left panel: one recipe card with an arrow pointing to a second, identical recipe card (same ingredient icons in the same places). Right panel: two different recipe cards; each has several ingredient icons, and two icons (a bergamot slice and a lavender sprig) appear on both cards, circled in the same accent colour. Icons carry no text.",
+      "labels": [
+        {"position": "top centre title", "text": "Clone or alternative?"},
+        {"position": "left panel caption", "text": "A clone tries to copy another fragrance's recipe."},
+        {"position": "right panel caption", "text": "An alternative is a different recipe sharing some ingredients."}
+      ],
+      "word_count": 18,
+      "content_sources": [
+        "https://www.pairfum.com/should-you-buy-clone-perfume-dupes-and-copycat-fragrance/ (clone replicates, copies or imitates a fragrance)",
+        "https://www.dior.com/en_us/beauty/products/sauvage-eau-de-parfum-Y0785220.html (bergamot and lavender icons are notes Dior lists)",
+        "Alternative wording is the article's editorial definition"
+      ],
+      "caption": "A clone tries to copy another fragrance's recipe. An alternative is its own recipe that shares a few of the same smells.",
+      "alt": "Two panels. On the left, a recipe card is copied into an identical card, labelled as a clone. On the right, two different recipe cards share a bergamot and a lavender icon, labelled as an alternative."
+    },
+    {
+      "id": "fig-02",
+      "type": "note-overlap map (hub and spokes)",
+      "marker": "<!-- img:fig-02 -->",
+      "layout": "Dior Sauvage Eau de Parfum in a central circle. Five equal-sized nodes evenly spaced around it on one circle, each joined to the centre by a line of identical length and weight, placed clockwise from the top in article order. Distance, size, colour and position carry no meaning. In each node: the fragrance name, a 'Shares' line in the accent colour and a 'Differs' line in neutral grey.",
+      "render": {
+        "revised": "2026-09-14T19:45Z repair: body text enlarged for legibility at a 720px display width",
+        "viewBox": "30 0 976 960",
+        "node_box": "260 x 170",
+        "font_sizes": {"hub_title": 22, "hub_notes": 16, "node_title": 18, "shares_differs": 16, "source_and_legend": 13},
+        "window": "1120x1300 at device scale factor 2",
+        "png": "2240 x 2600",
+        "shares_differs_px_at_720_display": 11.4
+      },
+      "centre": {
+        "name": "Dior Sauvage Eau de Parfum",
+        "notes_line": "Calabrian bergamot, Sichuan pepper, lavender, star anise, vanilla, ambroxan",
+        "source": "https://www.dior.com/en_us/beauty/products/sauvage-eau-de-parfum-Y0785220.html"
+      },
+      "nodes": [
+        {
+          "order": 1,
+          "name": "Creed Green Irish Tweed",
+          "shares_label": "Shares: bergamot, lavender, ambroxan",
+          "differs_label": "Differs: oakmoss",
+          "notes_used": ["bergamot", "lavender", "ambroxan", "oakmoss"],
+          "source": "https://creedboutique.com/products/green-irish-tweed"
+        },
+        {
+          "order": 2,
+          "name": "YSL Y Eau de Parfum Intense",
+          "shares_label": "Shares: lavender",
+          "differs_label": "Differs: patchouli",
+          "notes_used": ["lavender", "patchouli"],
+          "source": "https://www.yslbeauty.com/int/fragrance/masculine-fragrance/y/y--eau-de-parfum-intense/WW-51037YSL.html"
+        },
+        {
+          "order": 3,
+          "name": "Parfums de Marly Perseus",
+          "shares_label": "Shares: bergamot",
+          "differs_label": "Differs: vetiver",
+          "notes_used": ["bergamot", "vetiver"],
+          "source": "https://us.parfums-de-marly.com/products/perseus"
+        },
+        {
+          "order": 4,
+          "name": "Prada Paradigme",
+          "shares_label": "Shares: Calabrian bergamot",
+          "differs_label": "Differs: guaiac wood",
+          "notes_used": ["Calabrian bergamot", "guaiac wood"],
+          "source": "https://www.prada.com/us/en/pradasphere/fragrances/paradigme.html"
+        },
+        {
+          "order": 5,
+          "name": "Versace Eros Eau de Parfum",
+          "shares_label": "Shares: vanilla",
+          "differs_label": "Differs: candied apple",
+          "notes_used": ["vanilla", "candied apple"],
+          "source": "https://www.versace.com/us/en/men/accessories/fragrances-body-care/eros/eros-edp-100-ml-blue/R740110-R100MLS_RNUL.html"
+        }
+      ],
+      "caption": "Notes each alternative shares with Dior Sauvage Eau de Parfum, and one note where it differs, taken from each maker's current page. Placement around the centre follows the article order and does not show rank or similarity.",
+      "alt": "A map with Dior Sauvage Eau de Parfum in the centre, listing Calabrian bergamot, Sichuan pepper, lavender, star anise, vanilla and ambroxan. Five fragrances surround it. Creed Green Irish Tweed shares bergamot, lavender and ambroxan and differs with oakmoss. YSL Y Eau de Parfum Intense shares lavender and differs with patchouli. Parfums de Marly Perseus shares bergamot and differs with vetiver. Prada Paradigme shares Calabrian bergamot and differs with guaiac wood. Versace Eros Eau de Parfum shares vanilla and differs with candied apple."
+    }
+  ]
+}

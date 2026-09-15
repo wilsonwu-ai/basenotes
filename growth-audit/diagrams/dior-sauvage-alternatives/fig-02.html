@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Note overlap map</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=EB+Garamond:ital@0;1&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --paper: #faf6ec;
+    --ink: #1b2f22;
+    --muted: #5c574d;
+    --gold: #b8904f;
+    --line: rgba(34,57,43,.18);
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-serif: 'EB Garamond', Georgia, serif;
+    --font-sans: 'Jost', system-ui, sans-serif;
+  }
+  body {
+    font-family: var(--font-sans);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.25rem;
+  }
+  .frame { max-width: 1080px; width: 100%; }
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 1.25rem;
+  }
+  svg { width: 100%; min-width: 720px; display: block; }
+  .caption {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-top: 1rem;
+    max-width: 760px;
+  }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Note overlap map</p>
+    <h1>Dior Sauvage Eau de Parfum and five alternatives</h1>
+    <svg viewBox="30 0 976 960" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig02-title fig02-desc">
+      <title id="fig02-title">Note overlap map</title>
+      <desc id="fig02-desc">A map with Dior Sauvage Eau de Parfum in the centre, listing Calabrian bergamot, Sichuan pepper, lavender, star anise, vanilla and ambroxan. Five fragrances surround it. Creed Green Irish Tweed shares bergamot, lavender and ambroxan and differs with oakmoss. YSL Y Eau de Parfum Intense shares lavender and differs with patchouli. Parfums de Marly Perseus shares bergamot and differs with vetiver. Prada Paradigme shares Calabrian bergamot and differs with guaiac wood. Versace Eros Eau de Parfum shares vanilla and differs with candied apple.</desc>
+      <defs></defs>
+
+      <rect x="30" y="0" width="976" height="960" fill="#faf6ec"/>
+
+      <!-- spokes: identical length (360) and weight, drawn before nodes so each box hides its overshoot -->
+      <line x1="524" y1="494" x2="524" y2="134" stroke="#5c574d" stroke-width="1.5"/>
+      <line x1="524" y1="494" x2="866" y2="383" stroke="#5c574d" stroke-width="1.5"/>
+      <line x1="524" y1="494" x2="736" y2="785" stroke="#5c574d" stroke-width="1.5"/>
+      <line x1="524" y1="494" x2="312" y2="785" stroke="#5c574d" stroke-width="1.5"/>
+      <line x1="524" y1="494" x2="182" y2="383" stroke="#5c574d" stroke-width="1.5"/>
+
+      <!-- hub: Dior Sauvage Eau de Parfum -->
+      <rect x="334" y="394" width="380" height="200" rx="8" fill="#1b2f22" stroke="#1b2f22" stroke-width="1.5"/>
+      <text x="524" y="434" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="700" font-size="22" fill="#faf6ec">Dior Sauvage Eau de Parfum</text>
+      <text x="524" y="470" text-anchor="middle" font-family="'Jost', sans-serif" font-size="16" fill="#e4d9c3">
+        <tspan x="524" dy="0">Calabrian bergamot, Sichuan pepper,</tspan>
+        <tspan x="524" dy="23">lavender, star anise,</tspan>
+        <tspan x="524" dy="23">vanilla and ambroxan</tspan>
+      </text>
+      <text x="524" y="574" text-anchor="middle" font-family="'Jost', sans-serif" font-size="13" letter-spacing="0.08em" fill="#b8904f">SOURCE: DIOR.COM</text>
+
+      <!-- node 1: Creed Green Irish Tweed (top) -->
+      <rect x="394" y="49" width="260" height="170" rx="8" fill="#ffffff" stroke="#1b2f22" stroke-width="1.5"/>
+      <text x="524" y="86" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="600" font-size="18" fill="#1b2f22">Creed Green Irish Tweed</text>
+      <text x="524" y="124" text-anchor="middle" font-family="'Jost', sans-serif" font-size="16" fill="#b8904f">Shares: bergamot, lavender,</text>
+      <text x="524" y="146" text-anchor="middle" font-family="'Jost', sans-serif" font-size="16" fill="#b8904f">ambroxan</text>
+      <text x="524" y="186" text-anchor="middle" font-family="'Jost', sans-serif" font-size="16" fill="#5c574d">Differs: oakmoss</text>
+
+      <!-- node 2: YSL Y Eau de Parfum Intense (upper right) -->
+      <rect x="736" y="298" width="260" height="170" rx="8" fill="#ffffff" stroke="#1b2f22" stroke-width="1.5"/>
+      <text x="866" y="334" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="600" font-size="18" fill="#1b2f22">
+        <tspan x="866" dy="0">YSL Y Eau de Parfum</tspan>
+        <tspan x="866" dy="23">Intense</tspan>
+      </text>
+      <text x="866" y="402" text-anchor="middle" font-family="'Jost', sans-serif" font-size="16" fill="#b8904f">Shares: lavender</text>
+      <text x="866" y="434" text-anchor="middle" font-family="'Jost', sans-serif" font-size="16" fill="#5c574d">Differs: patchouli</text>
+
+      <!-- node 3: Parfums de Marly Perseus (lower right) -->
+      <rect x="606" y="700" width="260" height="170" rx="8" fill="#ffffff" stroke="#1b2f22" stroke-width="1.5"/>
+      <text x="736" y="736" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="600" font-size="18" fill="#1b2f22">
+        <tspan x="736" dy="0">Parfums de Marly</tspan>
+        <tspan x="736" dy="23">Perseus</tspan>
+      </text>
+      <text x="736" y="804" text-anchor="middle" font-family="'Jost', sans-serif" font-size="16" fill="#b8904f">Shares: bergamot</text>
+      <text x="736" y="836" text-anchor="middle" font-family="'Jost', sans-serif" font-size="16" fill="#5c574d">Differs: vetiver</text>
+
+      <!-- node 4: Prada Paradigme (lower left) -->
+      <rect x="182" y="700" width="260" height="170" rx="8" fill="#ffffff" stroke="#1b2f22" stroke-width="1.5"/>
+      <text x="312" y="736" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="600" font-size="18" fill="#1b2f22">
+        <tspan x="312" dy="0">Prada</tspan>
+        <tspan x="312" dy="23">Paradigme</tspan>
+      </text>
+      <text x="312" y="804" text-anchor="middle" font-family="'Jost', sans-serif" font-size="16" fill="#b8904f">Shares: Calabrian bergamot</text>
+      <text x="312" y="836" text-anchor="middle" font-family="'Jost', sans-serif" font-size="16" fill="#5c574d">Differs: guaiac wood</text>
+
+      <!-- node 5: Versace Eros Eau de Parfum (upper left) -->
+      <rect x="52" y="298" width="260" height="170" rx="8" fill="#ffffff" stroke="#1b2f22" stroke-width="1.5"/>
+      <text x="182" y="334" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="600" font-size="18" fill="#1b2f22">
+        <tspan x="182" dy="0">Versace Eros Eau</tspan>
+        <tspan x="182" dy="23">de Parfum</tspan>
+      </text>
+      <text x="182" y="402" text-anchor="middle" font-family="'Jost', sans-serif" font-size="16" fill="#b8904f">Shares: vanilla</text>
+      <text x="182" y="434" text-anchor="middle" font-family="'Jost', sans-serif" font-size="16" fill="#5c574d">Differs: candied apple</text>
+
+      <!-- legend -->
+      <line x1="40" y1="900" x2="992" y2="900" stroke="rgba(34,57,43,.18)" stroke-width="0.8"/>
+      <text x="40" y="930" xml:space="preserve" font-family="'Jost', sans-serif" font-size="13" letter-spacing="0.08em" fill="#5c574d">GOLD = SHARED NOTE   GREY = A DIFFERING NOTE   PLACEMENT FOLLOWS ARTICLE ORDER, NOT RANK</text>
+    </svg>
+    <p class="caption">Notes each alternative shares with Dior Sauvage Eau de Parfum, and one note where it differs, taken from each maker's current page. Placement around the centre follows the article order and does not show rank or similarity.</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Which Parfums de Marly should you try first?</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=EB+Garamond:ital@0;1&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #faf6ec;
+    --card: #fffdf7;
+    --green: #1b2f22;
+    --green-soft: rgba(27, 47, 34, .55);
+    --gold: #b8904f;
+    --line: rgba(27, 47, 34, .18);
+    --serif: 'EB Garamond', Georgia, serif;
+    --display: 'Playfair Display', Georgia, serif;
+    --sans: 'Jost', 'Helvetica Neue', Arial, sans-serif;
+  }
+  body {
+    background: var(--cream);
+    color: var(--green);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 32px;
+  }
+  .frame { max-width: 1600px; width: 100%; }
+  .eyebrow {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(26px, 2.6vw, 38px);
+    letter-spacing: -.01em;
+    line-height: 1.2;
+    color: var(--green);
+    margin-bottom: 32px;
+    max-width: 1100px;
+  }
+  svg { width: 100%; display: block; }
+  .caption {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--green-soft);
+    margin-top: 22px;
+    max-width: 1100px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">How to choose · Base Note</p>
+    <h1>Which Parfums de Marly should you try first?</h1>
+
+    <svg viewBox="0 0 1600 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pdm-decision-chart-title pdm-decision-chart-desc">
+      <title id="pdm-decision-chart-title">Which Parfums de Marly should you try first?</title>
+      <desc id="pdm-decision-chart-desc">A decision chart that starts with the question: which of these smells do you already like? Five equal boxes each lead to one fragrance. Apple and lavender lead to Parfums de Marly Layton. Cinnamon and orange blossom over vanilla lead to Parfums de Marly Althair. Praline and leather lead to Parfums de Marly Haltane. Grapefruit and vetiver lead to Parfums de Marly Perseus. Almond and anise lead to Parfums de Marly Pegasus. A footnote says bergamot is on all five lists, so it cannot choose for you.</desc>
+
+      <rect width="100%" height="100%" fill="#faf6ec"/>
+
+      <!-- Connectors, drawn before boxes -->
+      <g stroke="#b8904f" stroke-width="2.5" fill="none">
+        <!-- stem from start box down to bus -->
+        <line x1="800" y1="140" x2="800" y2="176"/>
+        <!-- bus across all five columns -->
+        <line x1="190" y1="176" x2="1410" y2="176"/>
+        <!-- drops into each if-you-like box -->
+        <line x1="190" y1="176" x2="190" y2="196"/>
+        <line x1="495" y1="176" x2="495" y2="196"/>
+        <line x1="800" y1="176" x2="800" y2="196"/>
+        <line x1="1105" y1="176" x2="1105" y2="196"/>
+        <line x1="1410" y1="176" x2="1410" y2="196"/>
+      </g>
+      <g stroke="#1b2f22" stroke-opacity="0.45" stroke-width="2.5" fill="none">
+        <!-- straight drops from each if-you-like box down to its fragrance box -->
+        <line x1="190" y1="308" x2="190" y2="340"/>
+        <line x1="495" y1="308" x2="495" y2="340"/>
+        <line x1="800" y1="308" x2="800" y2="340"/>
+        <line x1="1105" y1="308" x2="1105" y2="340"/>
+        <line x1="1410" y1="308" x2="1410" y2="340"/>
+      </g>
+
+      <!-- Start box -->
+      <g>
+        <rect x="560" y="60" width="480" height="80" rx="10" fill="#fffdf7" stroke="#1b2f22" stroke-width="1.5"/>
+        <text x="800" y="94" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="600" font-size="20" fill="#1b2f22">Which of these smells do</text>
+        <text x="800" y="120" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="600" font-size="20" fill="#1b2f22">you already like?</text>
+      </g>
+
+      <!-- If-you-like boxes (identical treatment) -->
+      <!-- Column 1: Layton -->
+      <g>
+        <rect x="60" y="196" width="260" height="112" rx="10" fill="#fffdf7" stroke="#1b2f22" stroke-width="1.5"/>
+        <text x="190" y="236" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="18" fill="#1b2f22">If you like apple</text>
+        <text x="190" y="262" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="18" fill="#1b2f22">and lavender</text>
+      </g>
+      <!-- Column 2: Althair -->
+      <g>
+        <rect x="365" y="196" width="260" height="112" rx="10" fill="#fffdf7" stroke="#1b2f22" stroke-width="1.5"/>
+        <text x="495" y="228" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="18" fill="#1b2f22">If you like cinnamon</text>
+        <text x="495" y="254" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="18" fill="#1b2f22">and orange blossom</text>
+        <text x="495" y="280" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="18" fill="#1b2f22">over vanilla</text>
+      </g>
+      <!-- Column 3: Haltane -->
+      <g>
+        <rect x="670" y="196" width="260" height="112" rx="10" fill="#fffdf7" stroke="#1b2f22" stroke-width="1.5"/>
+        <text x="800" y="236" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="18" fill="#1b2f22">If you like praline</text>
+        <text x="800" y="262" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="18" fill="#1b2f22">and leather</text>
+      </g>
+      <!-- Column 4: Perseus -->
+      <g>
+        <rect x="975" y="196" width="260" height="112" rx="10" fill="#fffdf7" stroke="#1b2f22" stroke-width="1.5"/>
+        <text x="1105" y="236" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="18" fill="#1b2f22">If you like grapefruit</text>
+        <text x="1105" y="262" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="18" fill="#1b2f22">and vetiver</text>
+      </g>
+      <!-- Column 5: Pegasus -->
+      <g>
+        <rect x="1280" y="196" width="260" height="112" rx="10" fill="#fffdf7" stroke="#1b2f22" stroke-width="1.5"/>
+        <text x="1410" y="236" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="18" fill="#1b2f22">If you like almond</text>
+        <text x="1410" y="262" text-anchor="middle" font-family="'Jost', sans-serif" font-weight="500" font-size="18" fill="#1b2f22">and anise</text>
+      </g>
+
+      <!-- Fragrance boxes (identical treatment) -->
+      <g>
+        <rect x="60" y="340" width="260" height="110" rx="10" fill="#faf3e4" stroke="#b8904f" stroke-width="1.5"/>
+        <text x="190" y="374" text-anchor="middle" font-family="'EB Garamond', Georgia, serif" font-style="italic" font-size="18" fill="#1b2f22">Parfums de Marly</text>
+        <text x="190" y="404" text-anchor="middle" font-family="'Playfair Display', Georgia, serif" font-weight="700" font-size="24" fill="#1b2f22">Layton</text>
+      </g>
+      <g>
+        <rect x="365" y="340" width="260" height="110" rx="10" fill="#faf3e4" stroke="#b8904f" stroke-width="1.5"/>
+        <text x="495" y="374" text-anchor="middle" font-family="'EB Garamond', Georgia, serif" font-style="italic" font-size="18" fill="#1b2f22">Parfums de Marly</text>
+        <text x="495" y="404" text-anchor="middle" font-family="'Playfair Display', Georgia, serif" font-weight="700" font-size="24" fill="#1b2f22">Althair</text>
+      </g>
+      <g>
+        <rect x="670" y="340" width="260" height="110" rx="10" fill="#faf3e4" stroke="#b8904f" stroke-width="1.5"/>
+        <text x="800" y="374" text-anchor="middle" font-family="'EB Garamond', Georgia, serif" font-style="italic" font-size="18" fill="#1b2f22">Parfums de Marly</text>
+        <text x="800" y="404" text-anchor="middle" font-family="'Playfair Display', Georgia, serif" font-weight="700" font-size="24" fill="#1b2f22">Haltane</text>
+      </g>
+      <g>
+        <rect x="975" y="340" width="260" height="110" rx="10" fill="#faf3e4" stroke="#b8904f" stroke-width="1.5"/>
+        <text x="1105" y="374" text-anchor="middle" font-family="'EB Garamond', Georgia, serif" font-style="italic" font-size="18" fill="#1b2f22">Parfums de Marly</text>
+        <text x="1105" y="404" text-anchor="middle" font-family="'Playfair Display', Georgia, serif" font-weight="700" font-size="24" fill="#1b2f22">Perseus</text>
+      </g>
+      <g>
+        <rect x="1280" y="340" width="260" height="110" rx="10" fill="#faf3e4" stroke="#b8904f" stroke-width="1.5"/>
+        <text x="1410" y="374" text-anchor="middle" font-family="'EB Garamond', Georgia, serif" font-style="italic" font-size="18" fill="#1b2f22">Parfums de Marly</text>
+        <text x="1410" y="404" text-anchor="middle" font-family="'Playfair Display', Georgia, serif" font-weight="700" font-size="24" fill="#1b2f22">Pegasus</text>
+      </g>
+
+      <!-- Official notes, one small line of type under each fragrance box -->
+      <g font-family="'Jost', sans-serif" font-size="18" fill="#1b2f22">
+        <text x="190" y="480" text-anchor="middle" fill="#8a7b5e" font-size="18" letter-spacing=".03em">Official notes include</text>
+        <text x="190" y="504" text-anchor="middle">Apple, Lavender,</text>
+        <text x="190" y="526" text-anchor="middle">Vanilla, Praline</text>
+
+        <text x="495" y="480" text-anchor="middle" fill="#8a7b5e" font-size="18" letter-spacing=".03em">Official notes include</text>
+        <text x="495" y="504" text-anchor="middle">Mandarin, Cinnamon,</text>
+        <text x="495" y="526" text-anchor="middle">Orange blossom, Bourbon vanilla</text>
+
+        <text x="800" y="480" text-anchor="middle" fill="#8a7b5e" font-size="18" letter-spacing=".03em">Official notes include</text>
+        <text x="800" y="504" text-anchor="middle">Saffron, Praline,</text>
+        <text x="800" y="526" text-anchor="middle">Oud, Leather</text>
+
+        <text x="1105" y="480" text-anchor="middle" fill="#8a7b5e" font-size="18" letter-spacing=".03em">Official notes include</text>
+        <text x="1105" y="504" text-anchor="middle">Grapefruit, Blackcurrant bud,</text>
+        <text x="1105" y="526" text-anchor="middle">Vetiver, Amberwood</text>
+
+        <text x="1410" y="480" text-anchor="middle" fill="#8a7b5e" font-size="18" letter-spacing=".03em">Official notes include</text>
+        <text x="1410" y="504" text-anchor="middle">Anise, Almond,</text>
+        <text x="1410" y="526" text-anchor="middle">Orange blossom, Sandalwood</text>
+      </g>
+
+      <!-- Footnote box, full width -->
+      <rect x="60" y="576" width="1480" height="64" rx="10" fill="none" stroke="#1b2f22" stroke-opacity="0.30" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <text x="800" y="614" text-anchor="middle" font-family="'EB Garamond', Georgia, serif" font-style="italic" font-size="19" fill="#1b2f22">Bergamot is on all five lists, so it cannot choose for you.</text>
+    </svg>
+
+    <p class="caption">Each box uses notes printed on the maker&#8217;s current official page. The order is not a quality ranking.</p>
+  </div>
+</body>
+</html>
