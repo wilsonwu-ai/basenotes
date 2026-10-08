@@ -1002,10 +1002,15 @@
 
       function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); }
 
+      // Charge days come from Appstle only (nextShipDate below). The last order's day of the
+      // month was the same guess the card above stopped making: on Oct 8 it printed
+      // "charges Oct 8" beside "Next charge on November 8". No live date means no label, and
+      // a month before the live renewal month is not charged at all.
       function billingDayLabel(monthStr) {
-        if (!subData.billingDay) return '';
+        if (!nextShipMonth || monthStr < nextShipMonth) return '';
         var parts = monthStr.split('-');
-        var d = new Date(parseInt(parts[0],10), parseInt(parts[1],10) - 1, parseInt(subData.billingDay, 10));
+        var y = parseInt(parts[0],10), m = parseInt(parts[1],10) - 1;
+        var d = new Date(y, m, Math.min(nextShipDate.getDate(), new Date(y, m + 1, 0).getDate()));
         return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       }
 
@@ -1124,6 +1129,12 @@
       if (tries > 40) return;
       setTimeout(function(){ waitForBQ(tries + 1); }, 50);
     })();
+
+    // Appstle answers after the card above is painted, from the big script below, which cannot
+    // reach renderDashJourney. It fires this once window.__bnLiveNextShipDate is set. Without
+    // it the card stayed on "Waiting for the subscription portal" for anyone whose queue the
+    // server sync left unchanged (no 'change' event).
+    document.addEventListener('bn:appstle-synced', renderDashJourney);
 
     // ── Next Billing hydrator for the #subscription view (standalone, no big-script dep) ──
     (function hydrateBilling(){
@@ -1950,7 +1961,6 @@ document.addEventListener('DOMContentLoaded', function() {
               family: prodVendor,
               image: prodImage
             };
-            if (typeof renderDashJourney === 'function') renderDashJourney();
           }
 
           // Only update if we have a product title from Appstle
@@ -1976,9 +1986,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
           }
         }
+
+        // renderDashJourney lives in the router's closure and cannot be called from here (the
+        // typeof check that used to sit above never passed). Ask it to repaint the dashboard
+        // card from the live date and fragrance set above.
+        document.dispatchEvent(new Event('bn:appstle-synced'));
       })
       .catch(function(err) {
-        // Silently fail — the page already has fallback data from Shopify order history
+        // Silently fail — the dates stay in their pending state; nothing is guessed
       });
   })();
 
