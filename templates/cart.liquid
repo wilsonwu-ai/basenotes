@@ -38,9 +38,9 @@
   comment
     Hoisted out of the summary aside so the order-mode fieldset can read it too. Both the
     "standard US rate applies" sentence and the progress line must agree about whether THIS
-    order clears the $33.00 (3300 cent) free-shipping threshold.
+    order clears the $50.00 (5000 cent) free-shipping threshold.
   endcomment
-  assign ship_remaining = 3300 | minus: cart.total_price
+  assign ship_remaining = 5000 | minus: cart.total_price
 -%}
 
 <artifact-cart class="artifact-cart" data-has-subscription="{{ has_subscription }}">
@@ -147,7 +147,7 @@
               every line on one. The subscription free-shipping discount is subscription
               purchase type, so it survives only on a PURE subscription order; any one-time
               line in the checkout drops the order back to the US Domestic profile, which is
-              $4.99 from $0.00 to $32.99 and free from $33.00 (3300 cents). Express ($15) is
+              $4.99 from $0.00 to $49.99 and free from $50.00 (5000 cents). Express ($15) is
               never part of this claim. The text carries the meaning (role=status); the bar is
               decorative and hidden from assistive tech.
             {%- endcomment -%}
