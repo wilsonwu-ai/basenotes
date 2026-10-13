@@ -89,13 +89,18 @@
                     <h2><a href="{{ item_url }}">{{ item_label | escape }}</a></h2>
                     <p>{%- if item_is_helper -%}5ml atomizer · additional vial{%- elsif item.variant.title != 'Default Title' -%}{{ item.variant.title | escape }}{% unless item_is_bottle %} atomizer{% endunless %}{%- endif -%}</p>
                     {%- if item.selling_plan_allocation -%}<p class="artifact-cart__plan">Monthly Rotation subscription</p>{%- elsif has_subscription and item_is_helper -%}<p class="artifact-cart__plan">One-time extra · does not renew</p>{%- endif -%}
+                    {%- unless item_is_helper -%}{%- for prop in item.properties -%}{%- assign prop_lead = prop.first | slice: 0 -%}{%- if prop_lead != '_' and prop.last != blank -%}<p class="artifact-cart__prop">{{ prop.first | escape }}: {{ prop.last | escape }}</p>{%- endif -%}{%- endfor -%}{%- endunless -%}
                     <a class="artifact-cart__remove" href="{{ item.url_to_remove }}" data-cart-remove aria-label="Remove {{ item_label | escape }} from cart">Remove</a>
                   </div>
                   <div class="artifact-cart__quantity">
+                    {%- if item.properties['_bn_box'] != blank -%}
+                      <input type="hidden" name="updates[]" value="{{ item.quantity }}"><span class="artifact-cart__qty-static">Qty {{ item.quantity }}</span>
+                    {%- else -%}
                     <button type="button" data-cart-step="-1" aria-label="Decrease {{ item_label | escape }} quantity" hidden>−</button>
                     <label class="visually-hidden" for="CartQuantity-{{ forloop.index }}">Quantity for {{ item_label | escape }}</label>
                     <input id="CartQuantity-{{ forloop.index }}" type="number" name="updates[]" min="0" max="99" value="{{ item.quantity }}" inputmode="numeric" data-cart-quantity>
                     <button type="button" data-cart-step="1" aria-label="Increase {{ item_label | escape }} quantity" hidden>+</button>
+                    {%- endif -%}
                   </div>
                   <strong class="artifact-cart__line-price" aria-label="Line total {{ item.final_line_price | money_without_trailing_zeros }}">{{ item.final_line_price | money_without_trailing_zeros }}</strong>
                 </article>
@@ -194,6 +199,8 @@
   .artifact-cart__details h2 { margin:0; font:500 1.2rem/1.2 'EB Garamond',serif; }
   .artifact-cart__details p { margin:.35rem 0 0; color:var(--ac-muted); font:.68rem/1.4 'Jost',sans-serif; letter-spacing:.08em; text-transform:uppercase; }
   .artifact-cart__details .artifact-cart__plan { color:var(--ac-gold); }
+  .artifact-cart__details .artifact-cart__prop { text-transform:none; letter-spacing:.02em; font-size:.78rem; overflow-wrap:anywhere; }
+  .artifact-cart__qty-static { display:grid; min-width:2.75rem; min-height:2.75rem; padding:0 .75rem; place-items:center; color:var(--ac-ink); font:.8rem/1 'Jost',sans-serif; white-space:nowrap; }
   .artifact-cart__remove { margin-block-start:.55rem; padding:0 0 .12rem; border:0; border-block-end:.0625rem solid var(--ac-muted); color:var(--ac-muted); background:transparent; font:.7rem/1.2 'Jost',sans-serif; cursor:pointer; }
   .artifact-cart__quantity { display:flex; align-items:center; border:.0625rem solid var(--ac-line); text-align:center; }
   .artifact-cart__quantity button,.artifact-cart__quantity input { display:grid; width:2.75rem; height:2.75rem; padding:0; place-items:center; border:0; color:var(--ac-ink); background:transparent; font:1rem/1 'Jost',sans-serif; text-align:center; }

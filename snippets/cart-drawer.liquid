@@ -70,6 +70,9 @@
                 {%- if item.variant.title != 'Default Title' -%}
                   <p class="cart-drawer-item__variant">{{ item.variant.title }}</p>
                 {%- endif -%}
+                {%- for prop in item.properties -%}{%- assign prop_lead = prop.first | slice: 0 -%}{%- if prop_lead != '_' and prop.last != blank -%}
+                  <p class="cart-drawer-item__variant">{{ prop.first | escape }}: {{ prop.last | escape }}</p>
+                {%- endif -%}{%- endfor -%}
 
                 {% comment %} Subscription Badge {% endcomment %}
                 {%- if item.selling_plan_allocation -%}
@@ -91,6 +94,8 @@
                     </svg>
                     Swap Fragrance
                   </a>
+                {%- elsif item.properties['_bn_box'] != blank -%}
+                  <span class="cart-drawer-item__qty-static">Qty {{ item.quantity }}</span>
                 {%- elsif item_is_giveaway -%}
                   {%- comment -%}
                     The giveaway SKU has no selling plan BY DESIGN, so it would otherwise fall

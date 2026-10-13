@@ -19,6 +19,8 @@
   @param {product} product - Shopify fragrance product.
   @param {string} section_id - Unique section identifier.
   @param {boolean} [compact] - Use Jeff's compact bordered catalog tile.
+  @param {boolean} [pick_mode] - Box builder tile: an "Add to box" button (plus a hidden "Remove one") instead of the add-to-cart form.
+  @param {number} [min_stock] - pick_mode only: tracked 5ml stock below this renders as sold out.
 {% enddoc %}
 
 {%- liquid
@@ -61,6 +63,22 @@
   assign family = family | strip
 
   assign review_count = product.metafields.reviews.rating_count.value | default: product.metafields.judgeme.review_count | default: product.metafields.reviews.count.value | default: 0
+
+  if pick_mode
+    assign pick_title = product.title | remove: 'EDP' | remove: 'Eau de Parfum' | strip
+    assign pick_label = scent_name
+    unless scent_name == pick_title
+      assign pick_label = product.vendor | append: ' ' | append: scent_name
+    endunless
+    assign pick_available = vial.available
+    assign pick_stock = ''
+    if vial.inventory_management != blank
+      assign pick_stock = vial.inventory_quantity
+      if vial.inventory_quantity < min_stock
+        assign pick_available = false
+      endif
+    endif
+  endif
 -%}
 
 {%- unless product.handle == 'extra-5ml-vial-add-on' or product.price == 0 or vial == blank -%}
@@ -76,7 +94,41 @@
   data-tags="{{ tags_down | escape }}"
   data-name="{{ product.title | escape }}"
   aria-labelledby="ScentCard-{{ section_id }}-{{ product.id }}"
+  {%- if pick_mode %}
+  data-handle="{{ product.handle }}"
+  data-product-id="{{ product.id }}"
+  data-variant-id="{{ vial.id }}"
+  data-box-label="{{ pick_label | escape }}"
+  data-available="{{ pick_available }}"
+  {%- if pick_stock != '' %} data-stock="{{ pick_stock }}"{% endif -%}
+  {%- endif %}
 >
+  {%- if pick_mode -%}
+    <div class="scent-card__media">
+      <span class="scent-card__badge" aria-hidden="true">5ml</span>
+      {%- liquid
+        assign card_image = product.featured_image
+        assign card_alt = pick_label | append: ', 5ml vial'
+      -%}
+      {%- capture grid_photo -%}{%- if card_image -%}{% render 'grid-photo', handle: product.handle, image_id: card_image.id %}{%- endif -%}{%- endcapture -%}
+      {%- if grid_photo != blank -%}
+        <img src="{{ grid_photo | strip }}" width="600" height="600" loading="lazy" class="scent-card__reference-image" alt="{{ card_alt | escape }}">
+      {%- elsif card_image -%}
+        {{ card_image | image_url: width: 600 | image_tag: loading: 'lazy', widths: '240, 360, 480, 600', sizes: '(min-width: 1000px) 14rem, 45vw', class: 'scent-card__reference-image', alt: card_alt }}
+      {%- else -%}
+        <span class="scent-card__vial" role="img" aria-label="{{ card_alt | escape }}">{% render 'vial-illustration', product: product %}</span>
+      {%- endif -%}
+      <span class="scent-card__slot" aria-hidden="true" hidden></span>
+    </div>
+    <h3 id="ScentCard-{{ section_id }}-{{ product.id }}">{{ scent_name }}</h3>
+    <p class="scent-card__brand">{{ product.vendor }}</p>
+    {%- if pick_available -%}
+      <button type="button" class="scent-card__pick" data-box-pick aria-label="Add {{ pick_label | escape }} to box"><span>Add to box</span></button>
+      <button type="button" class="scent-card__unpick" data-box-unpick aria-label="Remove one {{ pick_label | escape }}" hidden><span>Remove one</span></button>
+    {%- else -%}
+      <p class="scent-card__soldout">Sold out</p>
+    {%- endif -%}
+  {%- else -%}
   {%- if compact -%}
     <a class="scent-card__media" href="{{ product.url }}" aria-label="{{ 'fragrance_reference.explore' | t: fragrance: product.title | escape }}">
       <span class="scent-card__badge" aria-hidden="true">5ml</span>
@@ -119,5 +171,6 @@
       {% if vial.available %}{% if compact %}{{ 'fragrance_reference.add' | t }}{% else %}Add vial{% endif %}{% else %}{{ 'products.product.sold_out' | t }}{% endif %}
     </button>
   </form>
+  {%- endif %}
 </article>
 {%- endunless -%}

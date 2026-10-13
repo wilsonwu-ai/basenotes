@@ -1,0 +1,304 @@
+{{ 'scent-storefront.css' | asset_url | stylesheet_tag }}
+{{ 'box-builder.css' | asset_url | stylesheet_tag }}
+{%- comment -%}
+  Build Your Own Box. A shopper picks N 5ml vials (repeats allowed) (default 3) and adds ONE box product to the
+  cart; the picks travel as line item properties ("Fragrance 1".."Fragrance N", optional "Gift message",
+  hidden "_bn_box"). Behaviour lives in assets/box-builder.js; look in assets/box-builder.css.
+
+  The box product comes from the box_product setting, falling back to the template's own product. The
+  Add button is only ever enabled when that product carries the tag "box-set", so rendering this section
+  on a fragrance product (?view=box-builder) shows the whole page with Add disabled and can never add
+  that fragrance with box properties.
+{%- endcomment -%}
+{%- liquid
+  assign box = section.settings.box_product
+  if box == blank
+    assign box = product
+  endif
+
+  assign catalog = section.settings.collection
+  if catalog == blank
+    assign catalog = collections['fragrances']
+  endif
+
+  assign slot_count = section.settings.slots | default: 3
+  assign message_max = section.settings.message_max | default: 200
+  assign min_stock = section.settings.min_stock | default: 3
+  assign number_words = 'zero,one,two,three,four,five,six' | split: ','
+  assign slot_word = number_words[slot_count] | default: slot_count
+
+  assign box_ready = false
+  assign box_note = 'Box product not configured'
+  assign box_variant = box.variants.first
+  assign box_tags = box.tags | join: ',' | downcase | prepend: ',' | append: ','
+  if box != blank and box_variant != blank and box_tags contains ',box-set,'
+    assign box_title_down = box_variant.title | downcase
+    if box_title_down contains 'ml' or box_title_down contains 'oz'
+      assign box_note = 'Box sets are unavailable right now.'
+    elsif box_variant.available == false or box_variant.price == 0
+      assign box_note = 'Box sets are unavailable right now.'
+    else
+      assign box_ready = true
+      assign box_note = ''
+    endif
+  endif
+  comment
+    The price is only ever read from the resolved product's variant. In fallback mode (no box-set
+    product, Add disabled) that is simply the resolved product's own price.
+  endcomment
+  assign box_price_label = box_variant.price | money_without_trailing_zeros
+-%}
+{%- if request.design_mode and box_ready == false -%}
+  <p class="bb-merchant-warning">Box builder: {{ box_note }}. Add the tag <code>box-set</code> to the box product (single variant titled "Default Title") and select it in this section's settings.</p>
+{%- endif -%}
+
+<box-builder
+  class="scent-route box-builder"
+  data-slots="{{ slot_count }}"
+  data-message-max="{{ message_max }}"
+  data-rotation="{{ section.settings.show_rotation_prefill }}"
+  data-box-ready="{{ box_ready }}"
+  data-box-note="{{ box_note | escape }}"
+  data-box-handle="{{ box.handle }}"
+  data-box-title="{{ box.title | escape }}"
+  data-box-variant-id="{{ box_variant.id }}"
+  data-box-price="{{ box_variant.price }}"
+  data-box-price-label="{{ box_price_label | escape }}"
+>
+  <section class="bb-hero" aria-labelledby="BoxTitle">
+    <p class="bb-eyebrow">Build your own box</p>
+    <h1 id="BoxTitle">{{ slot_word | capitalize }} scents.<br>One <em>gift box.</em></h1>
+    <p class="bb-hero__sub">Choose any {{ slot_word }} 5ml vials from the collection. Decanted from the original bottles and presented in a Base Note gift box.</p>
+    <p class="bb-hero__price"><span class="bb-price">{{ box_price_label }}</span> <span>for the box</span> <span class="bb-ships">Ships free in the US</span></p>
+  </section>
+
+  <section class="bb-steps" aria-label="How it works">
+    <div><p>01 Pick {{ slot_word }}</p><p>Any {{ slot_word }} scents from the collection. Repeats welcome.</p></div>
+    <div><p>02 Add a note</p><p>Optional gift message, up to {{ message_max }} characters.</p></div>
+    <div><p>03 We box it</p><p>Presented in a Base Note gift box.</p></div>
+  </section>
+
+  <div class="bb-layout">
+    <section class="bb-catalog" aria-labelledby="ChooseTitle">
+      <div class="bb-catalog__head">
+        <h2 id="ChooseTitle">Choose your scents</h2>
+        <p class="bb-count" data-bb-count aria-live="polite"></p>
+      </div>
+
+      <div class="bb-tabs" role="group" aria-label="Filter by who it is for">
+        <button type="button" data-bb-tab="all" aria-pressed="true">All</button>
+        <button type="button" data-bb-tab="him" aria-pressed="false">For him</button>
+        <button type="button" data-bb-tab="her" aria-pressed="false">For her</button>
+        <button type="button" data-bb-tab="unisex" aria-pressed="false">Unisex</button>
+      </div>
+
+      <div class="bb-filters">
+        <div class="bb-chips" role="group" aria-label="Filter by scent family">
+          <button type="button" data-bb-family="all" aria-pressed="true">All families</button>
+          <button type="button" data-bb-family="fresh" aria-pressed="false">Fresh</button>
+          <button type="button" data-bb-family="woody" aria-pressed="false">Woody</button>
+          <button type="button" data-bb-family="sweet" aria-pressed="false">Sweet</button>
+          <button type="button" data-bb-family="spicy" aria-pressed="false">Spicy</button>
+        </div>
+        <div class="bb-search">
+          <label for="BoxSearch" class="bb-sr">Search fragrances</label>
+          <input id="BoxSearch" type="search" placeholder="Search by scent or brand" autocomplete="off" data-bb-search>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+        </div>
+      </div>
+
+      {%- paginate catalog.products by 250 -%}
+        <div class="bb-grid" data-bb-grid>
+          {%- for item in catalog.products -%}
+            {%- render 'studio-fragrance-card', product: item, section_id: section.id, pick_mode: true, min_stock: min_stock -%}
+          {%- endfor -%}
+        </div>
+        {%- if paginate.pages > 1 -%}<span data-bb-truncated hidden></span>{%- endif -%}
+      {%- endpaginate -%}
+
+      <div class="bb-empty" data-bb-empty hidden>
+        <p>No fragrances match these filters.</p>
+        <button type="button" data-bb-clear>Clear filters</button>
+      </div>
+    </section>
+
+    <aside class="bb-rail" aria-label="Your box">
+      <div class="bb-rail__slot" data-bb-rail-slot>
+        <div class="bb-panel" data-bb-panel>
+          <div class="bb-panel__head">
+            <h2 id="BoxPanelTitle">Your box</h2>
+            <p class="bb-counter" data-bb-counter>0 of {{ slot_count }}</p>
+          </div>
+
+          {%- if section.settings.hero_asset != blank -%}
+            <img class="bb-hero-img" data-bb-hero-img src="{{ section.settings.hero_asset | asset_url }}" width="640" height="480" loading="lazy" alt="A Base Note gift box holding {{ slot_word }} 5ml vials">
+          {%- endif -%}
+          <div class="bb-tray" aria-hidden="true">
+            {%- for i in (1..slot_count) -%}
+              <svg data-bb-tray-vial width="30" height="74" viewBox="0 0 30 74" fill="none"><rect x="9" y="2" width="12" height="13" fill="#d5d7d4" stroke="#22392b"></rect><rect x="5" y="15" width="20" height="56" fill="#fbf6e8" stroke="#22392b"></rect><rect class="bb-tray__liquid" x="7" y="30" width="16" height="39"></rect></svg>
+            {%- endfor -%}
+          </div>
+
+          <div class="bb-notice" data-bb-notice hidden>
+            <p data-bb-notice-text></p>
+            <button type="button" data-bb-notice-close aria-label="Dismiss"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+          </div>
+
+          <div class="bb-rotation" data-bb-rotation hidden>
+            <button type="button" data-bb-prefill><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12a8 8 0 0114-5l2 2M20 12a8 8 0 01-14 5l-2-2"></path><path d="M20 4v5h-5M4 20v-5h5"></path></svg>Start from my Rotation</button>
+            <span data-bb-rotation-help></span>
+          </div>
+
+          <ol class="bb-slots" data-bb-slots>
+            {%- for i in (1..slot_count) -%}
+              <li class="bb-slot" data-bb-slot="{{ forloop.index0 }}" tabindex="-1" aria-label="Vial {{ i }}, empty">
+                <div class="bb-slot__thumb" data-bb-thumb><span class="bb-slot__num" aria-hidden="true">{{ i }}</span></div>
+                <div class="bb-slot__text">
+                  <p class="bb-slot__label">Vial {{ i }}</p>
+                  <p class="bb-slot__name" data-bb-slot-name hidden></p>
+                  <p class="bb-slot__brand" data-bb-slot-brand hidden></p>
+                  <p class="bb-slot__empty" data-bb-slot-empty>Empty</p>
+                </div>
+                <button type="button" class="bb-slot__remove" data-bb-remove="{{ forloop.index0 }}" aria-label="Remove" hidden><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+              </li>
+            {%- endfor -%}
+          </ol>
+
+          <p class="bb-blocked" data-bb-blocked aria-hidden="true" hidden></p>
+
+          <div class="bb-gift">
+            <label for="BoxMessage">Gift message (optional)</label>
+            <textarea id="BoxMessage" rows="3" maxlength="{{ message_max }}" aria-describedby="BoxMessageHelp BoxMessageCount" data-bb-message></textarea>
+            <div class="bb-gift__meta">
+              <p id="BoxMessageHelp">Up to {{ message_max }} characters. We include it with your box.</p>
+              <p id="BoxMessageCount" class="bb-gift__count" data-bb-message-count>0 / {{ message_max }}</p>
+            </div>
+          </div>
+
+          <ul class="bb-includes">
+            <li>5ml glass spray atomizer, about 60 sprays</li>
+            <li>Decanted from the original bottles</li>
+            <li>Presented in a Base Note gift box</li>
+          </ul>
+
+          <div class="bb-ctaGroup">
+          <div class="bb-priceRow">
+            <span class="bb-price bb-price--lg">{{ box_price_label }}</span>
+            <span class="bb-ships">Ships free in the US</span>
+          </div>
+          <button type="button" class="bb-cta" data-bb-add aria-disabled="true" aria-busy="false">
+            <svg class="bb-cta__spin" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" hidden><circle cx="12" cy="12" r="9" stroke-opacity=".3"></circle><path d="M21 12a9 9 0 00-9-9"></path></svg>
+            <svg class="bb-cta__check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" hidden><path d="M4 12l5 5L20 6"></path></svg>
+            <span data-bb-cta-label>Add box to cart</span>
+          </button>
+          <p class="bb-helper" data-bb-helper></p>
+          <p class="bb-error" data-bb-error role="alert" hidden></p>
+          <p class="bb-added" data-bb-added hidden>Box added to your cart. <a href="{{ routes.cart_url }}">View cart</a></p>
+          <p class="bb-fineprint">One-time purchase. No subscription.</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <p class="bb-toast" data-bb-toast aria-hidden="true" hidden></p>
+
+  <div class="bb-bar" data-bb-bar role="region" aria-label="Your box summary">
+    <div class="bb-bar__info">
+      <span class="bb-bar__dots" aria-hidden="true">
+        {%- for i in (1..slot_count) -%}<span data-bb-dot></span>{%- endfor -%}
+      </span>
+      <span class="bb-bar__label" data-bb-bar-label>0 of {{ slot_count }} picked &middot; {{ box_price_label }}</span>
+    </div>
+    <button type="button" class="bb-bar__open" data-bb-open-sheet aria-haspopup="dialog" aria-expanded="false">Review box</button>
+  </div>
+
+  <div class="bb-sheet" data-bb-sheet hidden>
+    <div class="bb-sheet__scrim" data-bb-sheet-scrim aria-hidden="true"></div>
+    <div class="bb-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="BoxSheetTitle">
+      <div class="bb-sheet__grip" aria-hidden="true"></div>
+      <div class="bb-sheet__head">
+        <div>
+          <h2 id="BoxSheetTitle" tabindex="-1">Your box</h2>
+          <span class="bb-counter" data-bb-counter>0 of {{ slot_count }}</span>
+        </div>
+        <button type="button" class="bb-sheet__close" data-bb-close-sheet aria-label="Close"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+      </div>
+      <div class="bb-sheet__body" data-bb-sheet-body></div>
+    </div>
+  </div>
+
+  <div class="bb-sr" role="status" aria-live="polite" aria-atomic="true" data-bb-status></div>
+
+  <template data-bb-vial-tpl>
+    <svg aria-hidden="true" width="18" height="40" viewBox="0 0 56 130" fill="none"><rect x="18" y="4" width="20" height="24" fill="#d5d7d4" stroke="#22392b" stroke-width="3"></rect><rect x="12" y="28" width="32" height="96" fill="#fbf6e8" stroke="#22392b" stroke-width="3"></rect><rect x="15" y="62" width="26" height="59" fill="#e8d7a8"></rect></svg>
+  </template>
+</box-builder>
+
+<script src="{{ 'scent-storefront.js' | asset_url }}" defer></script>
+<script src="{{ 'box-builder.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Box builder",
+  "settings": [
+    {
+      "type": "product",
+      "id": "box_product",
+      "label": "Box product",
+      "info": "Needs the tag box-set and a single variant titled Default Title. Leave empty to use the page's own product."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Fragrance collection",
+      "info": "Leave empty to use the Fragrances collection."
+    },
+    {
+      "type": "range",
+      "id": "slots",
+      "label": "Fragrances per box",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "hero_asset",
+      "label": "Box photo (theme asset filename)",
+      "info": "For example box-builder-hero.jpg, uploaded to the theme's assets. Leave blank to show the drawn vial tray."
+    },
+    {
+      "type": "range",
+      "id": "min_stock",
+      "label": "Minimum stock to offer a scent",
+      "info": "Tracked vials with less stock than this show as sold out in the builder.",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rotation_prefill",
+      "label": "Offer Start from my Rotation",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "message_max",
+      "label": "Gift message length",
+      "min": 50,
+      "max": 300,
+      "step": 10,
+      "default": 200
+    }
+  ],
+  "presets": [
+    {
+      "name": "Box builder"
+    }
+  ]
+}
+{% endschema %}
