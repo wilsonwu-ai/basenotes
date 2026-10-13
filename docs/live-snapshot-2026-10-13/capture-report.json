@@ -1,0 +1,102 @@
+{
+  "capturedAt": "2026-10-13T22:54:14.844Z",
+  "expectedTheme": 164206149850,
+  "report": [
+    {
+      "page": "home",
+      "viewport": "desktop",
+      "url": "/",
+      "status": 200,
+      "themeId": 164206149850,
+      "themeOk": true
+    },
+    {
+      "page": "collection-fragrances",
+      "viewport": "desktop",
+      "url": "/collections/fragrances",
+      "status": 200,
+      "themeId": 164206149850,
+      "themeOk": true
+    },
+    {
+      "page": "pdp-pdm-layton",
+      "viewport": "desktop",
+      "url": "/products/pdm-layton",
+      "status": 200,
+      "themeId": 164206149850,
+      "themeOk": true
+    },
+    {
+      "page": "monthly-rotation",
+      "viewport": "desktop",
+      "url": "/pages/monthly-rotation",
+      "status": 200,
+      "themeId": 164206149850,
+      "themeOk": true
+    },
+    {
+      "page": "cart-empty",
+      "viewport": "desktop",
+      "url": "/cart",
+      "status": 200,
+      "themeId": 164206149850,
+      "themeOk": true
+    },
+    {
+      "page": "journal",
+      "viewport": "desktop",
+      "url": "/blogs/hub",
+      "status": 200,
+      "themeId": 164206149850,
+      "themeOk": true
+    },
+    {
+      "page": "home",
+      "viewport": "mobile",
+      "url": "/",
+      "status": 200,
+      "themeId": 164206149850,
+      "themeOk": true
+    },
+    {
+      "page": "collection-fragrances",
+      "viewport": "mobile",
+      "url": "/collections/fragrances",
+      "status": 200,
+      "themeId": 164206149850,
+      "themeOk": true
+    },
+    {
+      "page": "pdp-pdm-layton",
+      "viewport": "mobile",
+      "url": "/products/pdm-layton",
+      "status": 200,
+      "themeId": 164206149850,
+      "themeOk": true
+    },
+    {
+      "page": "monthly-rotation",
+      "viewport": "mobile",
+      "url": "/pages/monthly-rotation",
+      "status": 200,
+      "themeId": 164206149850,
+      "themeOk": true
+    },
+    {
+      "page": "cart-empty",
+      "viewport": "mobile",
+      "url": "/cart",
+      "status": 200,
+      "themeId": 164206149850,
+      "themeOk": true
+    },
+    {
+      "page": "journal",
+      "viewport": "mobile",
+      "url": "/blogs/hub",
+      "status": 200,
+      "themeId": 164206149850,
+      "themeOk": true
+    }
+  ]
+}

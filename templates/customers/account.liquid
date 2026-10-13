@@ -231,38 +231,64 @@
         <div data-view="subscription" class="acct__view" style="display:none;">
 
           {%- if is_subscriber -%}
+          {%- assign plan_price = settings.sub_plan_monthly_per_month | strip -%}
+          {%- if plan_price == blank -%}
+            {%- assign plan_price = '$20/mo' -%}
+          {%- endif -%}
+
+          {%- comment -%}
+            Jeff 2026-09-27: Appstle is still the live date when it answers.
+            These Liquid values are first paint only so Next Billing / countdown
+            are not blank if the portal is slow or down. Day-of-month comes from
+            the latest subscription order, not a guessed anniversary of "today".
+          {%- endcomment -%}
+          {%- assign next_bill_label = '' -%}
+          {%- assign cancel_label = '' -%}
+          {%- assign next_bill_iso = '' -%}
+          {%- if latest_sub_order -%}
+            {%- assign bill_day = latest_sub_order.created_at | date: '%d' | plus: 0 -%}
+            {%- assign y = 'now' | date: '%Y' | plus: 0 -%}
+            {%- assign mo = 'now' | date: '%m' | plus: 0 -%}
+            {%- assign today_d = 'now' | date: '%d' | plus: 0 -%}
+            {%- if today_d > bill_day -%}
+              {%- assign mo = mo | plus: 1 -%}
+              {%- if mo > 12 -%}
+                {%- assign mo = 1 -%}
+                {%- assign y = y | plus: 1 -%}
+              {%- endif -%}
+            {%- endif -%}
+            {%- assign mm = mo | prepend: '00' | slice: -2, 2 -%}
+            {%- assign dd = bill_day | prepend: '00' | slice: -2, 2 -%}
+            {%- assign next_bill_iso = y | append: '-' | append: mm | append: '-' | append: dd -%}
+            {%- assign next_bill_label = next_bill_iso | date: '%B %-d, %Y' -%}
+            {%- assign cancel_label = next_bill_iso | date: '%s' | minus: 86400 | date: '%B %-d, %Y' -%}
+          {%- endif -%}
+
           <!-- Featured card -->
           <div class="acct__welcome-banner">
             <div class="acct__welcome-content">
               <span class="acct__status-badge acct__status-badge--active" style="margin-bottom:12px;">Active</span>
               <h2 class="acct__welcome-title" style="font-size:1.5rem;">Monthly Subscription</h2>
-              <p class="acct__welcome-meta">{{ settings.sub_plan_monthly_per_month | default: '$20/mo' }}</p>
+              <p class="acct__welcome-meta">{{ plan_price }}</p>
             </div>
-            {%- comment -%}
-              `customer.created_at` is NOT a property of Shopify's Liquid customer object, so it
-              always renders empty — this line read "Member since" followed by nothing. The
-              welcome card at the top of this template already guards for that; this one did not.
-              Fall back to the first subscription order, which is the real "member since" anyway,
-              and render nothing at all rather than a dangling label.
-            {%- endcomment -%}
             {%- if earliest_sub_order -%}
               <p class="acct__welcome-meta">Member since {{ earliest_sub_order.created_at | date: '%B %Y' }}</p>
             {%- endif -%}
           </div>
 
           <!-- Billing Countdown -->
-          <div class="acct__card billing-countdown" id="billingCountdown">
+          <div class="acct__card billing-countdown" id="billingCountdown" data-next-bill="{{ next_bill_iso }}">
             <div class="billing-countdown__header">
               <h3 class="acct__card-title">Next Billing</h3>
-              <span class="billing-countdown__days" id="billingDaysLeft">— days</span>
+              <span class="billing-countdown__days" id="billingDaysLeft"></span>
             </div>
             <div class="billing-countdown__bar-wrap">
               <div class="billing-countdown__bar" id="billingBar" style="width:0%"></div>
             </div>
-            <p class="billing-countdown__date" id="billingDateText">Next charge on —</p>
+            <p class="billing-countdown__date" id="billingDateText">Next charge on {% if next_bill_label %}{{ next_bill_label }}{% else %}—{% endif %}</p>
             <div class="billing-countdown__cancel-window" id="cancelWindowNotice">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span>Cancel before <strong id="cancelDeadline">—</strong> to avoid the next charge</span>
+              <span>Cancel before <strong id="cancelDeadline">{% if cancel_label %}{{ cancel_label }}{% else %}—{% endif %}</strong> to avoid the next charge</span>
             </div>
           </div>
 
@@ -278,15 +304,15 @@
               </div>
               <div class="sub-details__row">
                 <span class="sub-details__label">Price</span>
-                <span class="sub-details__value">{{ settings.sub_plan_monthly_per_month | default: '$20/mo' }}</span>
+                <span class="sub-details__value">{{ plan_price }}</span>
               </div>
               <div class="sub-details__row">
                 <span class="sub-details__label">Next Billing</span>
-                <span class="sub-details__value" id="subNextBilling">—</span>
+                <span class="sub-details__value" id="subNextBilling">{% if next_bill_label %}{{ next_bill_label }}{% else %}—{% endif %}</span>
               </div>
               <div class="sub-details__row">
                 <span class="sub-details__label">Payment Method</span>
-                <span class="sub-details__value">•••• •••• •••• ——</span>
+                <span class="sub-details__value">Card on file</span>
               </div>
               <div class="sub-details__row">
                 <span class="sub-details__label">Shipping Address</span>
@@ -689,14 +715,25 @@
   .bq-card__ship-status--immediate { color: #C9A962; }
   .bq-card__swap { display: inline-flex; align-items: center; justify-content: center; gap: 4px; margin-top: 4px; padding: 6px 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: transparent; border: 1px solid #EEE9DF; border-radius: 6px; color: #2D4641; cursor: pointer; font-family: inherit; transition: border-color 0.15s, color 0.15s, background 0.15s; }
   .bq-card__swap:hover { border-color: #C9A962; color: #C9A962; background: #FAF8F5; }
+  .bq-card__extra {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid #C9A962;
+  border-radius: 6px;
+  color: #8B6F2B;
+  cursor: pointer;
+  font-family: inherit;
+}
+.bq-card__extra:hover { background: #FAF8F5; }
   .bq-card__swap svg { color: currentColor; }
-  /* One-time add-on upsell, directly under Swap per Jeff 2026-09-13. Gold-led so it reads as the
-     revenue action next to Swap's neutral outline, without shouting over the card. */
-  .bq-card__add { display: inline-flex; align-items: center; justify-content: center; gap: 4px; margin-top: 6px; padding: 6px 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: #FAF8F5; border: 1px solid #C9A962; border-radius: 6px; color: #8a6d2f; cursor: pointer; font-family: inherit; transition: border-color 0.15s, color 0.15s, background 0.15s; }
-  .bq-card__add:hover:not([disabled]) { background: #C9A962; border-color: #C9A962; color: #fff; }
-  .bq-card__add:focus-visible { outline: 2px solid #C9A962; outline-offset: 2px; }
-  .bq-card__add[disabled] { cursor: default; opacity: 0.85; }
-  .bq-card__add--done { background: #2D4641; border-color: #2D4641; color: #fff; }
   .bq-card__remove { position: absolute; top: 10px; left: 10px; width: 24px; height: 24px; background: rgba(255,255,255,0.9); border: 1px solid #EEE9DF; border-radius: 50%; cursor: pointer; color: #8a918e; display: flex; align-items: center; justify-content: center; padding: 0; transition: color 0.15s, border-color 0.15s; opacity: 0; }
   .bq-card:hover .bq-card__remove { opacity: 1; }
   .bq-card__remove:hover { color: #c62828; border-color: #c62828; }
@@ -777,6 +814,37 @@
 
   // ── Subscription action helper (pause / skip) — calls Appstle customer-portal API ──
   // Exposed on window so the click handlers below can call it.
+    window.bnAddExtraVial = function (month, frag) {
+    var EXTRA_VARIANT_ID = 48547911696602;
+    var fetchFn = window.__bnFetch || window.fetch;
+    return fetchFn('/cart/add.js', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        items: [{
+          id: EXTRA_VARIANT_ID,
+          quantity: 1,
+          properties: {
+            '_type': 'extra-5ml',
+            'Fragrance': frag.title || '',
+            'Fragrance handle': frag.handle || '',
+            'Ship month': month
+          }
+        }]
+      })
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      if (typeof showToast === 'function') {
+        showToast('$18 extra vial added — ' + (frag.title || 'fragrance') + ' ships with ' + month);
+      } else {
+        alert('$18 extra vial added. It will ship with ' + month + '.');
+      }
+      document.dispatchEvent(new Event('cart:updated'));
+    }).catch(function () {
+      alert('Could not add the extra vial. Email hello@basenotescent.com.');
+    });
+  };
   window.bnSubscriptionAction = function(action) {
     var cpBase = '/apps/subscriptions/cp/api';
     var paymentBtn = document.getElementById('subUpdatePaymentBtn');
@@ -1015,9 +1083,26 @@
       // response below is the only authoritative source for this card.
       var nextShipDate = window.__bnLiveNextShipDate ? new Date(window.__bnLiveNextShipDate) : null;
       if (!nextShipDate || isNaN(nextShipDate.getTime())) nextShipDate = null;
-      var nextShipMonth = nextShipDate ? (nextShipDate.getFullYear() + '-' + (nextShipDate.getMonth() + 1 < 10 ? '0' : '') + (nextShipDate.getMonth() + 1)) : null;
+
+      // First paint is before Appstle. Use first queue month + billing day so the
+      // bar is not empty. Appstle overwrites when __bnLiveNextShipDate is set.
+      if (!nextShipDate && subData.billingDay && upcomingMonths.length) {
+        var fp = upcomingMonths[0].split('-');
+        var fallbackDate = new Date(
+          parseInt(fp[0], 10),
+          parseInt(fp[1], 10) - 1,
+          parseInt(subData.billingDay, 10)
+        );
+        if (!isNaN(fallbackDate.getTime())) nextShipDate = fallbackDate;
+      }
+
+      var nextShipMonth = nextShipDate
+        ? (nextShipDate.getFullYear() + '-' + (nextShipDate.getMonth() + 1 < 10 ? '0' : '') + (nextShipDate.getMonth() + 1))
+        : (upcomingMonths[0] || null);
       var nextFragrance = window.__bnLiveNextFragrance || (nextShipMonth ? byMonth[nextShipMonth] : null);
-      var nextShipLabel = nextShipDate ? nextShipDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+      var nextShipLabel = nextShipDate
+        ? nextShipDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        : '—';
 
       // Populate the welcome-banner stat tile
       var statEl = document.getElementById('statNextShipment');
@@ -1091,12 +1176,25 @@
               '<p class="dash-journey__title">' + esc(p.title || '—') + '</p>' +
               '<p class="dash-journey__meta">' + esc(p.orderName || '') + (p.orderName ? ' · ' : '') + 'Shipped ' + esc(p.shippedAt) + (p.orderTotal ? ' · ' + esc(p.orderTotal) : '') + '</p>' +
             '</div>' +
-            (p.handle
-              ? '<a class="dash-journey__rate" href="/products/' + encodeURIComponent(p.handle) + '#judgeme_product_reviews" aria-label="Rate ' + esc(p.title || 'this fragrance') + '">' +
+              (function () {
+              var reviewed = false;
+              try {
+                reviewed = !!(JSON.parse(localStorage.getItem('bn_reviewed_handles') || '{}')[p.handle]);
+              } catch (e) {}
+              if (!p.handle) {
+                return '<span class="dash-journey__badge dash-journey__badge--past">Delivered</span>';
+              }
+              if (reviewed) {
+                return '<span class="dash-journey__rate dash-journey__rate--done" aria-label="Reviewed ' + esc(p.title || 'this fragrance') + '">' +
                   '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.4l6.5-.9L12 2.6z"/></svg>' +
-                  '<span>Rate it</span>' +
-                '</a>'
-              : '<span class="dash-journey__badge dash-journey__badge--past">Delivered</span>') +
+                  '<span>Reviewed</span>' +
+                '</span>';
+              }
+              return '<a class="dash-journey__rate" data-review-handle="' + esc(p.handle) + '" href="/products/' + encodeURIComponent(p.handle) + '#judgeme_product_reviews" aria-label="Review ' + esc(p.title || 'this fragrance') + '">' +
+                '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.4l6.5-.9L12 2.6z"/></svg>' +
+                '<span>Review it</span>' +
+              '</a>';
+            })() +
           '</div>';
         });
         html += '</div></section>';
@@ -1191,19 +1289,7 @@
                 (entry.family ? '<p class="bq-card__family">' + esc(entry.family) + '</p>' : '') + '</div>' +
                 '<p class="bq-card__month-label"><span class="bq-card__month">' + esc(monthLabel) + '</span>' +
                 '<span class="bq-card__ship-status' + (isImmediate ? ' bq-card__ship-status--immediate' : '') + '">' + esc(shipStatus) + '</span></p>' +
-                '<button type="button" class="bq-card__swap" data-queue-swap-month="' + esc(monthStr) + '">Swap</button>' +
-                // Jeff 2026-09-13: "Under swap - Add $18 or Add Scent $18". One-time upsell: adds this
-                // scent to the cart NOW without touching the queue slot, so the copy must not imply
-                // the month changes. NO price in the label on purpose: the marginal cost is $20 on an
-                // empty cart and $18 once an eligible vial anchors it (basenote-commerce.js
-                // normalizeCart swaps extra units to the add-on), so a static "$18" would be false
-                // for the first vial. The cart states the real figure.
-                (entry.url && entry.url.indexOf('/products/') === 0
-                  ? '<button type="button" class="bq-card__add" data-queue-add-handle="' + esc(entry.url.split('/products/')[1].split(/[?#]/)[0]) + '"' +
-                    ' aria-label="Add ' + esc(entry.title || 'this fragrance') + ' to your cart now as a one-time vial">' +
-                    'Add now' +
-                    '</button>'
-                  : '');
+                '<button type="button" class="bq-card__swap" data-queue-swap-month="' + esc(monthStr) + '">Swap</button>';
             } else {
               card.innerHTML =
                 '<div class="bq-card__empty-slot">' +
@@ -1233,42 +1319,6 @@
           if (rm) { e.preventDefault(); BQ.clearSlot(rm.getAttribute('data-queue-remove')); render(); return; }
           if (sw) { e.preventDefault(); window.__bqPendingTargetMonth = sw.getAttribute('data-queue-swap-month'); document.dispatchEvent(new Event('fragrance-selector:open')); return; }
           if (pk) { e.preventDefault(); window.__bqPendingTargetMonth = pk.getAttribute('data-queue-pick-month'); document.dispatchEvent(new Event('fragrance-selector:open')); return; }
-          var ad = e.target.closest && e.target.closest('[data-queue-add-handle]');
-          if (ad) {
-            e.preventDefault();
-            e.stopPropagation();
-            // Route through BaseNoteCommerce, never a raw /cart/add.js of the helper SKU.
-            // addVial() throws on the helper by design ("Choose a fragrance from the collection
-            // first."), and adding it directly strands an orphan add-on that DISABLES checkout
-            // ("An additional vial needs a first fragrance in the cart"). addVial adds the real
-            // vial and normalizeCart converts it to the $18 add-on when one already qualifies.
-            var handle = ad.getAttribute('data-queue-add-handle');
-            var api = window.BaseNoteCommerce;
-            if (!handle || ad.disabled) return;
-            var original = ad.innerHTML;
-            ad.disabled = true;
-            ad.textContent = 'Adding…';
-            Promise.resolve()
-              .then(function () {
-                if (!api || typeof api.addVial !== 'function') throw new Error('commerce module unavailable');
-                return fetch('/products/' + encodeURIComponent(handle) + '.js');
-              })
-              .then(function (r) { if (!r.ok) throw new Error('product lookup failed'); return r.json(); })
-              .then(function (p) {
-                var v = (p.variants || []).filter(function (x) { return Number(x.price) === 2000 && x.available; })[0];
-                if (!v) throw new Error('no eligible 5ml vial');
-                return api.addVial({ handle: p.handle, variantId: v.id, quantity: 1 });
-              })
-              .then(function () {
-                ad.textContent = 'Added to cart';
-                ad.classList.add('bq-card__add--done');
-              })
-              .catch(function () {
-                ad.disabled = false;
-                ad.innerHTML = original;
-              });
-            return;
-          }
         });
 
         BQ.on('change', render);
@@ -2301,16 +2351,7 @@ document.addEventListener('DOMContentLoaded', function() {
               '<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>' +
             '</svg>' +
             'Swap' +
-          '</button>' +
-          // Jeff 2026-09-13: "Under swap - Add $18". Same control as the other queue renderer in
-          // this file, kept identical on purpose: BOTH renderers target #bqStrip and both re-render
-          // on BQ 'change', so whichever wins the race must show the same button.
-          (entry.url && entry.url.indexOf('/products/') === 0
-            ? '<button type="button" class="bq-card__add" data-queue-add-handle="' + escapeAttr(entry.url.split('/products/')[1].split(/[?#]/)[0]) + '"' +
-              ' aria-label="Add ' + escapeAttr(entry.title || 'this fragrance') + ' to your cart now as a one-time vial">' +
-              'Add now' +
-              '</button>'
-            : '');
+          '</button>';
 
         var removeBtn = card.querySelector('.bq-card__remove');
         removeBtn.addEventListener('click', function(e) {
@@ -2327,41 +2368,6 @@ document.addEventListener('DOMContentLoaded', function() {
           window.__bqPendingTargetMonth = monthStr;
           document.dispatchEvent(new Event('fragrance-selector:open'));
         });
-
-        var addBtn = card.querySelector('.bq-card__add');
-        if (addBtn) {
-          addBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            // Same contract as the other renderer: go through BaseNoteCommerce.addVial so the
-            // $18 add-on is produced by normalizeCart, never by adding the helper SKU directly.
-            var handle = addBtn.getAttribute('data-queue-add-handle');
-            var api = window.BaseNoteCommerce;
-            if (!handle || addBtn.disabled) return;
-            var original = addBtn.innerHTML;
-            addBtn.disabled = true;
-            addBtn.textContent = 'Adding…';
-            Promise.resolve()
-              .then(function () {
-                if (!api || typeof api.addVial !== 'function') throw new Error('commerce module unavailable');
-                return fetch('/products/' + encodeURIComponent(handle) + '.js');
-              })
-              .then(function (r) { if (!r.ok) throw new Error('product lookup failed'); return r.json(); })
-              .then(function (p) {
-                var v = (p.variants || []).filter(function (x) { return Number(x.price) === 2000 && x.available; })[0];
-                if (!v) throw new Error('no eligible 5ml vial');
-                return api.addVial({ handle: p.handle, variantId: v.id, quantity: 1 });
-              })
-              .then(function () {
-                addBtn.textContent = 'Added to cart';
-                addBtn.classList.add('bq-card__add--done');
-              })
-              .catch(function () {
-                addBtn.disabled = false;
-                addBtn.innerHTML = original;
-              });
-          });
-        }
 
         return card;
       }

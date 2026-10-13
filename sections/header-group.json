@@ -14,16 +14,16 @@
     "header": {
       "type": "header",
       "settings": {
-        "announcement_enabled": true,
-        "announcement_text": "25% off for New Subscribers | Free Shipping",
+        "announcement_enabled": false,
+        "announcement_text": "",
         "announcement_link": "",
         "logo_width": 100,
-        "menu": "main-menu",
-        "journal_label": "Journal",
+        "menu": "header-menu",
+        "journal_label": "",
         "journal_url": "",
         "mega_menu_parent": "",
-        "mega_menu_label": "New",
-        "mega_menu_heading": "Summer Collection",
+        "mega_menu_label": "",
+        "mega_menu_heading": "",
         "mega_menu_link": "",
         "sticky_header": true,
         "transparent_on_homepage": true,
@@ -33,7 +33,5 @@
       }
     }
   },
-  "order": [
-    "header"
-  ]
+  "order": ["header"]
 }

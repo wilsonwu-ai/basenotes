@@ -1,22 +1,6 @@
 {%- comment -%}
-  Homepage, rebuilt 2026-09-13 from Jeff's "Homepage edits/updates" brief (20 numbered points) and
-  his Base-Note-Homepage-2 mock. Wilson cleared the two contentious points: #8 (catalogue 32 -> 8)
-  and #4 (3D vial off the homepage, ARCHIVED not deleted).
-
-  Deliberate departures from his mock, and why:
-   - Design tokens stay the LIVE ones (--scent-green #22392b / --scent-cream #f4efe3), not the
-     mock's #1c3a2e / #f6f1e8. His own #17/#18 ask for one consistent store; matching his hex
-     would make the homepage disagree with the collection and PDP.
-   - Cards render through studio-fragrance-card, not his `${p.img}` JS template, so the $18
-     add-on quote, the selling-plan guard and add-to-cart keep working.
-   - Rotation prices come from the real selling plan, not the mock's hardcoded $15/$20.
-   - #13: his brief says the lyric blocks repeat "six times"; only ONE existed. The campaign
-     section is removed because his mock omits it, not because it was duplicated.
-
-  ARCHIVED, NOT DELETED (#4): snippets/vial-studio.liquid and assets/basenote-vial-studio.*
-  all remain in the theme. Only the render call is gone. To bring it back on About or FAQ:
-      {% render 'vial-studio', products: collection.products, section_id: section.id %}
-  Jeff 2026-09-13: "great for a plug and play but could impact loading consistency."
+  Homepage, rebuilt 2026-09-13 from Jeff's "Homepage edits/updates" brief.
+  2026-09-27: hero now has View our collection + Take the quiz.
 {%- endcomment -%}
 {%- liquid
   assign scent_collection = section.settings.collection | default: collections.fragrances
@@ -26,12 +10,6 @@
   assign first_plan = first_variant.selling_plan_allocations | first
   assign renewal_price = first_plan.price_adjustments.last.price | default: first_variant.price
   assign collection_url = scent_collection.url | default: '/collections/fragrances'
-  comment
-    Explainer ids derive from section.id rather than being hardcoded: this section declares a
-    preset, so it can legally be added twice to one template. Hardcoded ids would emit duplicate
-    element ids and both snippet scripts would resolve getElementById to the first instance,
-    leaving the second Rotation card inert and double-binding the first dialog.
-  endcomment
   assign rotation_modal_id = 'rotationModal-' | append: section.id
   assign rotation_opener_id = 'openRotation-' | append: section.id
 -%}
@@ -39,15 +17,15 @@
 {{ 'fragrance-reference.css' | asset_url | stylesheet_tag }}
 
 <div class="scent-home bn-home">
-  {%- comment -%} #1 one hero CTA · #2 offer on one line · #3 "no subscription" stays in the hero
-    · #6 the vial is a side strip, not a full-width card {%- endcomment -%}
   <section class="bn-hero" aria-labelledby="ScentHomeTitle">
     <div class="bn-hero__copy">
-      <p class="scent-eyebrow">Exceptional fragrance. Your way.</p>
-      <h1 id="ScentHomeTitle">A little vial.<br>A whole new <em>feeling.</em></h1>
-      <p class="bn-hero__lede">Authentic designer and niche, decanted to a 5ml spray. Try it on your skin before you buy the bottle. One-time purchase &mdash; no subscription required.</p>
-      <a class="scent-button bn-hero__cta" href="{{ collection_url }}">Find your first vial</a>
-      <p class="bn-hero__offer">{{ first_variant.price | money_without_trailing_zeros }} first vial <span aria-hidden="true">·</span> $18 each extra in the same order.<br>Free US shipping over $50.</p>
+      <p class="scent-eyebrow">Exceptional fragrances. Your way.</p>
+      <h1 id="ScentHomeTitle">One 5ml vial.<br>A whole new <em>feeling.</em></h1>
+      <p class="bn-hero__lede">Authentic designer and niche fragrances - Creed, Tom Ford, Xerjoff, Parfums de Marly. Decanted from the original bottle. You pick the scent. <br>About 60 sprays. No surcharge.</p>
+      <div class="bn-hero__actions">
+        <a class="scent-button bn-hero__cta" href="{{ collection_url }}">View our collection</a>
+        <a class="scent-button scent-button--light bn-hero__cta" href="/pages/find-your-scent">Take the scent quiz</a>
+      </div>
     </div>
     <div class="bn-hero__photo">
       <img
@@ -57,19 +35,15 @@
     </div>
   </section>
 
-  {%- comment -%} #7 three short steps, replacing the repeated slogan {%- endcomment -%}
   <section class="bn-steps" aria-labelledby="BnStepsTitle">
     <h2 id="BnStepsTitle">How a 5ml vial works</h2>
     <div class="bn-steps__row">
-      <p class="bn-step"><b>01 Pick</b>Any scent in the collection. Creed, Bond, Dior, Xerjoff.</p>
+      <p class="bn-step"><b>01 Pick</b>Any scent in the collection. Creed, Tom Ford, Dior, Xerjoff.</p>
       <p class="bn-step"><b>02 We fill it</b>Authentic fragrance, from the original bottle.</p>
-      <p class="bn-step"><b>03 Wear it</b>About 60 sprays. Full bottle later, on the scent page.</p>
+      <p class="bn-step"><b>03 Wear it</b>Don’t judge a fragrance until it’s on your skin.</p>
     </div>
   </section>
 
-  {%- comment -%} #8 eight best sellers, not the full catalogue · #9 same card as the collection
-    · #19 no gender/season filters here - those live on /collections/fragrances.
-    The collection is sorted "Best selling" in Admin, so limit follows real sales order. {%- endcomment -%}
   <section class="bn-featured" id="fragrances" aria-labelledby="BnFeaturedTitle">
     <div class="bn-featured__head">
       <h2 id="BnFeaturedTitle">Start with these</h2>
@@ -88,43 +62,31 @@
     </scent-catalog>
   </section>
 
-  {%- comment -%} #10 one-time first, rotation optional · #12 the whole Rotation card opens the popup
-    · #16 "Notify us", house voice {%- endcomment -%}
   <section class="bn-ways" id="ways-to-shop" aria-labelledby="BnWaysTitle">
     <h2 id="BnWaysTitle">Three ways</h2>
     <div class="bn-ways__grid">
       <article class="bn-way">
-        <span class="bn-way__num">01 &mdash; Start here</span>
-        <h3>One-time vial</h3>
+        <span class="bn-way__num">01</span>
+        <h3>One-Time Vial</h3>
         <p>{{ first_variant.price | money_without_trailing_zeros }} first. $18 each extra in the same cart. No recurring charge.</p>
         <a href="{{ collection_url }}">Shop 5ml vials</a>
       </article>
-
-      <article class="bn-way bn-way--action" id="{{ rotation_opener_id }}" role="button" tabindex="0"
-               aria-haspopup="dialog" aria-controls="{{ rotation_modal_id }}">
-        <span class="bn-way__num">02 &mdash; Optional</span>
+      <article class="bn-way bn-way--action" id="{{ rotation_opener_id }}" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="{{ rotation_modal_id }}">
+        <span class="bn-way__num">02</span>
         <h3>Monthly Rotation</h3>
         <p>{% if first_plan %}{{ first_plan.price | money_without_trailing_zeros }} first shipment, then {{ renewal_price | money_without_trailing_zeros }}/month.{% endif %} Swap, pause, or cancel.</p>
         <span class="bn-way__link">See how Rotation works</span>
       </article>
-
       <article class="bn-way" id="box-sets">
-        <span class="bn-way__num">03 &mdash; Soon</span>
-        <h3>Box sets</h3>
+        <span class="bn-way__num">03 &mdash; Coming Soon</span>
+        <h3>Box Sets</h3>
         <p>A few vials in one box. For gifting and comparing side by side.</p>
-        <a href="/pages/full-bottles#BottleEnquiry">Notify us</a>
       </article>
     </div>
   </section>
 
-  {%- comment -%} #11 Rotation explained in a popup rather than a separate page.
-    The dialog, its CSS and its wiring live in snippets/rotation-explainer.liquid so the cart page
-    can show the identical explainer - one source of truth for the ROSCA-relevant Rotation wording.
-    The opener is the whole Rotation card above, whose id is derived from section.id. {%- endcomment -%}
   {% render 'rotation-explainer', modal_id: rotation_modal_id, opener_id: rotation_opener_id, show_cta: true %}
 
-  {%- comment -%} #14 FAQ kept, copy tightened · #15 full-bottle answer points at the same
-    waitlist wording the PDP uses {%- endcomment -%}
   <section class="bn-faq" id="how-it-works" aria-labelledby="BnFaqTitle">
     <h2 id="BnFaqTitle">Your first vial, explained</h2>
     <details open>
@@ -147,71 +109,78 @@
 </div>
 
 <script src="{{ 'scent-storefront.js' | asset_url }}" defer></script>
-{%- comment -%} #12 (the whole Rotation card opens the popup) is wired inside the
-  rotation-explainer snippet rendered above, scoped to this section's own opener/modal ids. {%- endcomment -%}
 
 {% stylesheet %}
-  .bn-home { --bn-max: 71rem; }
-  .bn-home h1, .bn-home h2, .bn-home h3 { font-family: 'Playfair Display', Georgia, serif; }
-
-  .bn-hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr); gap: 2.5rem; align-items: center; width: min(100% - 3rem, var(--bn-max)); margin-inline: auto; padding-block: 3rem 1.75rem; }
-  .bn-hero__copy { min-width: 0; }
-  .bn-home .bn-hero h1 { margin: 0; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1.04; font-weight: 500; letter-spacing: -.03em; }
-  /* scent-storefront.css hides `.scent-home h1 br:last-of-type` under 749px. The old hero had two
-     <br>s so that only killed the second; this hero has one, so without the override the protected
-     headline collapses to "A little vial.A whole new feeling." on phones. */
-  .bn-home .bn-hero h1 br, .bn-home .bn-hero h1 br:last-of-type { display: inline !important; }
-  .bn-hero__lede { max-width: 34em; margin: 1rem 0 1.4rem; color: var(--scent-muted); font: .98rem/1.65 'Jost', sans-serif; }
-  .bn-hero__cta { min-height: 3.25rem; }
-  .bn-hero__offer { margin: .9rem 0 0; color: var(--scent-muted); font: .84rem/1.6 'Jost', sans-serif; }
-  .bn-hero__offer span { margin-inline: .35rem; color: var(--scent-gold); }
-  .bn-hero__photo { min-width: 0; }
-  .bn-hero__photo img { display: block; width: 100%; max-width: 17rem; height: auto; margin-inline: auto; mix-blend-mode: multiply; }
-
-  .bn-steps { width: min(100% - 3rem, var(--bn-max)); margin-inline: auto; padding-block: 1.5rem 2.5rem; border-block-start: 1px solid var(--scent-line); }
-  .bn-steps h2 { margin: 0 0 1rem; font-size: 1.6rem; font-weight: 500; }
-  .bn-steps__row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-  .bn-step { margin: 0; color: var(--scent-muted); font: .88rem/1.6 'Jost', sans-serif; }
-  .bn-step b { display: block; margin-block-end: .3rem; color: var(--scent-ink); font-weight: 600; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; }
-
-  .bn-featured { width: min(100% - 3rem, var(--bn-max)); margin-inline: auto; padding-block: 1rem 3rem; }
-  .bn-featured__head { display: flex; align-items: end; justify-content: space-between; gap: 1.5rem; margin-block-end: 1.2rem; }
-  .bn-featured__head h2 { margin: 0; font-size: 1.75rem; font-weight: 500; }
-  .bn-featured__head a { color: var(--scent-green); font: .82rem/1.4 'Jost', sans-serif; border-block-end: 1px solid var(--scent-gold); padding-block-end: .15rem; }
-  .bn-home .bn-featured__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-
-  .bn-ways { width: min(100% - 3rem, var(--bn-max)); margin-inline: auto; padding-block: 1rem 3rem; border-block-start: 1px solid var(--scent-line); }
-  .bn-ways h2 { margin: 1.5rem 0 1.2rem; font-size: 1.75rem; font-weight: 500; }
-  .bn-ways__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .9rem; }
-  .bn-way { display: flex; flex-direction: column; padding: 1.1rem 1.2rem 1.3rem; border: 1px solid var(--scent-line); border-radius: .3rem; background: rgb(255 255 255 / 45%); }
-  .bn-way__num { color: var(--scent-muted); font: .67rem/1.4 'Jost', sans-serif; letter-spacing: .1em; text-transform: uppercase; }
-  .bn-way h3 { margin: .5rem 0 .45rem; font-size: 1.3rem; font-weight: 500; }
-  .bn-way p { margin: 0 0 .9rem; color: var(--scent-muted); font: .86rem/1.6 'Jost', sans-serif; }
-  .bn-way a, .bn-way__link { margin-block-start: auto; color: var(--scent-green); font: .82rem/1.4 'Jost', sans-serif; border-block-end: 1px solid var(--scent-gold); padding-block-end: .15rem; align-self: flex-start; }
-  .bn-way--action { cursor: pointer; }
-  .bn-way--action:hover { background: rgb(255 255 255 / 75%); }
-  .bn-way--action:focus-visible { outline: 2px solid var(--scent-green); outline-offset: 3px; }
-
-  /* .bn-modal* rules moved to snippets/rotation-explainer.liquid (2026-09-13) so the cart page,
-     which does not load this section's compiled stylesheet, renders the same dialog. */
-
-  .bn-faq { width: min(100% - 3rem, 45rem); margin-inline: auto; padding-block: 1rem 4rem; border-block-start: 1px solid var(--scent-line); }
-  .bn-faq h2 { margin: 1.5rem 0 1rem; font-size: 1.75rem; font-weight: 500; }
-  .bn-faq details { border-block-end: 1px solid var(--scent-line); }
-  .bn-faq summary { min-height: 2.75rem; display: flex; align-items: center; padding-block: .7rem; cursor: pointer; font: .95rem/1.5 'Jost', sans-serif; }
-  .bn-faq p { margin: 0 0 1rem; color: var(--scent-muted); font: .88rem/1.7 'Jost', sans-serif; }
-
-  @media (max-width: 60rem) {
-    .bn-home .bn-featured__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .bn-ways__grid { grid-template-columns: 1fr; }
-  }
-  @media (max-width: 46rem) {
-    .bn-hero { grid-template-columns: 1fr; gap: 1.25rem; padding-block: 1.75rem 1.25rem; }
-    .bn-hero__photo { order: -1; }
-    .bn-hero__photo img { max-width: 10.5rem; }
-    .bn-steps__row { grid-template-columns: 1fr; gap: .8rem; }
-    .bn-featured__head { align-items: start; flex-direction: column; gap: .4rem; }
-  }
+.bn-home { --bn-max: 71rem; }
+.bn-home h1, .bn-home h2, .bn-home h3 { font-family: 'Playfair Display', Georgia, serif; }
+.bn-hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr); gap: 2.5rem; align-items: center; width: min(100% - 3rem, var(--bn-max)); margin-inline: auto; padding-block: 3rem 1.75rem; }
+.bn-hero__copy { min-width: 0; }
+.bn-home .bn-hero h1 { margin: 0; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1.04; font-weight: 500; letter-spacing: -.03em; }
+.bn-home .bn-hero h1 br, .bn-home .bn-hero h1 br:last-of-type { display: inline !important; }
+.bn-hero__lede { max-width: 34em; margin: 1rem 0 1.4rem; color: var(--scent-muted); font: .98rem/1.65 'Jost', sans-serif; }
+.bn-hero__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.bn-hero__cta { min-height: 3.25rem; }
+.bn-hero__offer { margin: .9rem 0 0; color: var(--scent-muted); font: .84rem/1.6 'Jost', sans-serif; }
+.bn-hero__offer span { margin-inline: .35rem; color: var(--scent-gold); }
+.bn-hero__photo { min-width: 0; }
+.bn-hero__photo img { display: block; width: 100%; max-width: 17rem; height: auto; margin-inline: auto; mix-blend-mode: multiply; }
+.bn-hero__actions .scent-button {
+  box-sizing: border-box;
+  height: 56px;
+  min-height: 56px;
+  padding: 0 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.bn-steps { width: min(100% - 3rem, var(--bn-max)); margin-inline: auto; padding-block: 1.5rem 2.5rem; border-block-start: 1px solid var(--scent-line); }
+.bn-steps h2 { margin: 0 0 1rem; font-size: 1.6rem; font-weight: 500; }
+.bn-steps__row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.bn-step { margin: 0; color: var(--scent-muted); font: .88rem/1.6 'Jost', sans-serif; }
+.bn-step b { display: block; margin-block-end: .3rem; color: var(--scent-ink); font-weight: 600; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; }
+.bn-featured { width: min(100% - 3rem, var(--bn-max)); margin-inline: auto; padding-block: 1rem 3rem; }
+.bn-featured__head { display: flex; align-items: end; justify-content: space-between; gap: 1.5rem; margin-block-end: 1.2rem; }
+.bn-featured__head h2 { margin: 0; font-size: 1.75rem; font-weight: 500; }
+.bn-featured__head a { color: var(--scent-green); font: .82rem/1.4 'Jost', sans-serif; border-block-end: 1px solid var(--scent-gold); padding-block-end: .15rem; }
+.bn-home .bn-featured__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.bn-ways { width: min(100% - 3rem, var(--bn-max)); margin-inline: auto; padding-block: 1rem 3rem; border-block-start: 1px solid var(--scent-line); }
+.bn-ways h2 { margin: 1.5rem 0 1.2rem; font-size: 1.75rem; font-weight: 500; }
+.bn-ways__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .9rem; }
+.bn-way { display: flex; flex-direction: column; padding: 1.1rem 1.2rem 1.3rem; border: 1px solid var(--scent-line); border-radius: .3rem; background: rgb(255 255 255 / 45%); }
+.bn-way__num { color: var(--scent-muted); font: .67rem/1.4 'Jost', sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+.bn-way h3 { margin: .5rem 0 .45rem; font-size: 1.3rem; font-weight: 500; }
+.bn-way p { margin: 0 0 .9rem; color: var(--scent-muted); font: .86rem/1.6 'Jost', sans-serif; }
+.bn-way a, .bn-way__link { margin-block-start: auto; color: var(--scent-green); font: .82rem/1.4 'Jost', sans-serif; border-block-end: 1px solid var(--scent-gold); padding-block-end: .15rem; align-self: flex-start; }
+.bn-way--action { cursor: pointer; }
+.bn-way--action:hover { background: rgb(255 255 255 / 75%); }
+.bn-way--action:focus-visible { outline: 2px solid var(--scent-green); outline-offset: 3px; }
+.bn-faq { width: min(100% - 3rem, 45rem); margin-inline: auto; padding-block: 1rem 4rem; border-block-start: 1px solid var(--scent-line); }
+.bn-faq h2 { margin: 1.5rem 0 1rem; font-size: 1.75rem; font-weight: 500; }
+.bn-faq details { border-block-end: 1px solid var(--scent-line); }
+.bn-faq summary { min-height: 2.75rem; display: flex; align-items: center; padding-block: .7rem; cursor: pointer; font: .95rem/1.5 'Jost', sans-serif; }
+.bn-faq p { margin: 0 0 1rem; color: var(--scent-muted); font: .88rem/1.7 'Jost', sans-serif; }
+@media (max-width: 60rem) {
+  .bn-home .bn-featured__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bn-ways__grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 46rem) {
+  .bn-hero { grid-template-columns: 1fr; gap: 1.25rem; padding-block: 1.75rem 1.25rem; }
+  .bn-hero__photo { order: -1; }
+  .bn-hero__photo img { max-width: 10.5rem; }
+  .bn-steps__row { grid-template-columns: 1fr; gap: .8rem; }
+  .bn-featured__head { align-items: start; flex-direction: column; gap: .4rem; }
+}
+.bn-hero__actions .scent-button--light {
+  background: transparent !important;
+  border: 1px solid var(--scent-green);
+  color: var(--scent-green) !important;
+  min-height: 3.25rem;
+  padding: 0.9rem 1.5rem;
+}
+.bn-hero__actions .scent-button--light:hover {
+  background: var(--scent-green) !important;
+  color: var(--scent-cream) !important;
+}
 {% endstylesheet %}
 
 {% schema %}

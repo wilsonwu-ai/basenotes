@@ -311,7 +311,22 @@
   .scent-atelier__halo::before { inset: 7% -4%; }
   .scent-atelier__halo::after { inset: -5% 10%; }
   .scent-atelier__rig { position: absolute; inset: 3.5rem 3rem 4.5rem; display: grid; place-items: center; transform-style: preserve-3d; transition: transform 180ms ease-out; will-change: transform; }
-  .scent-atelier__vial { width: min(76%, 29rem); max-height: 92%; overflow: visible; filter: drop-shadow(0 2rem 1.5rem rgb(25 29 27 / 20%)); }
+/* BEFORE */
+.scent-atelier__vial {
+  width: min(76%, 29rem);
+  max-height: 92%;
+  object-fit: contain;
+  filter: drop-shadow(0 2rem 1.5rem rgb(25 29 27 / 20%));
+  clip-path: inset(-3rem -3rem -3rem -3rem); /* ← delete this line */
+}
+
+/* AFTER */
+.scent-atelier__vial {
+  width: min(76%, 29rem);
+  max-height: 92%;
+  object-fit: contain;
+  filter: drop-shadow(0 2rem 1.5rem rgb(25 29 27 / 20%));
+}
   .scent-atelier__object { transform-origin: center; animation: scentAtelierFloat 6s ease-in-out infinite; }
   .scent-atelier__camera { position: absolute; z-index: 2; right: 1.25rem; bottom: 1.25rem; left: 1.25rem; display: flex; align-items: center; justify-content: center; gap: .8rem; font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #4d5c56; }
   .scent-atelier__camera button { width: 2.75rem; height: 2.75rem; border: 1px solid rgb(45 70 65 / 32%); border-radius: 50%; color: #2d4641; background: rgb(249 245 236 / 72%); }

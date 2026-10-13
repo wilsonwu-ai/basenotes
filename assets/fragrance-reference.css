@@ -173,7 +173,7 @@
   margin: 0 0 1rem;
   padding: 8%;
   box-sizing: border-box;
-  background: #faf7f0;
+  background: #ffff;
 }
 /* Small 5ml badge on the image (Jeff ticket 2). */
 .scent-card--reference .scent-card__badge {
@@ -193,7 +193,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  mix-blend-mode: multiply;
+  mix-blend-mode: normal;
 }
 .scent-card--reference .scent-card__vial { height: 100%; width: 100%; transform: none; }
 .fragrance-catalog .scent-card--reference h2 {

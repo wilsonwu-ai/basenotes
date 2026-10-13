@@ -1,5 +1,13 @@
 {{ 'scent-storefront.css' | asset_url | stylesheet_tag }}
 {{ 'fragrance-reference.css' | asset_url | stylesheet_tag }}
+<style>
+@media (min-width: 900px) {
+  .fragrance-catalog__toolbar {
+    display: grid !important;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr !important;
+  }
+}
+</style>
 {%- comment -%}
   Fragrance page, rebuilt 2026-09-12 from Jeff's "Fragrance Page Updates - JT" brief (WhatsApp 00:32).
   His order, top to bottom: preference tabs, ONE-LINE hero, filter row, count + sort, then the grid.
@@ -28,7 +36,7 @@
   <nav class="fragrance-catalog__tabs" aria-label="Fragrance preference"><button class="is-active" type="button" data-gender-filter="all" aria-pressed="true">All</button><button type="button" data-gender-filter="him" aria-pressed="false">For him</button><button type="button" data-gender-filter="her" aria-pressed="false">For her</button><button type="button" data-gender-filter="unisex" aria-pressed="false">Unisex</button></nav>
   <header class="fragrance-catalog__hero">
     <h1>{% if is_fragrance_index %}Any 5ml for $20 <span aria-hidden="true">/</span> $18 after{% else %}{{ collection.title }}{% endif %}</h1>
-    <p class="fragrance-catalog__intro">Authentic designer and niche. One-time purchase. Free US shipping on orders over $50.</p>
+    <p class="fragrance-catalog__intro">Monthly Rotation: First Month $15, then $20. Free US Shipping.</p>
     {%- comment -%} Jeff: "'How decants work' stays on this page - modal or accordion, not a new URL."
       <details> needs no JavaScript, so it cannot break the way a modal can. {%- endcomment -%}
     <details class="fragrance-catalog__decants">
@@ -36,41 +44,55 @@
       <div class="fragrance-catalog__decants-body">
         <h3>What you get</h3>
         <p>{{ 'fragrance_reference.format' | t }} About 60 sprays &mdash; enough to wear it on skin, not just paper.</p>
-        <h3>What you pay</h3>
-        <p>First vial is $20. Each extra vial in the same order is $18. One-time purchase. No subscription required.</p>
-        <h3>Shipping</h3>
-        <p>Free US shipping on orders over $50. Under that, standard checkout rates apply.</p>
-        <h3>Full bottles</h3>
-        <p>Want the full size later? Those are on each scent&rsquo;s page when we have them. This grid is 5ml only.</p>
       </div>
     </details>
   </header>
   <div class="fragrance-catalog__body">
     <div class="fragrance-catalog__toolbar">
-      <label class="fragrance-catalog__field fragrance-catalog__field--search" for="ScentSearch-{{ section.id }}">
-        <span class="visually-hidden">{{ 'fragrance_reference.search_label' | t }}</span>
-        <input id="ScentSearch-{{ section.id }}" type="search" placeholder="Search scents..." data-scent-search autocomplete="off">
-      </label>
-      <label class="fragrance-catalog__field" for="ScentBrand-{{ section.id }}">
-        <span class="visually-hidden">Brand</span>
-        <select id="ScentBrand-{{ section.id }}" data-scent-brand>
-          <option value="">Brand</option>
-          {%- for brand in brands -%}
-            {%- unless brand == blank -%}<option value="{{ brand | escape }}">{{ brand | escape }}</option>{%- endunless -%}
-          {%- endfor -%}
-        </select>
-      </label>
-      <label class="fragrance-catalog__field" for="ScentFamily-{{ section.id }}">
-        <span class="visually-hidden">Scent family</span>
-        <select id="ScentFamily-{{ section.id }}" data-scent-family>
-          <option value="">Scent family</option>
-          <option value="fresh">Fresh</option>
-          <option value="woody">Woody</option>
-          <option value="sweet">Sweet</option>
-          <option value="spicy">Spicy</option>
-        </select>
-      </label>
-    </div>
+  <label class="fragrance-catalog__field fragrance-catalog__field--search" for="ScentSearch-{{ section.id }}">
+    <span class="visually-hidden">{{ 'fragrance_reference.search_label' | t }}</span>
+    <input id="ScentSearch-{{ section.id }}" type="search" placeholder="Search scents..." data-scent-search autocomplete="off">
+  </label>
+  <label class="fragrance-catalog__field" for="ScentBrand-{{ section.id }}">
+    <span class="visually-hidden">Brand</span>
+    <select id="ScentBrand-{{ section.id }}" data-scent-brand>
+      <option value="">Brand</option>
+      {%- for brand in brands -%}
+        {%- unless brand == blank -%}<option value="{{ brand | escape }}">{{ brand | escape }}</option>{%- endunless -%}
+      {%- endfor -%}
+    </select>
+  </label>
+  <label class="fragrance-catalog__field" for="ScentFamily-{{ section.id }}">
+    <span class="visually-hidden">Scent family</span>
+    <select id="ScentFamily-{{ section.id }}" data-scent-family>
+      <option value="">Scent family</option>
+      <option value="fresh">Fresh</option>
+      <option value="woody">Woody</option>
+      <option value="sweet">Sweet</option>
+      <option value="spicy">Spicy</option>
+    </select>
+  </label>
+  <label class="fragrance-catalog__field" for="ScentSeason-{{ section.id }}">
+    <span class="visually-hidden">Season</span>
+    <select id="ScentSeason-{{ section.id }}" data-scent-season>
+      <option value="">Season</option>
+      <option value="spring">Spring</option>
+      <option value="summer">Summer</option>
+      <option value="fall">Fall</option>
+      <option value="winter">Winter</option>
+    </select>
+  </label>
+  <label class="fragrance-catalog__field" for="ScentOccasion-{{ section.id }}">
+    <span class="visually-hidden">Occasion</span>
+    <select id="ScentOccasion-{{ section.id }}" data-scent-occasion>
+      <option value="">Occasion</option>
+      <option value="everyday">Everyday</option>
+      <option value="evening">Evening</option>
+      <option value="office">Office</option>
+      <option value="date">Date</option>
+    </select>
+  </label>
+</div>
     <div class="fragrance-catalog__resultbar">
       <p class="fragrance-catalog__count" data-scent-count aria-live="polite">{{ collection.products_count }} scents</p>
       <label class="fragrance-catalog__sort" for="ScentSort-{{ section.id }}">
@@ -92,6 +114,31 @@
 </scent-catalog>
 {%- endpaginate -%}
 <script src="{{ 'scent-storefront.js' | asset_url }}" defer></script>
+<script>
+(function () {
+  var root = document.querySelector('scent-catalog');
+  if (!root) return;
+  var seasonSel = root.querySelector('select[data-scent-season]');
+  var occasionSel = root.querySelector('select[data-scent-occasion]');
+  function apply() {
+    var season = (seasonSel && seasonSel.value || '').toLowerCase();
+    var occasion = (occasionSel && occasionSel.value || '').toLowerCase();
+    root.querySelectorAll('[data-scent-card]').forEach(function (card) {
+      var s = (card.getAttribute('data-season') || '').toLowerCase();
+      var o = (card.getAttribute('data-occasion') || '').toLowerCase();
+      var okS = !season || !s || s.indexOf(season) !== -1;
+      var okO = !occasion || !o || o.indexOf(occasion) !== -1;
+      if (okS && okO) card.removeAttribute('data-chip-hide');
+      else card.setAttribute('data-chip-hide', 'true');
+    });
+  }
+  if (seasonSel) seasonSel.addEventListener('change', apply);
+  if (occasionSel) occasionSel.addEventListener('change', apply);
+})();
+</script>
+<style>
+[data-scent-card][data-chip-hide] { display: none !important; }
+</style>
 {% schema %}
 {"name":"Fragrance catalog","settings":[],"presets":[{"name":"Fragrance catalog"}]}
 {% endschema %}

@@ -50,8 +50,6 @@
     "sub_plan_quarterly_per_month": "",
     "sub_plan_annual_price": "",
     "sub_plan_annual_per_month": "",
-    "cancel_discount_code": "STAYWITHUS10",
-    "cancel_discount_amount": "10% off your next month",
     "cancel_pause_duration": "1",
     "checkout_require_account": true,
     "urgency_timer_enabled": false,
@@ -59,6 +57,8 @@
     "urgency_timer_text": "",
     "cart_sub_upsell_enabled": true,
     "cart_sub_upsell_heading": "WOULD YOU LIKE TO ADD A MONTHLY FRAGRANCE SUBSCRIPTION?",
+    "cancel_discount_code": "STAYWITHUS10",
+    "cancel_discount_amount": "10% off your next month",
     "color_accent": "#d4af37",
     "subscription_price_monthly": "$20",
     "subscription_price_quarterly": "",
@@ -94,6 +94,16 @@
       },
       "14060646107696862457": {
         "type": "shopify://apps/judge-me-reviews/blocks/judgeme_core/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+        "disabled": false,
+        "settings": {}
+      },
+      "2200952712151285029": {
+        "type": "shopify://apps/microsoft-clarity/blocks/brandAgents_js/31c3d126-8116-4b4a-8ba1-baeda7c4aeea",
+        "disabled": false,
+        "settings": {}
+      },
+      "2567389343055140935": {
+        "type": "shopify://apps/microsoft-clarity/blocks/clarity_js/31c3d126-8116-4b4a-8ba1-baeda7c4aeea",
         "disabled": false,
         "settings": {}
       }

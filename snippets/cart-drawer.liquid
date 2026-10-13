@@ -188,7 +188,7 @@
           drawer_all_plan gates every FREE-shipping claim: the store's free-shipping
           discount applies only to PURE subscription orders — Shopify skips it when any
           one-time line (giveaway or add-on) shares the checkout, so a mixed cart pays
-          the profile rate ($4.99 under $50).
+          the profile rate ($4.99 under $33).
         {%- endcomment -%}
         {%- assign drawer_has_subscription = drawer_has_plan_line -%}
 
@@ -264,7 +264,7 @@
             Badge only when the claim is literally true for THIS cart: a pure subscription
             order ships free (discount 1500466643162, subscription purchase type). A mixed
             cart pays the profile rate, so the badge would contradict the Shipping line
-            two rows up. One-time carts: $4.99 under $50, free at $50+ (profile tiers).
+            two rows up. One-time carts: $4.99 under $33, free at $33+ (profile tiers).
           {%- endcomment -%}
           {%- if drawer_has_plan_line and drawer_all_plan -%}
             <span>

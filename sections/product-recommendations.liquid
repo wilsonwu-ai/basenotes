@@ -19,8 +19,9 @@
 
 <div
   data-product-recommendations
-  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=3&intent=related"
->
+  <div
+  data-product-recommendations
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=3&intent=complementary">
   {%- if recommendations.performed? -%}
     {%- if recommendations.products_count > 0 -%}
       <section class="artifact-product__related" aria-labelledby="RelatedVialsTitle">
@@ -96,7 +97,10 @@
     }
   })();
 </script>
-
+{% stylesheet %}
+.artifact-product__related-card button {width: 100%;min-height: 2.75rem;border: 0.0625rem solid #22392b;background: #22392b;color: #fff;font: 500 0.7rem/1.4 'Jost', sans-serif;letter-spacing: 0.08em;text-transform: uppercase;cursor: pointer;}
+.artifact-product__related-card button:hover {background: #2d4a38;color: #fff;}
+{% endstylesheet %}
 {% schema %}
 {"name":"Product recommendations","settings":[],"presets":[{"name":"Product recommendations"}]}
 {% endschema %}

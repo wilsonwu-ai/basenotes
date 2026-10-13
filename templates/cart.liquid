@@ -38,9 +38,9 @@
   comment
     Hoisted out of the summary aside so the order-mode fieldset can read it too. Both the
     "standard US rate applies" sentence and the progress line must agree about whether THIS
-    order clears the $50.00 (5000 cent) free-shipping threshold.
+    order clears the $33.00 (3300 cent) free-shipping threshold.
   endcomment
-  assign ship_remaining = 5000 | minus: cart.total_price
+  assign ship_remaining = 3300 | minus: cart.total_price
 -%}
 
 <artifact-cart class="artifact-cart" data-has-subscription="{{ has_subscription }}">
@@ -107,11 +107,11 @@
               <legend>How would you like to order?</legend>
               <label class="artifact-cart__mode{% unless has_subscription %} artifact-cart__mode--active{% endunless %}">
                 <input type="radio" name="artifact_order_mode" value="onetime" disabled {% unless has_subscription %}checked{% endunless %}>
-                <span><strong>One-time purchase</strong><small>$20 for the first 5ml and $18 for each additional vial. No subscription, no renewals.</small></span>
+                <span><strong>One-time purchase</strong><small>$20 for the first 5ml and $18 for each additional vial.</small></span>
               </label>
               <label class="artifact-cart__mode{% if has_subscription %} artifact-cart__mode--active{% endif %}">
                 <input type="radio" name="artifact_order_mode" value="subscription" disabled {% if rotation_variant == blank %}data-unavailable="true"{% endif %} {% if has_subscription %}checked{% endif %}>
-                <span><strong>Monthly Rotation <em>Subscription</em></strong><small>{% if rotation_variant != blank %}{{ rotation_variant.selling_plan_allocations.first.price | money_without_trailing_zeros }} for the first shipment, then {{ rotation_variant.selling_plan_allocations.first.price_adjustments.last.price | default: rotation_variant.price | money_without_trailing_zeros }} monthly for one 5ml vial of {{ rotation_product.title | escape }}.{% endif %} Extra vials and full bottles stay one-time purchases. Skip, swap, or cancel anytime.</small></span>
+                <span><strong>Monthly Rotation <em>Subscription</em></strong><small>{% if rotation_variant != blank %}{{ rotation_variant.selling_plan_allocations.first.price | money_without_trailing_zeros }} for the first shipment, then {{ rotation_variant.selling_plan_allocations.first.price_adjustments.last.price | default: rotation_variant.price | money_without_trailing_zeros }} monthly for one 5ml vial of your choice.{% endif %}</small></span>
               </label>
               {%- comment -%}
                 Subscription free-shipping incentive. The free-shipping discount (1500466643162)
@@ -147,7 +147,7 @@
               every line on one. The subscription free-shipping discount is subscription
               purchase type, so it survives only on a PURE subscription order; any one-time
               line in the checkout drops the order back to the US Domestic profile, which is
-              $4.99 from $0.00 to $49.99 and free from $50.00 (5000 cents). Express ($15) is
+              $4.99 from $0.00 to $32.99 and free from $33.00 (3300 cents). Express ($15) is
               never part of this claim. The text carries the meaning (role=status); the bar is
               decorative and hidden from assistive tech.
             {%- endcomment -%}
@@ -159,14 +159,14 @@
             -%}
             <div class="artifact-cart__shipping">
               {%- if has_subscription and cart_all_plan -%}
-                <p role="status" aria-live="polite">Free US shipping is already included on this Monthly Rotation order.</p>
+                <p role="status" aria-live="polite">Free US shipping</p>
               {%- else -%}
                 <p role="status" aria-live="polite">{% if ship_remaining > 0 %}Spend {{ ship_remaining | money_without_trailing_zeros }} more for free US shipping.{% else %}You’ve unlocked free US shipping on this order.{% endif %}</p>
                 <div class="artifact-cart__shipping-track" aria-hidden="true"><span style="inline-size:{{ ship_pct }}%"></span></div>
               {%- endif -%}
             </div>
             {%- if has_subscription -%}
-              <div class="artifact-cart__disclosure"><strong>This is a recurring subscription.</strong>{% for item in cart.items %}{% if item.selling_plan_allocation %}<p>{{ item.product.title | escape }}: {{ item.selling_plan_allocation.price | times: item.quantity | money_without_trailing_zeros }} for this shipment, then {{ item.selling_plan_allocation.price_adjustments.last.price | default: item.variant.price | times: item.quantity | money_without_trailing_zeros }} every month until cancelled.</p>{% endif %}{% endfor %}<p>Skip, swap, or cancel in your account. Any one-time extras do not renew.</p></div>
+              <div class="artifact-cart__disclosure"><strong>This is a recurring subscription.</strong>{% for item in cart.items %}{% if item.selling_plan_allocation %}<p>{{ item.selling_plan_allocation.price | times: item.quantity | money_without_trailing_zeros }} for this shipment, then {{ item.selling_plan_allocation.price_adjustments.last.price | default: item.variant.price | times: item.quantity | money_without_trailing_zeros }}. Free US Shipping.</p>{% endif %}{% endfor %}<p>Skip, swap, or cancel in your account. Any one-time extras do not renew.</p></div>
               <label class="artifact-cart__consent"><input type="checkbox" required data-cart-consent> <span>I agree to the recurring subscription and <a href="/pages/subscription-terms">subscription terms</a>.</span></label>
             {%- else -%}
               <p class="artifact-cart__disclosure">One-time purchase. No subscription, no recurring charges.</p>

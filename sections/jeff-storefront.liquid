@@ -63,7 +63,10 @@
       <p class="artifact-home__eyebrow">Your next signature scent</p>
       <h2>Try the vial. Then decide.</h2>
       <p>Wear it through real days before choosing another vial, Monthly Rotation, or the full bottle.</p>
-      <a href="{{ featured_collection.url | default: '/collections/fragrances' }}">Shop all fragrances</a>
+      <div class="artifact-home__banner-actions">
+        <a href="{{ featured_collection.url | default: '/collections/fragrances' }}">Shop all fragrances</a>
+        <a href="/pages/find-your-scent">Take the quiz</a>
+      </div>
     </div>
   </section>
 
@@ -80,64 +83,102 @@
 </artifact-storefront>
 
 {% stylesheet %}
-  .artifact-home { --artifact-green:#22392b; --artifact-green-dark:#1b2f22; --artifact-cream:#f4efe3; --artifact-gold:#ac9159; --artifact-ink:#242320; --artifact-muted:#5c574d; --artifact-line:rgb(34 57 43 / 18%); display:block; color:var(--artifact-ink); background:var(--artifact-cream); }
-  .artifact-home__filters { display:flex; min-height:3.75rem; align-items:center; justify-content:center; gap:2.75rem; padding-inline:1.5rem; color:rgb(244 239 227 / 64%); background:var(--artifact-green-dark); font:500 .75rem/1 'Jost',sans-serif; letter-spacing:.13em; text-transform:uppercase; }
-  .artifact-home__filter { padding-block:.75rem .55rem; border-block-end:.125rem solid transparent; transition:color 160ms ease,border-color 160ms ease; }
-  .artifact-home__filter:hover,.artifact-home__filter:focus-visible,.artifact-home__filter--active { color:var(--artifact-cream); border-color:var(--artifact-gold); }
-  .artifact-home__hero { width:min(100% - 3rem,48rem); min-height:34rem; margin-inline:auto; padding-block:4.75rem 2.5rem; text-align:center; }
-  .artifact-home__eyebrow { margin:0 0 1.35rem; color:var(--artifact-gold); font:500 .75rem/1.2 'Jost',sans-serif; letter-spacing:.2em; text-transform:uppercase; }
-  .artifact-home__hero h1 { max-width:14ch; margin:0 auto; font:700 clamp(2.75rem,5vw,4.65rem)/1.06 'Playfair Display',serif; letter-spacing:-.035em; text-wrap:balance; }
-  .artifact-home__intro { margin:1.35rem auto 1.25rem; color:var(--artifact-muted); font:italic 1.18rem/1.5 'EB Garamond',serif; }
-  .artifact-home__learn { display:inline-block; padding-block-end:.16rem; border-block-end:.0625rem solid var(--artifact-gold); color:var(--artifact-green); font:.84rem/1.4 'Jost',sans-serif; }
-  .artifact-home__proof { margin-block-start:7.25rem; font:.9rem/1.5 'Jost',sans-serif; }
-  .artifact-home__stars { display:block; margin-block:.95rem .25rem; color:var(--artifact-gold); font-size:1.25rem; letter-spacing:.12em; }
-  .artifact-home__proof small { color:var(--artifact-muted); font-size:.75rem; }
-  .artifact-home__catalog { width:min(100% - 3rem,73rem); margin-inline:auto; padding-block-end:4.5rem; }
-  .artifact-home__grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border-block-start:.0625rem solid var(--artifact-line); border-inline-start:.0625rem solid var(--artifact-line); }
-  .artifact-card { min-width:0; padding:1.7rem 1.15rem 1.35rem; border-inline-end:.0625rem solid var(--artifact-line); border-block-end:.0625rem solid var(--artifact-line); text-align:center; }
-  .artifact-card__image { display:grid; width:min(100%,9rem); aspect-ratio:1; margin-inline:auto; place-items:center; overflow:hidden; }
-  .artifact-card__image img,.artifact-card__image svg { width:auto; height:82%; object-fit:contain; transition:transform 220ms ease; }
-  .artifact-card:hover .artifact-card__image img,.artifact-card:hover .artifact-card__image svg { transform:scale(1.035); }
-  .artifact-card__body h2 { min-height:2.4em; margin:.65rem 0 0; font:500 1rem/1.2 'EB Garamond',serif; }
-  .artifact-card__body p { min-height:1.5em; margin:.35rem 0 .75rem; color:var(--artifact-muted); font:400 .66rem/1.4 'Jost',sans-serif; letter-spacing:.09em; text-transform:uppercase; }
-  .artifact-card__form button,.artifact-card__view { display:flex; width:100%; min-height:2.75rem; align-items:center; justify-content:center; padding:.7rem .45rem; border:.0625rem solid var(--artifact-green); color:var(--artifact-green); background:transparent; font:500 .66rem/1 'Jost',sans-serif; letter-spacing:.09em; text-transform:uppercase; cursor:pointer; transition:color 160ms ease,background 160ms ease; }
-  .artifact-card__form button:hover,.artifact-card__form button:focus-visible,.artifact-card__view:hover,.artifact-card__view:focus-visible { color:var(--artifact-cream); background:var(--artifact-green); }
-  .artifact-home__banner { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(20rem,.65fr); width:min(100% - 3rem,73rem); min-height:31rem; margin:0 auto 4.5rem; overflow:hidden; background:var(--artifact-green); }
-  .artifact-home__banner-media { min-width:0; overflow:hidden; perspective:62.5rem; }
-  .artifact-home__banner-media img { width:100%; height:100%; object-fit:cover; transform:scale(1.04); transition:transform 220ms ease-out; }
-  .artifact-home__banner-copy { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding:clamp(2rem,5vw,4.25rem); color:var(--artifact-cream); }
-  .artifact-home__banner-copy h2 { margin:0; color:inherit; font:500 clamp(2.4rem,4vw,4rem)/1 'Playfair Display',serif; letter-spacing:-.03em; }
-  .artifact-home__banner-copy p:not(.artifact-home__eyebrow) { margin:1.25rem 0 2rem; color:rgb(244 239 227 / 78%); font:1rem/1.6 'EB Garamond',serif; }
-  .artifact-home__banner-copy a { padding-block-end:.25rem; border-block-end:.0625rem solid var(--artifact-gold); font:500 .72rem/1.3 'Jost',sans-serif; letter-spacing:.12em; text-transform:uppercase; }
-  .artifact-home__paths { padding:4rem max(1.5rem,calc((100% - 73rem)/2)); color:var(--artifact-cream); background:var(--artifact-green-dark); }
-  .artifact-home__path-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-block-start:.0625rem solid rgb(244 239 227 / 22%); border-inline-start:.0625rem solid rgb(244 239 227 / 22%); }
-  .artifact-home__path-grid article { min-height:14rem; padding:1.75rem; border-inline-end:.0625rem solid rgb(244 239 227 / 22%); border-block-end:.0625rem solid rgb(244 239 227 / 22%); }
-  .artifact-home__path-grid span { color:var(--artifact-gold); font:500 .67rem/1 'Jost',sans-serif; letter-spacing:.16em; }
-  .artifact-home__path-grid h3 { margin:3.5rem 0 .55rem; color:inherit; font:500 1.55rem/1.1 'Playfair Display',serif; }
-  .artifact-home__path-grid p { margin:0; color:rgb(244 239 227 / 76%); font:.9rem/1.55 'EB Garamond',serif; }
-  .artifact-home__status { position:fixed; z-index:5; inset:auto 1rem 1rem auto; max-width:22rem; margin:0; padding:.75rem 1rem; color:var(--artifact-cream); background:var(--artifact-green); font:.8rem/1.4 'Jost',sans-serif; opacity:0; pointer-events:none; transition:opacity 180ms ease; }
-  .artifact-home__status--visible { opacity:1; }
-  @media (max-width:61.99rem) { .artifact-home__grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .artifact-home__banner { grid-template-columns:1fr 1fr; } }
-  @media (max-width:46.87rem) { .artifact-home__filters { justify-content:flex-start; gap:1.6rem; overflow-x:auto; } .artifact-home__filter { min-height:2.75rem; } .artifact-home__hero { min-height:30rem; padding-block-start:3.5rem; } .artifact-home__hero h1 { font-size:2.7rem; } .artifact-home__proof { margin-block-start:5rem; } .artifact-home__catalog,.artifact-home__banner { width:100%; } .artifact-card { padding:1.2rem .6rem 1rem; } .artifact-card__image { width:min(100%,7rem); } .artifact-card__body h2 { font-size:.92rem; } .artifact-card__form button { min-height:2.75rem; font-size:.58rem; } .artifact-home__banner { grid-template-columns:1fr; margin-block-end:0; } .artifact-home__banner-media { aspect-ratio:1.35; } .artifact-home__banner-copy { min-height:20rem; } .artifact-home__path-grid { grid-template-columns:1fr; } .artifact-home__path-grid article { min-height:12rem; } }
-  @media (prefers-reduced-motion:reduce) { .artifact-card__image img,.artifact-home__banner-media img,.artifact-home__status { transition:none; } }
+.artifact-home { --artifact-green:#22392b; --artifact-green-dark:#1b2f22; --artifact-cream:#f4efe3; --artifact-gold:#ac9159; --artifact-ink:#242320; --artifact-muted:#5c574d; --artifact-line:rgb(34 57 43 / 18%); display:block; color:var(--artifact-ink); background:var(--artifact-cream); }
+.artifact-home__filters { display:flex; min-height:3.75rem; align-items:center; justify-content:center; gap:2.75rem; padding-inline:1.5rem; color:rgb(244 239 227 / 64%); background:var(--artifact-green-dark); font:500 .75rem/1 'Jost',sans-serif; letter-spacing:.13em; text-transform:uppercase; }
+.artifact-home__filter { padding-block:.75rem .55rem; border-block-end:.125rem solid transparent; transition:color 160ms ease,border-color 160ms ease; }
+.artifact-home__filter:hover,.artifact-home__filter:focus-visible,.artifact-home__filter--active { color:var(--artifact-cream); border-color:var(--artifact-gold); }
+.artifact-home__hero { width:min(100% - 3rem,48rem); min-height:34rem; margin-inline:auto; padding-block:4.75rem 2.5rem; text-align:center; }
+.artifact-home__eyebrow { margin:0 0 1.35rem; color:var(--artifact-gold); font:500 .75rem/1.2 'Jost',sans-serif; letter-spacing:.2em; text-transform:uppercase; }
+.artifact-home__hero h1 { max-width:14ch; margin:0 auto; font:700 clamp(2.75rem,5vw,4.65rem)/1.06 'Playfair Display',serif; letter-spacing:-.035em; text-wrap:balance; }
+.artifact-home__intro { margin:1.35rem auto 1.25rem; color:var(--artifact-muted); font:italic 1.18rem/1.5 'EB Garamond',serif; }
+.artifact-home__learn { display:inline-block; padding-block-end:.16rem; border-block-end:.0625rem solid var(--artifact-gold); color:var(--artifact-green); font:.84rem/1.4 'Jost',sans-serif; }
+.artifact-home__proof { margin-block-start:7.25rem; font:.9rem/1.5 'Jost',sans-serif; }
+.artifact-home__stars { display:block; margin-block:.95rem .25rem; color:var(--artifact-gold); font-size:1.25rem; letter-spacing:.12em; }
+.artifact-home__proof small { color:var(--artifact-muted); font-size:.75rem; }
+.artifact-home__catalog { width:min(100% - 3rem,73rem); margin-inline:auto; padding-block-end:4.5rem; }
+.artifact-home__grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border-block-start:.0625rem solid var(--artifact-line); border-inline-start:.0625rem solid var(--artifact-line); }
+.artifact-card { min-width:0; padding:1.7rem 1.15rem 1.35rem; border-inline-end:.0625rem solid var(--artifact-line); border-block-end:.0625rem solid var(--artifact-line); text-align:center; }
+.artifact-card__image { display:grid; width:min(100%,9rem); aspect-ratio:1; margin-inline:auto; place-items:center; overflow:hidden; }
+.artifact-card__image img,.artifact-card__image svg { width:auto; height:82%; object-fit:contain; transition:transform 220ms ease; }
+.artifact-card:hover .artifact-card__image img,.artifact-card:hover .artifact-card__image svg { transform:scale(1.035); }
+.artifact-card__body h2 { min-height:2.4em; margin:.65rem 0 0; font:500 1rem/1.2 'EB Garamond',serif; }
+.artifact-card__body p { min-height:1.5em; margin:.35rem 0 .75rem; color:var(--artifact-muted); font:400 .66rem/1.4 'Jost',sans-serif; letter-spacing:.09em; text-transform:uppercase; }
+.artifact-card__form button,.artifact-card__view { display:flex; width:100%; min-height:2.75rem; align-items:center; justify-content:center; padding:.7rem .45rem; border:.0625rem solid var(--artifact-green); color:var(--artifact-green); background:transparent; font:500 .66rem/1 'Jost',sans-serif; letter-spacing:.09em; text-transform:uppercase; cursor:pointer; transition:color 160ms ease,background 160ms ease; }
+.artifact-card__form button:hover,.artifact-card__form button:focus-visible,.artifact-card__view:hover,.artifact-card__view:focus-visible { color:var(--artifact-cream); background:var(--artifact-green); }
+.artifact-home__banner { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(20rem,.65fr); width:min(100% - 3rem,73rem); min-height:31rem; margin:0 auto 4.5rem; overflow:hidden; background:var(--artifact-green); }
+.artifact-home__banner-media { min-width:0; overflow:hidden; perspective:62.5rem; }
+.artifact-home__banner-media img { width:100%; height:100%; object-fit:cover; transform:scale(1.04); transition:transform 220ms ease-out; }
+.artifact-home__banner-copy { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding:clamp(2rem,5vw,4.25rem); color:var(--artifact-cream); }
+.artifact-home__banner-copy h2 { margin:0; color:inherit; font:500 clamp(2.4rem,4vw,4rem)/1 'Playfair Display',serif; letter-spacing:-.03em; }
+.artifact-home__banner-copy p:not(.artifact-home__eyebrow) { margin:1.25rem 0 2rem; color:rgb(244 239 227 / 78%); font:1rem/1.6 'EB Garamond',serif; }
+.artifact-home__banner-actions { display:flex; flex-wrap:wrap; gap:1.25rem 1.75rem; }
+.artifact-home__banner-copy a { padding-block-end:.25rem; border-block-end:.0625rem solid var(--artifact-gold); font:500 .72rem/1.3 'Jost',sans-serif; letter-spacing:.12em; text-transform:uppercase; }
+.artifact-home__paths { padding:4rem max(1.5rem,calc((100% - 73rem)/2)); color:var(--artifact-cream); background:var(--artifact-green-dark); }
+.artifact-home__path-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-block-start:.0625rem solid rgb(244 239 227 / 22%); border-inline-start:.0625rem solid rgb(244 239 227 / 22%); }
+.artifact-home__path-grid article { min-height:14rem; padding:1.75rem; border-inline-end:.0625rem solid rgb(244 239 227 / 22%); border-block-end:.0625rem solid rgb(244 239 227 / 22%); }
+.artifact-home__path-grid span { color:var(--artifact-gold); font:500 .67rem/1 'Jost',sans-serif; letter-spacing:.16em; }
+.artifact-home__path-grid h3 { margin:3.5rem 0 .55rem; color:inherit; font:500 1.55rem/1.1 'Playfair Display',serif; }
+.artifact-home__path-grid p { margin:0; color:rgb(244 239 227 / 76%); font:.9rem/1.55 'EB Garamond',serif; }
+.artifact-home__status { position:fixed; z-index:5; inset:auto 1rem 1rem auto; max-width:22rem; margin:0; padding:.75rem 1rem; color:var(--artifact-cream); background:var(--artifact-green); font:.8rem/1.4 'Jost',sans-serif; opacity:0; pointer-events:none; transition:opacity 180ms ease; }
+.artifact-home__status--visible { opacity:1; }
+@media (max-width:61.99rem) { .artifact-home__grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .artifact-home__banner { grid-template-columns:1fr 1fr; } }
+@media (max-width:46.87rem) { .artifact-home__filters { justify-content:flex-start; gap:1.6rem; overflow-x:auto; } .artifact-home__filter { min-height:2.75rem; } .artifact-home__hero { min-height:30rem; padding-block-start:3.5rem; } .artifact-home__hero h1 { font-size:2.7rem; } .artifact-home__proof { margin-block-start:5rem; } .artifact-home__catalog,.artifact-home__banner { width:100%; } .artifact-card { padding:1.2rem .6rem 1rem; } .artifact-card__image { width:min(100%,7rem); } .artifact-card__body h2 { font-size:.92rem; } .artifact-card__form button { min-height:2.75rem; font-size:.58rem; } .artifact-home__banner { grid-template-columns:1fr; margin-block-end:0; } .artifact-home__banner-media { aspect-ratio:1.35; } .artifact-home__banner-copy { min-height:20rem; } .artifact-home__path-grid { grid-template-columns:1fr; } .artifact-home__path-grid article { min-height:12rem; } }
+@media (prefers-reduced-motion:reduce) { .artifact-card__image img,.artifact-home__banner-media img,.artifact-home__status { transition:none; } }
 {% endstylesheet %}
 
 {% javascript %}
-  if (!customElements.get('artifact-storefront')) {
-    customElements.define('artifact-storefront', class extends HTMLElement {
-      connectedCallback() {
-        this.status = this.querySelector('[data-artifact-status]'); this.hasFirst = false; this.forms = [...this.querySelectorAll('[data-artifact-add]')];
-        this.forms.forEach((form) => form.addEventListener('submit', (event) => this.add(event, form))); this.readCart();
-        const banner = this.querySelector('[data-artifact-banner]'); const image = banner?.querySelector('img');
-        if (banner && image && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          banner.addEventListener('pointermove', (event) => { const rect=banner.getBoundingClientRect(); const x=((event.clientX-rect.left)/rect.width-.5)*-1.6; const y=((event.clientY-rect.top)/rect.height-.5)*-1.1; image.style.transform=`scale(1.06) translate(${x}%, ${y}%)`; });
-          banner.addEventListener('pointerleave', () => { image.style.transform='scale(1.04)'; });
-        }
+if (!customElements.get('artifact-storefront')) {
+  customElements.define('artifact-storefront', class extends HTMLElement {
+    connectedCallback() {
+      this.status = this.querySelector('[data-artifact-status]');
+      this.hasFirst = false;
+      this.forms = [...this.querySelectorAll('[data-artifact-add]')];
+      this.forms.forEach((form) => form.addEventListener('submit', (event) => this.add(event, form)));
+      this.readCart();
+      const banner = this.querySelector('[data-artifact-banner]');
+      const image = banner?.querySelector('img');
+      if (banner && image && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        banner.addEventListener('pointermove', (event) => {
+          const rect = banner.getBoundingClientRect();
+          const x = ((event.clientX - rect.left) / rect.width - .5) * -1.6;
+          const y = ((event.clientY - rect.top) / rect.height - .5) * -1.1;
+          image.style.transform = `scale(1.06) translate(${x}%, ${y}%)`;
+        });
+        banner.addEventListener('pointerleave', () => { image.style.transform = 'scale(1.04)'; });
       }
-      async readCart() { try { const cart=await (await fetch('/cart.js',{headers:{Accept:'application/json'}})).json(); this.hasFirst=cart.items.some((item)=>item.handle!=='extra-5ml-vial-add-on'); if(this.hasFirst&&this.dataset.addOnAvailable==='true'){ const price=new Intl.NumberFormat(document.documentElement.lang||'en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(Number(this.dataset.addOnPrice)/100); this.querySelectorAll('[data-artifact-price]').forEach((node)=>{node.textContent=price;}); } } catch(error) {} }
-      async add(event,form) { event.preventDefault(); const button=form.querySelector('button'); const regularId=Number(form.elements.id.value); const useAddOn=this.hasFirst&&this.dataset.addOnAvailable==='true'&&Number(this.dataset.addOnId); const item={id:useAddOn?Number(this.dataset.addOnId):regularId,quantity:1}; if(useAddOn)item.properties={'Selected scent':form.dataset.title,'_Base Note source':'Homepage grid'}; button.disabled=true; try { const response=await fetch('/cart/add.js',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({items:[item]})}); if(!response.ok)throw new Error('add failed'); this.hasFirst=true; await this.readCart(); this.status.textContent=`${form.dataset.title} is in your cart.`; this.status.classList.add('artifact-home__status--visible'); setTimeout(()=>this.status.classList.remove('artifact-home__status--visible'),2600); document.dispatchEvent(new CustomEvent('cart:refresh',{bubbles:true})); } catch(error){form.submit();} finally{button.disabled=false;} }
-    });
-  }
+    }
+    async readCart() {
+      try {
+        const cart = await (await fetch('/cart.js', { headers: { Accept: 'application/json' } })).json();
+        this.hasFirst = cart.items.some((item) => item.handle !== 'extra-5ml-vial-add-on');
+        if (this.hasFirst && this.dataset.addOnAvailable === 'true') {
+          const price = new Intl.NumberFormat(document.documentElement.lang || 'en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(Number(this.dataset.addOnPrice) / 100);
+          this.querySelectorAll('[data-artifact-price]').forEach((node) => { node.textContent = price; });
+        }
+      } catch (error) {}
+    }
+    async add(event, form) {
+      event.preventDefault();
+      const button = form.querySelector('button');
+      const regularId = Number(form.elements.id.value);
+      const useAddOn = this.hasFirst && this.dataset.addOnAvailable === 'true' && Number(this.dataset.addOnId);
+      const item = { id: useAddOn ? Number(this.dataset.addOnId) : regularId, quantity: 1 };
+      if (useAddOn) item.properties = { 'Selected scent': form.dataset.title, '_Base Note source': 'Homepage grid' };
+      button.disabled = true;
+      try {
+        const response = await fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ items: [item] }) });
+        if (!response.ok) throw new Error('add failed');
+        this.hasFirst = true;
+        await this.readCart();
+        this.status.textContent = `${form.dataset.title} is in your cart.`;
+        this.status.classList.add('artifact-home__status--visible');
+        setTimeout(() => this.status.classList.remove('artifact-home__status--visible'), 2600);
+        document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+      } catch (error) { form.submit(); }
+      finally { button.disabled = false; }
+    }
+  });
+}
 {% endjavascript %}
 
 {% schema %}
