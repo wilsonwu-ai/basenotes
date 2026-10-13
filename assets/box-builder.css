@@ -221,3 +221,9 @@ box-builder { display: block; }
 @media (prefers-reduced-motion: reduce) {
   .box-builder *, .bb-sheet__panel, .bb-sheet__scrim { transition: none !important; animation: none !important; }
 }
+
+/* Third-party floating "Explore this product" assistant (app embed, host #ads-agent-host, shadow DOM).
+   Not ours, but it sits over the bar, the sheet and the rail CTA. Hidden on this page at every width. */
+body:has(box-builder) #ads-agent-host { display: none !important; }
+/* The theme's floating gold back-to-top button collides with the rail corner and the bar. */
+body:has(box-builder) .footer__back-to-top { display: none !important; }
