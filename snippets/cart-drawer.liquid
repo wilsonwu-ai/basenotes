@@ -70,9 +70,9 @@
                 {%- if item.variant.title != 'Default Title' -%}
                   <p class="cart-drawer-item__variant">{{ item.variant.title }}</p>
                 {%- endif -%}
-                {%- for prop in item.properties -%}{%- assign prop_lead = prop.first | slice: 0 -%}{%- if prop_lead != '_' and prop.last != blank -%}
+                {%- unless item.product.handle == 'extra-5ml-vial-add-on' -%}{%- for prop in item.properties -%}{%- assign prop_lead = prop.first | slice: 0 -%}{%- if prop_lead != '_' and prop.last != blank -%}
                   <p class="cart-drawer-item__variant">{{ prop.first | escape }}: {{ prop.last | escape }}</p>
-                {%- endif -%}{%- endfor -%}
+                {%- endif -%}{%- endfor -%}{%- endunless -%}
 
                 {% comment %} Subscription Badge {% endcomment %}
                 {%- if item.selling_plan_allocation -%}
