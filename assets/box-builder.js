@@ -263,6 +263,18 @@
       this.cards.forEach(function (c) { self.byHandle[c.handle] = c; });
       if ($(this, '[data-bb-truncated]')) console.warn('[box-builder] The collection has more than 250 products; showing the first 250.');
 
+      // Publish the bar's real height (it includes the safe-area padding) so the page can reserve it.
+      var bar = $(this, '[data-bb-bar]');
+      if (bar) {
+        var setBar = function () {
+          var h = bar.getBoundingClientRect().height;
+          if (h > 0) document.documentElement.style.setProperty('--bb-bar-real', Math.ceil(h) + 'px');
+        };
+        setBar();
+        if (window.ResizeObserver) new ResizeObserver(setBar).observe(bar);
+        window.addEventListener('resize', setBar);
+      }
+
       var heroImg = $(this, '[data-bb-hero-img]');
       if (heroImg) {
         var dropHero = function () { heroImg.remove(); self.els.panel.removeAttribute('data-hero'); };

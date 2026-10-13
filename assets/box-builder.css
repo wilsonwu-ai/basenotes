@@ -163,7 +163,7 @@ box-builder { display: block; }
 .bb-bar__dots span[data-filled] { background: var(--bb-gold-on-green); }
 .bb-bar__label { font: 500 .875rem/1.2 'Jost', sans-serif; white-space: nowrap; }
 .bb-bar__open { min-height: 48px; padding: 0 1.1rem; border: 0; background: var(--scent-cream); color: var(--scent-green); font: 600 .75rem/1 'Jost', sans-serif; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; cursor: pointer; }
-.bb-toast { position: fixed; left: 12px; right: 12px; bottom: calc(var(--bb-bar-h) + env(safe-area-inset-bottom)); z-index: 1001; margin: 0; padding: 10px 12px; background: var(--bb-paper); border: 1px solid var(--scent-line); border-left: 3px solid var(--scent-gold); box-shadow: 0 6px 18px rgba(34, 57, 43, .14); font-size: .8125rem; color: var(--scent-ink); }
+.bb-toast { position: fixed; left: 12px; right: 12px; bottom: calc(var(--bb-bar-real, var(--bb-bar-h)) + .5rem); z-index: 1001; margin: 0; padding: 10px 12px; background: var(--bb-paper); border: 1px solid var(--scent-line); border-left: 3px solid var(--scent-gold); box-shadow: 0 6px 18px rgba(34, 57, 43, .14); font-size: .8125rem; color: var(--scent-ink); }
 .bb-sheet__scrim { position: fixed; inset: 0; z-index: 1250; background: rgba(17, 28, 21, .55); animation: bb-fade .2s ease-out 1; }
 .bb-sheet__panel { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1251; box-sizing: border-box; max-height: 88vh; max-height: 88dvh; overflow-y: auto; overscroll-behavior: contain; padding: 0 16px calc(1.4rem + env(safe-area-inset-bottom)); background: var(--bb-paper); border-top: 2px solid var(--scent-gold); animation: bb-up .24s ease-out 1; color: var(--scent-ink); }
 .bb-sheet__grip { width: 40px; height: 4px; margin: 10px auto 4px; background: var(--scent-line); }
@@ -189,7 +189,9 @@ box-builder { display: block; }
   .bb-bar { display: flex; }
   .bb-toast:not([hidden]) { display: block; }
   .bb-sheet:not([hidden]) { display: block; }
-  .scent-route.box-builder { padding-bottom: calc(var(--bb-bar-h) + 2rem + env(safe-area-inset-bottom)); }
+  /* Reserve the bar's height at the end of the PAGE (footer included), not just this section.
+     --bb-bar-real is set by box-builder.js from the bar's measured height. */
+  body:has(box-builder) { padding-bottom: calc(var(--bb-bar-real, 5.25rem) + 1rem); }
   .bb-hero { padding-top: 2.5rem; }
   .bb-steps { margin-top: 2.5rem; }
 }
