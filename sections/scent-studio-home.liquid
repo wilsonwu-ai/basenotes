@@ -12,6 +12,14 @@
   assign collection_url = scent_collection.url | default: '/collections/fragrances'
   assign rotation_modal_id = 'rotationModal-' | append: section.id
   assign rotation_opener_id = 'openRotation-' | append: section.id
+  assign box_set = all_products['build-your-own-box-set']
+  assign box_set_url = blank
+  if box_set.available
+    assign box_set_url = box_set.url
+    unless box_set.template_suffix == 'box-builder'
+      assign box_set_url = box_set_url | append: '?view=box-builder'
+    endunless
+  endif
 -%}
 {{ 'scent-storefront.css' | asset_url | stylesheet_tag }}
 {{ 'fragrance-reference.css' | asset_url | stylesheet_tag }}
@@ -77,11 +85,20 @@
         <p>{% if first_plan %}{{ first_plan.price | money_without_trailing_zeros }} first shipment, then {{ renewal_price | money_without_trailing_zeros }}/month.{% endif %} Swap, pause, or cancel.</p>
         <span class="bn-way__link">See how Rotation works</span>
       </article>
+      {%- if box_set_url != blank -%}
+      <article class="bn-way" id="box-sets">
+        <span class="bn-way__num">03</span>
+        <h3>Box Sets</h3>
+        <p>Any three 5ml vials in one gift box, {{ box_set.price | money_without_trailing_zeros }}. For gifting and comparing side by side.</p>
+        <a href="{{ box_set_url }}">Build your box</a>
+      </article>
+      {%- else -%}
       <article class="bn-way" id="box-sets">
         <span class="bn-way__num">03 &mdash; Coming Soon</span>
         <h3>Box Sets</h3>
         <p>A few vials in one box. For gifting and comparing side by side.</p>
       </article>
+      {%- endif -%}
     </div>
   </section>
 
