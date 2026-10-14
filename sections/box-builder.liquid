@@ -66,7 +66,6 @@
 <box-builder
   class="scent-route box-builder"
   data-slots="{{ slot_count }}"
-  data-message-max="{{ message_max }}"
   data-rotation="{{ section.settings.show_rotation_prefill }}"
   data-box-ready="{{ box_ready }}"
   data-box-note="{{ box_note | escape }}"
@@ -78,7 +77,8 @@
 >
   <section class="bb-hero{% if show_gallery %} bb-hero--gallery{% endif %}" aria-labelledby="BoxTitle">
     <div class="bb-hero__copy">
-      <h1 id="BoxTitle"><span class="bb-eyebrow">Build your own fragrance box set</span>{{ slot_word | capitalize }} scents.<br>One <em>gift box.</em></h1>
+      <h1 id="BoxTitle"><span class="bb-eyebrow">Build your own fragrance box set</span>{{ slot_word | capitalize }} scents.<br>One <em>box set.</em></h1>
+<p class="bb-hero__sub">Choose any {{ slot_word }} 5ml vials from our designer and niche collection. Decanted from the original bottles and presented in a Base Note box set.</p>
       <p class="bb-hero__sub">Choose any {{ slot_word }} 5ml vials from our designer and niche collection. Decanted from the original bottles and presented in a Base Note gift box.</p>
       <p class="bb-hero__price"><span class="bb-price">{{ box_price_label }}</span> <span>for the box</span> <span class="bb-ships">Ships free in the US</span></p>
     </div>
@@ -115,8 +115,7 @@
 
   <section class="bb-steps" aria-label="How it works">
     <div><p>01 Pick {{ slot_word }}</p><p>Any {{ slot_word }} scents from the collection. Repeats welcome.</p></div>
-    <div><p>02 Add a note</p><p>Optional gift message, up to {{ message_max }} characters.</p></div>
-    <div><p>03 We box it</p><p>Presented in a Base Note gift box.</p></div>
+    <div><p>02 We box it</p><p>Presented in a Base Note box set.</p></div>
   </section>
 
   <div class="bb-layout">
@@ -208,19 +207,10 @@
 
           <p class="bb-blocked" data-bb-blocked aria-hidden="true" hidden></p>
 
-          <div class="bb-gift">
-            <label for="BoxMessage">Gift message (optional)</label>
-            <textarea id="BoxMessage" rows="3" maxlength="{{ message_max }}" aria-describedby="BoxMessageHelp BoxMessageCount" data-bb-message></textarea>
-            <div class="bb-gift__meta">
-              <p id="BoxMessageHelp">Up to {{ message_max }} characters. We include it with your box.</p>
-              <p id="BoxMessageCount" class="bb-gift__count" data-bb-message-count>0 / {{ message_max }}</p>
-            </div>
-          </div>
-
           <ul class="bb-includes">
-            <li>5ml glass spray atomizer, about 60 sprays</li>
-            <li>Decanted from the original bottles</li>
-            <li>Presented in a Base Note gift box</li>
+          <li>5ml glass spray atomizer, about 60 sprays</li>
+          <li>Decanted from the original bottles</li>
+          <li>Presented in a Base Note box set</li>
           </ul>
 
           </div>
@@ -249,7 +239,7 @@
     <h2 id="BoxFaqTitle">About the box set</h2>
     <details>
       <summary>What comes in the box?</summary>
-      <p>{{ slot_word | capitalize }} 5ml glass spray atomizers, about 60 sprays each, filled from the original bottles of the scents you pick. They arrive together in a Base Note gift box, with your gift message on a card if you add one.</p>
+      <p>{{ slot_word | capitalize }} 5ml glass spray atomizers, about 60 sprays each, filled from the original bottles of the scents you pick. They arrive together in a Base Note box set.</p>
     </details>
     <details>
       <summary>Can I pick the same scent more than once?</summary>
