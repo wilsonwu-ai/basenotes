@@ -17,22 +17,20 @@
 {%- endif -%}
 
 {%- comment -%}
-  Bug A fix (July 16 2026): build the filter tabs from the fragrance families that are ACTUALLY
-  present in the rendered products, instead of a hardcoded taxonomy (woody/floral/fresh/oriental/
-  leather/spicy/musk) that did not match the store's real `custom.fragrance_family` vocabulary and
-  emptied the grid on every filter. `.value | join` is metafield-type-robust: for a list metafield
-  it joins the array; for a single-line metafield it passes the string through; if unset it falls
-  back to product.type. Tab scope == grid scope (both `limit: 20`), so a tab can never be empty.
+  Family tabs used to be built from every Shopify taxonomy value on the product
+  (Aquatic, Citrus, Jasmine, Lavender…). That is why the modal filter bar did
+  not match /collections/fragrances (search + brand + scent family).
+
+  Jeff 2026-09-27: chips removed. We still collect family strings so the
+  Scent family <select> has options, and so each card can be filtered.
+  Taxonomy first, then custom.fragrance_family, then product.type.
+  No 20-product cap — the live catalog is 42.
 {%- endcomment -%}
 {%- assign fs_family_blob = '' -%}
-{%- for product in fs_products limit: 20 -%}
+{%- assign fs_brands = '' -%}
+{%- for product in fs_products -%}
   {%- if product.handle == 'extra-5ml-vial-add-on' -%}{%- continue -%}{%- endif -%}
-  {%- comment -%} Family source of truth = the Shopify taxonomy "Fragrance" attribute — the same
-       data the collection page facet (filter.v.t.shopify.fragrance) filters on. Live QA (Jul 18)
-       showed custom.fragrance_family resolves blank in this context, leaving only the ALL tab.
-       Taxonomy values are metaobjects; use .name (default to the raw value for plain strings).
-       If the taxonomy read yields nothing, fall back to the legacy chain (custom metafield ->
-       product.type) so the worst case is identical to prior behavior. {%- endcomment -%}
+  {%- assign fs_brands = fs_brands | append: product.vendor | append: '~~' -%}
   {%- assign p_fam_str = '' -%}
   {%- assign p_tax = product.metafields.shopify.fragrance.value -%}
   {%- if p_tax -%}
@@ -57,6 +55,7 @@
   {%- assign fs_family_blob = fs_family_blob | append: p_fam_str -%}
 {%- endfor -%}
 {%- assign fs_families = fs_family_blob | split: '~~' | uniq | sort_natural -%}
+{%- assign fs_brand_list = fs_brands | split: '~~' | uniq | sort_natural -%}
 
 {%- if mode == 'modal' -%}
 <div class="fs-overlay" id="fragranceSelectorOverlay" style="display:none;" aria-hidden="true">
@@ -64,131 +63,147 @@
   <div class="fs-panel" role="dialog" aria-label="Choose your fragrance">
 {%- endif -%}
 
-    <div class="fs-header">
-      <div>
-        <h3 class="fs-header__title">Choose Your Fragrance</h3>
-        <p class="fs-header__subtitle">Select from our exclusive collection of luxury scents</p>
-      </div>
-      {%- if mode == 'modal' -%}
-        <button class="fs-header__close" data-fs-close aria-label="Close">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-      {%- endif -%}
-    </div>
+<div class="fs-header">
+  <div>
+    <h3 class="fs-header__title">Choose Your Fragrance</h3>
+    <p class="fs-header__subtitle">Select from our exclusive collection of luxury scents</p>
+  </div>
+  {%- if mode == 'modal' -%}
+  <button class="fs-header__close" data-fs-close aria-label="Close">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
+  {%- endif -%}
+</div>
 
-    <div class="fs-filters-wrap">
-      <div class="fs-filters" role="tablist">
-        <button class="fs-filter is-active" data-fs-filter="all">All</button>
-        {%- for fam in fs_families -%}
-          {%- assign fam_clean = fam | strip -%}
-          {%- unless fam_clean == blank or fam_clean == 'Fragrance' -%}
-            <button class="fs-filter" data-fs-filter="{{ fam_clean | downcase }}">{{ fam_clean }}</button>
-          {%- endunless -%}
-        {%- endfor -%}
-      </div>
-    </div>
+{%- comment -%}
+  Jeff 2026-09-27: same control pattern as /collections/fragrances —
+  search field, Brand select, Scent family select. No tag chips.
+{%- endcomment -%}
+<div class="fs-toolbar">
+  <input type="search" id="fsSearch" class="fs-search" placeholder="Search scents…" autocomplete="off">
+  <select id="fsBrand" class="fs-select" aria-label="Brand">
+    <option value="">Brand</option>
+    {%- for brand in fs_brand_list -%}
+      {%- assign brand_clean = brand | strip -%}
+      {%- unless brand_clean == blank -%}
+        <option value="{{ brand_clean | downcase | escape }}">{{ brand_clean }}</option>
+      {%- endunless -%}
+    {%- endfor -%}
+  </select>
+  <select id="fsFamily" class="fs-select" aria-label="Scent family">
+    <option value="">Scent family</option>
+    {%- for fam in fs_families -%}
+      {%- assign fam_clean = fam | strip -%}
+      {%- unless fam_clean == blank or fam_clean == 'Fragrance' -%}
+        <option value="{{ fam_clean | downcase | escape }}">{{ fam_clean }}</option>
+      {%- endunless -%}
+    {%- endfor -%}
+  </select>
+</div>
 
-    <div class="fs-grid">
-      {%- for product in fs_products limit: 20 -%}
-        {%- if product.handle == 'extra-5ml-vial-add-on' -%}{%- continue -%}{%- endif -%}
-        {%- comment -%} Family derivation, taxonomy-first (matches the tab pre-pass above).
-             card_ff_display = human label ("Fresh, Citrus"); card_ff_key = "|fresh|citrus|" for delimiter-safe JS match;
-             card_ff_primary = first family for the queue event payload. {%- endcomment -%}
-        {%- assign card_ff_key = '|' -%}
-        {%- assign card_ff_display = '' -%}
-        {%- assign card_ff_primary = '' -%}
-        {%- assign card_tax = product.metafields.shopify.fragrance.value -%}
-        {%- if card_tax -%}
-          {%- for tv in card_tax -%}
-            {%- assign fvs = tv.label | default: tv.name | strip -%}
-            {%- unless fvs == blank -%}
-              {%- assign fvl = fvs | downcase -%}
-              {%- assign card_ff_key = card_ff_key | append: fvl | append: '|' -%}
-              {%- if card_ff_display == blank -%}
-                {%- assign card_ff_display = fvs -%}
-                {%- assign card_ff_primary = fvs -%}
-              {%- else -%}
-                {%- assign card_ff_display = card_ff_display | append: ', ' | append: fvs -%}
-              {%- endif -%}
-            {%- endunless -%}
-          {%- endfor -%}
-        {%- endif -%}
-        {%- if card_ff_display == blank -%}
-          {%- comment -%} legacy fallback: custom.fragrance_family -> product.type {%- endcomment -%}
-          {%- assign card_ff = product.metafields.custom.fragrance_family.value -%}
-          {%- if card_ff == blank -%}{%- assign card_ff = product.type -%}{%- endif -%}
-          {%- assign card_ff_arr = card_ff | join: '~~' | replace: ',', '~~' | split: '~~' -%}
-          {%- for fv in card_ff_arr -%}
-            {%- assign fvs = fv | strip -%}
-            {%- unless fvs == blank -%}
-              {%- assign fvl = fvs | downcase -%}
-              {%- assign card_ff_key = card_ff_key | append: fvl | append: '|' -%}
-              {%- if card_ff_display == blank -%}
-                {%- assign card_ff_display = fvs -%}
-                {%- assign card_ff_primary = fvs -%}
-              {%- else -%}
-                {%- assign card_ff_display = card_ff_display | append: ', ' | append: fvs -%}
-              {%- endif -%}
-            {%- endunless -%}
-          {%- endfor -%}
-        {%- endif -%}
-        {%- assign top_notes = product.metafields.custom.top_notes -%}
-        {%- assign heart_notes = product.metafields.custom.heart_notes -%}
-        {%- assign base_notes = product.metafields.custom.base_notes -%}
-        <div class="fs-card"
-             data-fs-id="{{ product.id }}"
-             data-fs-handle="{{ product.handle }}"
-             data-fs-family="{{ card_ff_key }}">
-          <div class="fs-card__image">
-            {%- if product.featured_image -%}
-              <img
-                src="{{ product.featured_image | image_url: width: 400 }}"
-                alt="{{ product.title }}"
-                loading="lazy"
-                width="200"
-                height="200"
-              >
-            {%- else -%}
-              <div class="fs-card__placeholder">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-                  <path d="M12 6v6l4 2"/>
-                </svg>
-              </div>
-            {%- endif -%}
-          </div>
-          <div class="fs-card__content">
-            <h4 class="fs-card__name">{{ product.title }}</h4>
-            <span class="fs-card__family">{{ card_ff_display }}</span>
-            {%- if top_notes != blank -%}
-              <div class="fs-card__notes">
-                <span class="fs-card__notes-label">Top:</span> {{ top_notes }}
-              </div>
-            {%- endif -%}
-            <div class="fs-card__price">
-              <span class="fs-card__retail">{{ product.price | money }} retail value</span>
-            </div>
-            <button class="btn btn--primary btn--small fs-card__select"
-                    data-fs-select
-                    data-product-id="{{ product.id }}"
-                    data-product-handle="{{ product.handle }}"
-                    data-product-title="{{ product.title | escape }}"
-                    data-product-image="{{ product.featured_image | image_url: width: 400 }}"
-                    data-product-family="{{ card_ff_primary }}">
-              Add to Queue
-            </button>
-          </div>
-        </div>
+<div class="fs-grid">
+  {%- for product in fs_products -%}
+    {%- if product.handle == 'extra-5ml-vial-add-on' -%}{%- continue -%}{%- endif -%}
+    {%- assign card_ff_key = '|' -%}
+    {%- assign card_ff_display = '' -%}
+    {%- assign card_ff_primary = '' -%}
+    {%- assign card_tax = product.metafields.shopify.fragrance.value -%}
+    {%- if card_tax -%}
+      {%- for tv in card_tax -%}
+        {%- assign fvs = tv.label | default: tv.name | strip -%}
+        {%- unless fvs == blank -%}
+          {%- assign fvl = fvs | downcase -%}
+          {%- assign card_ff_key = card_ff_key | append: fvl | append: '|' -%}
+          {%- if card_ff_display == blank -%}
+            {%- assign card_ff_display = fvs -%}
+            {%- assign card_ff_primary = fvs -%}
+          {%- else -%}
+            {%- assign card_ff_display = card_ff_display | append: ', ' | append: fvs -%}
+          {%- endif -%}
+        {%- endunless -%}
       {%- endfor -%}
-    </div>
-
-    {%- if fs_products.size == 0 -%}
-      <div class="fs-empty">
-        <p>No fragrances available. Please check back soon.</p>
-      </div>
     {%- endif -%}
+    {%- if card_ff_display == blank -%}
+      {%- assign card_ff = product.metafields.custom.fragrance_family.value -%}
+      {%- if card_ff == blank -%}{%- assign card_ff = product.type -%}{%- endif -%}
+      {%- assign card_ff_arr = card_ff | join: '~~' | replace: ',', '~~' | split: '~~' -%}
+      {%- for fv in card_ff_arr -%}
+        {%- assign fvs = fv | strip -%}
+        {%- unless fvs == blank -%}
+          {%- assign fvl = fvs | downcase -%}
+          {%- assign card_ff_key = card_ff_key | append: fvl | append: '|' -%}
+          {%- if card_ff_display == blank -%}
+            {%- assign card_ff_display = fvs -%}
+            {%- assign card_ff_primary = fvs -%}
+          {%- else -%}
+            {%- assign card_ff_display = card_ff_display | append: ', ' | append: fvs -%}
+          {%- endif -%}
+        {%- endunless -%}
+      {%- endfor -%}
+    {%- endif -%}
+    {%- assign top_notes = product.metafields.custom.top_notes -%}
+
+    <div
+      class="fs-card"
+      data-fs-id="{{ product.id }}"
+      data-fs-handle="{{ product.handle }}"
+      data-fs-family="{{ card_ff_key }}"
+      data-fs-brand="{{ product.vendor | downcase | escape }}"
+      data-fs-title="{{ product.title | downcase | escape }}"
+    >
+      <div class="fs-card__image">
+        {%- if product.featured_image -%}
+          <img
+            src="{{ product.featured_image | image_url: width: 400 }}"
+            alt="{{ product.title }}"
+            loading="lazy"
+            width="200"
+            height="200"
+          >
+        {%- else -%}
+          <div class="fs-card__placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+        {%- endif -%}
+      </div>
+      <div class="fs-card__content">
+        <h4 class="fs-card__name">{{ product.title }}</h4>
+        <span class="fs-card__family">{{ card_ff_display }}</span>
+        {%- if top_notes != blank -%}
+          <div class="fs-card__notes">
+            <span class="fs-card__notes-label">Top:</span> {{ top_notes }}
+          </div>
+        {%- endif -%}
+        {%- comment -%} Jeff 2026-09-27: 5ml price is $20, not "retail value". {%- endcomment -%}
+        <div class="fs-card__price">
+          <span class="fs-card__retail">{{ product.price | money }}</span>
+        </div>
+        <button
+          class="btn btn--primary btn--small fs-card__select"
+          data-fs-select
+          data-product-id="{{ product.id }}"
+          data-product-handle="{{ product.handle }}"
+          data-product-title="{{ product.title | escape }}"
+          data-product-image="{{ product.featured_image | image_url: width: 400 }}"
+          data-product-family="{{ card_ff_primary }}"
+        >
+          Add to Queue
+        </button>
+      </div>
+    </div>
+  {%- endfor -%}
+</div>
+
+{%- if fs_products.size == 0 -%}
+  <div class="fs-empty">
+    <p>No fragrances available. Please check back soon.</p>
+  </div>
+{%- endif -%}
 
 {%- if mode == 'modal' -%}
   </div>
@@ -196,233 +211,151 @@
 {%- endif -%}
 
 <style>
-  /* Overlay */
-  .fs-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 10001;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .fs-overlay__bg {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(4px);
-  }
+.fs-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fs-overlay__bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+}
+.fs-panel {
+  position: relative;
+  z-index: 1;
+  background: var(--color-background, #FAF8F5);
+  border-radius: 12px;
+  max-width: 900px;
+  width: 94%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2rem;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+}
+.fs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+.fs-header__title {
+  font-family: var(--font-heading, 'Cormorant Garamond', serif);
+  font-size: 1.75rem;
+  color: var(--color-primary, #2D4641);
+  margin: 0;
+}
+.fs-header__subtitle {
+  color: var(--color-text-muted, #666);
+  font-size: 0.9rem;
+  margin: 0.25rem 0 0;
+}
+.fs-header__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: var(--color-primary, #2D4641);
+  border-radius: 50%;
+}
+.fs-header__close:hover { background: rgba(0,0,0,0.05); }
 
-  /* Panel */
-  .fs-panel {
-    position: relative;
-    z-index: 1;
-    background: var(--color-background, #FAF8F5);
-    border-radius: 12px;
-    max-width: 900px;
-    width: 94%;
-    max-height: 90vh;
-    overflow-y: auto;
-    padding: 2rem;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-  }
+/* Jeff 2026-09-27: collection-page toolbar */
+.fs-toolbar {
+  display: grid;
+  grid-template-columns: 1fr 160px 160px;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+.fs-search,
+.fs-select {
+  height: 44px;
+  padding: 0 0.75rem;
+  border: 1px solid #E8E6E3;
+  background: #fff;
+  color: #2D4641;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
 
-  /* Header */
-  .fs-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1.5rem;
-  }
-  .fs-header__title {
-    font-family: var(--font-heading, 'Cormorant Garamond', serif);
-    font-size: 1.75rem;
-    color: var(--color-primary, #2D4641);
-    margin: 0;
-  }
-  .fs-header__subtitle {
-    color: var(--color-text-muted, #666);
-    font-size: 0.9rem;
-    margin: 0.25rem 0 0;
-  }
-  .fs-header__close {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.5rem;
-    color: var(--color-primary, #2D4641);
-    border-radius: 50%;
-    transition: background 0.2s;
-  }
-  .fs-header__close:hover {
-    background: rgba(0,0,0,0.05);
-  }
+.fs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+.fs-card {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.fs-card:hover {
+  border-color: var(--color-secondary, #C9A962);
+  box-shadow: 0 4px 20px rgba(201,169,98,0.15);
+}
+/* Jeff 2026-09-27: contain + padding so oversized pack shots sit
+   in the same frame as tight crops. Cover was blowing some bottles up. */
+.fs-card__image {
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #F5F3F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.fs-card__image img {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+.fs-card__placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center; color: #ccc;
+}
+.fs-card__content { padding: 1rem; }
+.fs-card__name {
+  font-family: var(--font-heading, 'Cormorant Garamond', serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary, #2D4641);
+  margin: 0 0 0.25rem;
+}
+.fs-card__family {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-secondary, #C9A962);
+  margin-bottom: 0.5rem;
+}
+.fs-card__notes {
+  font-size: 0.8rem;
+  color: var(--color-text-muted, #666);
+  margin-bottom: 0.5rem;
+}
+.fs-card__price { margin-bottom: 0.75rem; }
+.fs-card__retail { font-size: 0.8rem; color: var(--color-text-muted, #666); }
+.fs-card__select { width: 100%; font-size: 0.75rem; padding: 0.6rem 1rem; }
+.fs-empty { text-align: center; padding: 3rem; color: #666; }
 
-  /* Filters */
-  .fs-filters-wrap {
-    position: relative;
-    margin-bottom: 1.5rem;
-  }
-  .fs-filters-wrap::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0.25rem;
-    width: 28px;
-    pointer-events: none;
-    background: linear-gradient(to left, #fff, rgba(255,255,255,0));
-  }
-  .fs-filters {
-    display: flex;
-    gap: 0.5rem;
-    overflow-x: auto;
-    padding: 0 0 0.25rem 0;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-  }
-  .fs-filters::-webkit-scrollbar { height: 4px; }
-  .fs-filters::-webkit-scrollbar-thumb { background: #D5CFC3; border-radius: 2px; }
-  .fs-filter {
-    background: transparent;
-    border: 1px solid var(--color-border, #E8E6E3);
-    padding: 0.4rem 1rem;
-    border-radius: 999px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s;
-    color: var(--color-primary, #2D4641);
-  }
-  .fs-filter:hover {
-    border-color: var(--color-secondary, #C9A962);
-    color: var(--color-secondary, #C9A962);
-  }
-  .fs-filter.is-active {
-    background: var(--color-primary, #2D4641);
-    color: #fff;
-    border-color: var(--color-primary, #2D4641);
-  }
-
-  /* Grid */
-  .fs-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-  }
-
-  /* Card */
-  .fs-card {
-    background: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 2px solid transparent;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .fs-card:hover {
-    border-color: var(--color-secondary, #C9A962);
-    box-shadow: 0 4px 20px rgba(201,169,98,0.15);
-  }
-  .fs-card__image {
-    aspect-ratio: 1;
-    overflow: hidden;
-    background: #f5f5f5;
-  }
-  .fs-card__image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s;
-  }
-  .fs-card:hover .fs-card__image img {
-    transform: scale(1.05);
-  }
-  .fs-card__placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ccc;
-  }
-  .fs-card__content {
-    padding: 1rem;
-  }
-  .fs-card__name {
-    font-family: var(--font-heading, 'Cormorant Garamond', serif);
-    font-size: 1.1rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-primary, #2D4641);
-    margin: 0 0 0.25rem;
-  }
-  .fs-card__family {
-    display: inline-block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-secondary, #C9A962);
-    margin-bottom: 0.5rem;
-  }
-  .fs-card__notes {
-    font-size: 0.8rem;
-    color: var(--color-text-muted, #666);
-    margin-bottom: 0.5rem;
-    line-height: 1.4;
-  }
-  .fs-card__notes-label {
-    font-weight: 600;
-    color: var(--color-primary, #2D4641);
-  }
-  .fs-card__price {
-    margin-bottom: 0.75rem;
-  }
-  .fs-card__retail {
-    font-size: 0.8rem;
-    color: var(--color-text-muted, #666);
-  }
-  .fs-card__select {
-    width: 100%;
-    font-size: 0.75rem;
-    padding: 0.6rem 1rem;
-  }
-
-  .fs-empty {
-    text-align: center;
-    padding: 3rem;
-    color: var(--color-text-muted, #666);
-  }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    .fs-panel {
-      width: 100%;
-      height: 100%;
-      max-height: 100vh;
-      border-radius: 0;
-      padding: 1.25rem;
-    }
-    .fs-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.75rem;
-    }
-    .fs-header__title {
-      font-size: 1.35rem;
-    }
-    .fs-card__content {
-      padding: 0.75rem;
-    }
-    /* Brand framework §7.1: minimum 44px touch targets on mobile */
-    .fs-filter {
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-    }
-  }
+@media (max-width: 768px) {
+  .fs-panel { width: 100%; height: 100%; max-height: 100vh; border-radius: 0; padding: 1.25rem; }
+  .fs-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .fs-toolbar { grid-template-columns: 1fr; }
+  .fs-header__title { font-size: 1.35rem; }
+}
 </style>
 
 <script>
@@ -444,57 +377,56 @@
     document.body.style.overflow = '';
   }
 
-  // Open event
   document.addEventListener('fragrance-selector:open', openSelector);
 
-  // Close buttons
   overlay.querySelectorAll('[data-fs-close]').forEach(function(el) {
     el.addEventListener('click', closeSelector);
   });
 
-  // Escape key
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && overlay.style.display !== 'none') {
-      closeSelector();
-    }
+    if (e.key === 'Escape' && overlay.style.display !== 'none') closeSelector();
   });
 
-  // Filters
-  var filterBtns = overlay.querySelectorAll('[data-fs-filter]');
+  // Jeff 2026-09-27: collection-style filters (search / brand / family).
+  // Family still uses the pipe-delimited card key so "fresh" ≠ "freshwater".
   var cards = overlay.querySelectorAll('.fs-card');
+  var searchEl = overlay.querySelector('#fsSearch');
+  var brandEl = overlay.querySelector('#fsBrand');
+  var familyEl = overlay.querySelector('#fsFamily');
 
-  filterBtns.forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var family = btn.dataset.fsFilter;
+  function applyFsFilters() {
+    var q = (searchEl && searchEl.value || '').toLowerCase();
+    var brand = (brandEl && brandEl.value || '').toLowerCase();
+    var family = (familyEl && familyEl.value || '').toLowerCase();
 
-      filterBtns.forEach(function(b) { b.classList.remove('is-active'); });
-      btn.classList.add('is-active');
-
-      cards.forEach(function(card) {
-        if (family === 'all') {
-          card.style.display = '';
-        } else {
-          // data-fs-family is a pipe-delimited key like "|fresh|citrus|"; match the whole token
-          // (not a substring) so "fresh" never matches "freshwater" and multi-family cards work.
-          var cardFamily = (card.dataset.fsFamily || '').toLowerCase();
-          card.style.display = cardFamily.indexOf('|' + family + '|') !== -1 ? '' : 'none';
-        }
-      });
+    cards.forEach(function(card) {
+      var title = card.getAttribute('data-fs-title') || '';
+      var handle = card.getAttribute('data-fs-handle') || '';
+      var cardBrand = card.getAttribute('data-fs-brand') || '';
+      var cardFamily = (card.getAttribute('data-fs-family') || '').toLowerCase();
+      var show =
+        (!q || title.indexOf(q) !== -1 || handle.indexOf(q) !== -1 || cardBrand.indexOf(q) !== -1) &&
+        (!brand || cardBrand === brand) &&
+        (!family || cardFamily.indexOf('|' + family + '|') !== -1);
+      card.style.display = show ? '' : 'none';
     });
-  });
+  }
 
-  // Select fragrance
+  if (searchEl) searchEl.addEventListener('input', applyFsFilters);
+  if (brandEl) brandEl.addEventListener('change', applyFsFilters);
+  if (familyEl) familyEl.addEventListener('change', applyFsFilters);
+
   overlay.querySelectorAll('[data-fs-select]').forEach(function(btn) {
     btn.addEventListener('click', function() {
-      var detail = {
-        id: btn.dataset.productId,
-        handle: btn.dataset.productHandle,
-        title: btn.dataset.productTitle,
-        image: btn.dataset.productImage,
-        family: btn.dataset.productFamily
-      };
-
-      document.dispatchEvent(new CustomEvent('fragrance:selected', { detail: detail }));
+      document.dispatchEvent(new CustomEvent('fragrance:selected', {
+        detail: {
+          id: btn.dataset.productId,
+          handle: btn.dataset.productHandle,
+          title: btn.dataset.productTitle,
+          image: btn.dataset.productImage,
+          family: btn.dataset.productFamily
+        }
+      }));
       closeSelector();
     });
   });

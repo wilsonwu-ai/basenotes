@@ -56,16 +56,25 @@
   </title>
 
   {%- liquid
-    assign default_description = settings.default_meta_description | default: 'Try authentic luxury fragrance in a one-time 5 ml vial, join the Monthly Rotation subscription, or buy a full bottle for less than typical retail.'
+    assign default_description = settings.default_meta_description | default: 'Explore authentic fragrance in a one-time 5ml vial, join the optional Monthly Rotation subscription, or enquire about a full bottle.'
     assign meta_description = page_description | default: shop.description | default: default_description
     if template.name == 'index'
-      assign meta_description = 'Discover premium fragrances from Creed, Tom Ford, Valentino and Xerjoff. Try 5ml samples for $20 or shop full bottles and gift sets online.'
+      assign meta_description = 'Try authentic designer and niche fragrance in a 5ml vial. Start at $20, explore Monthly Rotation, or find your full bottle.'
+    elsif template.name == 'collection' and collection.handle == 'fragrances' or template.name == 'collection' and collection.handle == 'all'
+      assign meta_description = 'Explore authentic designer and niche fragrance in 5ml travel atomizers. Choose your first scent for $20 and additional vials for $18.'
+    elsif template.name == 'page' and page.handle == 'faq'
+      assign meta_description = page_description | default: 'Answers about one-time fragrance vials, the optional Monthly Rotation subscription, full-bottle availability, shipping, authenticity and your Base Note account.'
     endif
-    assign brand_description = 'Base Note offers authentic luxury fragrance as one-time 5 ml vials, a flexible Monthly Rotation subscription, and full bottles priced below typical retail.'
+    assign brand_description = 'Base Note offers authentic designer and niche fragrance in one-time 5ml vials, an optional Monthly Rotation subscription, and full bottles subject to availability.'
     assign is_internal_addon_page = false
     if template.name == 'product' and product.handle == 'extra-5ml-vial-add-on'
       assign is_internal_addon_page = true
-      assign meta_description = 'Subscriber-only Base Note add-on. Standalone purchase is unavailable while its subscription configuration is being updated.'
+      assign meta_description = 'Internal additional-vial item. Choose your fragrance from the Base Note collection; additional 5ml vials are $18 with a qualifying vial in your cart.'
+    endif
+    if template.name == 'article' and page_description != blank
+      assign meta_description = page_description | strip_html
+    else
+      assign meta_description = meta_description | strip_html | truncatewords: 22, '…'
     endif
   -%}
   {%- comment -%}
@@ -76,12 +85,13 @@
     strip_html leaves them alone, so plain `escape` re-encoded the ampersand and rendered a visible
     '&amp;#39;' in the snippet. escape_once skips anything already a valid entity and escapes the
     rest, which is exactly this case. (A replace-chain was tried first and did not match.)
-    22 words lands ~155 chars, inside Google's display limit.
+    Normalize once above so search and social descriptions agree. Keep explicit article copy
+    intact; a 22-word fallback is concise but does not guarantee a search display length.
   {%- endcomment -%}
   {%- if template.name == 'article' and page_description != blank -%}
     <meta name="description" content="{{ page_description | strip_html | escape_once }}">
   {%- else -%}
-    <meta name="description" content="{{ meta_description | strip_html | truncatewords: 22, '…' | escape_once }}">
+    <meta name="description" content="{{ meta_description | escape_once }}">
   {%- endif -%}
   {%- comment -%}
     The giveaway landing page is reachable only by a direct link from a paid ad. Shopify's Unlisted
@@ -105,7 +115,7 @@
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   {%- endif -%}
 
-  {% render 'meta-tags' %}
+  {% render 'meta-tags', seo_title: seo_title, meta_description: meta_description %}
 
   {% comment %} Organization Schema — hardcoded brand description so it can't be overwritten by per-page meta_description. {% endcomment %}
   <script type="application/ld+json">
@@ -148,7 +158,7 @@
       "@type": "AboutPage",
       "url": "{{ shop.url }}{{ page.url }}",
       "name": "About Base Note",
-      "description": "The founder story behind Base Note, a flat-priced luxury fragrance subscription.",
+      "description": "The founder story behind Base Note, a designer and niche fragrance discovery shop.",
       "mainEntity": {
         "@type": "Organization",
         "name": {{ shop.name | json }},
@@ -185,7 +195,7 @@
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Home", "item": {{ shop.url | json }} },
-        { "@type": "ListItem", "position": 2, "name": "Fragrances", "item": "{{ shop.url }}/collections/all" },
+        { "@type": "ListItem", "position": 2, "name": "Fragrances", "item": "{{ shop.url }}/collections/fragrances" },
         { "@type": "ListItem", "position": 3, "name": {{ product.title | json }}, "item": "{{ shop.url }}{{ product.url }}" }
       ]
     }
@@ -210,11 +220,6 @@
 
   {% comment %} Preload critical assets {% endcomment %}
   <link rel="preload" href="{{ 'base.css' | asset_url }}" as="style">
-
-  {% comment %} Preload LCP image for homepage {% endcomment %}
-  {%- if template.name == 'index' -%}
-    <link rel="preload" as="image" href="{{ 'hero-atomizer.png' | asset_url }}" fetchpriority="high">
-  {%- endif -%}
 
   {%- if settings.favicon != blank -%}
     <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
@@ -283,6 +288,7 @@
   </script>
   <script src="{{ 'queue-scheduler.js' | asset_url }}" defer></script>
   <script src="{{ 'bn-appstle-swap.js' | asset_url }}" defer></script>
+  <script src="{{ 'basenote-commerce.js' | asset_url }}" defer></script>
 </head>
 
 <body class="template-{{ template.name }}{% if template.suffix %} template-{{ template.name }}-{{ template.suffix }}{% endif %}">
@@ -294,6 +300,7 @@
 
   <main id="MainContent" class="main-content" role="main" tabindex="-1">
     {{ content_for_layout }}
+    {% render 'cart-feedback' %}
   </main>
 
   {% sections 'footer-group' %}
@@ -316,7 +323,9 @@
   <script src="{{ 'theme.js' | asset_url }}" defer></script>
 
   {% comment %} Email Capture Popup for Guest Visitors {% endcomment %}
-  {% render 'email-popup' %}
+  {%- unless template.name == 'index' or template.name == 'product' or template.name == 'cart' or template.name == 'collection' or template.name == 'page' or template.name == 'blog' or template.name == 'article' -%}
+    {% render 'email-popup' %}
+  {%- endunless -%}
 
   {% comment %} Cookie Consent Banner (GDPR) {% endcomment %}
   {% render 'cookie-consent' %}

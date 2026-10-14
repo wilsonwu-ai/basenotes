@@ -1,0 +1,485 @@
+{{ 'scent-storefront.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign rotation_collection = collections.fragrances
+  comment
+    Do not trust variant ORDER. Products carry a 5ml vial AND a full bottle (the PRD records Creed
+    Aventus with a 5ml at $20 alongside a 3.3 fl oz at $408), so "variants | first" can hand back
+    the bottle - the hero would print "$408 per vial" and rotation_plan would go nil at the same
+    time, wiping BOTH subscription prices off the subscription page. Scan for the plan-bearing $20
+    vial instead, the way main-product.liquid, studio-fragrance-card.liquid, vial-studio.liquid and
+    full-bottles.liquid all do, and skip the internal add-on helper and $0 products that nine other
+    surfaces already exclude - either could otherwise become the product the hero reads, and so
+    source every price on the page.
+  endcomment
+  assign rotation_variant = blank
+  assign rotation_plan = blank
+  for candidate in rotation_collection.products
+    if candidate.handle == 'extra-5ml-vial-add-on' or candidate.price == 0
+      continue
+    endif
+    for candidate_variant in candidate.variants
+      assign candidate_title = candidate_variant.title | downcase | remove: ' '
+      if candidate_title contains '5ml' and candidate_variant.price == 2000
+        assign candidate_plan = candidate_variant.selling_plan_allocations | first
+        if candidate_plan
+          assign rotation_variant = candidate_variant
+          assign rotation_plan = candidate_plan
+          break
+        endif
+      endif
+    endfor
+    if rotation_plan != blank
+      break
+    endif
+  endfor
+  assign rotation_renewal = rotation_plan.price_adjustments.last.price | default: rotation_variant.price
+  assign rotation_url = rotation_collection.url | default: '/collections/fragrances'
+  if rotation_plan
+    assign our_price_label = rotation_renewal | money_without_trailing_zeros | append: '/month'
+  else
+    assign our_price_label = section.settings.fallback_our_price
+  endif
+-%}
+<section class="scent-route rotation" aria-labelledby="MonthlyRotationTitle">
+
+  {%- comment -%}
+    HERO. 2026-09-26 conversion pass. Replaces the 2026-09-13 "Your Monthly Rotation /
+    Optional subscription" mock. That version led with optionality and explained the queue
+    before the offer. This version states the product, then the live plan price, then a
+    one-time escape hatch. Every plan price still comes from rotation_plan / rotation_renewal.
+    The "$15" / "$20" in older comments remain illustrative only.
+  {%- endcomment -%}
+  <header class="scent-route__intro rotation__hero">
+    <p class="scent-eyebrow">Monthly Rotation</p>
+    <h1 id="MonthlyRotationTitle">One 5ml a month. You pick the scent.</h1>
+    <p class="rotation__lede">Authentic designer and niche, decanted from the original bottle. Queue up to five months of fragrances. Skip or cancel anytime.</p>
+    {%- if rotation_plan -%}
+      <p class="rotation__price">{{ rotation_plan.price | money_without_trailing_zeros }} first shipment, then {{ rotation_renewal | money_without_trailing_zeros }}/month. Shipping included. No fees to skip or cancel.</p>
+    {%- endif -%}
+    <a class="scent-button" href="#RotationScents">Choose your first scent <span aria-hidden="true">&darr;</span></a>
+    {%- comment -%}
+      One-time alt line. Plan money stays object-derived. One-time shipping is NOT on the
+      selling plan, so it is a theme setting (default $4.99) rather than a typed money filter
+      that could drift from checkout. Hide the ship clause if the setting is emptied.
+    {%- endcomment -%}
+    <p class="rotation__alt">
+      Prefer not to subscribe?
+      <a href="{{ rotation_url }}">Shop one-time vials</a>
+      {%- if rotation_variant -%}
+        &mdash; {{ rotation_variant.price | money_without_trailing_zeros }} first{% if all_products['extra-5ml-vial-add-on'].variants.first.available %}, {{ all_products['extra-5ml-vial-add-on'].variants.first.price | money_without_trailing_zeros }} each extra{% endif %}.
+      {%- endif -%}
+      {%- if section.settings.one_time_shipping_note != blank -%}
+        {{ section.settings.one_time_shipping_note }}
+      {%- endif -%}
+    </p>
+  </header>
+
+  <div class="rotation__inner">
+
+    {%- comment -%}
+      HOW ROTATION WORKS. This 01/02/03 spine is deliberately NOT the homepage's
+      (01 Pick / 02 We fill it / 03 Wear it, sections/scent-studio-home.liquid). The homepage
+      steps describe a one-time vial; these describe Rotation. Both are correct; do not merge them.
+      2026-09-26: step 03 shortened. Queue / blank-month / FOTM detail still lives in the account
+      after purchase; putting all three in the hero and again here was repeating the stall.
+    {%- endcomment -%}
+    <section class="rotation__block" aria-labelledby="RotationStepsTitle">
+      <h2 class="rotation__h2" id="RotationStepsTitle">How Rotation works</h2>
+      <ol class="rotation__steps" role="list">
+        <li class="rotation__step">
+          <p class="rotation__step-num">01 Start</p>
+          <p class="rotation__step-copy">Choose your first scent from the catalog. That&rsquo;s month one.</p>
+        </li>
+        <li class="rotation__step">
+          <p class="rotation__step-num">02 We ship</p>
+          <p class="rotation__step-copy">A 5ml atomizer every month. About 60 sprays. Authentic fragrance, from the original bottle. Shipping included.</p>
+        </li>
+        <li class="rotation__step">
+          <p class="rotation__step-num">03 Then plan</p>
+          <p class="rotation__step-copy">After month one, queue up to five months ahead, skip a month, or cancel in your account. No calls, no fees.</p>
+        </li>
+      </ol>
+    </section>
+
+    {%- comment -%}
+      TWO OPTIONS. Jeff's mock says "$18 each extra in that order", and that claim IS backed.
+      Established on live 2026-09-13: normalizeCart() in assets/basenote-commerce.js replaces the
+      extra eligible unit with the extra-5ml-vial-add-on helper (priced 1800). The figure is read
+      from an object here, never typed as a literal. 2026-09-26: Rotation card says shipping
+      included so this block does not contradict the hero. One-time card does not promise free shipping.
+    {%- endcomment -%}
+    {%- comment -%}
+      PRICE COMPARE. 2026-09-26, revised same day: full retail bottles, not other decanters.
+      Sits AFTER the scent grid so it does not delay Choose this scent.
+      Bottle figures are merchant-edited house / authorized-retailer list prices for the size
+      named in the row (Jeff, 2026-09-26: Alexandria II $630 / 3.3 oz; Aventus $510 / 3.3 oz;
+      Orom $500 / 4.2 oz; Bond Nomad $470 / 3.3 oz).
+      Re-check when a house changes list. Our column uses the live renewal (our_price_label).
+      Strikethrough on the bottle column is ON — this is "don't buy the bottle first,"
+      not a fake markdown of someone else's 5ml. No checkmarks. No "Why Pay More?".
+      Hide the block by clearing compare_title or all four product rows.
+    {%- endcomment -%}
+    {%- assign compare_has_row = false -%}
+    {%- if section.settings.row_1_product != blank or section.settings.row_2_product != blank or section.settings.row_3_product != blank or section.settings.row_4_product != blank -%}
+      {%- assign compare_has_row = true -%}
+    {%- endif -%}
+    {%- if section.settings.compare_title != blank and compare_has_row -%}
+      <section class="rotation__block rotation-compare" aria-labelledby="RotationCompareTitle">
+        <h2 class="rotation__h2" id="RotationCompareTitle">{{ section.settings.compare_title }}</h2>
+        {%- if section.settings.compare_subtitle != blank -%}
+          <p class="rotation-compare__lede">{{ section.settings.compare_subtitle }}</p>
+        {%- endif -%}
+        <div class="rotation-compare__table-wrap">
+          <table class="rotation-compare__table">
+            <thead>
+              <tr>
+                <th scope="col">{{ section.settings.column_1_header }}</th>
+                <th scope="col">{{ section.settings.column_2_header }}</th>
+                <th scope="col" class="rotation-compare__ours-head">{{ section.settings.column_3_header }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in (1..4) %}
+                {% liquid
+                  assign product_key = 'row_' | append: i | append: '_product'
+                  assign competitor_key = 'row_' | append: i | append: '_competitor'
+                  assign product_name = section.settings[product_key]
+                  assign competitor_price = section.settings[competitor_key]
+                %}
+                {% if product_name != blank %}
+                  <tr>
+                    <th scope="row">{{ product_name }}</th>
+                    <td class="rotation-compare__them">{{ competitor_price }}</td>
+                    <td class="rotation-compare__ours"><span>{{ our_price_label }}</span></td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {%- if section.settings.compare_footnote != blank -%}
+          <p class="rotation-compare__note">{{ section.settings.compare_footnote }}</p>
+        {%- endif -%}
+      </section>
+    {%- endif -%}
+    {%- comment -%}
+      START WITH A SCENT. Unchanged data model: the same collection loop, filtered on
+      "allocation and variant.available", so only products that really carry the plan appear.
+    {%- endcomment -%}
+    <section class="rotation__block" aria-labelledby="RotationScentsTitle">
+      <div class="rotation__grid-head">
+        <h2 class="rotation__h2" id="RotationScentsTitle">Start with a scent</h2>
+        {%- if rotation_collection.products_count > 0 -%}
+          <a class="rotation__see-all" href="{{ rotation_url }}">See all {{ rotation_collection.products_count }} <span aria-hidden="true">&rarr;</span></a>
+        {%- endif -%}
+      </div>
+
+      <div id="RotationScents" class="scent-grid">
+        {%- for product in rotation_collection.products limit: 12 -%}
+          {%- if product.handle == 'extra-5ml-vial-add-on' or product.price == 0 -%}{%- continue -%}{%- endif -%}
+          {%- assign variant = blank -%}
+          {%- assign allocation = blank -%}
+          {%- for product_variant in product.variants -%}
+            {%- assign product_variant_title = product_variant.title | downcase | remove: ' ' -%}
+            {%- if product_variant_title contains '5ml' and product_variant.price == 2000 -%}
+              {%- assign product_allocation = product_variant.selling_plan_allocations | first -%}
+              {%- if product_allocation -%}
+                {%- assign variant = product_variant -%}
+                {%- assign allocation = product_allocation -%}
+                {%- break -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {%- assign card_renewal = allocation.price_adjustments.last.price | default: variant.price -%}
+          {%- if allocation and variant.available -%}
+            <article class="scent-card">
+              <a class="scent-card__media" href="{{ product.url }}?purchase=subscription#monthly-rotation" tabindex="-1" aria-hidden="true">
+                {%- if product.featured_image -%}
+                  <img
+                    src="{{ product.featured_image | image_url: width: 600 }}"
+                    srcset="{{ product.featured_image | image_url: width: 300 }} 1x, {{ product.featured_image | image_url: width: 600 }} 2x"
+                    alt="{{ product.featured_image.alt | escape }}"
+                    width="300"
+                    height="{{ 300 | divided_by: product.featured_image.aspect_ratio | round }}"
+                    loading="lazy"
+                    class="scent-card__img">
+                {%- else -%}
+                  <span class="scent-card__vial">{% render 'vial-illustration', product: product %}</span>
+                {%- endif -%}
+              </a>
+              <p class="scent-card__brand">{{ product.vendor }}</p>
+              <h3 class="rotation__card-title">
+                <a href="{{ product.url }}?purchase=subscription#monthly-rotation">{{ product.title | remove_first: product.vendor | strip }}</a>
+              </h3>
+              <p class="scent-card__format">{{ allocation.price | money_without_trailing_zeros }} first shipment, then {{ card_renewal | money_without_trailing_zeros }}/month</p>
+              <a class="scent-button rotation__card-cta" href="{{ product.url }}?purchase=subscription#monthly-rotation">Choose this scent <span aria-hidden="true">&nearr;</span></a>
+            </article>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </section>
+
+    {%- comment -%}
+      CLOSING DISCLOSURE. ROSCA-relevant. "until you cancel" and "renewal date" are load-bearing.
+      Treat this paragraph as frozen legal copy. 2026-09-26 hero/options/compare edits must not weaken it.
+    {%- endcomment -%}
+    <section class="rotation__block rotation__disclosure" aria-labelledby="RotationTermsTitle">
+      <h2 class="rotation__disclosure-title" id="RotationTermsTitle">Subscription terms</h2>
+      <p>Monthly Rotation is an automatically renewing subscription. By starting it you authorize recurring charges until you cancel. Checkout shows the plan, price, and renewal date. Prefer not to subscribe? <a href="{{ rotation_url }}">Shop one-time vials</a> - no subscription is required. <a href="/pages/faq">Read subscription FAQs</a>.</p>
+    </section>
+
+  </div>
+</section>
+
+{% stylesheet %}
+.rotation__inner { max-width: 1120px; margin-inline: auto; }
+.rotation .rotation__hero { max-width: 44rem; }
+.scent-route.rotation .rotation__lede { max-width: 38rem; margin-inline: auto; color: var(--scent-muted); }
+.scent-route.rotation .rotation__price { max-width: 38rem; margin: 1.25rem auto 0; font-size: .84rem; line-height: 1.7; color: var(--scent-muted); }
+.scent-route.rotation .rotation__alt { max-width: 38rem; margin: 1rem auto 0; font-size: .78rem; line-height: 1.6; color: var(--scent-muted); }
+.scent-route.rotation .rotation__alt a { text-decoration: underline; text-underline-offset: .2em; }
+.rotation__block { margin-top: clamp(3rem, 7vw, 4.75rem); }
+.rotation__h2 { margin: 0 0 1.75rem; font: 500 clamp(1.9rem, 3vw, 2.6rem)/1.14 'Playfair Display', Georgia, serif; }
+
+.rotation__steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 1.75rem; margin: 0; padding: 0; list-style: none; }
+.rotation__step { min-width: 0; padding-top: 1.1rem; border-top: 1px solid var(--scent-line); }
+.rotation__step-num { margin: 0 0 .7rem; font: 500 .7rem/1.4 'Jost', sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--scent-green); }
+.rotation__step-copy { margin: 0; font-size: .88rem; line-height: 1.7; color: var(--scent-muted); }
+
+.rotation__options { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: 1.25rem; }
+.rotation__option { display: flex; flex-direction: column; min-width: 0; padding: 1.6rem 1.5rem; border: 1px solid var(--scent-line); background: #ebe6d9; }
+.rotation__option--featured { border-color: var(--scent-green); border-width: 2px; }
+.rotation__option-title { margin: 0 0 .8rem; font: 500 1.5rem/1.2 'EB Garamond', Georgia, serif; }
+.rotation__option-price { margin: 0 0 .55rem; font: 500 .9rem/1.6 'Jost', sans-serif; }
+.rotation__option-copy { margin: 0; font-size: .86rem; line-height: 1.7; color: var(--scent-muted); }
+.rotation__option-link { display: inline-flex; align-items: center; gap: .6rem; align-self: flex-start; min-height: 44px; margin-top: 1.1rem; border-bottom: 1px solid var(--scent-gold); font-size: .78rem; font-weight: 500; }
+
+.rotation__grid-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+.rotation__grid-head .rotation__h2 { margin-bottom: 0; }
+.rotation__see-all { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; border-bottom: 1px solid var(--scent-gold); font-size: .78rem; font-weight: 500; }
+.rotation .scent-grid { margin-top: 2rem; }
+
+.rotation .scent-card__media {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  margin: 0 0 1.4rem;
+  padding: 8%;
+  box-sizing: border-box;
+  background: #faf7f0;
+  overflow: hidden;
+}
+.rotation .scent-card__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  mix-blend-mode: multiply;
+  transition: transform 0.6s;
+}
+.rotation .scent-card__media::before { content: "5ml"; position: absolute; top: 0.7rem; left: 0.7rem; z-index: 1; padding: 0.2rem 0.4rem; background: #1e2e24; color: #f3eee3; font: 600 0.62rem/1 'Jost', sans-serif; letter-spacing: 0.04em; text-transform: uppercase; }
+.rotation .scent-card { display: flex; flex-direction: column; }
+.rotation .scent-card__brand,
+.rotation .rotation__card-title,
+.rotation .scent-card__format { flex-shrink: 0; }
+.rotation .rotation__card-cta { margin-top: auto; }
+.rotation__card-title {margin: 0;font: 500 1rem/1.3 'EB Garamond', Georgia, serif;min-height: 0;letter-spacing: -0.02em;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.rotation__card-title a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.rotation .rotation__card-cta { width: 100%; gap: 1rem; min-height: 44px; padding: .7rem 1rem; font-size: .72rem; }
+
+/* Compare table. Same hairline language as How Rotation works. Highlight column uses
+   the option-card fill (#ebe6d9), not a sales-green. */
+.rotation-compare .rotation__h2 { text-align: center; }
+.rotation-compare__lede {
+  max-width: 36rem;
+  margin: -0.75rem auto 1.75rem;
+  text-align: center;
+  font-size: .88rem;
+  line-height: 1.7;
+  color: var(--scent-muted);
+}
+.rotation-compare__table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-top: 1px solid var(--scent-line); }
+.rotation-compare__table { width: 100%; border-collapse: collapse; background: transparent; }
+.rotation-compare__table th,
+.rotation-compare__table td {
+  padding: 1.05rem 1rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--scent-line);
+}
+.rotation-compare__table thead th {
+  font: 500 .7rem/1.4 'Jost', sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--scent-green);
+}
+.rotation-compare__table tbody th {
+  font: 500 1.05rem/1.3 'EB Garamond', Georgia, serif;
+  color: var(--scent-ink, var(--scent-green));
+  font-weight: 500;
+}
+.rotation-compare__them { font: 400 .9rem/1.5 'Jost', sans-serif; color: var(--scent-muted); text-decoration: line-through; text-decoration-thickness: 1px; }
+.rotation-compare__ours-head,
+.rotation-compare__ours { background: #ebe6d9; }
+.rotation-compare__ours { font: 500 .9rem/1.5 'Jost', sans-serif; color: var(--scent-green); white-space: nowrap; }
+.rotation-compare__note {
+  max-width: 40rem;
+  margin: 1.25rem auto 0;
+  font-size: .78rem;
+  line-height: 1.6;
+  color: var(--scent-muted);
+  text-align: center;
+}
+
+.rotation .rotation__disclosure { max-width: 44rem; padding-top: 1.25rem; border-top: 1px solid var(--scent-line); font-size: .9rem; line-height: 1.75; color: var(--scent-ink); }
+.rotation .rotation__disclosure-title { margin: 0 0 .6rem; font: 500 1rem/1.3 'Jost', sans-serif; letter-spacing: .02em; color: var(--scent-ink); }
+.rotation .rotation__disclosure a { text-decoration: underline; text-underline-offset: .2em; }
+
+@media (max-width: 749px) {
+  .scent-route.rotation .rotation__hero { text-align: left; }
+  .scent-route.rotation .rotation__lede,
+  .scent-route.rotation .rotation__price,
+  .scent-route.rotation .rotation__alt { margin-inline: 0; }
+  .rotation .rotation__card-title { font-size: 1.3rem; min-height: 3.1rem; }
+  .rotation .rotation__option { padding: 1.35rem 1.25rem; }
+
+  .rotation-compare__table thead { display: none; }
+  .rotation-compare__table,
+  .rotation-compare__table tbody,
+  .rotation-compare__table tr,
+  .rotation-compare__table th,
+  .rotation-compare__table td { display: block; width: 100%; }
+  .rotation-compare__table tr { padding: 1rem 0 1.15rem; border-bottom: 1px solid var(--scent-line); }
+  .rotation-compare__table tbody th { padding: 0 0 .35rem; border: 0; font-size: 1.2rem; }
+  .rotation-compare__them,
+  .rotation-compare__ours { padding: .2rem 0; border: 0; background: transparent; }
+  .rotation-compare__them::before {
+    content: "Full bottle  ";
+    display: block;
+    font: 500 .65rem/1.4 'Jost', sans-serif;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--scent-green);
+  }
+  .rotation-compare__ours::before {
+    content: "Monthly Rotation  ";
+    display: block;
+    font: 500 .65rem/1.4 'Jost', sans-serif;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Monthly Rotation",
+  "settings": [
+    {
+      "type": "text",
+      "id": "one_time_shipping_note",
+      "label": "One-time shipping note",
+      "default": "Shipping $4.99, free at 3 vials.",
+      "info": "Not derived from the selling plan. Clear this field to hide the clause."
+    },
+    {
+      "type": "header",
+      "content": "Price compare"
+    },
+    {
+      "type": "text",
+      "id": "compare_title",
+      "label": "Compare title",
+      "default": "One scent is a habit. A wardrobe is a choice."
+    },
+    {
+      "type": "textarea",
+      "id": "compare_subtitle",
+      "label": "Compare subtitle",
+      "default": "Full bottles lock you in. A 5ml Rotation vial lets you wear Alexandria II this month and Aventus next. Same juice. Shipping included"
+    },
+    {
+      "type": "text",
+      "id": "column_1_header",
+      "label": "Column 1",
+      "default": "Fragrance"
+    },
+    {
+      "type": "text",
+      "id": "column_2_header",
+      "label": "Column 2",
+      "default": "Full Bottle Retail Price"
+    },
+    {
+      "type": "text",
+      "id": "column_3_header",
+      "label": "Column 3",
+      "default": "Monthly Rotation (5ml)"
+    },
+    {
+      "type": "text",
+      "id": "fallback_our_price",
+      "label": "Fallback our price",
+      "default": "$20/month",
+      "info": "Used only if the live selling plan cannot be read."
+    },
+    {
+      "type": "textarea",
+      "id": "compare_footnote",
+      "label": "Compare footnote",
+      "default": "Bottle prices are current house or authorized-retailer list for the size named, checked September 2026, and can move. Rotation is the first-month plan price, then the renewal shown, until you cancel. A 5ml vial is not a full bottle."
+    },
+    {
+      "type": "text",
+      "id": "row_1_product",
+      "label": "Row 1 product",
+      "default": "Xerjoff Alexandria II"
+    },
+    {
+      "type": "text",
+      "id": "row_1_competitor",
+      "label": "Row 1 full bottle",
+      "default": "$630 / 3.3 oz"
+    },
+    {
+      "type": "text",
+      "id": "row_2_product",
+      "label": "Row 2 product",
+      "default": "Creed Aventus"
+    },
+    {
+      "type": "text",
+      "id": "row_2_competitor",
+      "label": "Row 2 full bottle",
+      "default": "$510 / 3.3 oz"
+    },
+    {
+      "type": "text",
+      "id": "row_3_product",
+      "label": "Row 3 product",
+      "default": "Bvlgari Le Gemme Orom"
+    },
+    {
+      "type": "text",
+      "id": "row_3_competitor",
+      "label": "Row 3 full bottle",
+      "default": "$500 / 4.2 oz"
+    },
+    {
+      "type": "text",
+      "id": "row_4_product",
+      "label": "Row 4 product",
+      "default": "Bond No. 9 Nomad"
+    },
+    {
+      "type": "text",
+      "id": "row_4_competitor",
+      "label": "Row 4 full bottle",
+      "default": "$470 / 3.3 oz"
+    }
+  ]
+}
+{% endschema %}

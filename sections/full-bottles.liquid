@@ -1,0 +1,24 @@
+{{ 'scent-storefront.css' | asset_url | stylesheet_tag }}
+<section class="scent-route" aria-labelledby="FullBottlesTitle">
+  <header class="scent-route__intro"><p class="scent-eyebrow">03 / Found the one?</p><h1 id="FullBottlesTitle">Make it your full bottle.</h1><p>When a vial becomes a favorite, it might be time for the original bottle. Tell us the fragrance and size you have in mind. We’ll confirm our price and availability before you order.</p><a class="scent-button" href="#BottleEnquiry">Ask about your bottle <span aria-hidden="true">↓</span></a><p>Not sure yet? <a href="/collections/fragrances"><u>Start with a one-time 5ml vial</u></a>.</p></header>
+  <div class="scent-route__content">
+    {%- capture available_bottles -%}{%- for product in collections.fragrances.products -%}{%- for variant in product.variants -%}{%- assign bottle_size = variant.title | downcase | remove: ' ' -%}{%- if bottle_size != '5ml' and variant.available -%}{%- if bottle_size contains 'ml' or bottle_size contains 'oz' or bottle_size contains 'fullbottle' -%}<article class="scent-card"><a class="scent-card__media" href="{{ product.url }}?variant={{ variant.id }}">{{ product.featured_image | image_url: width: 400 | image_tag: loading: 'lazy', widths: '200, 400', sizes: '200px' }}</a><p class="scent-card__brand">{{ product.vendor }}</p><h2>{{ product.title | remove_first: product.vendor | strip }}</h2><p>{{ variant.title }} · {{ variant.price | money }}</p><a class="scent-button" href="{{ product.url }}?variant={{ variant.id }}">View bottle ↗</a></article>{%- break -%}{%- endif -%}{%- endif -%}{%- endfor -%}{%- endfor -%}{%- endcapture -%}
+    {%- if available_bottles != blank -%}<div class="scent-grid">{{ available_bottles }}</div>{%- endif -%}
+    <div class="scent-route__steps"><article><p class="scent-eyebrow">01 / Tell us</p><h2>Your scent, your size.</h2><p>Share the fragrance name and bottle size you are looking for.</p></article><article><p class="scent-eyebrow">02 / Get the details</p><h2>A price you can check.</h2><p>We confirm the exact size, our price, and current availability. You can compare it with your usual retailer before deciding.</p></article><article><p class="scent-eyebrow">03 / Make it yours</p><h2>Order when you’re ready.</h2><p>An enquiry is not an order. No payment is collected and there is no obligation to buy.</p></article></div>
+    <h2 id="BottleEnquiry">Which bottle are you looking for?</h2>
+    {% form 'contact', id: 'FullBottleContact', class: 'scent-route__form' %}
+      {% if form.posted_successfully? %}<p class="scent-route__wide" role="status">Thanks — your bottle enquiry has been sent. We’ll reply with the details.</p>{% endif %}
+      {% if form.errors %}<div class="scent-route__wide" role="alert">{{ form.errors | default_errors }}</div>{% endif %}
+      <input type="hidden" name="contact[Enquiry type]" value="Full bottle price and availability">
+      <label>Name<input name="contact[name]" type="text" autocomplete="name" value="{{ form.name | default: customer.name | escape }}" required></label>
+      <label>Email address<input name="contact[email]" type="email" autocomplete="email" value="{{ form.email | default: customer.email | escape }}" required></label>
+      <label>Fragrance<input name="contact[Fragrance]" type="text" placeholder="Brand and fragrance name" required></label>
+      <label>Preferred bottle size<input name="contact[Preferred size]" type="text" placeholder="For example, 50ml or 100ml"></label>
+      <label class="scent-route__wide">Anything else?<textarea name="contact[body]" placeholder="Tell us what you are looking for."></textarea></label>
+      <p class="scent-route__wide">We’ll use these details to answer your enquiry. This does not subscribe you to marketing emails. <a href="{{ shop.privacy_policy.url }}"><u>Privacy policy</u></a>.</p>
+      <button class="scent-button scent-route__wide" type="submit">Request price and availability <span aria-hidden="true">↗</span></button>
+    {% endform %}
+  </div>
+</section>
+<script src="{{ 'scent-storefront.js' | asset_url }}" defer></script>
+{% schema %}{"name":"Full bottles","settings":[]}{% endschema %}

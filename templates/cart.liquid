@@ -1,163 +1,267 @@
 {%- layout 'theme' -%}
 {% comment %} CART_ADDON_CONFIGURATION_GUARD: the internal $18 helper is never exposed as a standalone cart upsell. {% endcomment %}
 {%- liquid
-  assign has_subscription = false
-  assign has_onetime = false
-  assign has_bottle = false
-  assign cart_savings = 0
-  for item in cart.items
-    assign item_title_down = item.variant.title | downcase
-    if item.selling_plan_allocation
-      assign has_subscription = true
-    else
-      assign has_onetime = true
-    endif
-    if item_title_down contains '100ml' or item_title_down contains '100 ml' or item_title_down contains '3.3' or item_title_down contains 'full bottle'
-      assign has_bottle = true
-    endif
-    if item.variant.compare_at_price > item.final_price
-      assign compare_line = item.variant.compare_at_price | times: item.quantity
-      assign line_savings = compare_line | minus: item.final_line_price
-      assign cart_savings = cart_savings | plus: line_savings
-    endif
-  endfor
+assign has_subscription = false
+assign has_base_vial = false
+assign has_helper = false
+assign cart_configuration_issue = false
+assign rotation_variant = nil
+assign rotation_product = nil
+assign cart_savings = 0
+assign cart_all_plan = true
+for item in cart.items
+assign item_title_down = item.variant.title | downcase
+assign compact_title = item_title_down | remove: ' '
+if item.product.handle == 'extra-5ml-vial-add-on'
+assign has_helper = true
+if item.properties['Selected scent'] == blank or item.selling_plan_allocation
+assign cart_configuration_issue = true
+endif
+elsif compact_title == '5ml' and item.variant.price == 2000
+assign has_base_vial = true
+if rotation_variant == blank and item.variant.selling_plan_allocations.size > 0
+assign rotation_variant = item.variant
+assign rotation_product = item.product
+endif
+endif
+if item.selling_plan_allocation
+assign has_subscription = true
+else
+assign cart_all_plan = false
+endif
+if item.variant.compare_at_price > item.final_price
+assign compare_line = item.variant.compare_at_price | times: item.quantity
+assign line_savings = compare_line | minus: item.final_line_price
+assign cart_savings = cart_savings | plus: line_savings
+endif
+endfor
+
+  comment
+    Hoisted out of the summary aside so the order-mode fieldset can read it too. Both the
+    "standard US rate applies" sentence and the progress line must agree about whether THIS
+    order clears the $35.00 (3500 cent) free-shipping threshold.
+  endcomment
+assign ship_remaining = 3500 | minus: cart.total_price
+
+  comment
+    Active subscriber detection via Appstle customer tag.
+    Replace the tag string with the exact value from Appstle Tag Settings → Customer Active Subscription Tag.
+  endcomment
+assign is_active_subscriber = false
+if customer
+  assign active_subscriber_tag = 'appstle_subscription_active_customer'
+  if customer.tags contains active_subscriber_tag
+    assign is_active_subscriber = true
+  endif
+endif
 -%}
 
+
 <artifact-cart class="artifact-cart" data-has-subscription="{{ has_subscription }}">
-  <div class="artifact-cart__shell">
-    <a class="artifact-cart__back" href="/collections/fragrances">← Continue shopping</a>
-    {%- if cart.item_count > 0 -%}
-      <h1>Your Cart</h1>
-      <form action="{{ routes.cart_url }}" method="post" class="artifact-cart__form">
-        <div class="artifact-cart__layout">
-          <div class="artifact-cart__main">
-            <div class="artifact-cart__items">
-              {%- for item in cart.items -%}
-                {%- liquid
-                  assign title_down = item.variant.title | downcase
-                  assign item_is_bottle = false
-                  if title_down contains '100ml' or title_down contains '100 ml' or title_down contains '3.3' or title_down contains 'full bottle'
-                    assign item_is_bottle = true
-                  endif
-                  assign item_plan = item.variant.selling_plan_allocations.first.selling_plan
+<div class="artifact-cart__shell">
+<a class="artifact-cart__back" href="/collections/fragrances">← Continue shopping</a>
+{%- if cart.item_count > 0 -%}
+<h1>Your Cart</h1>
+<p class="artifact-cart__status" data-cart-status role="status" aria-live="polite">{% if cart_configuration_issue %}An additional vial needs a valid one-time scent selection. Remove it and choose the fragrance again before checkout.{% elsif has_helper and has_base_vial == false %}An additional vial needs a first fragrance in the cart. Choose a fragrance below or remove the additional vial before continuing.{% endif %}</p>
+<form action="{{ routes.cart_url }}" method="post" class="artifact-cart__form">
+<div class="artifact-cart__layout">
+<div class="artifact-cart__main">
+<div class="artifact-cart__items">
+{%- for item in cart.items -%}
+{%- liquid
+assign title_down = item.variant.title | downcase | remove: ' '
+assign item_is_bottle = false
+unless title_down == '5ml'
+if title_down contains 'ml' or title_down contains 'oz' or title_down contains 'fullbottle'
+assign item_is_bottle = true
+endif
+endunless
+assign item_plan = item.variant.selling_plan_allocations.first.selling_plan
+assign item_label = item.product.title
+assign item_url = item.url
+assign item_image = item.image
+assign item_is_helper = false
+assign source_product = nil
+if item.product.handle == 'extra-5ml-vial-add-on'
+assign item_is_helper = true
+assign item_label = item.properties['Selected scent'] | default: 'Additional vial — choose a scent'
+assign scent_handle = item.properties['_Base Note scent handle']
+assign item_url = '/collections/fragrances'
+assign item_image = nil
+if scent_handle != blank
+assign source_product = all_products[scent_handle]
+assign item_url = source_product.url | default: item_url
+assign item_image = source_product.featured_image
+endif
+endif
                 -%}
-                <article class="artifact-cart__item" data-cart-key="{{ item.key }}" data-plan-id="{{ item_plan.id }}" data-bottle="{{ item_is_bottle }}">
-                  <div class="artifact-cart__image">
-                    {%- if item.image -%}{{ item.image | image_url: width: 180 | image_tag: loading: 'lazy', width: 90, height: 110, alt: item.product.title }}{%- else -%}{% render 'vial-illustration', product: item.product %}{%- endif -%}
-                  </div>
-                  <div class="artifact-cart__details">
-                    <h2>{{ item.product.title }}</h2>
-                    <p>{%- if item_is_bottle -%}Full bottle · 3.3oz{%- else -%}5ml atomizer{%- endif -%}</p>
-                    {%- if item.selling_plan_allocation -%}<p class="artifact-cart__plan">{{ item.selling_plan_allocation.selling_plan.name }} subscription</p>{%- endif -%}
-                    <button type="button" class="artifact-cart__remove" data-cart-remove aria-label="Remove {{ item.product.title | escape }} from cart">Remove</button>
-                  </div>
-                  <div class="artifact-cart__quantity" aria-label="Quantity for {{ item.product.title | escape }}">
-                    <button type="button" data-cart-quantity="{{ item.quantity | minus: 1 }}" aria-label="Decrease quantity">−</button>
-                    <span aria-live="polite">{{ item.quantity }}</span>
-                    <button type="button" data-cart-quantity="{{ item.quantity | plus: 1 }}" aria-label="Increase quantity">+</button>
-                  </div>
-                  <strong class="artifact-cart__line-price">{{ item.final_line_price | money }}</strong>
-                </article>
-              {%- endfor -%}
-            </div>
+<article class="artifact-cart__item" data-cart-key="{{ item.key }}" data-plan-id="{{ item_plan.id }}" data-bottle="{{ item_is_bottle }}">
+<a class="artifact-cart__image" href="{{ item_url }}" tabindex="-1" aria-hidden="true">
+{%- if item_image -%}{{ item_image | image_url: width: 180 | image_tag: loading: 'lazy', width: 90, height: 110, alt: '' }}{%- else -%}{% render 'vial-illustration', product: source_product %}{%- endif -%}
+</a>
+<div class="artifact-cart__details">
+<h2><a href="{{ item_url }}">{{ item_label | escape }}</a></h2>
+<p>{%- if item_is_helper -%}5ml atomizer · additional vial{%- elsif item.variant.title != 'Default Title' -%}{{ item.variant.title | escape }}{% unless item_is_bottle %} atomizer{% endunless %}{%- endif -%}</p>
+{%- if item.selling_plan_allocation -%}<p class="artifact-cart__plan">Monthly Rotation subscription</p>{%- elsif has_subscription and item_is_helper -%}<p class="artifact-cart__plan">One-time extra · does not renew</p>{%- endif -%}
+{%- unless item_is_helper -%}{%- for prop in item.properties -%}{%- assign prop_lead = prop.first | slice: 0 -%}{%- if prop_lead != '_' and prop.last != blank -%}<p class="artifact-cart__prop">{{ prop.first | escape }}: {{ prop.last | escape }}</p>{%- endif -%}{%- endfor -%}{%- endunless -%}
+<a class="artifact-cart__remove" href="{{ item.url_to_remove }}" data-cart-remove aria-label="Remove {{ item_label | escape }} from cart">Remove</a>
+</div>
+<div class="artifact-cart__quantity">
+{%- if item.properties['_bn_box'] != blank -%}
+<input type="hidden" name="updates[]" value="{{ item.quantity }}"><span class="artifact-cart__qty-static">Qty {{ item.quantity }}</span>
+{%- else -%}
+<button type="button" data-cart-step="-1" aria-label="Decrease {{ item_label | escape }} quantity" hidden>−</button>
+<label class="visually-hidden" for="CartQuantity-{{ forloop.index }}">Quantity for {{ item_label | escape }}</label>
+<input id="CartQuantity-{{ forloop.index }}" type="number" name="updates[]" min="0" max="99" value="{{ item.quantity }}" inputmode="numeric" data-cart-quantity>
+<button type="button" data-cart-step="1" aria-label="Increase {{ item_label | escape }} quantity" hidden>+</button>
+{%- endif -%}
+</div>
+<strong class="artifact-cart__line-price" aria-label="Line total {{ item.final_line_price | money_without_trailing_zeros }}">{{ item.final_line_price | money_without_trailing_zeros }}</strong>
+</article>
+{%- endfor -%}
+</div>
 
-            <fieldset class="artifact-cart__order-mode">
-              <legend>How would you like to order?</legend>
-              <label class="artifact-cart__mode{% unless has_subscription %} artifact-cart__mode--active{% endunless %}">
-                <input type="radio" name="artifact_order_mode" value="onetime" {% unless has_subscription %}checked{% endunless %}>
-                <span><strong>One-time purchase</strong><small>$20 for the first 5ml and $18 for each additional vial. No subscription, no renewals.</small></span>
-              </label>
-              <label class="artifact-cart__mode{% if has_subscription %} artifact-cart__mode--active{% endif %}">
-                <input type="radio" name="artifact_order_mode" value="subscription" {% if has_subscription %}checked{% endif %}>
-                <span><strong>Subscribe &amp; save <em>Best value</em></strong><small>$15 for your first 5ml shipment, then $20/month. Monthly Rotation is a subscription; skip, swap, or cancel anytime.</small></span>
-              </label>
-              <a href="/pages/subscription-terms">What does the subscription actually include?</a>
-            </fieldset>
-          </div>
 
-          <aside class="artifact-cart__summary" aria-labelledby="ArtifactSummaryTitle">
-            <h2 id="ArtifactSummaryTitle">Order summary</h2>
-            <dl class="artifact-cart__summary-lines">
-              {%- for item in cart.items -%}<div><dt>{{ item.product.title | truncate: 28 }}</dt><dd>{{ item.final_line_price | money }}</dd></div>{%- endfor -%}
-              <div><dt>Shipping</dt><dd>{% if has_subscription and has_onetime == false %}Free{% else %}Calculated at checkout{% endif %}</dd></div>
-            </dl>
-            <div class="artifact-cart__total"><span>Total due today</span><strong>{{ cart.total_price | money }}</strong></div>
-            {%- if cart_savings > 0 -%}<div class="artifact-cart__savings"><span>You’re saving</span><strong>{{ cart_savings | money }}</strong></div>{%- endif -%}
-            {%- if has_subscription -%}
-              <p class="artifact-cart__disclosure">Monthly Rotation renews automatically at the price and cadence shown until cancelled.</p>
-              <label class="artifact-cart__consent"><input type="checkbox" data-cart-consent> <span>I agree to the recurring subscription and <a href="/pages/subscription-terms" target="_blank">subscription terms</a>.</span></label>
-            {%- else -%}
-              <p class="artifact-cart__disclosure">One-time purchase. No subscription, no recurring charges.</p>
-            {%- endif -%}
-            <button class="artifact-cart__checkout" type="submit" name="checkout" data-cart-checkout {% if has_subscription %}disabled{% endif %}>Continue to payment</button>
-          </aside>
-        </div>
-      </form>
-    {%- else -%}
-      <div class="artifact-cart__empty"><h1>Your Cart</h1><p>Your next scent is waiting.</p><a href="/collections/fragrances">Shop fragrances</a></div>
-    {%- endif -%}
-  </div>
-  <p class="artifact-cart__status" data-cart-status role="status" aria-live="polite"></p>
+<noscript><button type="submit" name="update" class="artifact-cart__native-update" formnovalidate>Update quantities</button></noscript>
+{% if rotation_variant != blank or has_subscription %}<fieldset class="artifact-cart__order-mode">
+<legend>How would you like to order?</legend>
+<label class="artifact-cart__mode{% unless has_subscription %} artifact-cart__mode--active{% endunless %}">
+<input type="radio" name="artifact_order_mode" value="onetime" disabled {% unless has_subscription %}checked{% endunless %}>
+<span><strong>One-time purchase</strong><small>$20 for the first 5ml and $18 for each additional vial.</small></span>
+</label>
+<label class="artifact-cart__mode{% if has_subscription %} artifact-cart__mode--active{% endif %}">
+<input type="radio" name="artifact_order_mode" value="subscription" disabled {% if rotation_variant == blank %}data-unavailable="true"{% endif %} {% if has_subscription %}checked{% endif %}>
+<span><strong>Monthly Rotation <em>Subscription</em></strong><small>{% if rotation_variant != blank %}{{ rotation_variant.selling_plan_allocations.first.price | money_without_trailing_zeros }} for the first shipment, then {{ rotation_variant.selling_plan_allocations.first.price_adjustments.last.price | default: rotation_variant.price | money_without_trailing_zeros }} monthly for one 5ml vial of your choice.{% endif %}</small></span>
+</label>
+{%- comment -%}
+                Active subscribers always get free shipping (subscription or one-time).
+                Pure Monthly Rotation carts also get free shipping. Everyone else uses the $35 threshold.
+              {%- endcomment -%}
+{%- unless has_subscription and cart_all_plan -%}
+{%- unless is_active_subscriber -%}
+<p class="artifact-cart__ship-perk">Free US shipping when every item in your order is on Monthly Rotation. No minimum.{% if has_subscription and ship_remaining > 0 %} This cart also has one-time items, so the standard US rate applies to this order.{% endif %}</p>
+{%- endunless -%}
+{%- endunless -%}
+{%- if is_active_subscriber -%}
+<p class="artifact-cart__ship-perk">As an active subscriber, you get free US shipping on subscription and one-time purchases.</p>
+{%- endif -%}
+<a id="CartRotationExplainerOpener" href="/pages/subscription-terms" aria-haspopup="dialog" aria-controls="cartRotationModal">What does the subscription actually include?</a>
+<noscript><p>To change your purchase option, visit the <a href="/pages/monthly-rotation">Monthly Rotation page</a>.</p></noscript>
+</fieldset>
+{%- comment -%} Shared explainer dialog: the snippet owns its own markup, style and script, scoped to modal_id/opener_id. The anchor above keeps its href as the no-JS fallback. {%- endcomment -%}
+{% render 'rotation-explainer', modal_id: 'cartRotationModal', opener_id: 'CartRotationExplainerOpener', show_cta: false %}{% endif %}
+</div>
+
+
+<aside class="artifact-cart__summary" aria-labelledby="ArtifactSummaryTitle">
+<h2 id="ArtifactSummaryTitle">Order summary</h2>
+<dl class="artifact-cart__summary-lines">
+{%- for item in cart.items -%}<div><dt>{% if item.product.handle == 'extra-5ml-vial-add-on' %}{{ item.properties['Selected scent'] | default: 'Additional vial' | escape }}{% else %}{{ item.product.title | escape }}{% endif %}{% if item.quantity > 1 %} × {{ item.quantity }}{% endif %}</dt><dd>{{ item.final_line_price | money_without_trailing_zeros }}</dd></div>{%- endfor -%}
+<div><dt>Shipping &amp; taxes</dt><dd>Calculated at checkout</dd></div>
+</dl>
+<div class="artifact-cart__total"><span>Subtotal today</span><strong>{{ cart.total_price | money_without_trailing_zeros }}</strong></div>
+{%- if cart_savings > 0 -%}<div class="artifact-cart__savings"><span>You’re saving</span><strong>{{ cart_savings | money_without_trailing_zeros }}</strong></div>{%- endif -%}
+{%- comment -%}
+              Free-shipping progress. Active subscribers always qualify. Pure subscription carts always qualify.
+              Everyone else uses the $35 (3500 cent) threshold from the US Domestic profile.
+            {%- endcomment -%}
+{%- liquid
+assign ship_pct = cart.total_price | times: 100 | divided_by: 3500
+if ship_pct > 100
+assign ship_pct = 100
+endif
+            -%}
+<div class="artifact-cart__shipping">
+{%- if has_subscription and cart_all_plan -%}
+<p role="status" aria-live="polite">Free US shipping</p>
+{%- elsif is_active_subscriber -%}
+<p role="status" aria-live="polite">Free US shipping — active subscriber perk</p>
+{%- else -%}
+<p role="status" aria-live="polite">{% if ship_remaining > 0 %}Spend {{ ship_remaining | money_without_trailing_zeros }} more for free US shipping.{% else %}You’ve unlocked free US shipping on this order.{% endif %}</p>
+<div class="artifact-cart__shipping-track" aria-hidden="true"><span style="inline-size:{{ ship_pct }}%"></span></div>
+{%- endif -%}
+</div>
+{%- if has_subscription -%}
+<div class="artifact-cart__disclosure"><strong>This is a recurring subscription.</strong>{% for item in cart.items %}{% if item.selling_plan_allocation %}<p>{{ item.selling_plan_allocation.price | times: item.quantity | money_without_trailing_zeros }} for this shipment, then {{ item.selling_plan_allocation.price_adjustments.last.price | default: item.variant.price | times: item.quantity | money_without_trailing_zeros }}. Free US Shipping.</p>{% endif %}{% endfor %}<p>Skip, swap, or cancel in your account. Any one-time extras do not renew.</p></div>
+<label class="artifact-cart__consent"><input type="checkbox" required data-cart-consent> <span>I agree to the recurring subscription and <a href="/pages/subscription-terms">subscription terms</a>.</span></label>
+{%- else -%}
+<p class="artifact-cart__disclosure">One-time purchase. No subscription, no recurring charges.</p>
+{%- endif -%}
+<button class="artifact-cart__checkout" type="submit" name="checkout" data-cart-checkout {% if cart_configuration_issue or has_helper and has_base_vial == false %}disabled{% endif %}>Continue to payment</button>
+{% if has_helper and has_base_vial == false %}<a class="artifact-cart__back" href="/collections/fragrances">Choose a first fragrance</a>{% endif %}
+</aside>
+</div>
+</form>
+{%- else -%}
+<div class="artifact-cart__empty"><h1>Your Cart</h1><p>Your next scent is waiting.</p><a href="/collections/fragrances">Shop fragrances</a></div>
+{%- endif -%}
+</div>
 </artifact-cart>
 
-<style>
-  .artifact-cart { --ac-green:#22392b; --ac-cream:#f4efe3; --ac-gold:#ac9159; --ac-ink:#242320; --ac-muted:#5c574d; --ac-line:rgb(34 57 43 / 18%); display:block; min-height:72dvh; color:var(--ac-ink); background:var(--ac-cream); }
-  .artifact-cart__shell { width:min(100% - 3rem,68rem); margin-inline:auto; padding-block:2rem 5rem; }
-  .artifact-cart__back { display:inline-block; padding-block-end:.18rem; border-block-end:.0625rem solid var(--ac-gold); color:var(--ac-green); font:.75rem/1.3 'Jost',sans-serif; }
-  .artifact-cart h1 { margin:1.4rem 0 2rem; font:700 clamp(2.5rem,5vw,3.5rem)/1 'Playfair Display',serif; }
-  .artifact-cart__layout { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(19rem,.8fr); gap:3.5rem; align-items:start; }
-  .artifact-cart__item { display:grid; grid-template-columns:5rem minmax(0,1fr) auto auto; gap:1.2rem; align-items:center; min-height:9rem; padding-block:1.2rem; border-block-end:.0625rem solid var(--ac-line); }
-  .artifact-cart__image { display:grid; width:5rem; height:6.5rem; place-items:center; }
-  .artifact-cart__image img,.artifact-cart__image svg { max-width:100%; max-height:100%; object-fit:contain; }
-  .artifact-cart__details h2 { margin:0; font:500 1.2rem/1.2 'EB Garamond',serif; }
-  .artifact-cart__details p { margin:.35rem 0 0; color:var(--ac-muted); font:.68rem/1.4 'Jost',sans-serif; letter-spacing:.08em; text-transform:uppercase; }
-  .artifact-cart__details .artifact-cart__plan { color:var(--ac-gold); }
-  .artifact-cart__remove { margin-block-start:.55rem; padding:0 0 .12rem; border:0; border-block-end:.0625rem solid var(--ac-muted); color:var(--ac-muted); background:transparent; font:.7rem/1.2 'Jost',sans-serif; cursor:pointer; }
-  .artifact-cart__quantity { display:grid; grid-template-columns:2.5rem 2.5rem 2.5rem; align-items:center; border:.0625rem solid var(--ac-line); text-align:center; }
-  .artifact-cart__quantity button,.artifact-cart__quantity span { display:grid; width:2.5rem; height:2.7rem; place-items:center; border:0; color:var(--ac-ink); background:transparent; font:.8rem/1 'Jost',sans-serif; }
-  .artifact-cart__quantity button { cursor:pointer; }
-  .artifact-cart__line-price { min-width:4.8rem; text-align:end; font:500 .95rem/1 'Jost',sans-serif; }
-  .artifact-cart__order-mode { margin-block-start:2rem; padding:1.6rem; border:.0625rem solid var(--ac-gold); }
-  .artifact-cart__order-mode legend { padding:0 .25rem; font:600 .8rem/1.2 'Jost',sans-serif; letter-spacing:.06em; text-transform:uppercase; }
-  .artifact-cart__mode { display:flex; gap:.9rem; padding:1rem; border:.0625rem solid var(--ac-line); cursor:pointer; }
-  .artifact-cart__mode + .artifact-cart__mode { margin-block-start:.75rem; }
-  .artifact-cart__mode--active { border-color:var(--ac-green); background:rgb(255 255 255 / 58%); }
-  .artifact-cart__mode input { width:1rem; height:1rem; margin-block-start:.2rem; accent-color:var(--ac-green); }
-  .artifact-cart__mode span,.artifact-cart__mode strong,.artifact-cart__mode small { display:block; }
-  .artifact-cart__mode strong { font:600 .82rem/1.4 'Jost',sans-serif; }
-  .artifact-cart__mode strong em { margin-inline-start:.45rem; padding:.22rem .4rem; color:var(--ac-green); background:var(--ac-gold); font:500 .58rem/1 'Jost',sans-serif; font-style:normal; }
-  .artifact-cart__mode small { margin-block-start:.35rem; color:var(--ac-muted); font:.78rem/1.5 'Jost',sans-serif; }
-  .artifact-cart__order-mode>a { display:inline-block; margin:1rem 0 0 2rem; padding-block-end:.15rem; border-block-end:.0625rem solid var(--ac-gold); color:var(--ac-green); font:.72rem/1.3 'Jost',sans-serif; }
-  .artifact-cart__summary { position:sticky; inset-block-start:6rem; padding:1.7rem; border:.0625rem solid var(--ac-line); background:rgb(255 255 255 / 72%); }
-  .artifact-cart__summary h2 { margin:0 0 1rem; padding-block-end:1rem; border-block-end:.0625rem solid var(--ac-line); font:600 .78rem/1.2 'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; }
-  .artifact-cart__summary-lines { margin:0; }
-  .artifact-cart__summary-lines div,.artifact-cart__total,.artifact-cart__savings { display:flex; justify-content:space-between; gap:1rem; padding-block:.55rem; font:.78rem/1.35 'Jost',sans-serif; }
-  .artifact-cart__summary-lines dt { color:var(--ac-muted); }
-  .artifact-cart__summary-lines dd { margin:0; text-align:end; }
-  .artifact-cart__total { margin-block-start:.6rem; padding-block:1.15rem; border-block:.0625rem solid var(--ac-line); font-size:1rem; }
-  .artifact-cart__savings { color:var(--ac-green); }
-  .artifact-cart__disclosure { margin:1rem 0; color:var(--ac-muted); font:.72rem/1.5 'Jost',sans-serif; }
-  .artifact-cart__consent { display:flex; gap:.6rem; margin-block:1rem; color:var(--ac-muted); font:.68rem/1.45 'Jost',sans-serif; }
-  .artifact-cart__consent input { margin-block-start:.15rem; accent-color:var(--ac-green); }
-  .artifact-cart__consent a { text-decoration:underline; }
-  .artifact-cart__checkout { width:100%; min-height:3.6rem; border:.0625rem solid var(--ac-green); color:var(--ac-cream); background:var(--ac-green); font:500 .78rem/1 'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
-  .artifact-cart__checkout[disabled] { cursor:not-allowed; opacity:.48; }
-  .artifact-cart__empty { padding-block:5rem 8rem; text-align:center; }
-  .artifact-cart__empty a { display:inline-flex; min-height:3.4rem; align-items:center; padding-inline:1.4rem; color:var(--ac-cream); background:var(--ac-green); font:.75rem/1 'Jost',sans-serif; text-transform:uppercase; }
-  .artifact-cart__status { position:fixed; z-index:5; inset:auto 1rem 1rem auto; margin:0; padding:.75rem 1rem; color:var(--ac-cream); background:var(--ac-green); font:.75rem/1.4 'Jost',sans-serif; opacity:0; pointer-events:none; transition:opacity 180ms ease; }
-  .artifact-cart__status--visible { opacity:1; }
-  @media(max-width:52rem){.artifact-cart__layout{grid-template-columns:1fr}.artifact-cart__summary{position:static}.artifact-cart__item{grid-template-columns:4.5rem minmax(0,1fr) auto}.artifact-cart__line-price{grid-column:2;text-align:start}.artifact-cart__quantity{grid-column:3;grid-row:1 / span 2}}
-  @media(max-width:35rem){.artifact-cart__shell{width:min(100% - 2rem,68rem)}.artifact-cart__item{gap:.7rem}.artifact-cart__quantity{grid-template-columns:2.2rem 2.2rem 2.2rem}.artifact-cart__quantity button,.artifact-cart__quantity span{width:2.2rem}.artifact-cart__order-mode{padding:1rem}.artifact-cart__mode{padding:.85rem}}
-  @media(prefers-reduced-motion:reduce){.artifact-cart__status{transition:none}}
-</style>
 
-<script>
-  if (!customElements.get('artifact-cart')) {
-    customElements.define('artifact-cart', class extends HTMLElement {
-      connectedCallback(){this.status=this.querySelector('[data-cart-status]');this.querySelectorAll('[data-cart-quantity]').forEach((button)=>button.addEventListener('click',()=>this.change(button.closest('[data-cart-key]'),Number(button.dataset.cartQuantity))));this.querySelectorAll('[data-cart-remove]').forEach((button)=>button.addEventListener('click',()=>this.change(button.closest('[data-cart-key]'),0)));this.querySelectorAll('input[name="artifact_order_mode"]').forEach((radio)=>radio.addEventListener('change',()=>this.setMode(radio.value)));this.querySelector('[data-cart-consent]')?.addEventListener('change',(event)=>{this.querySelector('[data-cart-checkout]').disabled=!event.currentTarget.checked;});}
-      show(message){this.status.textContent=message;this.status.classList.add('artifact-cart__status--visible');}
-      async change(item,quantity){this.show('Updating your cart…');const response=await fetch('/cart/change.js',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({id:item.dataset.cartKey,quantity})});if(response.ok)location.reload();else this.show('We could not update your cart. Please try again.');}
-      async setMode(mode){this.show('Updating how you order…');const items=[...this.querySelectorAll('[data-cart-key]')];try{for(const item of items){if(item.dataset.bottle==='true'||!item.dataset.planId)continue;const body={id:item.dataset.cartKey,quantity:Number(item.querySelector('.artifact-cart__quantity span').textContent),selling_plan:mode==='subscription'?Number(item.dataset.planId):null};const response=await fetch('/cart/change.js',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error('mode change failed');}location.reload();}catch(error){this.show('This order option could not be applied. Your cart was not changed.');}}
-    });
-  }
-</script>
+<style>
+.artifact-cart { --ac-green:#22392b; --ac-cream:#f4efe3; --ac-gold:#ac9159; --ac-ink:#242320; --ac-muted:#5c574d; --ac-line:rgb(34 57 43 / 18%); display:block; min-height:72dvh; color:var(--ac-ink); background:var(--ac-cream); }
+.artifact-cart__shell { width:min(100% - 3rem,68rem); margin-inline:auto; padding-block:2rem 5rem; }
+.artifact-cart__back { display:inline-block; padding-block-end:.18rem; border-block-end:.0625rem solid var(--ac-gold); color:var(--ac-green); font:.75rem/1.3 'Jost',sans-serif; }
+.artifact-cart h1 { margin:1.4rem 0 2rem; font:700 clamp(2.5rem,5vw,3.5rem)/1 'Playfair Display',serif; }
+.artifact-cart__layout { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(19rem,.8fr); gap:3.5rem; align-items:start; }
+.artifact-cart__item { display:grid; grid-template-columns:5rem minmax(0,1fr) auto auto; gap:1.2rem; align-items:center; min-height:9rem; padding-block:1.2rem; border-block-end:.0625rem solid var(--ac-line); }
+.artifact-cart__image { display:grid; width:5rem; height:6.5rem; place-items:center; }
+.artifact-cart__image img,.artifact-cart__image svg { max-width:100%; max-height:100%; object-fit:contain; }
+.artifact-cart__details h2 { margin:0; font:500 1.2rem/1.2 'EB Garamond',serif; }
+.artifact-cart__details p { margin:.35rem 0 0; color:var(--ac-muted); font:.68rem/1.4 'Jost',sans-serif; letter-spacing:.08em; text-transform:uppercase; }
+.artifact-cart__details .artifact-cart__plan { color:var(--ac-gold); }
+.artifact-cart__details .artifact-cart__prop { text-transform:none; letter-spacing:.02em; font-size:.78rem; overflow-wrap:anywhere; }
+.artifact-cart__qty-static { display:grid; min-width:2.75rem; min-height:2.75rem; padding:0 .75rem; place-items:center; color:var(--ac-ink); font:.8rem/1 'Jost',sans-serif; white-space:nowrap; }
+.artifact-cart__remove { margin-block-start:.55rem; padding:0 0 .12rem; border:0; border-block-end:.0625rem solid var(--ac-muted); color:var(--ac-muted); background:transparent; font:.7rem/1.2 'Jost',sans-serif; cursor:pointer; }
+.artifact-cart__quantity { display:flex; align-items:center; border:.0625rem solid var(--ac-line); text-align:center; }
+.artifact-cart__quantity button,.artifact-cart__quantity input { display:grid; width:2.75rem; height:2.75rem; padding:0; place-items:center; border:0; color:var(--ac-ink); background:transparent; font:1rem/1 'Jost',sans-serif; text-align:center; }
+.artifact-cart__quantity input { appearance:textfield; }
+.artifact-cart__quantity input::-webkit-inner-spin-button { appearance:none; }
+.artifact-cart__quantity button { cursor:pointer; }
+.artifact-cart__line-price { min-width:4.8rem; text-align:end; font:500 .95rem/1 'Jost',sans-serif; }
+.artifact-cart__order-mode { margin-block-start:2rem; padding:1.6rem; border:.0625rem solid var(--ac-gold); }
+.artifact-cart__order-mode legend { padding:0 .25rem; font:600 .8rem/1.2 'Jost',sans-serif; letter-spacing:.06em; text-transform:uppercase; }
+.artifact-cart__mode { display:flex; gap:.9rem; padding:1rem; border:.0625rem solid var(--ac-line); cursor:pointer; }
+.artifact-cart__mode + .artifact-cart__mode { margin-block-start:.75rem; }
+.artifact-cart__mode--active { border-color:var(--ac-green); background:rgb(255 255 255 / 58%); }
+.artifact-cart__mode input { width:1rem; height:1rem; margin-block-start:.2rem; accent-color:var(--ac-green); }
+.artifact-cart__mode span,.artifact-cart__mode strong,.artifact-cart__mode small { display:block; }
+.artifact-cart__mode strong { font:600 .82rem/1.4 'Jost',sans-serif; }
+.artifact-cart__mode strong em { margin-inline-start:.45rem; padding:.22rem .4rem; color:var(--ac-green); background:var(--ac-gold); font:500 .58rem/1 'Jost',sans-serif; font-style:normal; }
+.artifact-cart__mode small { margin-block-start:.35rem; color:var(--ac-muted); font:.78rem/1.5 'Jost',sans-serif; }
+.artifact-cart__order-mode>a { display:inline-block; margin:1rem 0 0 2rem; padding-block-end:.15rem; border-block-end:.0625rem solid var(--ac-gold); color:var(--ac-green); font:.72rem/1.3 'Jost',sans-serif; }
+.artifact-cart__summary { position:sticky; inset-block-start:6rem; padding:1.7rem; border:.0625rem solid var(--ac-line); background:rgb(255 255 255 / 72%); }
+.artifact-cart__summary h2 { margin:0 0 1rem; padding-block-end:1rem; border-block-end:.0625rem solid var(--ac-line); font:600 .78rem/1.2 'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; }
+.artifact-cart__summary-lines { margin:0; }
+.artifact-cart__summary-lines div,.artifact-cart__total,.artifact-cart__savings { display:flex; justify-content:space-between; gap:1rem; padding-block:.55rem; font:.78rem/1.35 'Jost',sans-serif; }
+.artifact-cart__summary-lines dt { color:var(--ac-muted); }
+.artifact-cart__summary-lines dd { margin:0; text-align:end; }
+.artifact-cart__total { margin-block-start:.6rem; padding-block:1.15rem; border-block:.0625rem solid var(--ac-line); font-size:1rem; }
+.artifact-cart__savings { color:var(--ac-green); }
+.artifact-cart__disclosure { margin:1rem 0; color:var(--ac-muted); font:.72rem/1.5 'Jost',sans-serif; }
+.artifact-cart__consent { display:flex; gap:.6rem; margin-block:1rem; color:var(--ac-muted); font:.68rem/1.45 'Jost',sans-serif; }
+.artifact-cart__consent input { margin-block-start:.15rem; accent-color:var(--ac-green); }
+.artifact-cart__consent a { text-decoration:underline; }
+.artifact-cart__checkout { width:100%; min-height:3.6rem; border:.0625rem solid var(--ac-green); color:var(--ac-cream); background:var(--ac-green); font:500 .78rem/1 'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
+.artifact-cart__checkout[disabled] { cursor:not-allowed; opacity:.48; }
+.artifact-cart__empty { padding-block:5rem 8rem; text-align:center; }
+.artifact-cart__empty a { display:inline-flex; min-height:3.4rem; align-items:center; padding-inline:1.4rem; color:var(--ac-cream); background:var(--ac-green); font:.75rem/1 'Jost',sans-serif; text-transform:uppercase; }
+.artifact-cart__status { margin:0; color:var(--ac-green); font:.85rem/1.5 'Jost',sans-serif; }
+.artifact-cart__status:not(:empty) { margin-block-end:1rem; padding:.75rem; border:.0625rem solid var(--ac-gold); }
+.artifact-cart__status a { text-decoration:underline; }
+.artifact-cart [hidden] { display:none; }
+.artifact-cart__remove { display:inline-flex; align-items:center; min-height:2.75rem; text-decoration:underline; border:0; }
+.artifact-cart__remove[aria-disabled="true"] { pointer-events:none; opacity:.45; }
+.artifact-cart__quantity :disabled { opacity:.45; cursor:wait; }
+.artifact-cart__disclosure,.artifact-cart__consent { font-size:.82rem; }
+.artifact-cart__consent input { min-width:1.2rem; min-height:1.2rem; }
+@media(max-width:52rem){.artifact-cart__layout{grid-template-columns:1fr}.artifact-cart__summary{position:static}.artifact-cart__item{grid-template-columns:4.5rem minmax(0,1fr) auto}.artifact-cart__line-price{grid-column:2;text-align:start}.artifact-cart__quantity{grid-column:3;grid-row:1 / span 2}}
+@media(max-width:35rem){.artifact-cart__shell{width:min(100% - 2rem,68rem)}.artifact-cart__item{grid-template-columns:3rem minmax(0,1fr);gap:.7rem}.artifact-cart__image{width:3rem}.artifact-cart__quantity{grid-column:2;grid-row:auto;width:max-content}.artifact-cart__line-price{grid-column:2}.artifact-cart__order-mode{padding:1rem}.artifact-cart__mode{padding:.85rem}}
+.artifact-cart__shipping { margin-block:1rem; padding:.8rem .85rem; border:.0625rem solid var(--ac-line); background:rgb(255 255 255 / 55%); }
+.artifact-cart__shipping p { margin:0; color:var(--ac-green); font:.78rem/1.45 'Jost',sans-serif; text-wrap:pretty; }
+.artifact-cart__shipping-track { overflow:hidden; block-size:.3rem; margin-block-start:.65rem; background:var(--ac-line); }
+.artifact-cart__shipping-track span { display:block; block-size:100%; background:var(--ac-gold); transition:inline-size .35s ease; }
+.artifact-cart__ship-perk { margin:1rem 0 0; padding:.75rem .85rem; border-inline-start:.15rem solid var(--ac-gold); background:rgb(255 255 255 / 55%); color:var(--ac-green); font:.78rem/1.5 'Jost',sans-serif; text-wrap:pretty; }
+@media(prefers-reduced-motion:reduce){.artifact-cart__status,.artifact-cart__shipping-track span{transition:none}}
+</style>

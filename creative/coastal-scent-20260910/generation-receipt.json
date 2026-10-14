@@ -1,0 +1,39 @@
+{
+  "endpoint": "bytedance/seedance-2.5/reference-to-video",
+  "duration": "20",
+  "resolution": "720p",
+  "aspect_ratio": "9:16",
+  "generate_audio": true,
+  "estimated_cost_usd": 9.5,
+  "estimate_not_invoice": true,
+  "request_cap": 1,
+  "automatic_model_fallback": false,
+  "references": [
+    {
+      "name": "product-reference.png",
+      "sha256": "646f860799f262451ede3402214664f26a01230582592731507a4542dc579944"
+    },
+    {
+      "name": "coastal-model-reference.png",
+      "sha256": "744f23f48589cd1ac8a507c0af61f203c7d16c19b05bd63b686cf0bd38ca39b2"
+    }
+  ],
+  "prompt_sha256": "34590e1a63b3ced848d2e16190186f975d34b85ceea7c1ba307f6aea71427b37",
+  "output": "basenote-coastal-seedance-20s.mp4",
+  "state": "generation_rejected",
+  "started_at_utc": "2026-09-11T03:05:48Z",
+  "request_id": "01a08e6d-b873-77a1-a4ea-343babefb485",
+  "status_url": "https://queue.fal.run/bytedance/seedance-2.5/requests/01a08e6d-b873-77a1-a4ea-343babefb485/status",
+  "response_url": "https://queue.fal.run/bytedance/seedance-2.5/requests/01a08e6d-b873-77a1-a4ea-343babefb485",
+  "provider_status": "COMPLETED",
+  "http_status": 422,
+  "message": [
+    {
+      "loc": ["body", "image_urls"],
+      "msg": "The images or videos provided may contain likenesses of real people or other private information that cannot be processed.",
+      "type": "content_policy_violation",
+      "url": "https://docs.fal.ai/errors#content_policy_violation",
+      "ctx": {"extra_info": {"reason": "partner_validation_failed"}}
+    }
+  ]
+}

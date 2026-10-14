@@ -1,0 +1,51 @@
+{% doc %}
+  Links a fragrance page to the most relevant live Journal article.
+  Candidates are tried in order; scheduled or missing articles resolve to nothing,
+  so each link appears by itself on the day its post goes live.
+
+  @param {product} product - The fragrance product.
+
+  @example
+  {% render 'product-journal-link', product: product %}
+{% enddoc %}
+{%- liquid
+  assign candidates = ''
+  case product.handle
+    when 'creed-aventus'
+      assign candidates = 'creed-aventus-review-is-it-worth-500,creed-aventus-dupes-clones-honest-guide'
+    when 'creed-green-irish-tweed', 'creed-silver-mountain-water'
+      assign candidates = 'green-irish-tweed-vs-silver-mountain-water'
+    when 'pdm-layton'
+      assign candidates = 'parfums-de-marly-layton-review'
+    when 'pdm-pegasus'
+      assign candidates = 'parfums-de-marly-pegasus-review'
+    when 'bond-no-9-nomad', 'bond-no-9-fidi', 'bond-no-9-bleecker-street', 'bond-no-9-the-scent-of-peace'
+      assign candidates = 'bond-no-9-explained-which-new-york-scent'
+  endcase
+
+  assign niche_vendors = 'creed,parfums de marly,xerjoff,bond no. 9,initio,tom ford,bvlgari' | split: ','
+  assign vendor_down = product.vendor | downcase | strip
+  if niche_vendors contains vendor_down
+    assign candidates = candidates | append: ',best-niche-fragrances-2026-ranked'
+  else
+    assign candidates = candidates | append: ',best-designer-colognes-2026-ranked'
+  endif
+  assign candidates = candidates | append: ',32-luxury-fragrances-ranked'
+
+  assign journal_article = blank
+  assign handles = candidates | split: ','
+  for journal_handle in handles
+    if journal_handle == blank
+      continue
+    endif
+    assign journal_key = 'hub/' | append: journal_handle
+    assign found = articles[journal_key]
+    if found != blank and found.title != blank
+      assign journal_article = found
+      break
+    endif
+  endfor
+-%}
+{%- if journal_article != blank -%}
+  <p class="artifact-product__journal"><span>From the Journal</span><a href="{{ journal_article.url }}">{{ journal_article.title | escape }} →</a></p>
+{%- endif -%}

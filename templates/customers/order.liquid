@@ -222,6 +222,8 @@
                       src="{{ line_item.image | image_url: width: 200 }}"
                       alt="{{ line_item.title }}"
                       loading="lazy"
+                      width="{{ line_item.image.width }}"
+                      height="{{ line_item.image.height }}"
                     >
                   {%- else -%}
                     <div class="order-item__placeholder">

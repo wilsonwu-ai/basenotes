@@ -1,0 +1,176 @@
+{%- comment -%}
+  Jeff 2026-09-27: season + occasion on the card for catalog dropdowns.
+  Everyday is the store word (not Daytime). Accepts Occasion_* and raw tags.
+{%- endcomment -%}
+{%- assign season_key = '' -%}
+{%- assign occasion_key = '' -%}
+{%- assign tags_join = product.tags | join: '|' | downcase -%}
+{%- if tags_join contains 'spring' -%}{%- assign season_key = season_key | append: ' spring' -%}{%- endif -%}
+{%- if tags_join contains 'summer' -%}{%- assign season_key = season_key | append: ' summer' -%}{%- endif -%}
+{%- if tags_join contains 'fall' or tags_join contains 'autumn' -%}{%- assign season_key = season_key | append: ' fall' -%}{%- endif -%}
+{%- if tags_join contains 'winter' -%}{%- assign season_key = season_key | append: ' winter' -%}{%- endif -%}
+{%- if tags_join contains 'everyday' or tags_join contains 'daytime' -%}{%- assign occasion_key = occasion_key | append: ' everyday' -%}{%- endif -%}
+{%- if tags_join contains 'evening' or tags_join contains 'night' -%}{%- assign occasion_key = occasion_key | append: ' evening' -%}{%- endif -%}
+{%- if tags_join contains 'office' or tags_join contains 'work' -%}{%- assign occasion_key = occasion_key | append: ' office' -%}{%- endif -%}
+{%- if tags_join contains 'date' -%}{%- assign occasion_key = occasion_key | append: ' date' -%}{%- endif -%}
+
+{% doc %}
+  Compact fragrance card with actual atomizer format and original bottle reference.
+  @param {product} product - Shopify fragrance product.
+  @param {string} section_id - Unique section identifier.
+  @param {boolean} [compact] - Use Jeff's compact bordered catalog tile.
+  @param {boolean} [pick_mode] - Box builder tile: an "Add to box" button (plus a hidden "Remove one") instead of the add-to-cart form.
+  @param {number} [min_stock] - pick_mode only: tracked 5ml stock below this renders as sold out.
+{% enddoc %}
+
+{%- liquid
+  assign vial = blank
+  for variant in product.variants
+    assign variant_title = variant.title | downcase | remove: ' '
+    if variant_title contains '5ml'
+      assign vial = variant
+      break
+    endif
+  endfor
+  assign scent_name = product.title | remove_first: product.vendor | remove: 'EDP' | remove: 'Eau de Parfum' | strip
+  if scent_name == blank
+    assign scent_name = product.title
+  endif
+  assign gender = 'unclassified'
+  assign tags_down = product.tags | join: '|' | downcase
+  assign title_down = product.title | downcase
+  if tags_down contains 'gender_unisex' or tags_down contains 'unisex'
+    assign gender = 'unisex'
+  elsif tags_down contains 'gender_her' or tags_down contains 'feminine' or title_down contains 'for her' or title_down contains 'pour femme'
+    assign gender = 'her'
+  elsif tags_down contains 'gender_him' or tags_down contains 'masculine' or title_down contains 'for him' or title_down contains 'pour homme'
+    assign gender = 'him'
+  endif
+
+  assign family = ''
+  if tags_down contains 'fresh' or tags_down contains 'citrus' or tags_down contains 'clean' or tags_down contains 'aromatic' or tags_down contains 'green' or tags_down contains 'tropical'
+    assign family = family | append: 'fresh '
+  endif
+  if tags_down contains 'woody' or tags_down contains 'woodsy' or tags_down contains 'oud' or tags_down contains 'leather' or tags_down contains 'smoky'
+    assign family = family | append: 'woody '
+  endif
+  if tags_down contains 'sweet' or tags_down contains 'vanilla' or tags_down contains 'gourmand' or tags_down contains 'fruity' or tags_down contains 'boozy' or tags_down contains 'powdery' or tags_down contains 'floral' or tags_down contains 'flowery'
+    assign family = family | append: 'sweet '
+  endif
+  if tags_down contains 'spicy' or tags_down contains 'amber' or tags_down contains 'oriental' or tags_down contains 'benzoin'
+    assign family = family | append: 'spicy '
+  endif
+  assign family = family | strip
+
+  assign review_count = product.metafields.reviews.rating_count.value | default: product.metafields.judgeme.review_count | default: product.metafields.reviews.count.value | default: 0
+
+  if pick_mode
+    assign pick_title = product.title | remove: 'EDP' | remove: 'Eau de Parfum' | strip
+    assign pick_label = scent_name
+    unless scent_name == pick_title
+      assign pick_label = product.vendor | append: ' ' | append: scent_name
+    endunless
+    assign pick_available = vial.available
+    assign pick_stock = ''
+    if vial.inventory_management != blank
+      assign pick_stock = vial.inventory_quantity
+      if vial.inventory_quantity < min_stock
+        assign pick_available = false
+      endif
+    endif
+  endif
+-%}
+
+{%- unless product.handle == 'extra-5ml-vial-add-on' or product.price == 0 or vial == blank -%}
+<article
+  class="scent-card{% if compact %} scent-card--reference{% endif %}"
+  data-scent-card
+  data-gender="{{ gender }}"
+  data-family="{{ family }}"
+  data-brand="{{ product.vendor | strip | escape }}"
+  data-season="{{ season_key | strip | escape }}"
+  data-occasion="{{ occasion_key | strip | escape }}"
+  data-created="{{ product.created_at | date: '%s' }}"
+  data-tags="{{ tags_down | escape }}"
+  data-name="{{ product.title | escape }}"
+  aria-labelledby="ScentCard-{{ section_id }}-{{ product.id }}"
+  {%- if pick_mode %}
+  data-handle="{{ product.handle }}"
+  data-product-id="{{ product.id }}"
+  data-variant-id="{{ vial.id }}"
+  data-box-label="{{ pick_label | escape }}"
+  data-available="{{ pick_available }}"
+  {%- if pick_stock != '' %} data-stock="{{ pick_stock }}"{% endif -%}
+  {%- endif %}
+>
+  {%- if pick_mode -%}
+    <div class="scent-card__media">
+      <span class="scent-card__badge" aria-hidden="true">5ml</span>
+      {%- liquid
+        assign card_image = product.featured_image
+        assign card_alt = pick_label | append: ', 5ml vial'
+      -%}
+      {%- capture grid_photo -%}{%- if card_image -%}{% render 'grid-photo', handle: product.handle, image_id: card_image.id %}{%- endif -%}{%- endcapture -%}
+      {%- if grid_photo != blank -%}
+        <img src="{{ grid_photo | strip }}" width="600" height="600" loading="lazy" class="scent-card__reference-image" alt="{{ card_alt | escape }}">
+      {%- elsif card_image -%}
+        {{ card_image | image_url: width: 600 | image_tag: loading: 'lazy', widths: '240, 360, 480, 600', sizes: '(min-width: 1000px) 14rem, 45vw', class: 'scent-card__reference-image', alt: card_alt }}
+      {%- else -%}
+        <span class="scent-card__vial" role="img" aria-label="{{ card_alt | escape }}">{% render 'vial-illustration', product: product %}</span>
+      {%- endif -%}
+      <span class="scent-card__slot" aria-hidden="true" hidden></span>
+    </div>
+    <h3 id="ScentCard-{{ section_id }}-{{ product.id }}">{{ scent_name }}</h3>
+    <p class="scent-card__brand">{{ product.vendor }}</p>
+    {%- if pick_available -%}
+      <button type="button" class="scent-card__pick" data-box-pick aria-label="Add {{ pick_label | escape }} to box"><svg class="scent-card__check" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5L20 6"></path></svg><span>Add to box</span></button>
+      <button type="button" class="scent-card__unpick" data-box-unpick aria-label="Remove one {{ pick_label | escape }}" hidden><span>Remove one</span></button>
+    {%- else -%}
+      <p class="scent-card__soldout">Sold out</p>
+    {%- endif -%}
+  {%- else -%}
+  {%- if compact -%}
+    <a class="scent-card__media" href="{{ product.url }}" aria-label="{{ 'fragrance_reference.explore' | t: fragrance: product.title | escape }}">
+      <span class="scent-card__badge" aria-hidden="true">5ml</span>
+      {%- liquid
+        assign card_image = product.featured_image
+        assign card_alt = card_image.alt | default: product.title
+      -%}
+      {%- capture grid_photo -%}{%- if card_image -%}{% render 'grid-photo', handle: product.handle, image_id: card_image.id %}{%- endif -%}{%- endcapture -%}
+      {%- if grid_photo != blank -%}
+        <img src="{{ grid_photo | strip }}" width="600" height="600" loading="lazy" class="scent-card__reference-image" alt="{{ card_alt | escape }}">
+      {%- elsif card_image -%}
+        {{ card_image | image_url: width: 600 | image_tag: loading: 'lazy', widths: '240, 360, 480, 600', sizes: '(min-width: 821px) 260px, 45vw', class: 'scent-card__reference-image', alt: card_alt }}
+      {%- else -%}
+        <span class="scent-card__vial">{% render 'vial-illustration', product: product %}</span>
+      {%- endif -%}
+    </a>
+    <h2 id="ScentCard-{{ section_id }}-{{ product.id }}"><a href="{{ product.url }}">{{ scent_name }}</a></h2>
+    <p class="scent-card__brand">{{ product.vendor }}</p>
+    {%- if review_count >= 3 -%}{% render 'product-review-badge', product: product, surface: 'card' %}{%- endif -%}
+  {%- else -%}
+    <a class="scent-card__media" href="{{ product.url }}" aria-label="Explore {{ product.title | escape }} in a 5ml vial">
+      <span class="scent-card__vial">{% render 'vial-illustration', product: product %}</span>
+      {%- if product.featured_image -%}
+        <span class="scent-card__original">
+          {{ product.featured_image | image_url: width: 200 | image_tag: loading: 'lazy', widths: '100, 150, 200', sizes: '64px', alt: product.featured_image.alt | default: product.title }}
+          <span>Original fragrance</span>
+        </span>
+      {%- endif -%}
+    </a>
+    <p class="scent-card__brand">{{ product.vendor }}</p>
+    <h2 id="ScentCard-{{ section_id }}-{{ product.id }}"><a href="{{ product.url }}">{{ scent_name }}</a></h2>
+    <p class="scent-card__format">5ml travel atomizer</p>
+  {%- endif -%}
+
+  <form method="post" action="{{ routes.cart_add_url }}" data-scent-add data-kind="vial" data-variant-id="{{ vial.id }}" data-handle="{{ product.handle }}" data-title="{{ product.title | escape }}" data-price="{{ vial.price }}" data-add-label="{% if compact %}{{ 'fragrance_reference.add' | t | escape }}{% else %}Add vial{% endif %}" data-sold-out-label="{{ 'products.product.sold_out' | t | escape }}">
+    <input type="hidden" name="id" value="{{ vial.id }}">
+    <input type="hidden" name="quantity" value="1">
+    <p class="scent-card__price"><span data-scent-price>{{ vial.price | money_without_trailing_zeros }}</span></p>
+    <button type="submit" {% unless vial.available %}disabled{% endunless %}>
+      {% if vial.available %}{% if compact %}{{ 'fragrance_reference.add' | t }}{% else %}Add vial{% endif %}{% else %}{{ 'products.product.sold_out' | t }}{% endif %}
+    </button>
+  </form>
+  {%- endif %}
+</article>
+{%- endunless -%}

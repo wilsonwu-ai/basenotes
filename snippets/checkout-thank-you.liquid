@@ -414,7 +414,7 @@
       <div class="bn-ty__sub-summary">
         {%- if sub_item.image -%}
           <div class="bn-ty__sub-image">
-            <img src="{{ sub_item.image | image_url: width: 200 }}" alt="{{ sub_item.product.title | escape }}">
+            <img src="{{ sub_item.image | image_url: width: 200 }}" alt="{{ sub_item.product.title | escape }}" width="{{ sub_item.image.width }}" height="{{ sub_item.image.height }}">
           </div>
         {%- endif -%}
         <div class="bn-ty__sub-details">

@@ -1,1458 +1,379 @@
 <script>
-  window.__sellingPlans = {};
-  {%- for product in collections.all.products limit: 50 -%}
-    {%- if product.selling_plan_groups.size > 0 -%}
-      window.__sellingPlans["{{ product.handle }}"] = {{ product.selling_plan_groups[0].selling_plans[0].id }};
-    {%- endif -%}
-  {%- endfor -%}
+  window.__bnScentMeta = {
+    {%- assign bn_meta_first = true -%}
+    {%- for product in collections['fragrances'].products limit: 80 -%}
+      {%- if product.handle == 'extra-5ml-vial-add-on' -%}{%- continue -%}{%- endif -%}
+      {%- unless bn_meta_first -%},{%- endunless -%}
+      "{{ product.handle }}": {{ product.tags | json }}
+      {%- assign bn_meta_first = false -%}
+    {%- endfor -%}
+  };
 </script>
+
 <section class="quiz-section">
-  {% comment %} Quiz Hero/Intro {% endcomment %}
   <div class="quiz-intro" id="quizIntro">
-    <div class="container">
-      <div class="quiz-intro__content">
-        <span class="quiz-intro__eyebrow">Personalized Recommendations</span>
-        <h1 class="quiz-intro__title">Find Your Signature Scents</h1>
-        <p class="quiz-intro__description">
-          Answer 5 quick questions and we'll match you with fragrances that fit your style,
-          lifestyle, and preferences. Our algorithm analyzes your responses to find your
-          perfect scent profile from our curated collection.
-        </p>
-        <div class="quiz-intro__features">
-          <div class="quiz-intro__feature">
-            <span class="quiz-intro__feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            </span>
-            <span>Takes 2 minutes</span>
-          </div>
-          <div class="quiz-intro__feature">
-            <span class="quiz-intro__feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </span>
-            <span>Science-backed matching</span>
-          </div>
-          <div class="quiz-intro__feature">
-            <span class="quiz-intro__feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            </span>
-            <span>Personalized results</span>
-          </div>
-        </div>
-        <button class="btn btn--primary btn--large" id="startQuizBtn">
-          Start the Quiz
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; margin-left: 8px;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </button>
-        <p class="quiz-intro__note">No account required. Your results are saved locally.</p>
-      </div>
+    <div class="quiz-intro__content">
+      <span class="quiz-intro__eyebrow">Personalized recommendations</span>
+      <h1 class="quiz-intro__title">Find Your Ideal Scents</h1>
+      <p class="quiz-intro__description">Four short questions. We match you to scents by wearer, occasion, season, and family.</p>
+      <button class="btn btn--primary btn--large" id="startQuizBtn" type="button">Start the Quiz</button>
+      <p class="quiz-intro__note">No account required.</p>
     </div>
   </div>
 
-  {% comment %} Quiz Container {% endcomment %}
-  <div class="quiz-container" id="quizContainer" style="display: none;">
-    <div class="container">
-      <div class="quiz" id="scentQuiz">
-        {% comment %} Progress Bar {% endcomment %}
-        <div class="quiz__progress">
-          <div class="quiz__progress-bar">
-            <div class="quiz__progress-fill" id="progressFill"></div>
-          </div>
-          <span class="quiz__progress-text" id="progressText">Question 1 of 5</span>
-        </div>
-
-        {% comment %} Quiz Questions {% endcomment %}
-        <div class="quiz__questions">
-
-          {% comment %} Question 1: Lifestyle/Occasion {% endcomment %}
-          <div class="quiz__slide" data-question="1">
-            <div class="quiz__question">
-              <h2 class="quiz__question-text">Where will you wear this fragrance most?</h2>
-              <p class="quiz__question-hint">Select the primary setting for your signature scent</p>
-            </div>
-            <div class="quiz__options quiz__options--grid">
-              <button class="quiz__option" data-value="office">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-                </span>
-                <span class="quiz__option-label">Office & Business</span>
-                <span class="quiz__option-desc">Professional settings, meetings, networking</span>
-              </button>
-              <button class="quiz__option" data-value="casual">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-                </span>
-                <span class="quiz__option-label">Casual & Everyday</span>
-                <span class="quiz__option-desc">Weekend errands, coffee runs, daily wear</span>
-              </button>
-              <button class="quiz__option" data-value="evening">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                </span>
-                <span class="quiz__option-label">Evening & Dating</span>
-                <span class="quiz__option-desc">Dinner dates, bars, nightlife, romantic settings</span>
-              </button>
-              <button class="quiz__option" data-value="special">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                </span>
-                <span class="quiz__option-label">Special Occasions</span>
-                <span class="quiz__option-desc">Weddings, galas, milestone events</span>
-              </button>
-            </div>
-          </div>
-
-          {% comment %} Question 2: Season/Climate {% endcomment %}
-          <div class="quiz__slide" data-question="2" style="display: none;">
-            <div class="quiz__question">
-              <h2 class="quiz__question-text">What's your preferred season or climate to wear fragrances?</h2>
-              <p class="quiz__question-hint">Different notes perform better in different temperatures</p>
-            </div>
-            <div class="quiz__options quiz__options--grid">
-              <button class="quiz__option" data-value="warm">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-                </span>
-                <span class="quiz__option-label">Spring & Summer</span>
-                <span class="quiz__option-desc">Light, fresh scents that won't overwhelm in heat</span>
-              </button>
-              <button class="quiz__option" data-value="cold">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2v20M20 16l-4-4 4-4M4 8l4 4-4 4M16 4l-4 4-4-4M8 20l4-4 4 4"/></svg>
-                </span>
-                <span class="quiz__option-label">Fall & Winter</span>
-                <span class="quiz__option-desc">Rich, warming scents that project in cool air</span>
-              </button>
-              <button class="quiz__option" data-value="versatile">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                </span>
-                <span class="quiz__option-label">Year-Round</span>
-                <span class="quiz__option-desc">Versatile scents that work in any season</span>
-              </button>
-              <button class="quiz__option" data-value="tropical">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 8c.7-1 1-2.2 1-3.5A5.5 5.5 0 0 0 12.5 0 5.5 5.5 0 0 0 7 4.5c0 1.3.3 2.5 1 3.5"/><path d="M12 22V10"/><path d="M7 12l5-2 5 2"/><path d="M7 16l5-2 5 2"/><path d="M7 20l5-2 5 2"/></svg>
-                </span>
-                <span class="quiz__option-label">Hot & Humid</span>
-                <span class="quiz__option-desc">Live in a tropical climate year-round</span>
-              </button>
-            </div>
-          </div>
-
-          {% comment %} Question 3: Scent Family {% endcomment %}
-          <div class="quiz__slide" data-question="3" style="display: none;">
-            <div class="quiz__question">
-              <h2 class="quiz__question-text">Which scent profile speaks to you?</h2>
-              <p class="quiz__question-hint">Trust your instincts - there's no wrong answer</p>
-            </div>
-            <div class="quiz__options quiz__options--grid">
-              <button class="quiz__option" data-value="woody">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22V8"/><path d="M5 12l7-4 7 4"/><path d="M5 16l7-4 7 4"/><path d="M5 20l7-4 7 4"/></svg>
-                </span>
-                <span class="quiz__option-label">Woody & Earthy</span>
-                <span class="quiz__option-desc">Sandalwood, cedar, vetiver, patchouli</span>
-              </button>
-              <button class="quiz__option" data-value="fresh">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-                </span>
-                <span class="quiz__option-label">Fresh & Aquatic</span>
-                <span class="quiz__option-desc">Citrus, marine, green tea, cucumber</span>
-              </button>
-              <button class="quiz__option" data-value="oriental">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/><circle cx="12" cy="12" r="4"/></svg>
-                </span>
-                <span class="quiz__option-label">Oriental & Spicy</span>
-                <span class="quiz__option-desc">Amber, oud, cardamom, cinnamon, incense</span>
-              </button>
-              <button class="quiz__option" data-value="aromatic">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>
-                </span>
-                <span class="quiz__option-label">Aromatic & Herbal</span>
-                <span class="quiz__option-desc">Lavender, sage, rosemary, mint</span>
-              </button>
-            </div>
-          </div>
-
-          {% comment %} Question 4: Projection/Intensity {% endcomment %}
-          <div class="quiz__slide" data-question="4" style="display: none;">
-            <div class="quiz__question">
-              <h2 class="quiz__question-text">How do you want to be noticed?</h2>
-              <p class="quiz__question-hint">This determines projection and scent trail</p>
-            </div>
-            <div class="quiz__options quiz__options--list">
-              <button class="quiz__option" data-value="intimate">
-                <div class="quiz__option-content">
-                  <span class="quiz__option-label">Intimate & Personal</span>
-                  <span class="quiz__option-desc">Only noticed when close - whisper distance</span>
-                </div>
-                <span class="quiz__option-indicator"></span>
-              </button>
-              <button class="quiz__option" data-value="moderate">
-                <div class="quiz__option-content">
-                  <span class="quiz__option-label">Moderate & Balanced</span>
-                  <span class="quiz__option-desc">Noticeable within arm's reach - professional</span>
-                </div>
-                <span class="quiz__option-indicator"></span>
-              </button>
-              <button class="quiz__option" data-value="confident">
-                <div class="quiz__option-content">
-                  <span class="quiz__option-label">Confident & Present</span>
-                  <span class="quiz__option-desc">Leaves a trail - enters the room with you</span>
-                </div>
-                <span class="quiz__option-indicator"></span>
-              </button>
-              <button class="quiz__option" data-value="powerful">
-                <div class="quiz__option-content">
-                  <span class="quiz__option-label">Powerful & Commanding</span>
-                  <span class="quiz__option-desc">Beast mode - announces your arrival</span>
-                </div>
-                <span class="quiz__option-indicator"></span>
-              </button>
-            </div>
-          </div>
-
-          {% comment %} Question 5: Key Notes {% endcomment %}
-          <div class="quiz__slide" data-question="5" style="display: none;">
-            <div class="quiz__question">
-              <h2 class="quiz__question-text">Which note combination draws you in?</h2>
-              <p class="quiz__question-hint">Imagine smelling these in a high-end boutique</p>
-            </div>
-            <div class="quiz__options quiz__options--grid">
-              <button class="quiz__option" data-value="oud-leather">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                </span>
-                <span class="quiz__option-label">Oud & Leather</span>
-                <span class="quiz__option-desc">Luxurious, bold, Middle Eastern influence</span>
-              </button>
-              <button class="quiz__option" data-value="bergamot-vetiver">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                </span>
-                <span class="quiz__option-label">Bergamot & Vetiver</span>
-                <span class="quiz__option-desc">Fresh opening, earthy dry-down, sophisticated</span>
-              </button>
-              <button class="quiz__option" data-value="tobacco-vanilla">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                </span>
-                <span class="quiz__option-label">Tobacco & Vanilla</span>
-                <span class="quiz__option-desc">Warm, sweet, cozy, evening-oriented</span>
-              </button>
-              <button class="quiz__option" data-value="cedar-musk">
-                <span class="quiz__option-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><line x1="12" y1="22" x2="12" y2="15.5"/><polyline points="22 8.5 12 15.5 2 8.5"/></svg>
-                </span>
-                <span class="quiz__option-label">Cedar & Clean Musk</span>
-                <span class="quiz__option-desc">Modern, clean, versatile, crowd-pleaser</span>
-              </button>
-            </div>
-          </div>
-
-          {% comment %} Email Gate — captures high-intent lead BEFORE revealing results {% endcomment %}
-          <div class="quiz__slide quiz__email-gate" data-question="email-gate" style="display: none;">
-            <div class="quiz__email-gate-content">
-              <div class="quiz__results-badge" style="margin: 0 auto 20px;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-              </div>
-              <span class="quiz__results-eyebrow">Your scent profile is ready.</span>
-              <h2 class="quiz-email-gate__title">See your top fragrance matches</h2>
-              <p class="quiz-email-gate__subtitle">Enter your email to reveal your scent profile and top 3 matches — plus 25% off your first month.</p>
-              <form class="quiz-email-gate__form" id="quizEmailForm" novalidate>
-                <input
-                  type="email"
-                  required
-                  placeholder="you@example.com"
-                  autocomplete="email"
-                  name="email"
-                  class="quiz-email-gate__input"
-                  aria-label="Email address"
-                >
-                <button type="submit" class="btn btn--primary btn--large quiz-email-gate__submit">See My Matches</button>
-              </form>
-              <p class="quiz-email-gate__microcopy">No spam. Unsubscribe in one click.</p>
-              <button type="button" class="quiz-email-gate__skip" id="quizEmailSkip">See results without email</button>
-            </div>
-          </div>
-
-          {% comment %} Results {% endcomment %}
-          <div class="quiz__slide quiz__results" data-question="results" style="display: none;">
-            <div class="quiz__results-content">
-              <div class="quiz__results-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
-              </div>
-              <span class="quiz__results-eyebrow">Your Scent Profile</span>
-              <h2 class="quiz__results-title" id="quizResultTitle">The Sophisticated Explorer</h2>
-              <p class="quiz__results-description" id="quizResultDescription">
-                You appreciate depth and complexity in your fragrances. You're drawn to rich, luxurious scents that make a statement without being overwhelming.
-              </p>
-
-              <div class="quiz__results-traits" id="quizResultTraits">
-                <div class="quiz__results-trait">
-                  <span class="quiz__results-trait-label">Best For</span>
-                  <span class="quiz__results-trait-value" id="traitOccasion">Evening & Special Events</span>
-                </div>
-                <div class="quiz__results-trait">
-                  <span class="quiz__results-trait-label">Season</span>
-                  <span class="quiz__results-trait-value" id="traitSeason">Fall & Winter</span>
-                </div>
-                <div class="quiz__results-trait">
-                  <span class="quiz__results-trait-label">Projection</span>
-                  <span class="quiz__results-trait-value" id="traitProjection">Confident</span>
-                </div>
-              </div>
-
-              <div class="quiz__results-divider"></div>
-
-              <h3 class="quiz__results-subtitle">Your Top Matches</h3>
-              <div id="quizRecommendations" class="quiz__recommendations">
-                {% comment %} Recommendations populated by JavaScript {% endcomment %}
-              </div>
-
-              <div class="quiz__results-actions">
-                <a href="/collections/all" class="btn btn--primary btn--large">
-                  Browse All Fragrances
-                </a>
-                <button class="btn btn--outline" id="retakeQuizBtn">
-                  Retake Quiz
-                </button>
-              </div>
-
-              {%- comment -%}
-                Was /pages/subscription. That template was deleted with the
-                subscription landing page; the fragrance collection is now the
-                canonical place to start a subscription (each PDP carries the
-                Appstle selling plan).
-              {%- endcomment -%}
-              <p class="quiz__results-cta">
-                Ready to explore? <a href="/collections/fragrances">Subscribe for {{ settings.subscription_price | default: '$20' }}/month</a> and get your first match delivered.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {% comment %} Back Button {% endcomment %}
-        <button class="quiz__back" id="quizBack" style="display: none;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Back
-        </button>
+  <div class="quiz-container" id="quizContainer" style="display:none;">
+    <div class="quiz" id="scentQuiz">
+      <div class="quiz__progress">
+        <div class="quiz__progress-bar"><div class="quiz__progress-fill" id="progressFill"></div></div>
+        <span class="quiz__progress-text" id="progressText">Question 1 of 4</span>
       </div>
+
+      <div class="quiz__slide" data-question="1">
+        <div class="quiz__question"><h2 class="quiz__question-text">Who is this scent for?</h2></div>
+        <div class="quiz__options quiz__options--grid quiz__options--three">
+          <button class="quiz__option" type="button" data-value="him"><span class="quiz__option-label">For him</span></button>
+          <button class="quiz__option" type="button" data-value="her"><span class="quiz__option-label">For her</span></button>
+          <button class="quiz__option" type="button" data-value="unisex"><span class="quiz__option-label">Unisex</span></button>
+        </div>
+      </div>
+
+      <div class="quiz__slide" data-question="2" style="display:none;">
+        <div class="quiz__question"><h2 class="quiz__question-text">Where will you wear this most?</h2></div>
+        <div class="quiz__options quiz__options--grid">
+          <button class="quiz__option" type="button" data-value="office"><span class="quiz__option-label">Office</span></button>
+          <button class="quiz__option" type="button" data-value="everyday"><span class="quiz__option-label">Everyday</span></button>
+          <button class="quiz__option" type="button" data-value="evening"><span class="quiz__option-label">Evening</span></button>
+          <button class="quiz__option" type="button" data-value="date"><span class="quiz__option-label">Date night</span></button>
+        </div>
+      </div>
+
+      <div class="quiz__slide" data-question="3" style="display:none;">
+        <div class="quiz__question"><h2 class="quiz__question-text">Which season first?</h2></div>
+        <div class="quiz__options quiz__options--grid">
+          <button class="quiz__option" type="button" data-value="spring"><span class="quiz__option-label">Spring</span></button>
+          <button class="quiz__option" type="button" data-value="summer"><span class="quiz__option-label">Summer</span></button>
+          <button class="quiz__option" type="button" data-value="fall"><span class="quiz__option-label">Fall</span></button>
+          <button class="quiz__option" type="button" data-value="winter"><span class="quiz__option-label">Winter</span></button>
+          <button class="quiz__option" type="button" data-value="tropical"><span class="quiz__option-label">Hot &amp; humid (year-round)</span></button>
+        </div>
+      </div>
+
+      <div class="quiz__slide" data-question="4" style="display:none;">
+        <div class="quiz__question"><h2 class="quiz__question-text">Which family first?</h2></div>
+        <div class="quiz__options quiz__options--grid">
+          <button class="quiz__option" type="button" data-value="fresh"><span class="quiz__option-label">Fresh</span><span class="quiz__option-desc">Citrus, clean, green</span></button>
+          <button class="quiz__option" type="button" data-value="woody"><span class="quiz__option-label">Woody</span><span class="quiz__option-desc">Cedar, sandalwood, oud</span></button>
+          <button class="quiz__option" type="button" data-value="sweet"><span class="quiz__option-label">Sweet</span><span class="quiz__option-desc">Vanilla, fruit, floral</span></button>
+          <button class="quiz__option" type="button" data-value="spicy"><span class="quiz__option-label">Spicy</span><span class="quiz__option-desc">Amber, incense, spice</span></button>
+        </div>
+      </div>
+
+      <div class="quiz__slide quiz__email-gate" data-question="email-gate" style="display:none;">
+        <span class="quiz__results-eyebrow">Your matches are ready</span>
+        <h2 class="quiz-email-gate__title">See your ideal scents</h2>
+        <p class="quiz-email-gate__subtitle">Email unlocks the three picks and 25% off the first Monthly Rotation.</p>
+        <form class="quiz-email-gate__form" id="quizEmailForm" novalidate>
+          <input type="email" required name="email" class="quiz-email-gate__input" placeholder="you@example.com" autocomplete="email">
+          <button type="submit" class="btn btn--primary btn--large">See my matches</button>
+        </form>
+        <button type="button" class="quiz-email-gate__skip" id="quizEmailSkip">See results without email</button>
+      </div>
+
+      <div class="quiz__slide quiz__results" data-question="results" style="display:none;">
+        <p class="quiz__results-eyebrow">Your matches</p>
+        <h2 id="quizResultTitle"></h2>
+        <p id="quizResultDescription"></p>
+        <p class="quiz__matchline" id="quizMatchLine"></p>
+        <div id="quizRecommendations" class="quiz__recommendations"></div>
+        <div class="quiz__results-actions">
+          <a href="/collections/fragrances">View the collection</a>
+          <span aria-hidden="true">|</span>
+          <button type="button" id="retakeQuizBtn">Retake</button>
+        </div>
+      </div>
+
+      <button type="button" id="quizBackBtn" class="quiz__back" style="display:none;">Back</button>
     </div>
   </div>
 </section>
 
-<style>
-  .quiz-section {
-    min-height: 100vh;
-    background: linear-gradient(180deg, var(--color-background) 0%, var(--color-background-secondary) 100%);
-  }
-
-  /* Quiz Intro */
-  .quiz-intro {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    padding: calc(var(--header-height) + var(--spacing-3xl)) 0 var(--spacing-3xl);
-  }
-
-  .quiz-intro__content {
-    max-width: 640px;
-    margin: 0 auto;
-    text-align: center;
-  }
-
-  .quiz-intro__eyebrow {
-    display: inline-block;
-    padding: 6px 16px;
-    background: var(--color-secondary);
-    color: var(--color-primary);
-    font-size: var(--font-size-xs);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    border-radius: var(--radius-full);
-    margin-bottom: var(--spacing-lg);
-  }
-
-  .quiz-intro__title {
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 700;
-    margin-bottom: var(--spacing-md);
-    line-height: 1.2;
-  }
-
-  .quiz-intro__description {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-light);
-    line-height: 1.7;
-    margin-bottom: var(--spacing-2xl);
-  }
-
-  .quiz-intro__features {
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-xl);
-    margin-bottom: var(--spacing-2xl);
-    flex-wrap: wrap;
-  }
-
-  .quiz-intro__feature {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-  }
-
-  .quiz-intro__feature-icon {
-    width: 24px;
-    height: 24px;
-    color: var(--color-secondary);
-  }
-
-  .quiz-intro__feature-icon svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  .quiz-intro__note {
-    margin-top: var(--spacing-lg);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-  }
-
-  /* Quiz Container */
-  .quiz-container {
-    min-height: 100vh;
-    padding: calc(var(--header-height) + var(--spacing-2xl)) 0 var(--spacing-3xl);
-  }
-
-  .quiz {
-    max-width: 700px;
-    margin: 0 auto;
-    position: relative;
-  }
-
-  /* Progress */
-  .quiz__progress {
-    margin-bottom: var(--spacing-2xl);
-    text-align: center;
-  }
-
-  .quiz__progress-bar {
-    height: 4px;
-    background: var(--color-border);
-    border-radius: 2px;
-    overflow: hidden;
-    margin-bottom: var(--spacing-sm);
-  }
-
-  .quiz__progress-fill {
-    height: 100%;
-    background: var(--color-secondary);
-    border-radius: 2px;
-    transition: width 0.3s ease;
-    width: 20%;
-  }
-
-  .quiz__progress-text {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-  }
-
-  /* Questions */
-  .quiz__question {
-    text-align: center;
-    margin-bottom: var(--spacing-2xl);
-  }
-
-  .quiz__question-text {
-    font-size: clamp(1.5rem, 4vw, 2rem);
-    font-weight: 600;
-    margin-bottom: var(--spacing-sm);
-    line-height: 1.3;
-  }
-
-  .quiz__question-hint {
-    font-size: var(--font-size-base);
-    color: var(--color-text-light);
-  }
-
-  /* Options Grid */
-  .quiz__options--grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-md);
-  }
-
-  .quiz__options--grid .quiz__option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: var(--spacing-xl);
-    background: white;
-    border: 2px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .quiz__options--grid .quiz__option:hover {
-    border-color: var(--color-secondary);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  }
-
-  .quiz__options--grid .quiz__option.is-selected {
-    border-color: var(--color-secondary);
-    background: rgba(184, 150, 61, 0.08);
-  }
-
-  .quiz__option-icon {
-    width: 48px;
-    height: 48px;
-    margin-bottom: var(--spacing-md);
-    color: var(--color-secondary);
-  }
-
-  .quiz__option-icon svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  .quiz__option-label {
-    display: block;
-    font-size: var(--font-size-base);
-    font-weight: 600;
-    margin-bottom: var(--spacing-xs);
-    color: var(--color-text);
-  }
-
-  .quiz__option-desc {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    line-height: 1.4;
-  }
-
-  /* Options List */
-  .quiz__options--list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-  }
-
-  .quiz__options--list .quiz__option {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--spacing-lg);
-    background: white;
-    border: 2px solid var(--color-border);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: left;
-  }
-
-  .quiz__options--list .quiz__option:hover {
-    border-color: var(--color-secondary);
-  }
-
-  .quiz__options--list .quiz__option.is-selected {
-    border-color: var(--color-secondary);
-    background: rgba(184, 150, 61, 0.08);
-  }
-
-  .quiz__option-content {
-    flex: 1;
-  }
-
-  .quiz__options--list .quiz__option-label {
-    margin-bottom: 2px;
-  }
-
-  .quiz__option-indicator {
-    width: 24px;
-    height: 24px;
-    border: 2px solid var(--color-border);
-    border-radius: 50%;
-    position: relative;
-    flex-shrink: 0;
-    margin-left: var(--spacing-md);
-    transition: all 0.2s;
-  }
-
-  .quiz__options--list .quiz__option.is-selected .quiz__option-indicator {
-    border-color: var(--color-secondary);
-    background: var(--color-secondary);
-  }
-
-  .quiz__options--list .quiz__option.is-selected .quiz__option-indicator::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 8px;
-    height: 8px;
-    background: white;
-    border-radius: 50%;
-  }
-
-  /* Back Button */
-  .quiz__back {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: none;
-    border: none;
-    color: var(--color-text-light);
-    font-size: var(--font-size-sm);
-    cursor: pointer;
-    transition: color 0.2s;
-  }
-
-  .quiz__back:hover {
-    color: var(--color-text);
-  }
-
-  .quiz__back svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  /* Results */
-  .quiz__results-content {
-    text-align: center;
-    padding: var(--spacing-xl) 0;
-  }
-
-  .quiz__results-badge {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto var(--spacing-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, var(--color-secondary) 0%, #d4b88a 100%);
-    border-radius: 50%;
-    color: white;
-  }
-
-  .quiz__results-badge svg {
-    width: 40px;
-    height: 40px;
-  }
-
-  .quiz__results-eyebrow {
-    display: block;
-    font-size: var(--font-size-xs);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--color-secondary);
-    margin-bottom: var(--spacing-sm);
-  }
-
-  .quiz__results-title {
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    font-weight: 700;
-    margin-bottom: var(--spacing-md);
-  }
-
-  .quiz__results-description {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-light);
-    line-height: 1.7;
-    max-width: 500px;
-    margin: 0 auto var(--spacing-xl);
-  }
-
-  .quiz__results-traits {
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-2xl);
-    margin-bottom: var(--spacing-xl);
-    flex-wrap: wrap;
-  }
-
-  .quiz__results-trait {
-    text-align: center;
-  }
-
-  .quiz__results-trait-label {
-    display: block;
-    font-size: var(--font-size-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--color-text-muted);
-    margin-bottom: var(--spacing-xs);
-  }
-
-  .quiz__results-trait-value {
-    font-weight: 600;
-    color: var(--color-text);
-  }
-
-  .quiz__results-divider {
-    width: 60px;
-    height: 2px;
-    background: var(--color-border);
-    margin: var(--spacing-2xl) auto;
-  }
-
-  .quiz__results-subtitle {
-    font-size: var(--font-size-xl);
-    margin-bottom: var(--spacing-xl);
-  }
-
-  /* Recommendations */
-  .quiz__recommendations {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-lg);
-    margin-bottom: var(--spacing-2xl);
-  }
-
-  .quiz-product-card {
-    background: white;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    transition: box-shadow 0.2s, transform 0.2s;
-  }
-
-  .quiz-product-card:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    transform: translateY(-4px);
-  }
-
-  .quiz-product-card__image {
-    display: block;
-    aspect-ratio: 1;
-    background: var(--color-background-secondary);
-    overflow: hidden;
-  }
-
-  .quiz-product-card__image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s;
-  }
-
-  .quiz-product-card:hover .quiz-product-card__image img {
-    transform: scale(1.05);
-  }
-
-  .quiz-product-card__placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--color-background-secondary);
-    color: var(--color-text-muted);
-  }
-
-  .quiz-product-card__details {
-    padding: var(--spacing-md);
-    text-align: left;
-  }
-
-  .quiz-product-card__vendor {
-    display: block;
-    font-size: var(--font-size-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--color-text-muted);
-    margin-bottom: var(--spacing-xs);
-  }
-
-  .quiz-product-card__title {
-    font-size: var(--font-size-sm);
-    font-family: var(--font-heading);
-    margin: 0 0 var(--spacing-xs);
-    line-height: 1.3;
-  }
-
-  .quiz-product-card__title a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .quiz-product-card__title a:hover {
-    color: var(--color-secondary);
-  }
-
-  .quiz-product-card__price {
-    font-weight: 600;
-    color: var(--color-secondary);
-  }
-
-  .quiz-product-card__plan-label {
-    display: block;
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-text-muted);
-    margin-top: 2px;
-  }
-
-  .quiz-product-card__add {
-    width: calc(100% - 2 * var(--spacing-md));
-    margin: 0 var(--spacing-md) var(--spacing-md);
-  }
-
-  .quiz-product-card__add:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-
-  .quiz-product-card__form {
-    padding: 0 var(--spacing-md) var(--spacing-md);
-  }
-
-  .quiz__results-actions {
-    display: flex;
-    gap: var(--spacing-md);
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .quiz__results-cta {
-    margin-top: var(--spacing-xl);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-  }
-
-  .quiz__results-cta a {
-    color: var(--color-secondary);
-    font-weight: 600;
-  }
-
-  /* Loading State */
-  .quiz__recommendations--loading {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: var(--spacing-2xl);
-    color: var(--color-text-light);
-  }
-
-  /* Mobile Responsive */
-  @media (max-width: 768px) {
-    .quiz-intro__features {
-      flex-direction: column;
-      align-items: center;
-      gap: var(--spacing-md);
-    }
-
-    .quiz__options--grid {
-      grid-template-columns: 1fr;
-    }
-
-    .quiz__recommendations {
-      grid-template-columns: 1fr;
-      max-width: 300px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .quiz__results-traits {
-      gap: var(--spacing-lg);
-    }
-
-    .quiz__results-actions {
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .quiz__results-actions .btn {
-      width: 100%;
-      max-width: 280px;
-    }
-  }
-
-  /* ─── Email Gate ──────────────────────────────────────────── */
-  .quiz__email-gate-content {
-    max-width: 540px;
-    margin: 0 auto;
-    text-align: center;
-    padding: 48px 20px;
-  }
-  .quiz-email-gate__title {
-    font-size: clamp(1.8rem, 4vw, 2.4rem);
-    letter-spacing: -0.01em;
-    margin: 16px 0 12px;
-    line-height: 1.2;
-  }
-  .quiz-email-gate__subtitle {
-    color: #555;
-    font-size: 1.02rem;
-    line-height: 1.55;
-    margin: 0 0 28px;
-  }
-  .quiz-email-gate__form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-width: 420px;
-    margin: 0 auto;
-  }
-  .quiz-email-gate__input {
-    width: 100%;
-    padding: 14px 16px;
-    font-size: 1rem;
-    border: 1px solid #d0d0d0;
-    border-radius: 4px;
-    background: #fff;
-    color: #1a1a1a;
-    font-family: inherit;
-  }
-  .quiz-email-gate__input:focus {
-    outline: none;
-    border-color: #1a1a1a;
-    box-shadow: 0 0 0 3px rgba(26,26,26,0.08);
-  }
-  .quiz-email-gate__submit {
-    width: 100%;
-  }
-  .quiz-email-gate__microcopy {
-    color: #888;
-    font-size: 0.82rem;
-    margin: 14px 0 0;
-  }
-  .quiz-email-gate__skip {
-    background: none;
-    border: none;
-    color: #888;
-    font-size: 0.85rem;
-    text-decoration: underline;
-    cursor: pointer;
-    margin-top: 18px;
-    padding: 8px;
-    font-family: inherit;
-  }
-  .quiz-email-gate__skip:hover {
-    color: #1a1a1a;
-  }
-  @media (min-width: 640px) {
-    .quiz-email-gate__form {
-      flex-direction: row;
-      align-items: stretch;
-    }
-    .quiz-email-gate__input {
-      flex: 1;
-    }
-    .quiz-email-gate__submit {
-      width: auto;
-      white-space: nowrap;
-    }
-  }
-</style>
-
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const quizIntro = document.getElementById('quizIntro');
-  const quizContainer = document.getElementById('quizContainer');
-  const startBtn = document.getElementById('startQuizBtn');
-  const backBtn = document.getElementById('quizBack');
-  const retakeBtn = document.getElementById('retakeQuizBtn');
-  const progressFill = document.getElementById('progressFill');
-  const progressText = document.getElementById('progressText');
+document.addEventListener('DOMContentLoaded', function () {
+  var quiz = document.getElementById('scentQuiz');
+  var quizIntro = document.getElementById('quizIntro');
+  var quizContainer = document.getElementById('quizContainer');
+  var startBtn = document.getElementById('startQuizBtn');
+  var backBtn = document.getElementById('quizBackBtn');
+  var retakeBtn = document.getElementById('retakeQuizBtn');
+  var progressFill = document.getElementById('progressFill');
+  var progressText = document.getElementById('progressText');
+  var currentQuestion = 1;
+  var totalQuestions = 4;
+  var answers = {};
+  var slides = quiz.querySelectorAll('.quiz__slide');
 
-  const quiz = document.getElementById('scentQuiz');
-  if (!quiz) return;
-
-  let currentQuestion = 1;
-  const totalQuestions = 5;
-  const answers = {};
-
-  const slides = quiz.querySelectorAll('.quiz__slide');
-
-  // Scoring matrix based on fragrance market research
-  const scoringMatrix = {
-    // Q1: Occasion
+  var scoringMatrix = {
+    him: { classic: 2, fresh: 2, sophisticated: 2, bold: 2 },
+    her: { classic: 2, fresh: 2, sophisticated: 2, bold: 1 },
+    unisex: { classic: 2, fresh: 2, sophisticated: 2, bold: 1 },
     office: { classic: 3, fresh: 2, sophisticated: 2, bold: 0 },
-    casual: { classic: 1, fresh: 3, sophisticated: 1, bold: 0 },
+    everyday: { classic: 2, fresh: 3, sophisticated: 1, bold: 0 },
     evening: { classic: 1, fresh: 0, sophisticated: 2, bold: 3 },
-    special: { classic: 2, fresh: 0, sophisticated: 3, bold: 2 },
-
-    // Q2: Season
-    warm: { classic: 1, fresh: 3, sophisticated: 1, bold: 0 },
-    cold: { classic: 2, fresh: 0, sophisticated: 2, bold: 3 },
-    versatile: { classic: 3, fresh: 2, sophisticated: 2, bold: 1 },
-    tropical: { classic: 0, fresh: 3, sophisticated: 1, bold: 0 },
-
-    // Q3: Scent family
+    date: { classic: 1, fresh: 0, sophisticated: 3, bold: 2 },
+    spring: { classic: 2, fresh: 3, sophisticated: 1, bold: 0 },
+    summer: { classic: 1, fresh: 3, sophisticated: 1, bold: 0 },
+    fall: { classic: 2, fresh: 1, sophisticated: 2, bold: 2 },
+    winter: { classic: 2, fresh: 0, sophisticated: 2, bold: 3 },
+    tropical: { classic: 1, fresh: 3, sophisticated: 1, bold: 0 },
     woody: { classic: 2, fresh: 1, sophisticated: 3, bold: 2 },
     fresh: { classic: 2, fresh: 3, sophisticated: 1, bold: 0 },
-    oriental: { classic: 1, fresh: 0, sophisticated: 2, bold: 3 },
-    aromatic: { classic: 3, fresh: 2, sophisticated: 1, bold: 0 },
-
-    // Q4: Projection
-    intimate: { classic: 2, fresh: 3, sophisticated: 2, bold: 0 },
-    moderate: { classic: 3, fresh: 2, sophisticated: 2, bold: 1 },
-    confident: { classic: 1, fresh: 0, sophisticated: 3, bold: 2 },
-    powerful: { classic: 0, fresh: 0, sophisticated: 1, bold: 3 },
-
-    // Q5: Notes
-    'oud-leather': { classic: 0, fresh: 0, sophisticated: 2, bold: 3 },
-    'bergamot-vetiver': { classic: 2, fresh: 2, sophisticated: 3, bold: 0 },
-    'tobacco-vanilla': { classic: 1, fresh: 0, sophisticated: 2, bold: 2 },
-    'cedar-musk': { classic: 3, fresh: 2, sophisticated: 2, bold: 0 }
+    sweet: { classic: 1, fresh: 1, sophisticated: 2, bold: 2 },
+    spicy: { classic: 1, fresh: 0, sophisticated: 2, bold: 3 }
   };
 
-  // Profile definitions with market-research backed descriptions
-  // matchSeasons/matchEvents match against structured tags (season:X, event:X)
-  const profiles = {
-    classic: {
-      name: 'The Refined Gentleman',
-      description: 'You gravitate toward timeless, crowd-pleasing fragrances that exude quiet confidence. Clean, professional, and universally appealing scents are your foundation. You believe a fragrance should complement, not overpower.',
-      occasion: 'Office & Daily Wear',
-      season: 'Year-Round',
-      projection: 'Moderate',
-      keywords: ['clean', 'fresh', 'citrus', 'bergamot', 'cedar', 'musk', 'professional'],
-      tags: ['clean', 'versatile', 'professional', 'classic'],
-      matchSeasons: ['spring', 'summer', 'fall', 'winter'],
-      matchEvents: ['office', 'everyday', 'casual']
-    },
-    fresh: {
-      name: 'The Modern Minimalist',
-      description: 'You prefer light, refreshing scents that feel like a second skin. Aquatic, citrus, and green notes energize you. You want a fragrance that\'s noticeable up close but never announces your presence from across the room.',
-      occasion: 'Casual & Active',
-      season: 'Spring & Summer',
-      projection: 'Intimate',
-      keywords: ['fresh', 'aquatic', 'citrus', 'marine', 'green', 'light', 'clean'],
-      tags: ['fresh', 'light', 'aquatic', 'citrus'],
-      matchSeasons: ['spring', 'summer'],
-      matchEvents: ['casual', 'everyday', 'beach', 'outdoor']
-    },
-    sophisticated: {
-      name: 'The Sophisticated Explorer',
-      description: 'Complexity and evolution intrigue you. You appreciate fragrances that tell a story, with distinct opening, heart, and base notes. Woody, amber, and niche ingredients appeal to your refined palate.',
-      occasion: 'Evening & Special',
-      season: 'Fall & Winter',
-      projection: 'Confident',
-      keywords: ['woody', 'amber', 'sandalwood', 'vetiver', 'sophisticated', 'complex', 'niche'],
-      tags: ['woody', 'sophisticated', 'complex', 'refined'],
-      matchSeasons: ['fall', 'winter'],
-      matchEvents: ['evening-out', 'date-night', 'formal', 'wedding']
-    },
-    bold: {
-      name: 'The Bold Pioneer',
-      description: 'You make statements. Oud, leather, tobacco, and spices are your playground. You want fragrances that leave a lasting impression and spark conversation. Subtlety is not in your vocabulary.',
-      occasion: 'Night Out & Events',
-      season: 'Cold Weather',
-      projection: 'Powerful',
-      keywords: ['oud', 'leather', 'tobacco', 'spicy', 'intense', 'bold', 'oriental'],
-      tags: ['bold', 'intense', 'oriental', 'statement'],
-      matchSeasons: ['fall', 'winter'],
-      matchEvents: ['evening-out', 'date-night', 'night-out', 'clubbing']
-    }
+  var profiles = {
+    classic: { name: 'Clean and easy', description: 'Crowd-pleasing bottles for most days.', keywords: ['clean','fresh','citrus','cedar','musk'], families: ['fresh','woody'] },
+    fresh: { name: 'Light and airy', description: 'Citrus, green, aquatic.', keywords: ['fresh','aquatic','citrus','green'], families: ['fresh'] },
+    sophisticated: { name: 'Woody and considered', description: 'Wood, amber, slower dry-down.', keywords: ['woody','amber','sandalwood','vetiver','oud'], families: ['woody','spicy'] },
+    bold: { name: 'Warm and loud', description: 'Oud, leather, spice, vanilla.', keywords: ['oud','leather','tobacco','spicy','vanilla'], families: ['spicy','sweet','woody'] }
   };
 
-  // Start quiz
-  startBtn?.addEventListener('click', function() {
+  function tagsFor(p) {
+    var raw = (window.__bnScentMeta && window.__bnScentMeta[p.handle]) || p.tags || [];
+    return raw.map(function (t) { return String(t).toLowerCase(); }).join('|');
+  }
+
+  startBtn.addEventListener('click', function () {
     quizIntro.style.display = 'none';
     quizContainer.style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  // Check for saved progress
-  const savedProfile = localStorage.getItem('basenotes_scent_profile');
-  if (savedProfile && profiles[savedProfile]) {
-    // Could show "Continue where you left off" but for now, start fresh
-  }
-
   function showQuestion(num) {
-    slides.forEach(slide => {
-      slide.style.display = 'none';
-    });
-
-    const currentSlide = quiz.querySelector(`[data-question="${num}"]`);
-    if (currentSlide) {
-      currentSlide.style.display = 'block';
-    }
-
-    // Update progress
-    if (num !== 'results') {
-      const progress = (num / totalQuestions) * 100;
-      progressFill.style.width = progress + '%';
-      progressText.textContent = `Question ${num} of ${totalQuestions}`;
-      backBtn.style.display = num > 1 ? 'flex' : 'none';
-    } else {
-      progressFill.style.width = '100%';
-      progressText.textContent = 'Complete!';
+    slides.forEach(function (s) { s.style.display = 'none'; });
+    var current = quiz.querySelector('[data-question="' + num + '"]');
+    var bar = document.querySelector('.quiz__progress');
+    if (bar) bar.style.display = (num === 'results' || num === 'email-gate') ? 'none' : '';
+    if (current) current.style.display = 'block';
+    if (num === 'results' || num === 'email-gate') {
       backBtn.style.display = 'none';
+    } else {
+      progressFill.style.width = (num / totalQuestions) * 100 + '%';
+      progressText.textContent = 'Question ' + num + ' of ' + totalQuestions;
+      backBtn.style.display = num > 1 ? 'inline-block' : 'none';
     }
-  }
-
-  function selectOption(questionNum, value) {
-    answers[questionNum] = value;
-
-    // Update UI
-    const currentSlide = quiz.querySelector(`[data-question="${questionNum}"]`);
-    currentSlide.querySelectorAll('.quiz__option').forEach(opt => {
-      opt.classList.remove('is-selected');
-    });
-    event.target.closest('.quiz__option').classList.add('is-selected');
-
-    // Auto-advance after animation
-    setTimeout(() => {
-      if (questionNum < totalQuestions) {
-        currentQuestion++;
-        showQuestion(currentQuestion);
-        // Scroll to top of quiz container for next question
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        showResults();
-        // Scroll to top for results
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }, 400);
   }
 
   function calculateProfile() {
-    const scores = { classic: 0, fresh: 0, sophisticated: 0, bold: 0 };
-
-    Object.values(answers).forEach(answer => {
-      if (scoringMatrix[answer]) {
-        Object.keys(scores).forEach(profile => {
-          scores[profile] += scoringMatrix[answer][profile] || 0;
-        });
-      }
+    var scores = { classic: 0, fresh: 0, sophisticated: 0, bold: 0 };
+    Object.keys(answers).forEach(function (k) {
+      var row = scoringMatrix[answers[k]];
+      if (!row) return;
+      Object.keys(scores).forEach(function (p) { scores[p] += row[p] || 0; });
     });
-
-    let maxScore = 0;
-    let winningProfile = 'sophisticated';
-
-    Object.keys(scores).forEach(profile => {
-      if (scores[profile] > maxScore) {
-        maxScore = scores[profile];
-        winningProfile = profile;
-      }
-    });
-
-    return winningProfile;
+    var win = 'classic', max = -1;
+    Object.keys(scores).forEach(function (p) { if (scores[p] > max) { max = scores[p]; win = p; } });
+    return win;
   }
 
-  function showResults() {
-    // Route through the email gate first — captures high-intent lead.
-    showEmailGate();
-  }
+  quiz.querySelectorAll('.quiz__option').forEach(function (option) {
+    option.addEventListener('click', function () {
+      var num = parseInt(this.closest('.quiz__slide').dataset.question, 10);
+      if (!num) return;
+      answers[num] = this.dataset.value;
+      this.closest('.quiz__slide').querySelectorAll('.quiz__option').forEach(function (o) { o.classList.remove('is-selected'); });
+      this.classList.add('is-selected');
+      setTimeout(function () {
+        if (num < totalQuestions) { currentQuestion = num + 1; showQuestion(currentQuestion); }
+        else { showQuestion('email-gate'); bindEmailGate(); }
+      }, 300);
+    });
+  });
 
-  function showEmailGate() {
-    showQuestion('email-gate');
-    const form = document.getElementById('quizEmailForm');
-    const skipBtn = document.getElementById('quizEmailSkip');
+  function bindEmailGate() {
+    var form = document.getElementById('quizEmailForm');
+    var skipBtn = document.getElementById('quizEmailSkip');
     if (!form || form.dataset.bound === 'true') return;
     form.dataset.bound = 'true';
-
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
-      const emailInput = form.elements['email'];
-      const email = (emailInput.value || '').trim();
-      if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-        emailInput.focus();
-        emailInput.setCustomValidity('Please enter a valid email address');
-        emailInput.reportValidity();
-        return;
-      }
-      emailInput.setCustomValidity('');
-      const submitBtn = form.querySelector('button[type="submit"]');
-      submitBtn.textContent = 'Revealing matches…';
-      submitBtn.disabled = true;
-      submitQuizEmailToKlaviyo(email).finally(function() {
-        revealResults();
-      });
+      var email = (form.elements.email.value || '').trim();
+      if (!email || email.indexOf('@') === -1) return;
+      submitKlaviyo(email).finally(revealResults);
     });
-
-    if (skipBtn) {
-      skipBtn.addEventListener('click', function() {
-        revealResults();
-      });
-    }
+    if (skipBtn) skipBtn.addEventListener('click', revealResults);
   }
 
-  function submitQuizEmailToKlaviyo(email) {
+  function submitKlaviyo(email) {
     var profileKey = calculateProfile();
     return fetch('https://a.klaviyo.com/client/events/?company_id=VbjRT8', {
-      method: 'POST',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-        'revision': '2024-10-15'
-      },
-      body: JSON.stringify({
-        data: {
-          type: 'event',
-          attributes: {
-            profile: {
-              data: {
-                type: 'profile',
-                attributes: {
-                  email: email,
-                  properties: {
-                    quiz_completed: true,
-                    scent_profile: profileKey
-                  }
-                }
-              }
-            },
-            metric: {
-              data: {
-                type: 'metric',
-                attributes: { name: 'Completed Scent Quiz' }
-              }
-            },
-            properties: {
-              scent_profile: profileKey,
-              q1_setting: answers[1] || '',
-              q2_season: answers[2] || '',
-              q3_profile: answers[3] || '',
-              q4_projection: answers[4] || '',
-              q5_notes: answers[5] || ''
-            }
-          }
-        }
-      })
-    }).catch(function(err) {
-      // Soft-fail: never block the user from seeing their results over a Klaviyo hiccup.
-      console.error('Klaviyo quiz event failed:', err);
-    });
+      method: 'POST', mode: 'cors',
+      headers: { 'Content-Type': 'application/json', revision: '2024-10-15' },
+      body: JSON.stringify({ data: { type: 'event', attributes: {
+        profile: { data: { type: 'profile', attributes: { email: email, properties: { quiz_completed: true, scent_profile: profileKey } } } },
+        metric: { data: { type: 'metric', attributes: { name: 'Completed Scent Quiz' } } },
+        properties: { scent_profile: profileKey, q1: answers[1] || '', q2: answers[2] || '', q3: answers[3] || '', q4: answers[4] || '' }
+      } } })
+    }).catch(function () {});
   }
 
   function revealResults() {
     showQuestion('results');
-
-    const profileKey = calculateProfile();
-    const profile = profiles[profileKey];
-
+    var key = calculateProfile();
+    var profile = profiles[key];
     document.getElementById('quizResultTitle').textContent = profile.name;
     document.getElementById('quizResultDescription').textContent = profile.description;
-    document.getElementById('traitOccasion').textContent = profile.occasion;
-    document.getElementById('traitSeason').textContent = profile.season;
-    document.getElementById('traitProjection').textContent = profile.projection;
-
-    // Save to localStorage
-    localStorage.setItem('basenotes_scent_profile', profileKey);
+    var who = { him: 'For him', her: 'For her', unisex: 'Unisex' }[answers[1]] || '';
+    var occ = { office: 'Office', everyday: 'Everyday', evening: 'Evening', date: 'Date night' }[answers[2]] || '';
+    var season = answers[3] === 'tropical'
+      ? 'Hot & humid (year-round)'
+      : ({ spring: 'Spring', summer: 'Summer', fall: 'Fall', winter: 'Winter' }[answers[3]] || '');
+    document.getElementById('quizMatchLine').textContent = [who, occ, season].filter(Boolean).join('  ·  ');
+    localStorage.setItem('basenotes_scent_profile', key);
     localStorage.setItem('basenotes_quiz_answers', JSON.stringify(answers));
-
     loadRecommendations(profile);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function vialOf(p) {
+    var list = p.variants || [];
+    for (var i = 0; i < list.length; i++) {
+      var t = String(list[i].title || '').toLowerCase().replace(/\s/g, '');
+      if (t.indexOf('5ml') !== -1) return list[i];
+    }
+    return list[0];
   }
 
   function loadRecommendations(profile) {
-    const container = document.getElementById('quizRecommendations');
-    container.innerHTML = '<div class="quiz__recommendations--loading">Finding your perfect matches...</div>';
-
-    fetch('/collections/all/products.json?limit=20')
-      .then(response => response.json())
-      .then(data => {
-        let products = data.products || [];
-
-        // PRD-Aug08: /collections/all includes the Unlisted free-5ml giveaway SKU, and the quiz is a
-        // SECOND add-to-cart path that does not set the _bn_offer line property every cart-side
-        // guard keys off. Recommending it here would let someone claim a free bottle through a
-        // route where the one-per-customer and quantity protections simply do not apply — and it
-        // would show the promo to people who never saw the ad. Drop any $0 product.
-        products = products.filter(function (p) {
+    var box = document.getElementById('quizRecommendations');
+    box.innerHTML = '<p>Finding matches…</p>';
+    fetch('/collections/fragrances/products.json?limit=50')
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var gender = answers[1] || '';
+        var list = (data.products || []).filter(function (p) {
           if (p.handle === 'extra-5ml-vial-add-on') return false;
-          var v = (p.variants || [])[0];
-          if (!v) return false;
-          return parseFloat(v.price) > 0;
+          var v = vialOf(p);
+          return v && parseFloat(v.price) > 0;
+        }).map(function (p) {
+          var tags = tagsFor(p);
+          var score = 0;
+          (profile.keywords || []).forEach(function (k) {
+            if (tags.indexOf(k) !== -1 || (p.title || '').toLowerCase().indexOf(k) !== -1) score += 2;
+          });
+          (profile.families || []).forEach(function (f) { if (tags.indexOf(f) !== -1) score += 4; });
+          if (gender === 'him' && /him|masculine|gender_him/.test(tags)) score += 8;
+          if (gender === 'her' && /her|feminine|gender_her/.test(tags)) score += 8;
+          if ((gender === 'her' || gender === 'him' || gender === 'unisex') && /unisex|gender_unisex/.test(tags)) score += 6;
+          var occ = answers[2] || '';
+          if (occ && tags.indexOf(occ) !== -1) score += 5;
+          if (occ === 'everyday' && tags.indexOf('daytime') !== -1) score += 5;
+          var seasonAns = answers[3] || '';
+          var seasons = seasonAns === 'tropical' ? ['spring', 'summer'] : [seasonAns];
+          seasons.forEach(function (s) { if (s && tags.indexOf(s) !== -1) score += 5; });
+          return Object.assign({}, p, { matchScore: score });
         });
-
-        // Score products based on profile using plain tags + structured tags
-        products = products.map(product => {
-          let matchScore = 0;
-          const allTags = (product.tags || []).map(t => t.toLowerCase());
-
-          // Parse structured tags (season:X, event:X) from plain tags
-          var productSeasons = [];
-          var productEvents = [];
-          var plainTags = [];
-          allTags.forEach(function(tag) {
-            if (tag.indexOf('season:') === 0) {
-              productSeasons.push(tag.replace('season:', ''));
-            } else if (tag.indexOf('event:') === 0) {
-              productEvents.push(tag.replace('event:', ''));
-            } else if (tag.indexOf(':') === -1) {
-              plainTags.push(tag);
-            }
-          });
-
-          // Also check for occasion tags without event: prefix (e.g., "wedding/formal")
-          allTags.forEach(function(tag) {
-            if (tag.indexOf('wedding') !== -1 || tag.indexOf('formal') !== -1) {
-              productEvents.push('formal');
-              productEvents.push('wedding');
-            }
-          });
-
-          // --- 1. Keyword matching (+2 each) ---
-          const searchText = (product.title + ' ' + allTags.join(' ') + ' ' + (product.body_html || '')).toLowerCase();
-          profile.keywords.forEach(keyword => {
-            if (searchText.includes(keyword.toLowerCase())) {
-              matchScore += 2;
-            }
-          });
-
-          // --- 2. Plain tag matching (+3 each) ---
-          profile.tags.forEach(tag => {
-            if (plainTags.some(t => t.includes(tag.toLowerCase()))) {
-              matchScore += 3;
-            }
-          });
-
-          // --- 3. Season tag matching (+5 each) ---
-          if (profile.matchSeasons) {
-            profile.matchSeasons.forEach(function(s) {
-              if (productSeasons.indexOf(s) !== -1) matchScore += 5;
-            });
-          }
-
-          // --- 4. Event/occasion tag matching (+5 each) ---
-          if (profile.matchEvents) {
-            profile.matchEvents.forEach(function(ev) {
-              if (productEvents.some(function(pe) { return pe.indexOf(ev) !== -1 || ev.indexOf(pe) !== -1; })) {
-                matchScore += 5;
-              }
-            });
-          }
-
-          return { ...product, matchScore };
-        });
-
-        products.sort((a, b) => b.matchScore - a.matchScore);
-        const recommended = products.slice(0, 3);
-
-        if (recommended.length === 0) {
-          container.innerHTML = '<p style="grid-column: span 3; text-align: center; color: var(--color-text-light);">Browse our collection to find your perfect match.</p>';
-          return;
-        }
-
-        container.innerHTML = recommended.map(product => {
-          const image = product.images?.[0]?.src || '';
-          const variantId = product.variants?.[0]?.id || '';
-
-          return `
-            <div class="quiz-product-card">
-              <a href="/products/${product.handle}" class="quiz-product-card__image">
-                ${image
-                  ? `<img src="${image}" alt="${product.title}" loading="lazy" width="300" height="300">`
-                  : `<div class="quiz-product-card__placeholder"><svg viewBox="0 0 60 100" fill="none" stroke="currentColor" stroke-width="1"><rect x="15" y="25" width="30" height="65" rx="3"/><rect x="20" y="10" width="20" height="15"/><rect x="25" y="2" width="10" height="8" rx="2"/></svg></div>`
-                }
-              </a>
-              <div class="quiz-product-card__details">
-                ${product.vendor ? `<span class="quiz-product-card__vendor">${product.vendor}</span>` : ''}
-                <h4 class="quiz-product-card__title">
-                  <a href="/products/${product.handle}">${product.title}</a>
-                </h4>
-                <span class="quiz-product-card__price">$20</span>
-                <span class="quiz-product-card__plan-label">Monthly Subscription</span>
-              </div>
-              <button type="button" class="btn btn--outline btn--small btn--full quiz-product-card__add" data-variant-id="${variantId}" data-product-handle="${product.handle}">Add to Queue</button>
-            </div>
-          `;
-        }).join('');
+        list.sort(function (a, b) { return b.matchScore - a.matchScore; });
+        box.innerHTML = list.slice(0, 3).map(function (p) {
+          var img = (p.images && p.images[0] && p.images[0].src) || '';
+          var vial = vialOf(p);
+          var vid = vial && vial.id;
+          var name = (p.title || '').replace(new RegExp(p.vendor || '', 'i'), '').replace(/EDP/gi, '').replace(/Eau de Parfum/gi, '').trim();
+          return '<article class="quiz-product-card">' +
+            '<a class="quiz-product-card__media" href="/products/' + p.handle + '">' +
+              (img ? '<img src="' + img + '" alt="" loading="lazy">' : '') +
+            '</a>' +
+            '<p class="quiz-product-card__brand">' + (p.vendor || '') + '</p>' +
+            '<h4><a href="/products/' + p.handle + '">' + name + '</a></h4>' +
+            '<p class="quiz-product-card__price">$20</p>' +
+            '<button type="button" class="quiz-product-card__add" data-variant-id="' + vid + '">Add to cart</button>' +
+          '</article>';
+        }).join('') || '<p><a href="/collections/fragrances">Browse the collection</a></p>';
       })
-      .catch(error => {
-        console.error('Error loading recommendations:', error);
-        container.innerHTML = '<p style="grid-column: span 3; text-align: center;">Unable to load recommendations. <a href="/collections/all">Browse all fragrances</a></p>';
+      .catch(function () {
+        box.innerHTML = '<p><a href="/collections/fragrances">Browse the collection</a></p>';
       });
   }
 
-  // Quiz add-to-cart: use Liquid pre-rendered selling plan map
-  document.addEventListener('click', function(e) {
-    const addBtn = e.target.closest('.quiz-product-card__add');
-    if (!addBtn) return;
-
-    const variantId = addBtn.dataset.variantId;
-    const handle = addBtn.dataset.productHandle;
-    if (!variantId || !handle) return;
-
-    addBtn.disabled = true;
-    addBtn.textContent = 'Adding...';
-
-    var sellingPlan = window.__sellingPlans && window.__sellingPlans[handle] ? window.__sellingPlans[handle] : null;
-    var payload = { id: parseInt(variantId), quantity: 1 };
-    if (sellingPlan) payload.selling_plan = sellingPlan;
-
-    fetch('/cart/add.js', {
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.quiz-product-card__add');
+    if (!btn) return;
+    var id = btn.dataset.variantId;
+    if (!id) return;
+    btn.disabled = true;
+    var send = window.__bnFetch || window.fetch;
+    send('/cart/add.js', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ id: parseInt(id, 10), quantity: 1 })
     })
-      .then(function(r) {
-        if (!r.ok) throw new Error('Add to cart failed');
-        return r.json();
-      })
-      .then(function() {
-        addBtn.textContent = 'Added!';
+      .then(function (r) { if (!r.ok) throw new Error('fail'); return r.json(); })
+      .then(function () {
+        btn.textContent = 'Added';
+        document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+        document.dispatchEvent(new CustomEvent('cart:updated', { bubbles: true }));
         if (window.refreshAndOpenCartDrawer) window.refreshAndOpenCartDrawer();
-        setTimeout(function() {
-          addBtn.textContent = 'Add to Queue';
-          addBtn.disabled = false;
-        }, 2000);
       })
-      .catch(function() {
-        addBtn.textContent = 'Error - Try Again';
-        setTimeout(function() {
-          addBtn.textContent = 'Add to Queue';
-          addBtn.disabled = false;
-        }, 2000);
-      });
+      .catch(function () { btn.textContent = 'Try again'; btn.disabled = false; });
   });
 
-  // Event listeners
-  quiz.querySelectorAll('.quiz__option').forEach(option => {
-    option.addEventListener('click', function(e) {
-      const questionNum = parseInt(this.closest('.quiz__slide').dataset.question);
-      selectOption(questionNum, this.dataset.value);
-    });
+  backBtn.addEventListener('click', function () {
+    if (currentQuestion > 1) { currentQuestion--; showQuestion(currentQuestion); }
   });
-
-  backBtn?.addEventListener('click', () => {
-    if (currentQuestion > 1) {
-      currentQuestion--;
-      showQuestion(currentQuestion);
-    }
-  });
-
-  retakeBtn?.addEventListener('click', () => {
-    currentQuestion = 1;
-    Object.keys(answers).forEach(key => delete answers[key]);
-    quiz.querySelectorAll('.quiz__option').forEach(opt => opt.classList.remove('is-selected'));
+  if (retakeBtn) retakeBtn.addEventListener('click', function () {
+    currentQuestion = 1; answers = {};
+    quiz.querySelectorAll('.quiz__option').forEach(function (o) { o.classList.remove('is-selected'); });
     showQuestion(1);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  // Initialize
   showQuestion(1);
 });
 </script>
 
+{% stylesheet %}
+.quiz-section { background: #f4efe3; color: #24372b; }
+.quiz-intro, .quiz-container { width: min(100% - 3rem, 56rem); margin: 0 auto; padding: 4.5rem 0 5rem; }
+.quiz-intro { text-align: center; }
+.quiz-intro__eyebrow { display: block; margin: 0 0 1rem; color: #ac9159; font: 500 0.72rem/1.2 Jost, sans-serif; letter-spacing: 0.16em; text-transform: uppercase; }
+.quiz-intro__title { margin: 0 0 0.85rem; font: 500 clamp(2.4rem, 5vw, 3.5rem)/1.08 "Playfair Display", Georgia, serif; }
+.quiz-intro__description { max-width: 34em; margin: 0 auto 1.6rem; color: #62675d; font: 0.95rem/1.65 Jost, sans-serif; }
+.quiz-intro .btn { min-height: 3.5rem; padding: 0.9rem 1.6rem; }
+.quiz-intro__note { margin-top: 1rem; color: #62675d; font-size: 0.82rem; }
+.quiz__progress { text-align: center; margin-bottom: 2.5rem; }
+.quiz__progress-text { color: #62675d; font: 0.85rem/1.4 Jost, sans-serif; }
+.quiz__question { text-align: center; }
+.quiz__question-text { margin: 0 0 1.5rem; font: 500 clamp(1.8rem, 3.2vw, 2.6rem)/1.12 "Playfair Display", Georgia, serif; }
+.quiz__options--grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.quiz__options--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.quiz__option { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem; min-height: 7.5rem; padding: 1.25rem 1rem; border: 1px solid #d9d4c8; background: #fff; cursor: pointer; font: 500 1rem/1.35 Jost, sans-serif; }
+.quiz__option-desc { display: block; color: #62675d; font: 400 0.82rem/1.4 Jost, sans-serif; }
+.quiz__option:hover, .quiz__option.is-selected { border-color: #22392b; }
+.quiz__back, .quiz-email-gate__skip { display: inline-block; margin-top: 1.25rem; padding: 0; border: 0; background: none; color: #62675d; font: 0.85rem/1.4 Jost, sans-serif; text-decoration: underline; cursor: pointer; }
+.quiz__email-gate { text-align: center; max-width: 28rem; margin: 0 auto; }
+.quiz-email-gate__title { margin: 0.35rem 0 0.6rem; font: 500 clamp(2rem, 4vw, 3rem)/1.08 "Playfair Display", Georgia, serif; }
+.quiz-email-gate__subtitle { margin: 0 0 1.4rem; color: #62675d; }
+.quiz-email-gate__form { display: grid; gap: 0.75rem; }
+.quiz-email-gate__input { width: 100%; min-height: 3.25rem; padding: 0.7rem 1rem; border: 1px solid #d9d4c8; background: #fff; font: 1rem Jost, sans-serif; }
+.quiz-email-gate__form .btn { width: 100%; min-height: 3.5rem; }
+.quiz__results { max-width: 56rem; margin: 0 auto; text-align: center; }
+.quiz__results-eyebrow { margin: 0 0 0.7rem; color: #ac9159; font: 500 0.72rem/1.2 Jost, sans-serif; letter-spacing: 0.18em; text-transform: uppercase; }
+.quiz__results h2 { margin: 0; font: 500 clamp(2.2rem, 4vw, 3.2rem)/1.08 "Playfair Display", Georgia, serif; }
+#quizResultDescription { max-width: 28em; margin: 0.7rem auto 0; color: #62675d; }
+.quiz__matchline { margin: 1rem 0 0; color: #ac9159; font: 500 0.72rem/1.4 Jost, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; }
+#quizRecommendations { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; margin: 2rem 0 0; align-items: stretch; }
+.quiz-product-card { min-width: 0; display: flex; flex-direction: column; padding: 1.1rem 1rem 1.15rem; border: 1px solid #d9d4c8; background: #f4efe3; text-align: center; }
+.quiz-product-card__media { display: grid; place-items: center; height: 240px; padding: 0.75rem; margin: 0 0 0.85rem; background: #f4efe3; overflow: hidden; }
+.quiz-product-card__media img { width: 100%; height: 100%; object-fit: contain; }
+.quiz-product-card__brand { margin: 0 0 0.35rem; font: 500 0.67rem/1.4 Jost, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; color: #62675d; }
+.quiz-product-card h4 { margin: 0; min-height: 2.5em; font: 500 1.3rem/1.2 "EB Garamond", Georgia, serif; }
+.quiz-product-card__price { margin: 0.4rem 0 0.8rem; }
+.quiz-product-card__add { display: block; width: 100%; margin-top: auto; min-height: 44px; border: 0; background: #22392b; color: #f4efe3; font: 500 0.72rem/1 Jost, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+.quiz-product-card__add:hover { background: #314e3b; }
+.quiz__results-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.9rem; margin-top: 1.75rem; }
+.quiz__results-actions a, .quiz__results-actions button { border: 0; background: none; padding: 0; min-height: 0; color: #24372b; font: 400 0.88rem/1.4 "EB Garamond", Georgia, serif; letter-spacing: 0; text-transform: none; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+.quiz__results-actions span { color: #d9d4c8; }
+@media (max-width: 52rem) { #quizRecommendations { grid-template-columns: 1fr 1fr; } .quiz__options--three { grid-template-columns: 1fr; } }
+@media (max-width: 40rem) { .quiz__options--grid { grid-template-columns: 1fr; } #quizRecommendations { grid-template-columns: 1fr; } }
+{% endstylesheet %}
+
 {% schema %}
-{
-  "name": "Scent Quiz",
-  "tag": "section",
-  "class": "quiz-section",
-  "settings": [],
-  "presets": [
-    {
-      "name": "Scent Quiz"
-    }
-  ]
-}
+{"name":"Scent Quiz","tag":"section","class":"quiz-section","settings":[],"presets":[{"name":"Scent Quiz"}]}
 {% endschema %}

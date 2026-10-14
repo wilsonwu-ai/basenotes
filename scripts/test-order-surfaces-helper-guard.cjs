@@ -25,10 +25,14 @@ test('account dashboard excludes the helper variant at every selection site', ()
   assert.equal(unguarded, 0, 'no unguarded selection site may remain');
 });
 
-test('FAQ visible answers and FAQPage JSON-LD captures agree on shipping copy', () => {
+test('FAQ uses one source for visible and machine-readable answers', () => {
   const src = read('sections/faq-page.liquid');
-  assert.doesNotMatch(src, /3-5 business days/);
-  assert.doesNotMatch(src, /next renewal date/);
-  assert.equal((src.match(/next scheduled shipment date/g) || []).length, 2);
-  assert.equal((src.match(/1–3 business days after shipping/g) || []).length, 2);
+  const capture = src.match(/capture faq_content -%}([\s\S]*?){%- endcapture/);
+  assert(capture, 'FAQ answers have a single canonical source');
+  assert.match(capture[1], /without subscribing/);
+  assert.match(capture[1], /Shipping for one-time and mixed orders is calculated at checkout/);
+  assert.doesNotMatch(capture[1], /all orders ship free|shipping is always on us/i);
+  assert.equal((src.match(/for entry in faq_entries/g) || []).length, 2, 'visible and JSON-LD views consume the same entries');
+  // Rendered answer equality is checked against the actual preview/live page by
+  // scripts/verify-storefront-seo.cjs, replacing the former duplicate-word-count test.
 });

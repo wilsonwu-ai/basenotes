@@ -1,0 +1,213 @@
+{%- comment -%}
+  Homepage, rebuilt 2026-09-13 from Jeff's "Homepage edits/updates" brief.
+  2026-09-27: hero now has View our collection + Take the quiz.
+{%- endcomment -%}
+{%- liquid
+  assign scent_collection = section.settings.collection | default: collections.fragrances
+  assign featured_count = section.settings.featured_count | default: 8
+  assign first_product = scent_collection.products | first
+  assign first_variant = first_product.variants | first
+  assign first_plan = first_variant.selling_plan_allocations | first
+  assign renewal_price = first_plan.price_adjustments.last.price | default: first_variant.price
+  assign collection_url = scent_collection.url | default: '/collections/fragrances'
+  assign rotation_modal_id = 'rotationModal-' | append: section.id
+  assign rotation_opener_id = 'openRotation-' | append: section.id
+  assign box_set = all_products['build-your-own-box-set']
+  assign box_set_url = blank
+  if box_set.available
+    assign box_set_url = box_set.url
+    unless box_set.template_suffix == 'box-builder'
+      assign box_set_url = box_set_url | append: '?view=box-builder'
+    endunless
+  endif
+-%}
+{{ 'scent-storefront.css' | asset_url | stylesheet_tag }}
+{{ 'fragrance-reference.css' | asset_url | stylesheet_tag }}
+
+<div class="scent-home bn-home">
+  <section class="bn-hero" aria-labelledby="ScentHomeTitle">
+    <div class="bn-hero__copy">
+      <p class="scent-eyebrow">Exceptional fragrances. Your way.</p>
+      <h1 id="ScentHomeTitle">One 5ml vial.<br>A whole new <em>feeling.</em></h1>
+      <p class="bn-hero__lede">Authentic designer and niche fragrances - Creed, Tom Ford, Xerjoff, Parfums de Marly. Decanted from the original bottle. You pick the scent. <br>About 60 sprays. No surcharge.</p>
+      <div class="bn-hero__actions">
+        <a class="scent-button bn-hero__cta" href="{{ collection_url }}">View our collection</a>
+        <a class="scent-button scent-button--light bn-hero__cta" href="/pages/find-your-scent">Take the scent quiz</a>
+      </div>
+    </div>
+    <div class="bn-hero__photo">
+      <img
+        src="{{ 'homepage-vial-photo.jpg' | asset_url }}"
+        alt="A filled Base Note 5ml glass spray atomizer labelled Your Choice"
+        width="480" height="640" loading="eager" fetchpriority="high">
+    </div>
+  </section>
+
+  <section class="bn-steps" aria-labelledby="BnStepsTitle">
+    <h2 id="BnStepsTitle">How a 5ml vial works</h2>
+    <div class="bn-steps__row">
+      <p class="bn-step"><b>01 Pick</b>Any scent in the collection. Creed, Tom Ford, Dior, Xerjoff.</p>
+      <p class="bn-step"><b>02 We fill it</b>Authentic fragrance, from the original bottle.</p>
+      <p class="bn-step"><b>03 Wear it</b>Don’t judge a fragrance until it’s on your skin.</p>
+    </div>
+  </section>
+
+  <section class="bn-featured" id="fragrances" aria-labelledby="BnFeaturedTitle">
+    <div class="bn-featured__head">
+      <h2 id="BnFeaturedTitle">Start with these</h2>
+      <a href="{{ collection_url }}">See all {{ scent_collection.products_count }} <span aria-hidden="true">&rarr;</span></a>
+    </div>
+    <scent-catalog class="fragrance-catalog fragrance-catalog--home" data-source="Homepage featured">
+      <div class="fragrance-catalog__body bn-featured__body">
+        <p class="visually-hidden" data-scent-count aria-live="polite">{{ scent_collection.products_count }} scents</p>
+        <div class="scent-grid bn-featured__grid">
+          {%- for product in scent_collection.products limit: featured_count -%}
+            {% render 'studio-fragrance-card', product: product, section_id: section.id, compact: true %}
+          {%- endfor -%}
+        </div>
+        <p class="scent-feedback" data-scent-status role="status" aria-live="polite"></p>
+      </div>
+    </scent-catalog>
+  </section>
+
+  <section class="bn-ways" id="ways-to-shop" aria-labelledby="BnWaysTitle">
+    <h2 id="BnWaysTitle">Three ways</h2>
+    <div class="bn-ways__grid">
+      <article class="bn-way">
+        <span class="bn-way__num">01</span>
+        <h3>One-Time Vial</h3>
+        <p>{{ first_variant.price | money_without_trailing_zeros }} first. $18 each extra in the same cart. No recurring charge.</p>
+        <a href="{{ collection_url }}">Shop 5ml vials</a>
+      </article>
+      <article class="bn-way bn-way--action" id="{{ rotation_opener_id }}" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="{{ rotation_modal_id }}">
+        <span class="bn-way__num">02</span>
+        <h3>Monthly Rotation</h3>
+        <p>{% if first_plan %}{{ first_plan.price | money_without_trailing_zeros }} first shipment, then {{ renewal_price | money_without_trailing_zeros }}/month.{% endif %} Swap, pause, or cancel.</p>
+        <span class="bn-way__link">See how Rotation works</span>
+      </article>
+      {%- if box_set_url != blank -%}
+      <article class="bn-way" id="box-sets">
+        <span class="bn-way__num">03</span>
+        <h3>Box Sets</h3>
+        <p>Any three 5ml vials in one gift box, {{ box_set.price | money_without_trailing_zeros }}. For gifting and comparing side by side.</p>
+        <a href="{{ box_set_url }}">Build your box</a>
+      </article>
+      {%- else -%}
+      <article class="bn-way" id="box-sets">
+        <span class="bn-way__num">03 &mdash; Coming Soon</span>
+        <h3>Box Sets</h3>
+        <p>A few vials in one box. For gifting and comparing side by side.</p>
+      </article>
+      {%- endif -%}
+    </div>
+  </section>
+
+  {% render 'rotation-explainer', modal_id: rotation_modal_id, opener_id: rotation_opener_id, show_cta: true %}
+
+  <section class="bn-faq" id="how-it-works" aria-labelledby="BnFaqTitle">
+    <h2 id="BnFaqTitle">Your first vial, explained</h2>
+    <details open>
+      <summary>What is a decant?</summary>
+      <p>Authentic fragrance transferred from the original bottle into a smaller spray. Yours is 5ml and labeled with the scent you chose.</p>
+    </details>
+    <details>
+      <summary>Do I have to subscribe?</summary>
+      <p>No. One-time vials are the default. Monthly Rotation is separate and optional.</p>
+    </details>
+    <details>
+      <summary>How does $18 after work?</summary>
+      <p>First 5ml in the cart is {{ first_variant.price | money_without_trailing_zeros }}. Every extra vial in that same order is $18.</p>
+    </details>
+    <details>
+      <summary>Can I buy the full bottle?</summary>
+      <p>When we have it, the 50ml or 100ml is on that scent&rsquo;s page. If it isn&rsquo;t listed, use Notify us.</p>
+    </details>
+  </section>
+</div>
+
+<script src="{{ 'scent-storefront.js' | asset_url }}" defer></script>
+
+{% stylesheet %}
+.bn-home { --bn-max: 71rem; }
+.bn-home h1, .bn-home h2, .bn-home h3 { font-family: 'Playfair Display', Georgia, serif; }
+.bn-hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr); gap: 2.5rem; align-items: center; width: min(100% - 3rem, var(--bn-max)); margin-inline: auto; padding-block: 3rem 1.75rem; }
+.bn-hero__copy { min-width: 0; }
+.bn-home .bn-hero h1 { margin: 0; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1.04; font-weight: 500; letter-spacing: -.03em; }
+.bn-home .bn-hero h1 br, .bn-home .bn-hero h1 br:last-of-type { display: inline !important; }
+.bn-hero__lede { max-width: 34em; margin: 1rem 0 1.4rem; color: var(--scent-muted); font: .98rem/1.65 'Jost', sans-serif; }
+.bn-hero__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.bn-hero__cta { min-height: 3.25rem; }
+.bn-hero__offer { margin: .9rem 0 0; color: var(--scent-muted); font: .84rem/1.6 'Jost', sans-serif; }
+.bn-hero__offer span { margin-inline: .35rem; color: var(--scent-gold); }
+.bn-hero__photo { min-width: 0; }
+.bn-hero__photo img { display: block; width: 100%; max-width: 17rem; height: auto; margin-inline: auto; mix-blend-mode: multiply; }
+.bn-hero__actions .scent-button {
+  box-sizing: border-box;
+  height: 56px;
+  min-height: 56px;
+  padding: 0 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.bn-steps { width: min(100% - 3rem, var(--bn-max)); margin-inline: auto; padding-block: 1.5rem 2.5rem; border-block-start: 1px solid var(--scent-line); }
+.bn-steps h2 { margin: 0 0 1rem; font-size: 1.6rem; font-weight: 500; }
+.bn-steps__row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.bn-step { margin: 0; color: var(--scent-muted); font: .88rem/1.6 'Jost', sans-serif; }
+.bn-step b { display: block; margin-block-end: .3rem; color: var(--scent-ink); font-weight: 600; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; }
+.bn-featured { width: min(100% - 3rem, var(--bn-max)); margin-inline: auto; padding-block: 1rem 3rem; }
+.bn-featured__head { display: flex; align-items: end; justify-content: space-between; gap: 1.5rem; margin-block-end: 1.2rem; }
+.bn-featured__head h2 { margin: 0; font-size: 1.75rem; font-weight: 500; }
+.bn-featured__head a { color: var(--scent-green); font: .82rem/1.4 'Jost', sans-serif; border-block-end: 1px solid var(--scent-gold); padding-block-end: .15rem; }
+.bn-home .bn-featured__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.bn-ways { width: min(100% - 3rem, var(--bn-max)); margin-inline: auto; padding-block: 1rem 3rem; border-block-start: 1px solid var(--scent-line); }
+.bn-ways h2 { margin: 1.5rem 0 1.2rem; font-size: 1.75rem; font-weight: 500; }
+.bn-ways__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .9rem; }
+.bn-way { display: flex; flex-direction: column; padding: 1.1rem 1.2rem 1.3rem; border: 1px solid var(--scent-line); border-radius: .3rem; background: rgb(255 255 255 / 45%); }
+.bn-way__num { color: var(--scent-muted); font: .67rem/1.4 'Jost', sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+.bn-way h3 { margin: .5rem 0 .45rem; font-size: 1.3rem; font-weight: 500; }
+.bn-way p { margin: 0 0 .9rem; color: var(--scent-muted); font: .86rem/1.6 'Jost', sans-serif; }
+.bn-way a, .bn-way__link { margin-block-start: auto; color: var(--scent-green); font: .82rem/1.4 'Jost', sans-serif; border-block-end: 1px solid var(--scent-gold); padding-block-end: .15rem; align-self: flex-start; }
+.bn-way--action { cursor: pointer; }
+.bn-way--action:hover { background: rgb(255 255 255 / 75%); }
+.bn-way--action:focus-visible { outline: 2px solid var(--scent-green); outline-offset: 3px; }
+.bn-faq { width: min(100% - 3rem, 45rem); margin-inline: auto; padding-block: 1rem 4rem; border-block-start: 1px solid var(--scent-line); }
+.bn-faq h2 { margin: 1.5rem 0 1rem; font-size: 1.75rem; font-weight: 500; }
+.bn-faq details { border-block-end: 1px solid var(--scent-line); }
+.bn-faq summary { min-height: 2.75rem; display: flex; align-items: center; padding-block: .7rem; cursor: pointer; font: .95rem/1.5 'Jost', sans-serif; }
+.bn-faq p { margin: 0 0 1rem; color: var(--scent-muted); font: .88rem/1.7 'Jost', sans-serif; }
+@media (max-width: 60rem) {
+  .bn-home .bn-featured__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bn-ways__grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 46rem) {
+  .bn-hero { grid-template-columns: 1fr; gap: 1.25rem; padding-block: 1.75rem 1.25rem; }
+  .bn-hero__photo { order: -1; }
+  .bn-hero__photo img { max-width: 10.5rem; }
+  .bn-steps__row { grid-template-columns: 1fr; gap: .8rem; }
+  .bn-featured__head { align-items: start; flex-direction: column; gap: .4rem; }
+}
+.bn-hero__actions .scent-button--light {
+  background: transparent !important;
+  border: 1px solid var(--scent-green);
+  color: var(--scent-green) !important;
+  min-height: 3.25rem;
+  padding: 0.9rem 1.5rem;
+}
+.bn-hero__actions .scent-button--light:hover {
+  background: var(--scent-green) !important;
+  color: var(--scent-cream) !important;
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Scent studio homepage",
+  "settings": [
+    { "type": "collection", "id": "collection", "label": "Fragrance collection" },
+    { "type": "range", "id": "featured_count", "min": 4, "max": 12, "step": 2, "default": 8, "label": "Featured products on the homepage" },
+    { "type": "image_picker", "id": "campaign_image", "label": "Campaign image (unused since 2026-09-13)" }
+  ],
+  "presets": [{ "name": "Scent studio homepage" }]
+}
+{% endschema %}

@@ -45,6 +45,8 @@
                   src="{{ item.image | image_url: width: 200 }}"
                   alt="{{ item.title }}"
                   loading="lazy"
+                  width="{{ item.image.width }}"
+                  height="{{ item.image.height }}"
                 >
               {%- else -%}
                 <div class="cart-drawer-item__placeholder">
@@ -68,6 +70,9 @@
                 {%- if item.variant.title != 'Default Title' -%}
                   <p class="cart-drawer-item__variant">{{ item.variant.title }}</p>
                 {%- endif -%}
+                {%- unless item.product.handle == 'extra-5ml-vial-add-on' -%}{%- for prop in item.properties -%}{%- assign prop_lead = prop.first | slice: 0 -%}{%- if prop_lead != '_' and prop.last != blank -%}
+                  <p class="cart-drawer-item__variant">{{ prop.first | escape }}: {{ prop.last | escape }}</p>
+                {%- endif -%}{%- endfor -%}{%- endunless -%}
 
                 {% comment %} Subscription Badge {% endcomment %}
                 {%- if item.selling_plan_allocation -%}
@@ -89,6 +94,8 @@
                     </svg>
                     Swap Fragrance
                   </a>
+                {%- elsif item.properties['_bn_box'] != blank -%}
+                  <span class="cart-drawer-item__qty-static">Qty {{ item.quantity }}</span>
                 {%- elsif item_is_giveaway -%}
                   {%- comment -%}
                     The giveaway SKU has no selling plan BY DESIGN, so it would otherwise fall
@@ -128,9 +135,9 @@
 
                 <div class="cart-drawer-item__price">
                   {%- if item.original_line_price != item.final_line_price -%}
-                    <span class="cart-drawer-item__price-original">{{ item.original_line_price | money }}</span>
+                    <span class="cart-drawer-item__price-original">{{ item.original_line_price | money_without_trailing_zeros }}</span>
                   {%- endif -%}
-                  <span class="cart-drawer-item__price-current">{{ item.final_line_price | money }}</span>
+                  <span class="cart-drawer-item__price-current">{{ item.final_line_price | money_without_trailing_zeros }}</span>
                 </div>
               </div>
             </div>
@@ -186,14 +193,14 @@
           drawer_all_plan gates every FREE-shipping claim: the store's free-shipping
           discount applies only to PURE subscription orders — Shopify skips it when any
           one-time line (giveaway or add-on) shares the checkout, so a mixed cart pays
-          the profile rate ($4.99 under $50).
+          the profile rate ($4.99 under $33).
         {%- endcomment -%}
         {%- assign drawer_has_subscription = drawer_has_plan_line -%}
 
         <div class="cart-drawer__summary">
           <div class="cart-drawer__summary-line">
             <span>Subtotal</span>
-            <span class="cart-drawer__subtotal-price">{{ cart.total_price | money }}</span>
+            <span class="cart-drawer__subtotal-price">{{ cart.total_price | money_without_trailing_zeros }}</span>
           </div>
           <div class="cart-drawer__summary-line">
             <span>Shipping</span>
@@ -212,7 +219,7 @@
           </div>
           <div class="cart-drawer__summary-line cart-drawer__summary-line--total">
             <span>{% if drawer_has_plan_line and drawer_all_plan %}Total{% else %}Total before shipping{% endif %}</span>
-            <span class="cart-drawer__subtotal-price">{{ cart.total_price | money }}</span>
+            <span class="cart-drawer__subtotal-price">{{ cart.total_price | money_without_trailing_zeros }}</span>
           </div>
         </div>
 
@@ -262,7 +269,7 @@
             Badge only when the claim is literally true for THIS cart: a pure subscription
             order ships free (discount 1500466643162, subscription purchase type). A mixed
             cart pays the profile rate, so the badge would contradict the Shipping line
-            two rows up. One-time carts: $4.99 under $50, free at $50+ (profile tiers).
+            two rows up. One-time carts: $4.99 under $33, free at $33+ (profile tiers).
           {%- endcomment -%}
           {%- if drawer_has_plan_line and drawer_all_plan -%}
             <span>

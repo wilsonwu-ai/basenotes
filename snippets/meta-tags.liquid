@@ -1,123 +1,146 @@
-{%- comment -%}
-  Meta Tags for SEO and Social Sharing
-{%- endcomment -%}
+{% doc %}
+  Social metadata and factual product offers. The default offer is a one-time
+  purchase; a separate offer describes a real recurring selling-plan allocation.
+
+  @param {string} [seo_title] - The resolved page title from the layout.
+  @param {string} [meta_description] - The resolved description from the layout.
+{% enddoc %}
 
 {%- liquid
-  assign default_social_description = 'Luxury fragrance subscription — $20/month for a 5ml atomizer of a designer or niche fragrance. No surcharges, cancel anytime.'
-  assign og_title = page_title | default: shop.name
-  assign og_description = page_description | default: shop.description | default: default_social_description
+  assign default_social_description = 'Discover authentic fragrance in a one-time 5 ml vial. Explore the Monthly Rotation subscription and full-bottle availability at Base Note.'
+  assign og_title = seo_title | default: page_title | default: shop.name
+  assign og_description = meta_description | default: page_description | default: shop.description | default: default_social_description
   assign og_type = 'website'
-  assign is_internal_addon_page = false
-
+  assign social_url = canonical_url
+  assign social_image = settings.share_image
+  assign is_commercial_product = false
   if template.name == 'product'
-    assign og_type = 'product'
-    if product.handle == 'extra-5ml-vial-add-on'
-      assign is_internal_addon_page = true
-      assign og_description = 'Subscriber-only Base Note add-on. Standalone purchase is unavailable while its subscription configuration is being updated.'
+    assign schema_variant = product.selected_or_first_available_variant
+    assign social_image = schema_variant.featured_image | default: product.featured_image | default: social_image
+    if product.handle != 'extra-5ml-vial-add-on' and template.suffix != 'giveaway' and schema_variant.price > 0
+      assign og_type = 'product'
+      assign is_commercial_product = true
+    endif
+  elsif template.name == 'collection'
+    assign social_image = collection.image | default: social_image
+    if collection.handle == 'all'
+      assign social_url = shop.url | append: '/collections/fragrances'
     endif
   elsif template.name == 'article'
     assign og_type = 'article'
+    assign social_image = article.image | default: social_image
   endif
+  assign currency_code = cart.currency.iso_code | default: shop.currency
 -%}
 
-<meta property="og:site_name" content="{{ shop.name }}">
+<meta property="og:site_name" content="{{ shop.name | escape }}">
 <meta property="og:type" content="{{ og_type }}">
-<meta property="og:title" content="{{ og_title | escape }}">
-<meta property="og:description" content="{{ og_description | escape }}">
-<meta property="og:url" content="{{ canonical_url }}">
-
-{%- if template.name == 'product' and is_internal_addon_page == false -%}
-  <meta property="og:price:amount" content="{{ product.price | money_without_currency }}">
-  <meta property="og:price:currency" content="{{ cart.currency.iso_code }}">
-  {%- if product.featured_image -%}
-    <meta property="og:image" content="https:{{ product.featured_image | image_url: width: 1200 }}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="1200">
-  {%- endif -%}
-{%- elsif template.name == 'collection' and collection.image -%}
-  <meta property="og:image" content="https:{{ collection.image | image_url: width: 1200 }}">
-{%- elsif template.name == 'article' and article.image -%}
-  <meta property="og:image" content="https:{{ article.image | image_url: width: 1200 }}">
-{%- elsif settings.share_image -%}
-  <meta property="og:image" content="https:{{ settings.share_image | image_url: width: 1200 }}">
+<meta property="og:title" content="{{ og_title | escape_once }}">
+<meta property="og:description" content="{{ og_description | strip_html | escape_once }}">
+<meta property="og:url" content="{{ social_url | escape }}">
+{%- if is_commercial_product -%}
+  <meta property="product:price:amount" content="{{ schema_variant.price | divided_by: 100.0 }}">
+  <meta property="product:price:currency" content="{{ currency_code }}">
 {%- endif -%}
-
+{%- if social_image -%}
+  <meta property="og:image" content="https:{{ social_image | image_url: width: 1200 }}">
+  <meta property="og:image:alt" content="{{ social_image.alt | default: og_title | escape_once }}">
+  <meta name="twitter:image" content="https:{{ social_image | image_url: width: 1200 }}">
+{%- endif -%}
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{{ og_title | escape }}">
-<meta name="twitter:description" content="{{ og_description | escape }}">
+<meta name="twitter:title" content="{{ og_title | escape_once }}">
+<meta name="twitter:description" content="{{ og_description | strip_html | escape_once }}">
 
-{%- if template.name == 'product' and is_internal_addon_page == false -%}
+{%- if is_commercial_product -%}
+  {%- liquid
+    assign schema_name = product.title
+    assign variant_format = schema_variant.title | downcase | remove: ' '
+    assign name_format = product.title | downcase | remove: ' '
+    assign is_vial = false
+    if variant_format contains '5ml'
+      assign is_vial = true
+      unless name_format contains '5ml'
+        assign schema_name = schema_name | append: ' — 5 ml travel atomizer'
+      endunless
+    endif
+    assign schema_description = product.description | strip_html | strip
+    if is_vial
+      assign schema_description = 'A 5 ml Base Note travel atomizer, decanted from the original fragrance. Buy once, or choose the optional recurring Monthly Rotation subscription. ' | append: schema_description
+    endif
+    assign offer_url = shop.url | append: product.url | append: '?variant=' | append: schema_variant.id
+    assign monthly_allocation = schema_variant.selling_plan_allocations.first
+    assign monthly_plan_name = monthly_allocation.selling_plan.name | downcase
+    assign monthly_plan_matches = false
+    if monthly_allocation and monthly_allocation.selling_plan.recurring_deliveries and monthly_plan_name contains 'monthly'
+      assign monthly_plan_matches = true
+    endif
+    assign refund_policy_text = shop.refund_policy.body | strip_html | strip | downcase
+  -%}
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Product",
-      "name": {{ product.title | json }},
-      "description": {{ product.description | strip_html | json }},
-      "image": {{ product.featured_image | image_url: width: 1200 | prepend: 'https:' | json }},
-      {%- comment -%}
-        sku/mpn were being FABRICATED: sku fell back to product.id (a number, so it emitted
-        unquoted and invalid) and mpn was the URL handle. Neither is a real identifier, and a wrong
-        identifier is worse than an absent one — Google clusters offers on it. Emit them only when a
-        genuine variant SKU exists.
-      {%- endcomment -%}
-      {%- assign v = product.selected_or_first_available_variant -%}
-      {%- if v.sku != blank %}"sku": {{ v.sku | json }},
-      "mpn": {{ v.sku | json }},{% endif %}
-      "category": "Beauty > Personal Care > Cosmetics > Fragrance",
-      "brand": {
-        "@type": "Brand",
-        "name": {{ product.vendor | json }}
-      },
-      "offers": {
-        "@type": "Offer",
-        "url": {{ product.url | prepend: shop.url | json }},
-        "priceCurrency": {{ cart.currency.iso_code | json }},
-        "price": {{ product.price | money_without_currency | json }},
-        "itemCondition": "https://schema.org/NewCondition",
-        "priceValidUntil": {{ 'now' | date: '%Y' | plus: 1 | append: '-12-31' | json }},
-        {%- comment -%}
-          A bare price tells Google (and any AI shopping agent) nothing about the fact that this
-          charge repeats monthly, which is the entire product. UnitPriceSpecification is the
-          schema.org way to say "$20, billed every 1 month". Only emitted where a selling plan
-          actually exists, so one-time products stay a plain price.
-        {%- endcomment -%}
-        {%- if product.selling_plan_groups.size > 0 %}
-        "priceSpecification": {
-          "@type": "UnitPriceSpecification",
-          "price": {{ product.price | money_without_currency | json }},
-          "priceCurrency": {{ cart.currency.iso_code | json }},
-          "billingDuration": 1,
-          "billingIncrement": "MONTH",
-          "unitCode": "MON"
-        },
-        {%- endif %}
-        "shippingDetails": {
-          "@type": "OfferShippingDetails",
-          "shippingRate": {
-            "@type": "MonetaryAmount",
-            "value": {% if product.selling_plan_groups.size > 0 %}"0.00"{% else %}"4.99"{% endif %},
-            "currency": {{ cart.currency.iso_code | json }}
+      "@id": {{ shop.url | append: product.url | append: '#product' | json }},
+      "name": {{ schema_name | json }},
+      "description": {{ schema_description | json }},
+      {%- if social_image %}"image": {{ social_image | image_url: width: 1200 | prepend: 'https:' | json }},{% endif %}
+      {%- if schema_variant.sku != blank %}"sku": {{ schema_variant.sku | json }},{% endif %}
+      "category": "Fragrance",
+      "brand": { "@type": "Brand", "name": {{ product.vendor | json }} },
+      {%- if is_vial %}"size": "5 ml",{% endif %}
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "One-time purchase",
+          "url": {{ offer_url | json }},
+          "priceCurrency": {{ currency_code | json }},
+          "price": {{ schema_variant.price | divided_by: 100.0 | json }},
+          "itemCondition": "https://schema.org/NewCondition",
+          "seller": { "@type": "Organization", "name": {{ shop.name | json }} },
+          {%- if refund_policy_text == 'no returns.' or refund_policy_text == 'no returns' %}
+          "hasMerchantReturnPolicy": {
+            "@type": "MerchantReturnPolicy",
+            "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted",
+            "merchantReturnLink": {{ shop.refund_policy.url | prepend: shop.url | json }}
           },
-          "shippingDestination": {
-            "@type": "DefinedRegion",
-            "addressCountry": "US"
-          },
-          "deliveryTime": {
-            "@type": "ShippingDeliveryTime",
-            "handlingTime": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 2, "unitCode": "DAY" },
-            "transitTime": { "@type": "QuantitativeValue", "minValue": 3, "maxValue": 5, "unitCode": "DAY" }
-          }
-        },
-        "hasMerchantReturnPolicy": {
-          "@type": "MerchantReturnPolicy",
-          "applicableCountry": "US",
-          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
-          "merchantReturnDays": 30,
-          "returnMethod": "https://schema.org/ReturnByMail",
-          "returnFees": "https://schema.org/FreeReturn"
-        },
-        "availability": {% if product.available %}"https://schema.org/InStock"{% else %}"https://schema.org/OutOfStock"{% endif %}
-      }
+          {%- endif %}
+          "availability": {% if schema_variant.available %}"https://schema.org/InStock"{% else %}"https://schema.org/OutOfStock"{% endif %}
+        }
+        {%- if monthly_plan_matches -%}
+        ,{
+          "@type": "Offer",
+          "name": "Monthly Rotation subscription",
+          "url": {{ offer_url | append: '&selling_plan=' | append: monthly_allocation.selling_plan.id | json }},
+          "description": "An optional recurring monthly fragrance subscription. The first-shipment and ongoing prices are shown separately.",
+          "priceCurrency": {{ currency_code | json }},
+          "price": {{ monthly_allocation.price | divided_by: 100.0 | json }},
+          "priceSpecification": [
+            {
+              "@type": "UnitPriceSpecification",
+              "name": "First shipment",
+              "price": {{ monthly_allocation.price | divided_by: 100.0 | json }},
+              "priceCurrency": {{ currency_code | json }},
+              "billingDuration": "P1M",
+              "billingIncrement": 1,
+              "unitCode": "MON"
+            }
+            {%- assign recurring_adjustment = monthly_allocation.price_adjustments | last -%}
+            {%- if recurring_adjustment -%}
+            ,{
+              "@type": "UnitPriceSpecification",
+              "name": "Each monthly renewal after the first shipment",
+              "price": {{ recurring_adjustment.price | divided_by: 100.0 | json }},
+              "priceCurrency": {{ currency_code | json }},
+              "billingIncrement": 1,
+              "unitCode": "MON"
+            }
+            {%- endif -%}
+          ],
+          "itemCondition": "https://schema.org/NewCondition",
+          "availability": {% if schema_variant.available %}"https://schema.org/InStock"{% else %}"https://schema.org/OutOfStock"{% endif %}
+        }
+        {%- endif -%}
+      ]
     }
   </script>
 {%- endif -%}

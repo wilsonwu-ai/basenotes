@@ -1,0 +1,144 @@
+{{ 'scent-storefront.css' | asset_url | stylesheet_tag }}
+{{ 'fragrance-reference.css' | asset_url | stylesheet_tag }}
+<style>
+@media (min-width: 900px) {
+  .fragrance-catalog__toolbar {
+    display: grid !important;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr !important;
+  }
+}
+</style>
+{%- comment -%}
+  Fragrance page, rebuilt 2026-09-12 from Jeff's "Fragrance Page Updates - JT" brief (WhatsApp 00:32).
+  His order, top to bottom: preference tabs, ONE-LINE hero, filter row, count + sort, then the grid.
+  The old tall cream block (eyebrow + "Find scents that work for you." + italic intro + a separate
+  $20/$18 purchase note) is deliberately gone: "Cut the tall cream block so bottles show immediately."
+{%- endcomment -%}
+{%- paginate collection.products by 48 -%}
+{%- liquid
+  assign brand_list = ''
+  for product in collection.products
+    if product.handle == 'extra-5ml-vial-add-on' or product.price == 0
+      continue
+    endif
+    assign vendor_token = product.vendor | strip
+    unless vendor_token == blank or brand_list contains vendor_token
+      assign brand_list = brand_list | append: vendor_token | append: '|'
+    endunless
+  endfor
+  assign brands = brand_list | split: '|' | sort
+  assign is_fragrance_index = false
+  if collection.handle == 'fragrances' or collection.handle == 'all'
+    assign is_fragrance_index = true
+  endif
+-%}
+<scent-catalog class="fragrance-catalog" data-source="Fragrance collection">
+  <nav class="fragrance-catalog__tabs" aria-label="Fragrance preference"><button class="is-active" type="button" data-gender-filter="all" aria-pressed="true">All</button><button type="button" data-gender-filter="him" aria-pressed="false">For him</button><button type="button" data-gender-filter="her" aria-pressed="false">For her</button><button type="button" data-gender-filter="unisex" aria-pressed="false">Unisex</button></nav>
+  <header class="fragrance-catalog__hero">
+    <h1>{% if is_fragrance_index %}Any 5ml for $20 <span aria-hidden="true">/</span> $18 after{% else %}{{ collection.title }}{% endif %}</h1>
+    <p class="fragrance-catalog__intro">Monthly Rotation: First Month $15, then $20. Free US Shipping.</p>
+    {%- comment -%} Jeff: "'How decants work' stays on this page - modal or accordion, not a new URL."
+      <details> needs no JavaScript, so it cannot break the way a modal can. {%- endcomment -%}
+    <details class="fragrance-catalog__decants">
+      <summary>How decants work</summary>
+      <div class="fragrance-catalog__decants-body">
+        <h3>What you get</h3>
+        <p>{{ 'fragrance_reference.format' | t }} About 60 sprays &mdash; enough to wear it on skin, not just paper.</p>
+      </div>
+    </details>
+  </header>
+  <div class="fragrance-catalog__body">
+    <div class="fragrance-catalog__toolbar">
+  <label class="fragrance-catalog__field fragrance-catalog__field--search" for="ScentSearch-{{ section.id }}">
+    <span class="visually-hidden">{{ 'fragrance_reference.search_label' | t }}</span>
+    <input id="ScentSearch-{{ section.id }}" type="search" placeholder="Search scents..." data-scent-search autocomplete="off">
+  </label>
+  <label class="fragrance-catalog__field" for="ScentBrand-{{ section.id }}">
+    <span class="visually-hidden">Brand</span>
+    <select id="ScentBrand-{{ section.id }}" data-scent-brand>
+      <option value="">Brand</option>
+      {%- for brand in brands -%}
+        {%- unless brand == blank -%}<option value="{{ brand | escape }}">{{ brand | escape }}</option>{%- endunless -%}
+      {%- endfor -%}
+    </select>
+  </label>
+  <label class="fragrance-catalog__field" for="ScentFamily-{{ section.id }}">
+    <span class="visually-hidden">Scent family</span>
+    <select id="ScentFamily-{{ section.id }}" data-scent-family>
+      <option value="">Scent family</option>
+      <option value="fresh">Fresh</option>
+      <option value="woody">Woody</option>
+      <option value="sweet">Sweet</option>
+      <option value="spicy">Spicy</option>
+    </select>
+  </label>
+  <label class="fragrance-catalog__field" for="ScentSeason-{{ section.id }}">
+    <span class="visually-hidden">Season</span>
+    <select id="ScentSeason-{{ section.id }}" data-scent-season>
+      <option value="">Season</option>
+      <option value="spring">Spring</option>
+      <option value="summer">Summer</option>
+      <option value="fall">Fall</option>
+      <option value="winter">Winter</option>
+    </select>
+  </label>
+  <label class="fragrance-catalog__field" for="ScentOccasion-{{ section.id }}">
+    <span class="visually-hidden">Occasion</span>
+    <select id="ScentOccasion-{{ section.id }}" data-scent-occasion>
+      <option value="">Occasion</option>
+      <option value="everyday">Everyday</option>
+      <option value="evening">Evening</option>
+      <option value="office">Office</option>
+      <option value="date">Date</option>
+    </select>
+  </label>
+</div>
+    <div class="fragrance-catalog__resultbar">
+      <p class="fragrance-catalog__count" data-scent-count aria-live="polite">{{ collection.products_count }} scents</p>
+      <label class="fragrance-catalog__sort" for="ScentSort-{{ section.id }}">
+        <span class="visually-hidden">Sort by</span>
+        <select id="ScentSort-{{ section.id }}" data-scent-sort>
+          <option value="best">Best sellers</option>
+          <option value="az">Name A&ndash;Z</option>
+          <option value="new">Newest</option>
+        </select>
+      </label>
+    </div>
+    <div class="scent-grid">{%- for product in collection.products -%}{% render 'studio-fragrance-card', product: product, section_id: section.id, compact: true %}{%- endfor -%}</div>
+    <div class="fragrance-catalog__empty" data-scent-empty hidden><h2>No scents in this selection.</h2><p>Try a different name or explore the full collection.</p><button type="button" class="scent-button" data-clear-filters>View all fragrances</button></div>
+    {% if paginate.pages > 1 %}<nav class="scent-pagination" aria-label="Fragrance pages">{{ paginate | default_pagination }}</nav>{% endif %}
+    <p class="scent-feedback" data-scent-status role="status" aria-live="polite"></p>
+    <p class="fragrance-catalog__format">{{ 'fragrance_reference.format' | t }}</p>
+    {% assign collection_description_text = collection.description | strip_html | strip %}{% if collection_description_text != blank and collection_description_text != 'List Showing the Fragrances Offered' %}<div class="fragrance-catalog__description">{{ collection.description }}</div>{% endif %}
+  </div>
+</scent-catalog>
+{%- endpaginate -%}
+<script src="{{ 'scent-storefront.js' | asset_url }}" defer></script>
+<script>
+(function () {
+  var root = document.querySelector('scent-catalog');
+  if (!root) return;
+  var seasonSel = root.querySelector('select[data-scent-season]');
+  var occasionSel = root.querySelector('select[data-scent-occasion]');
+  function apply() {
+    var season = (seasonSel && seasonSel.value || '').toLowerCase();
+    var occasion = (occasionSel && occasionSel.value || '').toLowerCase();
+    root.querySelectorAll('[data-scent-card]').forEach(function (card) {
+      var s = (card.getAttribute('data-season') || '').toLowerCase();
+      var o = (card.getAttribute('data-occasion') || '').toLowerCase();
+      var okS = !season || !s || s.indexOf(season) !== -1;
+      var okO = !occasion || !o || o.indexOf(occasion) !== -1;
+      if (okS && okO) card.removeAttribute('data-chip-hide');
+      else card.setAttribute('data-chip-hide', 'true');
+    });
+  }
+  if (seasonSel) seasonSel.addEventListener('change', apply);
+  if (occasionSel) occasionSel.addEventListener('change', apply);
+})();
+</script>
+<style>
+[data-scent-card][data-chip-hide] { display: none !important; }
+</style>
+{% schema %}
+{"name":"Fragrance catalog","settings":[],"presets":[{"name":"Fragrance catalog"}]}
+{% endschema %}

@@ -231,38 +231,64 @@
         <div data-view="subscription" class="acct__view" style="display:none;">
 
           {%- if is_subscriber -%}
+          {%- assign plan_price = settings.sub_plan_monthly_per_month | strip -%}
+          {%- if plan_price == blank -%}
+            {%- assign plan_price = '$20/mo' -%}
+          {%- endif -%}
+
+          {%- comment -%}
+            Jeff 2026-09-27: Appstle is still the live date when it answers.
+            These Liquid values are first paint only so Next Billing / countdown
+            are not blank if the portal is slow or down. Day-of-month comes from
+            the latest subscription order, not a guessed anniversary of "today".
+          {%- endcomment -%}
+          {%- assign next_bill_label = '' -%}
+          {%- assign cancel_label = '' -%}
+          {%- assign next_bill_iso = '' -%}
+          {%- if latest_sub_order -%}
+            {%- assign bill_day = latest_sub_order.created_at | date: '%d' | plus: 0 -%}
+            {%- assign y = 'now' | date: '%Y' | plus: 0 -%}
+            {%- assign mo = 'now' | date: '%m' | plus: 0 -%}
+            {%- assign today_d = 'now' | date: '%d' | plus: 0 -%}
+            {%- if today_d > bill_day -%}
+              {%- assign mo = mo | plus: 1 -%}
+              {%- if mo > 12 -%}
+                {%- assign mo = 1 -%}
+                {%- assign y = y | plus: 1 -%}
+              {%- endif -%}
+            {%- endif -%}
+            {%- assign mm = mo | prepend: '00' | slice: -2, 2 -%}
+            {%- assign dd = bill_day | prepend: '00' | slice: -2, 2 -%}
+            {%- assign next_bill_iso = y | append: '-' | append: mm | append: '-' | append: dd -%}
+            {%- assign next_bill_label = next_bill_iso | date: '%B %-d, %Y' -%}
+            {%- assign cancel_label = next_bill_iso | date: '%s' | minus: 86400 | date: '%B %-d, %Y' -%}
+          {%- endif -%}
+
           <!-- Featured card -->
           <div class="acct__welcome-banner">
             <div class="acct__welcome-content">
               <span class="acct__status-badge acct__status-badge--active" style="margin-bottom:12px;">Active</span>
               <h2 class="acct__welcome-title" style="font-size:1.5rem;">Monthly Subscription</h2>
-              <p class="acct__welcome-meta">{{ settings.sub_plan_monthly_per_month | default: '$20/mo' }}</p>
+              <p class="acct__welcome-meta">{{ plan_price }}</p>
             </div>
-            {%- comment -%}
-              `customer.created_at` is NOT a property of Shopify's Liquid customer object, so it
-              always renders empty — this line read "Member since" followed by nothing. The
-              welcome card at the top of this template already guards for that; this one did not.
-              Fall back to the first subscription order, which is the real "member since" anyway,
-              and render nothing at all rather than a dangling label.
-            {%- endcomment -%}
             {%- if earliest_sub_order -%}
               <p class="acct__welcome-meta">Member since {{ earliest_sub_order.created_at | date: '%B %Y' }}</p>
             {%- endif -%}
           </div>
 
           <!-- Billing Countdown -->
-          <div class="acct__card billing-countdown" id="billingCountdown">
+          <div class="acct__card billing-countdown" id="billingCountdown" data-next-bill="{{ next_bill_iso }}">
             <div class="billing-countdown__header">
               <h3 class="acct__card-title">Next Billing</h3>
-              <span class="billing-countdown__days" id="billingDaysLeft">— days</span>
+              <span class="billing-countdown__days" id="billingDaysLeft"></span>
             </div>
             <div class="billing-countdown__bar-wrap">
               <div class="billing-countdown__bar" id="billingBar" style="width:0%"></div>
             </div>
-            <p class="billing-countdown__date" id="billingDateText">Next charge on —</p>
+            <p class="billing-countdown__date" id="billingDateText">Next charge on {% if next_bill_label %}{{ next_bill_label }}{% else %}—{% endif %}</p>
             <div class="billing-countdown__cancel-window" id="cancelWindowNotice">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span>Cancel before <strong id="cancelDeadline">—</strong> to avoid the next charge</span>
+              <span>Cancel before <strong id="cancelDeadline">{% if cancel_label %}{{ cancel_label }}{% else %}—{% endif %}</strong> to avoid the next charge</span>
             </div>
           </div>
 
@@ -278,15 +304,15 @@
               </div>
               <div class="sub-details__row">
                 <span class="sub-details__label">Price</span>
-                <span class="sub-details__value">{{ settings.sub_plan_monthly_per_month | default: '$20/mo' }}</span>
+                <span class="sub-details__value">{{ plan_price }}</span>
               </div>
               <div class="sub-details__row">
                 <span class="sub-details__label">Next Billing</span>
-                <span class="sub-details__value" id="subNextBilling">—</span>
+                <span class="sub-details__value" id="subNextBilling">{% if next_bill_label %}{{ next_bill_label }}{% else %}—{% endif %}</span>
               </div>
               <div class="sub-details__row">
                 <span class="sub-details__label">Payment Method</span>
-                <span class="sub-details__value">•••• •••• •••• ——</span>
+                <span class="sub-details__value">Card on file</span>
               </div>
               <div class="sub-details__row">
                 <span class="sub-details__label">Shipping Address</span>
@@ -689,6 +715,24 @@
   .bq-card__ship-status--immediate { color: #C9A962; }
   .bq-card__swap { display: inline-flex; align-items: center; justify-content: center; gap: 4px; margin-top: 4px; padding: 6px 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: transparent; border: 1px solid #EEE9DF; border-radius: 6px; color: #2D4641; cursor: pointer; font-family: inherit; transition: border-color 0.15s, color 0.15s, background 0.15s; }
   .bq-card__swap:hover { border-color: #C9A962; color: #C9A962; background: #FAF8F5; }
+  .bq-card__extra {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid #C9A962;
+  border-radius: 6px;
+  color: #8B6F2B;
+  cursor: pointer;
+  font-family: inherit;
+}
+.bq-card__extra:hover { background: #FAF8F5; }
   .bq-card__swap svg { color: currentColor; }
   .bq-card__remove { position: absolute; top: 10px; left: 10px; width: 24px; height: 24px; background: rgba(255,255,255,0.9); border: 1px solid #EEE9DF; border-radius: 50%; cursor: pointer; color: #8a918e; display: flex; align-items: center; justify-content: center; padding: 0; transition: color 0.15s, border-color 0.15s; opacity: 0; }
   .bq-card:hover .bq-card__remove { opacity: 1; }
@@ -770,6 +814,37 @@
 
   // ── Subscription action helper (pause / skip) — calls Appstle customer-portal API ──
   // Exposed on window so the click handlers below can call it.
+    window.bnAddExtraVial = function (month, frag) {
+    var EXTRA_VARIANT_ID = 48547911696602;
+    var fetchFn = window.__bnFetch || window.fetch;
+    return fetchFn('/cart/add.js', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        items: [{
+          id: EXTRA_VARIANT_ID,
+          quantity: 1,
+          properties: {
+            '_type': 'extra-5ml',
+            'Fragrance': frag.title || '',
+            'Fragrance handle': frag.handle || '',
+            'Ship month': month
+          }
+        }]
+      })
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      if (typeof showToast === 'function') {
+        showToast('$18 extra vial added — ' + (frag.title || 'fragrance') + ' ships with ' + month);
+      } else {
+        alert('$18 extra vial added. It will ship with ' + month + '.');
+      }
+      document.dispatchEvent(new Event('cart:updated'));
+    }).catch(function () {
+      alert('Could not add the extra vial. Email hello@basenotescent.com.');
+    });
+  };
   window.bnSubscriptionAction = function(action) {
     var cpBase = '/apps/subscriptions/cp/api';
     var paymentBtn = document.getElementById('subUpdatePaymentBtn');
@@ -1002,18 +1077,32 @@
         return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       }
 
-      // ── Auto-compute Next Ship date: last order + 1 month (Appstle handles the actual renewal) ──
-      var nextShipDate = null;
-      var lastOrderDateStr = el.getAttribute('data-last-order-date');
-      if (lastOrderDateStr) {
-        var lo = new Date(lastOrderDateStr + 'T00:00:00');
-        if (!isNaN(lo.getTime())) {
-          nextShipDate = new Date(lo.getFullYear(), lo.getMonth() + 1, lo.getDate());
-        }
+      // The previous order date is not the subscription's next renewal date. Appstle
+      // can have a different cadence, a skipped month, or a manually changed date.
+      // Never present a guessed date/product as the next shipment; the Appstle
+      // response below is the only authoritative source for this card.
+      var nextShipDate = window.__bnLiveNextShipDate ? new Date(window.__bnLiveNextShipDate) : null;
+      if (!nextShipDate || isNaN(nextShipDate.getTime())) nextShipDate = null;
+
+      // First paint is before Appstle. Use first queue month + billing day so the
+      // bar is not empty. Appstle overwrites when __bnLiveNextShipDate is set.
+      if (!nextShipDate && subData.billingDay && upcomingMonths.length) {
+        var fp = upcomingMonths[0].split('-');
+        var fallbackDate = new Date(
+          parseInt(fp[0], 10),
+          parseInt(fp[1], 10) - 1,
+          parseInt(subData.billingDay, 10)
+        );
+        if (!isNaN(fallbackDate.getTime())) nextShipDate = fallbackDate;
       }
-      var nextShipMonth = nextShipDate ? (nextShipDate.getFullYear() + '-' + (nextShipDate.getMonth() + 1 < 10 ? '0' : '') + (nextShipDate.getMonth() + 1)) : null;
-      var nextFragrance = nextShipMonth ? byMonth[nextShipMonth] : (upcomingEntries[0] || null);
-      var nextShipLabel = nextShipDate ? nextShipDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+
+      var nextShipMonth = nextShipDate
+        ? (nextShipDate.getFullYear() + '-' + (nextShipDate.getMonth() + 1 < 10 ? '0' : '') + (nextShipDate.getMonth() + 1))
+        : (upcomingMonths[0] || null);
+      var nextFragrance = window.__bnLiveNextFragrance || (nextShipMonth ? byMonth[nextShipMonth] : null);
+      var nextShipLabel = nextShipDate
+        ? nextShipDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        : '—';
 
       // Populate the welcome-banner stat tile
       var statEl = document.getElementById('statNextShipment');
@@ -1035,6 +1124,12 @@
             '<a href="#next-shipment" class="dash-journey__next-cta">' + (nextFragrance ? 'Swap' : 'Pick now') + '</a>' +
           '</div>' +
         '</div>';
+      } else {
+        html += '<div class="dash-journey__next dash-journey__next--pending">' +
+          '<div class="dash-journey__next-eyebrow">Next shipment</div>' +
+          '<p class="dash-journey__next-date"><em>Waiting for the subscription portal to confirm your date.</em></p>' +
+          '<p class="dash-journey__next-frag">Your previous shipment is shown below; it is not your next shipment.</p>' +
+          '</div>';
       }
 
       // Upcoming / Queue (rendered before Shipped per PM PRD-1 — Apr 30 2026)
@@ -1081,12 +1176,25 @@
               '<p class="dash-journey__title">' + esc(p.title || '—') + '</p>' +
               '<p class="dash-journey__meta">' + esc(p.orderName || '') + (p.orderName ? ' · ' : '') + 'Shipped ' + esc(p.shippedAt) + (p.orderTotal ? ' · ' + esc(p.orderTotal) : '') + '</p>' +
             '</div>' +
-            (p.handle
-              ? '<a class="dash-journey__rate" href="/products/' + encodeURIComponent(p.handle) + '#judgeme_product_reviews" aria-label="Rate ' + esc(p.title || 'this fragrance') + '">' +
+              (function () {
+              var reviewed = false;
+              try {
+                reviewed = !!(JSON.parse(localStorage.getItem('bn_reviewed_handles') || '{}')[p.handle]);
+              } catch (e) {}
+              if (!p.handle) {
+                return '<span class="dash-journey__badge dash-journey__badge--past">Delivered</span>';
+              }
+              if (reviewed) {
+                return '<span class="dash-journey__rate dash-journey__rate--done" aria-label="Reviewed ' + esc(p.title || 'this fragrance') + '">' +
                   '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.4l6.5-.9L12 2.6z"/></svg>' +
-                  '<span>Rate it</span>' +
-                '</a>'
-              : '<span class="dash-journey__badge dash-journey__badge--past">Delivered</span>') +
+                  '<span>Reviewed</span>' +
+                '</span>';
+              }
+              return '<a class="dash-journey__rate" data-review-handle="' + esc(p.handle) + '" href="/products/' + encodeURIComponent(p.handle) + '#judgeme_product_reviews" aria-label="Review ' + esc(p.title || 'this fragrance') + '">' +
+                '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.4l6.5-.9L12 2.6z"/></svg>' +
+                '<span>Review it</span>' +
+              '</a>';
+            })() +
           '</div>';
         });
         html += '</div></section>';
@@ -1123,36 +1231,10 @@
       try { subData = JSON.parse(subDataEl.textContent); } catch(e) { return; }
       if (!subData.isSubscriber) return;
 
-      var journeyEl = document.getElementById('dashJourney');
-      var lastOrderDateStr = journeyEl && journeyEl.getAttribute('data-last-order-date');
-      if (!lastOrderDateStr) return;
-
-      var lo = new Date(lastOrderDateStr + 'T00:00:00');
-      if (isNaN(lo.getTime())) return;
-      var next = new Date(lo.getFullYear(), lo.getMonth() + 1, lo.getDate());
-      var now = new Date();
-      var msPerDay = 1000 * 60 * 60 * 24;
-      var daysLeft = Math.max(0, Math.ceil((next.getTime() - now.getTime()) / msPerDay));
-      var dateLabel = next.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-      var shortLabel = next.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-      var daysEl = document.getElementById('billingDaysLeft');
-      var dateTextEl = document.getElementById('billingDateText');
-      var cancelEl = document.getElementById('cancelDeadline');
-      var barEl = document.getElementById('billingBar');
-      var subNextBillEl = document.getElementById('subNextBilling');
-
-      if (daysEl) daysEl.textContent = daysLeft + (daysLeft === 1 ? ' day' : ' days');
-      if (dateTextEl) dateTextEl.textContent = 'Next charge on ' + dateLabel;
-      if (cancelEl) cancelEl.textContent = shortLabel;
-      if (subNextBillEl) subNextBillEl.textContent = shortLabel;
-      if (barEl) {
-        // Percentage through the billing cycle (0 at charge → 100 at next charge)
-        var cycle = next.getTime() - lo.getTime();
-        var elapsed = now.getTime() - lo.getTime();
-        var pct = Math.max(0, Math.min(100, (elapsed / cycle) * 100));
-        barEl.style.width = pct.toFixed(0) + '%';
-      }
+      // Do not derive billing from the previous order. This hydrator runs before
+      // Appstle's contract request and used to overwrite the account with a
+      // plausible-but-wrong anniversary date. The Appstle response owns these
+      // fields and updates them in fetchAppstleData below.
     })();
 
     // ── Safety-net: queue strip hydration (full renderer, independent of big script) ──
@@ -1347,7 +1429,8 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     {%- endif -%}
     fotmDisplayName: {{ settings.fotm_display_name | json }},
-    isStaff: {{ customer.tags | join: ',' | downcase | contains: 'staff' | json }}
+    {%- assign customer_tag_text = customer.tags | join: ',' | downcase -%}
+    isStaff: {% if customer_tag_text contains 'staff' %}true{% else %}false{% endif %}
   };
 
   function isValidDate(d) {
@@ -1361,7 +1444,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.__bnStage = 2;
   } catch (e) { console.error('[bn-router] stage 2 FAIL', e); }
 
-  // Router lives in the standalone <script> tag above — removed from here so this big block
+  // Router lives in the standalone script block above — removed from here so this big block
   // can't break routing if it has a parse error.
 
   /* ── Fragrance History ── */
@@ -1747,35 +1830,10 @@ document.addEventListener('DOMContentLoaded', function() {
     var now = new Date();
     var nextBill = null;
 
-    // Try 1: localStorage (set during checkout on this device)
-    try {
-      var subData = JSON.parse(localStorage.getItem('bn_active_subscription') || 'null');
-      if (subData && subData.nextBillDate) {
-        var d = new Date(subData.nextBillDate);
-        if (isValidDate(d)) nextBill = d;
-      }
-    } catch(e) {}
-
-    // Try 2: Anniversary billing from server order date
-    if (!nextBill && serverSubData.orderDate) {
-      var orderDate = new Date(serverSubData.orderDate);
-      if (isValidDate(orderDate)) {
-        var billingDay = orderDate.getDate();
-        nextBill = new Date(now.getFullYear(), now.getMonth(), billingDay);
-      }
-    }
-
-    // Try 3: Fallback to first of next month
-    if (!nextBill) {
-      nextBill = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-    }
-
-    // Advance to future if in the past
-    while (nextBill <= now) {
-      nextBill.setMonth(nextBill.getMonth() + 1);
-    }
-
-    return nextBill;
+    // A previous order date, localStorage value, or first-of-month fallback is not
+    // authoritative. Appstle may skip, pause, swap, or move a renewal. The caller
+    // starts in a pending state and the Appstle response below fills this in.
+    return null;
   }
 
   function renderBillingCountdown() {
@@ -1784,6 +1842,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var now = new Date();
     var nextBill = getNextBillingDate();
+
+    if (!nextBill) {
+      var daysPending = document.getElementById('billingDaysLeft');
+      var barPending = document.getElementById('billingBar');
+      var datePending = document.getElementById('billingDateText');
+      var cancelPending = document.getElementById('cancelDeadline');
+      var subPending = document.getElementById('subNextBilling');
+      if (daysPending) daysPending.textContent = '— days';
+      if (barPending) barPending.style.width = '0%';
+      if (datePending) datePending.textContent = 'Next charge date pending subscription sync';
+      if (cancelPending) cancelPending.textContent = '—';
+      if (subPending) subPending.textContent = '—';
+      return;
+    }
 
     // Days remaining
     var msPerDay = 86400000;
@@ -1850,6 +1922,7 @@ document.addEventListener('DOMContentLoaded', function() {
           || active.billingDate || active.nextDeliveryDate || null;
         var nextBill = rawDate ? new Date(rawDate) : null;
         if (nextBill && isValidDate(nextBill)) {
+          window.__bnLiveNextShipDate = nextBill.toISOString();
           var now = new Date();
           var msPerDay = 86400000;
           var daysLeft = Math.max(0, Math.ceil((nextBill - now) / msPerDay));
@@ -1920,6 +1993,15 @@ document.addEventListener('DOMContentLoaded', function() {
           var prodTitle = line.title || line.productTitle || '';
           var prodVendor = line.variantTitle || line.vendor || '';
           var prodImage = line.image || line.imageSrc || '';
+
+          if (prodTitle) {
+            window.__bnLiveNextFragrance = {
+              title: prodTitle,
+              family: prodVendor,
+              image: prodImage
+            };
+            if (typeof renderDashJourney === 'function') renderDashJourney();
+          }
 
           // Only update if we have a product title from Appstle
           if (prodTitle && nsStatusBadge) {
