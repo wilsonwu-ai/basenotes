@@ -75,7 +75,12 @@ box-builder { display: block; }
 .bb-grid .scent-card__pick:hover:not([aria-disabled="true"]) { background: var(--scent-green); color: var(--scent-cream); }
 .bb-grid .scent-card__pick[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
 .bb-grid .scent-card__pick:focus-visible, .bb-grid .scent-card__unpick:focus-visible { outline: 2px solid var(--scent-green); outline-offset: 3px; }
-.bb-grid .scent-card[data-picked] .scent-card__pick:not([aria-disabled="true"]) { background: var(--scent-green); color: var(--scent-cream); }
+.bb-grid .scent-card__pick .scent-card__check { display: none; color: var(--bb-gold-on-green); }
+.bb-grid .scent-card:not([data-picked]) .scent-card__pick[aria-disabled="true"]:hover { background: transparent; color: var(--scent-green); }
+.bb-grid .scent-card .scent-card__unpick:hover { background: transparent; color: var(--scent-ink); }
+.bb-grid .scent-card[data-picked] .scent-card__pick { background: var(--scent-green); color: var(--scent-cream); opacity: 1; }
+.bb-grid .scent-card[data-picked] .scent-card__pick .scent-card__check { display: block; }
+.bb-grid .scent-card[data-picked] .scent-card__pick[aria-disabled="true"] { cursor: default; }
 .bb-grid .scent-card__unpick { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; margin-top: 8px; padding: .5rem; border: 0; background: transparent; color: var(--scent-ink); font: 500 .75rem/1.4 'Jost', sans-serif; letter-spacing: .09em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
 .bb-grid .scent-card__unpick[hidden] { display: none; }
 .bb-grid .scent-card__unpick[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
@@ -89,9 +94,10 @@ box-builder { display: block; }
 .bb-empty button:hover { background: var(--scent-green); color: var(--scent-cream); }
 
 /* Rail and panel */
-.bb-rail { position: sticky; top: 1.5rem; max-height: calc(100vh - 3rem); max-height: calc(100dvh - 3rem); overflow-y: auto; overscroll-behavior: contain; background: var(--bb-paper); border: 1px solid var(--scent-line); }
-.bb-panel { padding: 1.6rem 1.5rem 1.5rem; }
-.bb-panel__head { display: flex; align-items: baseline; justify-content: space-between; }
+.bb-rail { position: sticky; top: 1.5rem; display: flex; flex-direction: column; max-height: calc(100vh - 3rem); max-height: calc(100dvh - 3rem); overflow: hidden; background: var(--bb-paper); border: 1px solid var(--scent-line); }
+.bb-rail__slot, .bb-panel { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+.bb-panel__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 1.5rem .5rem; scroll-padding-block: 1rem; }
+.bb-panel__head { display: flex; flex: none; align-items: baseline; justify-content: space-between; padding: 1.6rem 1.5rem .2rem; }
 .bb-panel__head h2, .bb-sheet__head h2 { margin: 0; font: 500 1.5rem/1.2 'Playfair Display', Georgia, serif; letter-spacing: 0; }
 .bb-counter { margin: 0; font: 500 .8125rem/1.2 'Jost', sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--scent-ink); }
 .bb-hero-img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; margin: 1.1rem 0 .4rem; object-fit: cover; background: var(--scent-cream); }
@@ -139,8 +145,8 @@ box-builder { display: block; }
 .bb-includes li::before { content: ''; flex: none; width: 10px; height: 1px; background: var(--scent-gold); }
 .bb-priceRow { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-top: .6rem; }
 
-.bb-ctaGroup { position: sticky; bottom: 0; margin: 0 -1.5rem -1.5rem; padding: .2rem 1.5rem 1rem; background: var(--bb-paper); box-shadow: 0 -10px 12px -8px rgba(34, 57, 43, .12); }
-.bb-sheet__body .bb-ctaGroup { margin: 0 -16px calc(-1.4rem - env(safe-area-inset-bottom)); padding: .2rem 16px calc(1rem + env(safe-area-inset-bottom)); }
+.bb-ctaGroup { flex: none; padding: .2rem 1.5rem 1.1rem; border-top: 1px solid var(--scent-line); background: var(--bb-paper); }
+.bb-sheet__body .bb-ctaGroup { padding: .2rem 0 0; }
 .bb-cta { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 56px; margin-top: 1rem; border: 0; background: var(--scent-green); color: var(--scent-cream); font: 500 .8125rem/1 'Jost', sans-serif; letter-spacing: .09em; text-transform: uppercase; cursor: pointer; transition: background .2s ease-out, box-shadow .18s ease; }
 .bb-cta:hover:not([aria-disabled="true"]) { background: #314e3b; box-shadow: 0 3px 0 var(--scent-gold); }
 .bb-cta[aria-disabled="true"] { background: #e6e0d2; color: var(--scent-muted); cursor: not-allowed; }
@@ -165,16 +171,18 @@ box-builder { display: block; }
 .bb-bar__open { min-height: 48px; padding: 0 1.1rem; border: 0; background: var(--scent-cream); color: var(--scent-green); font: 600 .75rem/1 'Jost', sans-serif; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; cursor: pointer; }
 .bb-toast { position: fixed; left: 12px; right: 12px; bottom: calc(var(--bb-bar-real, var(--bb-bar-h)) + .5rem); z-index: 1001; margin: 0; padding: 10px 12px; background: var(--bb-paper); border: 1px solid var(--scent-line); border-left: 3px solid var(--scent-gold); box-shadow: 0 6px 18px rgba(34, 57, 43, .14); font-size: .8125rem; color: var(--scent-ink); }
 .bb-sheet__scrim { position: fixed; inset: 0; z-index: 1250; background: rgba(17, 28, 21, .55); animation: bb-fade .2s ease-out 1; }
-.bb-sheet__panel { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1251; box-sizing: border-box; max-height: 88vh; max-height: 88dvh; overflow-y: auto; overscroll-behavior: contain; padding: 0 16px calc(1.4rem + env(safe-area-inset-bottom)); background: var(--bb-paper); border-top: 2px solid var(--scent-gold); animation: bb-up .24s ease-out 1; color: var(--scent-ink); }
+.bb-sheet__panel { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1251; box-sizing: border-box; display: flex; flex-direction: column; max-height: 88vh; max-height: 88dvh; overflow: hidden; padding: 0 16px calc(.9rem + env(safe-area-inset-bottom)); background: var(--bb-paper); border-top: 2px solid var(--scent-gold); animation: bb-up .24s ease-out 1; color: var(--scent-ink); }
 .bb-sheet__grip { width: 40px; height: 4px; margin: 10px auto 4px; background: var(--scent-line); }
 .bb-sheet__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .bb-sheet__head > div { display: flex; align-items: baseline; gap: 12px; }
 .bb-sheet__head h2:focus { outline: none; }
 .bb-sheet__head h2:focus-visible { outline: 2px solid var(--scent-green); outline-offset: 4px; }
 .bb-sheet__close { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid var(--scent-line); background: transparent; color: var(--scent-green); cursor: pointer; }
-.bb-sheet__body .bb-panel { padding: 0; }
+.bb-sheet__head { flex: none; }
+.bb-sheet__body { display: flex; flex: 1 1 auto; flex-direction: column; min-height: 0; }
 .bb-sheet__body .bb-panel__head { display: none; }
-.bb-sheet__body .bb-tray { margin-top: .8rem; }
+.bb-sheet__body .bb-panel__body { padding: 0 0 .5rem; }
+.bb-sheet__body .bb-hero-img, .bb-sheet__body .bb-tray { display: none; }
 
 @keyframes bb-fill { from { opacity: .4; transform: translateY(3px); } to { opacity: 1; transform: none; } }
 @keyframes bb-pulse { 0% { box-shadow: 0 0 0 0 rgba(172, 145, 89, .8); } 100% { box-shadow: 0 0 0 9px rgba(172, 145, 89, 0); } }
@@ -220,6 +228,21 @@ box-builder { display: block; }
 }
 @media (prefers-reduced-motion: reduce) {
   .box-builder *, .bb-sheet__panel, .bb-sheet__scrim { transition: none !important; animation: none !important; }
+}
+
+/* Cards: title, brand and buttons line up across a row even when a title wraps (pick_mode cards only, via this page's grid). */
+@supports (grid-template-rows: subgrid) {
+  .bb-grid { row-gap: 0; }
+  .bb-grid .scent-card { display: grid; grid-template-rows: subgrid; grid-row: span 5; row-gap: 0; align-content: start; padding-bottom: 2.5rem; }
+  .bb-grid .scent-card[hidden] { display: none; }
+  .bb-grid .scent-card__media { grid-row: 1; }
+  .bb-grid .scent-card h3 { grid-row: 2; }
+  .bb-grid .scent-card__brand { grid-row: 3; }
+  .bb-grid .scent-card__pick, .bb-grid .scent-card__soldout { grid-row: 4; align-self: start; }
+  .bb-grid .scent-card__unpick { grid-row: 5; align-self: start; }
+}
+@media (max-width: 749px) {
+  @supports (grid-template-rows: subgrid) { .bb-grid .scent-card { padding-bottom: 2rem; } }
 }
 
 /* Third-party floating "Explore this product" assistant (app embed, host #ads-agent-host, shadow DOM).

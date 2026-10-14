@@ -123,7 +123,7 @@
     <h3 id="ScentCard-{{ section_id }}-{{ product.id }}">{{ scent_name }}</h3>
     <p class="scent-card__brand">{{ product.vendor }}</p>
     {%- if pick_available -%}
-      <button type="button" class="scent-card__pick" data-box-pick aria-label="Add {{ pick_label | escape }} to box"><span>Add to box</span></button>
+      <button type="button" class="scent-card__pick" data-box-pick aria-label="Add {{ pick_label | escape }} to box"><svg class="scent-card__check" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5L20 6"></path></svg><span>Add to box</span></button>
       <button type="button" class="scent-card__unpick" data-box-unpick aria-label="Remove one {{ pick_label | escape }}" hidden><span>Remove one</span></button>
     {%- else -%}
       <p class="scent-card__soldout">Sold out</p>

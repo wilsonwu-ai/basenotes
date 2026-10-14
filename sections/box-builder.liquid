@@ -130,6 +130,7 @@
             <p class="bb-counter" data-bb-counter>0 of {{ slot_count }}</p>
           </div>
 
+          <div class="bb-panel__body" data-bb-panel-body>
           {%- if section.settings.hero_asset != blank -%}
             <img class="bb-hero-img" data-bb-hero-img src="{{ section.settings.hero_asset | asset_url }}" width="640" height="480" loading="lazy" alt="A Base Note gift box holding {{ slot_word }} 5ml vials">
           {%- endif -%}
@@ -180,6 +181,8 @@
             <li>Decanted from the original bottles</li>
             <li>Presented in a Base Note gift box</li>
           </ul>
+
+          </div>
 
           <div class="bb-ctaGroup">
           <div class="bb-priceRow">
