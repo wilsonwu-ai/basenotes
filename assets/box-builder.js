@@ -283,6 +283,7 @@
         else self.els.panel.setAttribute('data-hero', '');
         if (window.matchMedia('(min-width: 1000px)').matches) heroImg.loading = 'eager';
       }
+      this.initGallery();
 
       BasenoteGiftbox.load({ slots: this.cfg.slots, messageMax: this.cfg.messageMax });
       this.reconcile(false);
@@ -356,6 +357,37 @@
         this.say(this.ui.notices.join(' '));
       } else if (announce === true) {
         this.ui.notices = [];
+      }
+    }
+
+    /* Hero gallery: the strip scrolls natively; a thumbnail scrolls to its photo, and whichever photo is
+       mostly in view marks its thumbnail current. */
+    initGallery() {
+      var gallery = $(this, '[data-bb-gallery]');
+      if (!gallery) return;
+      var viewport = $(gallery, '[data-bb-gallery-viewport]');
+      var slides = $$(gallery, '[data-bb-slide]');
+      var thumbs = $$(gallery, '[data-bb-gallery-thumb]');
+      if (!viewport || thumbs.length < 2) return;
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+      var mark = function (index) {
+        if (index < 0) return;
+        thumbs.forEach(function (t, i) { t.setAttribute('aria-current', i === index ? 'true' : 'false'); });
+      };
+      thumbs.forEach(function (thumb, i) {
+        thumb.addEventListener('click', function () {
+          if (!slides[i]) return;
+          viewport.scrollTo({ left: slides[i].offsetLeft, behavior: reduce.matches ? 'auto' : 'smooth' });
+          mark(i);
+        });
+      });
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.6) mark(slides.indexOf(entry.target));
+          });
+        }, { root: viewport, threshold: 0.6 });
+        slides.forEach(function (s) { io.observe(s); });
       }
     }
 

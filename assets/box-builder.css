@@ -33,6 +33,21 @@ box-builder { display: block; }
 .bb-price { font: 400 1.875rem/1.1 'Playfair Display', Georgia, serif; color: var(--scent-green); }
 .bb-price--lg { font-size: 2rem; }
 .bb-ships { font: 500 .75rem/1.4 'Jost', sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--bb-gold-text); }
+/* Hero gallery: the box product's photos in one scroll-snap strip. Swipe on touch; thumbnails jump on desktop. */
+.bb-hero--gallery { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 30rem); gap: 2rem 4rem; align-items: center; }
+.bb-hero__copy, .bb-gallery { min-width: 0; }
+.bb-gallery__viewport { position: relative; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: .3rem; }
+.bb-gallery__viewport::-webkit-scrollbar { display: none; }
+.bb-gallery__viewport:focus-visible { outline: 2px solid var(--scent-green); outline-offset: 4px; }
+.bb-gallery__track { display: flex; gap: .75rem; margin: 0; padding: 0; list-style: none; }
+.bb-gallery__slide { flex: 0 0 100%; aspect-ratio: 1 / 1; scroll-snap-align: start; border-radius: .3rem; overflow: hidden; background: var(--bb-paper); }
+.bb-gallery__img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.bb-gallery__thumbs { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
+.bb-gallery__thumb { width: 3.5rem; height: 3.5rem; padding: 0; border: 1px solid var(--scent-line); border-radius: .25rem; background: var(--bb-paper); overflow: hidden; cursor: pointer; }
+.bb-gallery__thumb img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: .7; transition: opacity .15s; }
+.bb-gallery__thumb:hover img, .bb-gallery__thumb[aria-current="true"] img { opacity: 1; }
+.bb-gallery__thumb[aria-current="true"] { border-color: var(--scent-green); box-shadow: inset 0 0 0 1px var(--scent-green); }
+.bb-gallery__thumb:focus-visible { outline: 2px solid var(--scent-green); outline-offset: 2px; }
 .bb-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--scent-line); }
 .bb-steps p { margin: 0; }
 .bb-steps p:first-child { font: 600 .75rem/1.4 'Jost', sans-serif; letter-spacing: .14em; text-transform: uppercase; }
@@ -202,6 +217,10 @@ box-builder { display: block; }
   body:has(box-builder) { padding-bottom: calc(var(--bb-bar-real, 5.25rem) + 1rem); }
   .bb-hero { padding-top: 2.5rem; }
   .bb-steps { margin-top: 2.5rem; }
+  /* Gallery stacks under the copy; the next photo peeks in so the strip reads as swipeable. */
+  .bb-hero--gallery { grid-template-columns: minmax(0, 1fr); gap: 1.75rem; }
+  .bb-gallery__slide { flex-basis: min(82%, 22rem); }
+  .bb-gallery__thumbs { display: none; }
 }
 @media (min-width: 700px) and (max-width: 999px) {
   .bb-sheet__panel { left: 50%; right: auto; width: min(100%, 34rem); margin-left: calc(min(100%, 34rem) / -2); }

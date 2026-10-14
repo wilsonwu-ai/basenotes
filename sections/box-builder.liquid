@@ -47,6 +47,17 @@
     product, Add disabled) that is simply the resolved product's own price.
   endcomment
   assign box_price_label = box_variant.price | money_without_trailing_zeros
+
+  comment
+    Hero gallery = the box product's own photos from Admin, so they can be swapped without code. Only a
+    box-set product gets one; fallback mode on a fragrance shows no gallery.
+  endcomment
+  assign gallery = box.media | where: 'media_type', 'image'
+  assign gallery_count = gallery.size | at_most: 8
+  assign show_gallery = false
+  if box_tags contains ',box-set,' and gallery_count > 0
+    assign show_gallery = true
+  endif
 -%}
 {%- if request.design_mode and box_ready == false -%}
   <p class="bb-merchant-warning">Box builder: {{ box_note }}. Add the tag <code>box-set</code> to the box product (single variant titled "Default Title") and select it in this section's settings.</p>
@@ -65,11 +76,42 @@
   data-box-price="{{ box_variant.price }}"
   data-box-price-label="{{ box_price_label | escape }}"
 >
-  <section class="bb-hero" aria-labelledby="BoxTitle">
-    <p class="bb-eyebrow">Build your own box</p>
-    <h1 id="BoxTitle">{{ slot_word | capitalize }} scents.<br>One <em>gift box.</em></h1>
-    <p class="bb-hero__sub">Choose any {{ slot_word }} 5ml vials from the collection. Decanted from the original bottles and presented in a Base Note gift box.</p>
-    <p class="bb-hero__price"><span class="bb-price">{{ box_price_label }}</span> <span>for the box</span> <span class="bb-ships">Ships free in the US</span></p>
+  <section class="bb-hero{% if show_gallery %} bb-hero--gallery{% endif %}" aria-labelledby="BoxTitle">
+    <div class="bb-hero__copy">
+      <p class="bb-eyebrow">Build your own box</p>
+      <h1 id="BoxTitle">{{ slot_word | capitalize }} scents.<br>One <em>gift box.</em></h1>
+      <p class="bb-hero__sub">Choose any {{ slot_word }} 5ml vials from the collection. Decanted from the original bottles and presented in a Base Note gift box.</p>
+      <p class="bb-hero__price"><span class="bb-price">{{ box_price_label }}</span> <span>for the box</span> <span class="bb-ships">Ships free in the US</span></p>
+    </div>
+    {%- if show_gallery -%}
+      <div class="bb-gallery" data-bb-gallery>
+        <div class="bb-gallery__viewport" role="region" tabindex="0" aria-label="Photos of the {{ box.title | escape }}, {{ gallery_count }} images" data-bb-gallery-viewport>
+          <ul class="bb-gallery__track">
+            {%- for media in gallery limit: 8 -%}
+              {%- liquid
+                assign media_alt = media.alt | default: box.title
+                assign media_loading = 'lazy'
+                if forloop.first
+                  assign media_loading = 'eager'
+                endif
+              -%}
+              <li class="bb-gallery__slide" data-bb-slide>
+                {{ media | image_url: width: 1200 | image_tag: widths: '360, 540, 720, 900, 1200', sizes: '(min-width: 1000px) 30rem, min(82vw, 22rem)', loading: media_loading, alt: media_alt, class: 'bb-gallery__img' }}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+        {%- if gallery_count > 1 -%}
+          <div class="bb-gallery__thumbs" role="group" aria-label="Choose a photo">
+            {%- for media in gallery limit: 8 -%}
+              <button type="button" class="bb-gallery__thumb" data-bb-gallery-thumb aria-label="Photo {{ forloop.index }} of {{ gallery_count }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}">
+                {{ media | image_url: width: 120, height: 120, crop: 'center' | image_tag: loading: 'lazy', alt: '', width: 56, height: 56 }}
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
   </section>
 
   <section class="bb-steps" aria-label="How it works">
