@@ -78,9 +78,8 @@
 >
   <section class="bb-hero{% if show_gallery %} bb-hero--gallery{% endif %}" aria-labelledby="BoxTitle">
     <div class="bb-hero__copy">
-      <p class="bb-eyebrow">Build your own box</p>
-      <h1 id="BoxTitle">{{ slot_word | capitalize }} scents.<br>One <em>gift box.</em></h1>
-      <p class="bb-hero__sub">Choose any {{ slot_word }} 5ml vials from the collection. Decanted from the original bottles and presented in a Base Note gift box.</p>
+      <h1 id="BoxTitle"><span class="bb-eyebrow">Build your own fragrance box set</span>{{ slot_word | capitalize }} scents.<br>One <em>gift box.</em></h1>
+      <p class="bb-hero__sub">Choose any {{ slot_word }} 5ml vials from our designer and niche collection. Decanted from the original bottles and presented in a Base Note gift box.</p>
       <p class="bb-hero__price"><span class="bb-price">{{ box_price_label }}</span> <span>for the box</span> <span class="bb-ships">Ships free in the US</span></p>
     </div>
     {%- if show_gallery -%}
@@ -245,6 +244,30 @@
       </div>
     </aside>
   </div>
+
+  <section class="bb-faq" aria-labelledby="BoxFaqTitle">
+    <h2 id="BoxFaqTitle">About the box set</h2>
+    <details>
+      <summary>What comes in the box?</summary>
+      <p>{{ slot_word | capitalize }} 5ml glass spray atomizers, about 60 sprays each, filled from the original bottles of the scents you pick. They arrive together in a Base Note gift box, with your gift message on a card if you add one.</p>
+    </details>
+    <details>
+      <summary>Can I pick the same scent more than once?</summary>
+      <p>Yes. Repeats are welcome, so you can send two of a favorite and one to try.</p>
+    </details>
+    <details>
+      <summary>Is the box set a subscription?</summary>
+      <p>No. It is a one-time purchase. For a new scent every month, see <a href="/pages/monthly-rotation">Monthly Rotation</a>.</p>
+    </details>
+    <details>
+      <summary>Are the fragrances authentic?</summary>
+      <p>Yes. Every vial is decanted from an authentic, original bottle of the designer or niche fragrance you choose.</p>
+    </details>
+    <details>
+      <summary>Who is it for?</summary>
+      <p>Anyone who wants to try a few luxury fragrances without buying full bottles. It works as a gift, or as a way to compare {{ slot_word }} scents side by side.</p>
+    </details>
+  </section>
 
   <p class="bb-toast" data-bb-toast aria-hidden="true" hidden></p>
 

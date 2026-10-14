@@ -26,6 +26,7 @@ box-builder { display: block; }
 .bb-hero, .bb-steps, .bb-layout { width: min(100% - 3rem, 76rem); margin-inline: auto; }
 .bb-hero { padding: 3.5rem 0 0; }
 .bb-eyebrow { margin: 0 0 1.1rem; font: 500 .75rem/1.5 'Jost', sans-serif; letter-spacing: .2em; text-transform: uppercase; }
+.bb-hero h1 .bb-eyebrow { display: block; color: var(--scent-ink); }
 .bb-hero h1 { margin: 0; font: 500 clamp(2.6rem, 5vw, 4rem)/1.04 'Playfair Display', Georgia, serif; letter-spacing: -.02em; }
 .bb-hero h1 em { font-style: italic; color: #4d6a52; }
 .bb-hero__sub { max-width: 34rem; margin: 1.4rem 0 0; color: var(--scent-muted); font-size: 1rem; }
@@ -48,6 +49,17 @@ box-builder { display: block; }
 .bb-gallery__thumb:hover img, .bb-gallery__thumb[aria-current="true"] img { opacity: 1; }
 .bb-gallery__thumb[aria-current="true"] { border-color: var(--scent-green); box-shadow: inset 0 0 0 1px var(--scent-green); }
 .bb-gallery__thumb:focus-visible { outline: 2px solid var(--scent-green); outline-offset: 2px; }
+/* About the box set: crawlable answers below the builder */
+.bb-faq { width: min(100% - 3rem, 76rem); margin: 4rem auto 0; padding-top: 2rem; border-top: 1px solid var(--scent-line); }
+.bb-faq h2 { margin: 0 0 .75rem; font: 500 1.75rem/1.2 'Playfair Display', Georgia, serif; }
+.bb-faq details { max-width: 48rem; border-bottom: 1px solid var(--scent-line); }
+.bb-faq summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 3.25rem; padding: .75rem 0; color: var(--scent-green); font: 500 .95rem/1.4 'Jost', sans-serif; list-style: none; cursor: pointer; }
+.bb-faq summary::-webkit-details-marker { display: none; }
+.bb-faq summary::after { content: '+'; flex: none; color: var(--bb-gold-text); font-size: 1.25rem; line-height: 1; }
+.bb-faq details[open] summary::after { content: '\2212'; }
+.bb-faq summary:focus-visible { outline: 2px solid var(--scent-green); outline-offset: 3px; }
+.bb-faq details p { max-width: 42rem; margin: 0 0 1rem; color: var(--scent-muted); font-size: .9rem; line-height: 1.6; }
+.bb-faq a { color: var(--scent-green); text-decoration: underline; text-underline-offset: .15em; }
 .bb-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--scent-line); }
 .bb-steps p { margin: 0; }
 .bb-steps p:first-child { font: 600 .75rem/1.4 'Jost', sans-serif; letter-spacing: .14em; text-transform: uppercase; }
