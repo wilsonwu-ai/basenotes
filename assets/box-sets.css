@@ -103,3 +103,6 @@
 .bs-photo img { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; border-radius: .3rem; background: var(--bs-paper); }
 .bs-info__lede { margin: 1rem 0 0; color: var(--scent-ink); line-height: 1.55; }
 .bs-detail[hidden], .bs [data-view-grid][hidden], .bs [data-view-detail][hidden] { display: none; }
+/* Single column per the design council (max 40rem); on desktop the square photo is capped by viewport height so the title, price and Add to cart start above the fold. */
+.bs-detail { max-width: 40rem; margin-inline: auto; }
+@media (min-width: 700px) { .bs-photo { width: min(100%, 58vh); margin-inline: auto; } }

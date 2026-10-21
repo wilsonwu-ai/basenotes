@@ -15,7 +15,8 @@
     endunless
   endif
   assign back_url = '/collections/box-sets'
-  if collections['box-sets'].products_count == 0 and byo.available
+  assign curated_count = collections['box-sets'].products_count | default: 0
+  if curated_count == 0 and byo.available
     assign back_url = byo.url | append: '?view=box-sets'
   endif
   assign set_lede = product.description | strip_html | truncatewords: 30

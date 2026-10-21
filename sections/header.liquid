@@ -18,7 +18,9 @@
     endunless
   endif
   assign curated_url = blank
-  if collections['box-sets'].products_count > 0
+  # the box-sets collection may not exist yet: nil > 0 errors and silently skips this whole if
+  assign curated_count = collections['box-sets'].products_count | default: 0
+  if curated_count > 0
     assign curated_url = '/collections/box-sets'
   elsif box_set.available
     assign curated_url = box_set.url | append: '?view=box-sets'
