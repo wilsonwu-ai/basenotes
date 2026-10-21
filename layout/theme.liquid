@@ -131,6 +131,9 @@
     <meta name="robots" content="noindex, follow">
   {%- elsif template.suffix == 'giveaway' -%}
     <meta name="robots" content="noindex, follow">
+  {%- elsif template.name == 'product' and template.suffix == 'box-sets' -%}
+    {%- comment -%} /products/build-your-own-box-set?view=box-sets duplicates the BYO product; its canonical stays the product URL. {%- endcomment -%}
+    <meta name="robots" content="noindex, follow">
   {%- elsif current_tags -%}
     <meta name="robots" content="noindex, follow">
   {%- else -%}

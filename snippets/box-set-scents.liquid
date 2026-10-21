@@ -5,33 +5,38 @@
   bx2:<handle>, bx3:<handle> resolved with all_products[handle]. Shopify sorts tags alphabetically, hence
   the numbered prefix. Missing scents are skipped (never a broken row).
 
-  @param {product} set - the box-set product
+  @param {product} [set] - a real box-set product (scents come from metafield/tags)
+  @param {product} [s1] - scent products passed directly (curated section blocks); win over set
+  @param {product} [s2]
+  @param {product} [s3]
   @param {string} mode - 'card' (collection tile: vendor over name rows) or 'page' (links, thumbs, notes, data attrs)
   Page mode marks the <ul> with data-all-available="true|false" so the caller can capture and test it.
   Note: all_products[] is capped (~20 unique handles per page). Prefer the metafield once it exists.
 {%- endcomment -%}
 {%- liquid
-  assign fp = set.metafields.custom.fragrances.value
-  assign p1 = blank
-  assign p2 = blank
-  assign p3 = blank
-  if fp != blank and fp.size > 0
-    assign p1 = fp[0]
-    assign p2 = fp[1]
-    assign p3 = fp[2]
-  else
-    for tag in set.tags
-      if tag contains 'bx1:'
-        assign h1 = tag | remove_first: 'bx1:' | strip
-        assign p1 = all_products[h1]
-      elsif tag contains 'bx2:'
-        assign h2 = tag | remove_first: 'bx2:' | strip
-        assign p2 = all_products[h2]
-      elsif tag contains 'bx3:'
-        assign h3 = tag | remove_first: 'bx3:' | strip
-        assign p3 = all_products[h3]
-      endif
-    endfor
+  assign p1 = s1
+  assign p2 = s2
+  assign p3 = s3
+  if p1 == blank and p2 == blank and p3 == blank and set != blank
+    assign fp = set.metafields.custom.fragrances.value
+    if fp != blank and fp.size > 0
+      assign p1 = fp[0]
+      assign p2 = fp[1]
+      assign p3 = fp[2]
+    else
+      for tag in set.tags
+        if tag contains 'bx1:'
+          assign h1 = tag | remove_first: 'bx1:' | strip
+          assign p1 = all_products[h1]
+        elsif tag contains 'bx2:'
+          assign h2 = tag | remove_first: 'bx2:' | strip
+          assign p2 = all_products[h2]
+        elsif tag contains 'bx3:'
+          assign h3 = tag | remove_first: 'bx3:' | strip
+          assign p3 = all_products[h3]
+        endif
+      endfor
+    endif
   endif
   assign all_ok = true
   assign shown = 0

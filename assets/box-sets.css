@@ -94,3 +94,12 @@
 .bs-build .bs-btn { min-height: 3.2rem; }
 @media (min-width: 700px) { .bs-build .bs-btn { max-width: 20rem; } }
 @media (prefers-reduced-motion: reduce) { .bs-btn { transition: none; } .bs-gallery__viewport { scroll-behavior: auto; } }
+
+/* Detail view (inside .bs-wrap, so the gutter is already applied) */
+.bs-product { width: min(100%, 40rem); margin-inline: auto; padding-top: .5rem; }
+.bs-detail .bs-back { padding-inline: 0; }
+.bs-detail .bs-info { padding-inline: 0; }
+.bs-photo { margin: 0; }
+.bs-photo img { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; border-radius: .3rem; background: var(--bs-paper); }
+.bs-info__lede { margin: 1rem 0 0; color: var(--scent-ink); line-height: 1.55; }
+.bs-detail[hidden], .bs [data-view-grid][hidden], .bs [data-view-detail][hidden] { display: none; }

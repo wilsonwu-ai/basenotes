@@ -1,0 +1,72 @@
+{%- comment -%}
+  Single curated box set detail view (photo first, one column). Used by:
+   - sections/box-sets-collection.liquid (one hidden <article> per set block, shown by hash route #slug)
+   - sections/box-set-product.liquid (a real box-set product, always visible)
+  Cart behaviour lives in assets/box-sets.js, driven by the data-* attributes below.
+
+  @param {string} slug - url slug / element id
+  @param {string} title
+  @param {string} [lede]
+  @param {image} [image] - image_picker or product media; falls back to asset_name, then a text placeholder
+  @param {string} [asset_name] - theme asset used when no image is set
+  @param {product} [s1] [s2] [s3] - scent products passed directly
+  @param {product} [set] - real box-set product (scents from metafield/tags when s1-s3 are blank)
+  @param {string} mode - 'byo' (add the Build Your Own product with the same properties as the builder) or 'product' (add set's own variant)
+  @param {product} [add_product] - product whose first variant is added (the BYO product, or the real set)
+  @param {string} byo_url - Build Your Own url, blank if unavailable
+  @param {string} back_url - "All box sets" url
+  @param {boolean} routed - true when hidden until its hash route is active
+{%- endcomment -%}
+{%- liquid
+  assign dvariant = add_product.variants.first
+  assign alt_text = title | append: ' gift box with three 5ml vials'
+-%}
+{%- capture scent_list -%}{% render 'box-set-scents', set: set, s1: s1, s2: s2, s3: s3, mode: 'page' %}{%- endcapture -%}
+{%- assign scents_ok = false -%}
+{%- if scent_list contains 'data-all-available="true"' -%}{%- assign scents_ok = true -%}{%- endif -%}
+{%- assign can_buy = false -%}
+{%- if scents_ok and dvariant.available and dvariant.price > 0 -%}{%- assign can_buy = true -%}{%- endif -%}
+
+<article class="bs-detail" id="set-{{ slug }}" data-set="{{ slug }}" data-title="{{ title | escape }}" data-mode="{{ mode }}" data-variant-id="{{ dvariant.id }}" data-handle="{{ add_product.handle }}" data-can-buy="{{ can_buy }}"{% if routed %} hidden{% endif %}>
+  <a class="bs-back" href="{{ back_url }}" aria-label="Back to all curated box sets">&larr; All box sets</a>
+  <div class="bs-photo">
+    {%- if image != blank -%}
+      {{ image | image_url: width: 1200 | image_tag: width: 1200, height: 1200, sizes: '(min-width: 700px) 40rem, 100vw', widths: '600, 900, 1200', loading: 'lazy', alt: alt_text }}
+    {%- elsif asset_name != blank -%}
+      <img src="{{ asset_name | asset_url }}" width="1200" height="1200" loading="lazy" alt="{{ alt_text | escape }}">
+    {%- else -%}
+      <div class="bs-gallery__placeholder" role="img" aria-label="{{ alt_text | escape }}">{{ title | escape }}</div>
+    {%- endif -%}
+  </div>
+
+  <div class="bs-info">
+    <p class="bs-eyebrow">Box Set</p>
+    <h1 tabindex="-1" data-detail-title>{{ title | escape }}</h1>
+    <p class="bs-info__sub">Three 5ml vials in one gift box</p>
+    {%- if lede != blank -%}<p class="bs-info__lede">{{ lede | escape }}</p>{%- endif -%}
+
+    {{ scent_list }}
+
+    <div class="bs-buy">
+      <p class="bs-price">{{ dvariant.price | money_without_trailing_zeros }}</p>
+      <button type="button" class="bs-btn bs-add" data-add{% unless can_buy %} aria-disabled="true"{% endunless %}>{% if can_buy %}Add to cart{% else %}Currently unavailable{% endif %}</button>
+      <p class="bs-status" data-status role="status" aria-live="polite">{% if scents_ok == false %}One of the three fragrances in this set is unavailable right now.{% endif %}</p>
+    </div>
+
+    <section class="bs-included" aria-labelledby="BsIncluded-{{ slug }}">
+      <h2 id="BsIncluded-{{ slug }}">What's included</h2>
+      <ul>
+        <li>3 &times; 5ml glass spray atomizers</li>
+        <li>Decanted from the original bottles</li>
+        <li>Packed in one gift box</li>
+      </ul>
+    </section>
+
+    {%- if byo_url != blank -%}
+      <div class="bs-build">
+        <p>Want a different three?</p>
+        <a class="bs-btn bs-btn--outline" href="{{ byo_url }}">Or build your own box set</a>
+      </div>
+    {%- endif -%}
+  </div>
+</article>

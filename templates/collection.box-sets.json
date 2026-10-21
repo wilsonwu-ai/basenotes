@@ -2,11 +2,61 @@
   "sections": {
     "main": {
       "type": "box-sets-collection",
+      "blocks": {
+        "set1": {
+          "type": "set",
+          "settings": {
+            "title": "Fresh & Clean",
+            "lede": "Bright, airy and clean: three crisp signatures for warm days and fresh starts.",
+            "scent_1": "creed-silver-mountain-water",
+            "scent_2": "creed-green-irish-tweed",
+            "scent_3": "pdm-perseus"
+          }
+        },
+        "set2": {
+          "type": "set",
+          "settings": {
+            "title": "Warm Evening",
+            "lede": "Rich, warm and magnetic: three crowd favourites built for cooler nights.",
+            "scent_1": "creed-aventus",
+            "scent_2": "pdm-layton",
+            "scent_3": "initio-side-effect"
+          }
+        },
+        "set3": {
+          "type": "set",
+          "settings": {
+            "title": "Date Night",
+            "lede": "Sweet, sultry and unforgettable: three scents made for close company.",
+            "scent_1": "tom-ford-tobacco-vanille-edp",
+            "scent_2": "kilian-love-don-t-be-shy-edp",
+            "scent_3": "yves-saint-laurent-libre-edp"
+          }
+        },
+        "set4": {
+          "type": "set",
+          "settings": {
+            "title": "Office Ready",
+            "lede": "Polished and versatile: three signatures that work from the desk to dinner.",
+            "scent_1": "dior-homme-intense-edp",
+            "scent_2": "versace-eros",
+            "scent_3": "mont-blanc-legend-eau-de-parfum"
+          }
+        }
+      },
+      "block_order": [
+        "set1",
+        "set2",
+        "set3",
+        "set4"
+      ],
       "settings": {
         "heading": "Curated Box Sets",
         "subheading": "Three hand-paired 5ml vials in one gift box, $56."
       }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }

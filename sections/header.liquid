@@ -17,9 +17,11 @@
       assign box_set_url = box_set_url | append: '?view=box-builder'
     endunless
   endif
-  assign curated_ok = false
+  assign curated_url = blank
   if collections['box-sets'].products_count > 0
-    assign curated_ok = true
+    assign curated_url = '/collections/box-sets'
+  elsif box_set.available
+    assign curated_url = box_set.url | append: '?view=box-sets'
   endif
 -%}
 
@@ -123,14 +125,14 @@
       <ul class="header__nav-list">
         {%- if artifact_surface -%}
           <li class="header__nav-item"><a href="/collections/fragrances" class="header__nav-link">Fragrances</a></li>
-          {% render 'nav-box-sets', layout: 'desktop', byo_url: box_set_url, curated_ok: curated_ok %}
+          {% render 'nav-box-sets', layout: 'desktop', byo_url: box_set_url, curated_url: curated_url %}
           <li class="header__nav-item"><a href="/pages/monthly-rotation" class="header__nav-link">Subscription</a></li>
           {%- comment -%} Full bottles menu link removed 2026-09-11 (Jeff: full bottles are offered on the product page only){%- endcomment -%}
           {%- if section.settings.journal_label != blank -%}<li class="header__nav-item"><a href="{{ section.settings.journal_url | default: '/blogs/hub' }}" class="header__nav-link">{{ section.settings.journal_label | escape }}</a></li>{%- endif -%}
         {%- else -%}
         {%- for link in section.settings.menu.links -%}
           {%- if link.title == 'Box Sets' and link.links.size == 0 -%}
-            {% render 'nav-box-sets', layout: 'desktop', byo_url: box_set_url, curated_ok: curated_ok %}
+            {% render 'nav-box-sets', layout: 'desktop', byo_url: box_set_url, curated_url: curated_url %}
             {%- continue -%}
           {%- endif -%}
           <li class="header__nav-item{% if link.links.size > 0 %} has-dropdown{% endif %}">
@@ -324,14 +326,14 @@
   <ul class="mobile-nav__list">
     {%- if artifact_surface -%}
       <li class="mobile-nav__item"><a href="/collections/fragrances" class="mobile-nav__link">Fragrances</a></li>
-      {% render 'nav-box-sets', layout: 'mobile', byo_url: box_set_url, curated_ok: curated_ok %}
+      {% render 'nav-box-sets', layout: 'mobile', byo_url: box_set_url, curated_url: curated_url %}
       <li class="mobile-nav__item"><a href="/pages/monthly-rotation" class="mobile-nav__link">Subscription</a></li>
       {%- comment -%} Full bottles menu link removed 2026-09-11 {%- endcomment -%}
       {%- if section.settings.journal_label != blank -%}<li class="mobile-nav__item"><a href="{{ section.settings.journal_url | default: '/blogs/hub' }}" class="mobile-nav__link">{{ section.settings.journal_label | escape }}</a></li>{%- endif -%}
     {%- else -%}
     {%- for link in section.settings.menu.links -%}
       {%- if link.title == 'Box Sets' and link.links.size == 0 -%}
-        {% render 'nav-box-sets', layout: 'mobile', byo_url: box_set_url, curated_ok: curated_ok %}
+        {% render 'nav-box-sets', layout: 'mobile', byo_url: box_set_url, curated_url: curated_url %}
         {%- continue -%}
       {%- endif -%}
       <li class="mobile-nav__item{% if link.links.size > 0 %} has-children{% endif %}">

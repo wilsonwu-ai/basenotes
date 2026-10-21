@@ -1,16 +1,19 @@
 {{ 'scent-storefront.css' | asset_url | stylesheet_tag }}
 {{ 'box-sets.css' | asset_url | stylesheet_tag }}
 {%- comment -%}
-  Curated Box Sets collection (templates/collection.box-sets.json, assign to the collection "box-sets").
-  Cards mirror the Fragrances tile look: 1:1 photo, title, three scents (vendor over name), price, a visual
-  "View set" button. The title link is stretched over the card, so each card is ONE link / one tab stop.
-  Products come from the product_list setting (so Jeff can order them), falling back to the collection.
+  Curated Box Sets. One section, two homes:
+   - templates/product.box-sets.json  -> /products/build-your-own-box-set?view=box-sets (works today, no Admin changes)
+   - templates/collection.box-sets.json -> /collections/box-sets (once that collection exists)
+
+  Each set is a BLOCK (type "set"): title, lede, image, three scent pickers, and an optional real box-set
+  product. Grid = the cards; a set's detail view is the same page, switched by the #slug hash
+  (assets/box-sets.js), so back/forward and deep links work.
+
+  Add to cart: block product set + available -> that product's first variant. Otherwise the Build Your
+  Own product's variant with the SAME properties box-builder.js sends, plus a visible "Box set" = title.
+  Image fallback: block image > block product image > assets/box-set-<slug>.jpg > text placeholder.
 {%- endcomment -%}
 {%- liquid
-  assign sets = section.settings.product_list
-  if sets == blank
-    assign sets = collection.products
-  endif
   assign byo = all_products['build-your-own-box-set']
   assign byo_url = blank
   if byo.available
@@ -19,57 +22,121 @@
       assign byo_url = byo_url | append: '?view=box-builder'
     endunless
   endif
+  assign known_assets = 'fresh-clean,warm-evening,date-night,office-ready' | split: ','
+  assign byo_variant = byo.variants.first
 -%}
-<div class="scent-route bs">
+<div class="scent-route bs" data-curated data-self-title="{{ section.settings.heading | default: 'Curated Box Sets' | escape }}">
   <div class="bs-wrap">
-    <header class="bs-head">
-      <h1>{{ section.settings.heading | default: 'Curated Box Sets' | escape }}</h1>
-      {%- if section.settings.subheading != blank -%}<p>{{ section.settings.subheading | escape }}</p>{%- endif -%}
-    </header>
+    <div data-view-grid>
+      <header class="bs-head">
+        <h1 tabindex="-1" data-grid-title>{{ section.settings.heading | default: 'Curated Box Sets' | escape }}</h1>
+        {%- if section.settings.subheading != blank -%}<p>{{ section.settings.subheading | escape }}</p>{%- endif -%}
+      </header>
 
-    {%- if sets.size > 0 -%}
-      <ul class="bs-grid">
-        {%- for set in sets limit: 24 -%}
-          {%- assign img_loading = 'lazy' -%}
-          {%- if forloop.index <= 2 -%}{%- assign img_loading = 'eager' -%}{%- endif -%}
-          {%- assign img_alt = set.title | append: ' gift box with three 5ml vials' -%}
-          <li class="bs-card">
-            <div class="bs-card__media">
-              {%- if set.featured_media -%}
-                {{ set.featured_media | image_url: width: 900 | image_tag: width: 900, height: 900, sizes: '(min-width: 700px) 50vw, 100vw', widths: '450, 700, 900', loading: img_loading, alt: img_alt }}
-              {%- else -%}
-                <span class="bs-card__placeholder">{{ set.title | escape }}</span>
-              {%- endif -%}
-            </div>
-            <div class="bs-card__body">
-              <h2 class="bs-card__title"><a href="{{ set.url }}">{{ set.title | escape }}</a></h2>
-              {% render 'box-set-scents', set: set, mode: 'card' %}
-              <p class="bs-card__price">{{ set.price | money_without_trailing_zeros }}</p>
-              <span class="bs-btn bs-card__btn" aria-hidden="true">View set</span>
-            </div>
-          </li>
-        {%- endfor -%}
-      </ul>
-    {%- else -%}
-      <p class="bs-empty">Curated box sets are on their way. In the meantime you can {% if byo_url != blank %}<a href="{{ byo_url }}">build your own box set</a>{% else %}<a href="/collections/fragrances">browse the fragrances</a>{% endif %}.</p>
-    {%- endif -%}
+      {%- if section.blocks.size > 0 -%}
+        <ul class="bs-grid">
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign b = block.settings
+              assign slug = b.title | handleize
+              assign card_img = b.image
+              if card_img == blank
+                assign card_img = b.product.featured_media
+              endif
+              assign card_asset = blank
+              if card_img == blank and known_assets contains slug
+                assign card_asset = 'box-set-' | append: slug | append: '.jpg'
+              endif
+              assign card_price = byo_variant.price
+              if b.product != blank
+                assign card_price = b.product.price
+              endif
+              assign img_loading = 'lazy'
+              if forloop.index <= 2
+                assign img_loading = 'eager'
+              endif
+              assign img_alt = b.title | append: ' gift box with three 5ml vials'
+            -%}
+            <li class="bs-card" {{ block.shopify_attributes }}>
+              <div class="bs-card__media">
+                {%- if card_img != blank -%}
+                  {{ card_img | image_url: width: 900 | image_tag: width: 900, height: 900, sizes: '(min-width: 700px) 50vw, 100vw', widths: '450, 700, 900', loading: img_loading, alt: img_alt }}
+                {%- elsif card_asset != blank -%}
+                  <img src="{{ card_asset | asset_url }}" width="1200" height="1200" loading="{{ img_loading }}" alt="{{ img_alt | escape }}">
+                {%- else -%}
+                  <span class="bs-card__placeholder">{{ b.title | escape }}</span>
+                {%- endif -%}
+              </div>
+              <div class="bs-card__body">
+                <h2 class="bs-card__title"><a href="#{{ slug }}">{{ b.title | escape }}</a></h2>
+                {% render 'box-set-scents', set: b.product, s1: b.scent_1, s2: b.scent_2, s3: b.scent_3, mode: 'card' %}
+                <p class="bs-card__price">{{ card_price | money_without_trailing_zeros }}</p>
+                <span class="bs-btn bs-card__btn" aria-hidden="true">View set</span>
+              </div>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- else -%}
+        <p class="bs-empty">Curated box sets are on their way. In the meantime you can {% if byo_url != blank %}<a href="{{ byo_url }}">build your own box set</a>{% else %}<a href="/collections/fragrances">browse the fragrances</a>{% endif %}.</p>
+      {%- endif -%}
 
-    {%- if byo_url != blank -%}
-      <div class="bs-cross">
-        <p>Want a different three? Pick any three 5ml vials yourself.</p>
-        <a href="{{ byo_url }}">Build your own box set</a>
-      </div>
-    {%- endif -%}
+      {%- if byo_url != blank -%}
+        <div class="bs-cross">
+          <p>Want a different three? Pick any three 5ml vials yourself.</p>
+          <a href="{{ byo_url }}">Build your own box set</a>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="bs-product" data-view-detail hidden>
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign b = block.settings
+          assign slug = b.title | handleize
+          assign d_img = b.image
+          if d_img == blank
+            assign d_img = b.product.featured_media
+          endif
+          assign d_asset = blank
+          if d_img == blank and known_assets contains slug
+            assign d_asset = 'box-set-' | append: slug | append: '.jpg'
+          endif
+          assign d_mode = 'byo'
+          assign d_product = byo
+          if b.product != blank and b.product.available
+            assign d_mode = 'product'
+            assign d_product = b.product
+          endif
+        -%}
+        {% render 'box-set-detail', slug: slug, title: b.title, lede: b.lede, image: d_img, asset_name: d_asset, s1: b.scent_1, s2: b.scent_2, s3: b.scent_3, set: b.product, mode: d_mode, add_product: d_product, byo_url: byo_url, back_url: '#all', routed: true %}
+      {%- endfor -%}
+    </div>
   </div>
 </div>
+<script src="{{ 'box-sets.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
   "name": "Curated box sets",
+  "max_blocks": 12,
   "settings": [
     { "type": "text", "id": "heading", "label": "Heading", "default": "Curated Box Sets" },
-    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Three hand-paired 5ml vials in one gift box, $56." },
-    { "type": "product_list", "id": "product_list", "label": "Box sets (in order)", "info": "Leave empty to show every product in the collection." }
+    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Three hand-paired 5ml vials in one gift box, $56." }
+  ],
+  "blocks": [
+    {
+      "type": "set",
+      "name": "Box set",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "New box set" },
+        { "type": "textarea", "id": "lede", "label": "Description" },
+        { "type": "image_picker", "id": "image", "label": "Photo", "info": "Square works best. Falls back to the box set product's photo, then the built-in placeholder." },
+        { "type": "product", "id": "scent_1", "label": "Fragrance 1" },
+        { "type": "product", "id": "scent_2", "label": "Fragrance 2" },
+        { "type": "product", "id": "scent_3", "label": "Fragrance 3" },
+        { "type": "product", "id": "product", "label": "Box set product (optional)", "info": "Leave blank until the real box set product exists. When set and available, Add to cart uses it." }
+      ]
+    }
   ],
   "presets": [{ "name": "Curated box sets" }]
 }
