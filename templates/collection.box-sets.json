@@ -1,0 +1,12 @@
+{
+  "sections": {
+    "main": {
+      "type": "box-sets-collection",
+      "settings": {
+        "heading": "Curated Box Sets",
+        "subheading": "Three hand-paired 5ml vials in one gift box, $56."
+      }
+    }
+  },
+  "order": ["main"]
+}

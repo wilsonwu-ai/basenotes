@@ -1,0 +1,98 @@
+{{ 'scent-storefront.css' | asset_url | stylesheet_tag }}
+{{ 'box-sets.css' | asset_url | stylesheet_tag }}
+{%- comment -%}
+  Curated box set product page (templates/product.box-set.json). Photo first, one column.
+  Scents: metafield custom.fragrances, else tags bx1:/bx2:/bx3:<handle> (see snippets/box-set-scents.liquid).
+  Add to cart is one-time only (no selling plan) and sends "Fragrance 1".."Fragrance 3" as line properties
+  through BaseNoteCommerce.addVial, exactly like the Build Your Own box. Behaviour: assets/box-sets.js.
+{%- endcomment -%}
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign gallery = product.media | where: 'media_type', 'image'
+  assign gallery_count = gallery.size | at_most: 8
+  assign byo = all_products['build-your-own-box-set']
+  assign byo_url = blank
+  if byo.available
+    assign byo_url = byo.url
+    unless byo.template_suffix == 'box-builder'
+      assign byo_url = byo_url | append: '?view=box-builder'
+    endunless
+  endif
+-%}
+{%- capture scent_list -%}{% render 'box-set-scents', set: product, mode: 'page' %}{%- endcapture -%}
+{%- assign scents_ok = false -%}
+{%- if scent_list contains 'data-all-available="true"' -%}{%- assign scents_ok = true -%}{%- endif -%}
+{%- assign can_buy = false -%}
+{%- if scents_ok and variant.available and variant.price > 0 -%}{%- assign can_buy = true -%}{%- endif -%}
+
+<div class="scent-route bs">
+  <article class="bs-product" data-box-set data-variant-id="{{ variant.id }}" data-handle="{{ product.handle }}" data-title="{{ product.title | escape }}" data-can-buy="{{ can_buy }}">
+    <a class="bs-back" href="{{ collections['box-sets'].url | default: '/collections/box-sets' }}" aria-label="Back to all curated box sets">&larr; All box sets</a>
+
+    <div class="bs-gallery" data-gallery>
+      {%- if gallery_count > 0 -%}
+        <div class="bs-gallery__viewport" data-gallery-viewport tabindex="0" role="region" aria-roledescription="carousel" aria-label="{{ product.title | escape }} photos">
+          <ul class="bs-gallery__track">
+            {%- for media in gallery limit: gallery_count -%}
+              <li class="bs-gallery__slide" id="BsSlide-{{ forloop.index }}">
+                {%- assign slide_alt = media.alt | default: product.title -%}
+                {%- if forloop.first -%}
+                  {{ media | image_url: width: 1200 | image_tag: width: 1200, height: 1200, sizes: '(min-width: 700px) 40rem, 100vw', widths: '600, 900, 1200', loading: 'eager', fetchpriority: 'high', alt: slide_alt }}
+                {%- else -%}
+                  {{ media | image_url: width: 1200 | image_tag: width: 1200, height: 1200, sizes: '(min-width: 700px) 40rem, 100vw', widths: '600, 900, 1200', loading: 'lazy', alt: slide_alt }}
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+        {%- if gallery_count > 1 -%}
+          <ul class="bs-gallery__thumbs">
+            {%- for media in gallery limit: gallery_count -%}
+              <li><button type="button" class="bs-gallery__thumb" data-gallery-thumb="{{ forloop.index0 }}" aria-label="Show photo {{ forloop.index }} of {{ gallery_count }}"{% if forloop.first %} aria-current="true"{% endif %}>{{ media | image_url: width: 160 | image_tag: width: 56, height: 56, loading: 'lazy', alt: '' }}</button></li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      {%- else -%}
+        <div class="bs-gallery__placeholder" role="img" aria-label="{{ product.title | escape }} gift box">{{ product.title | escape }}</div>
+      {%- endif -%}
+    </div>
+
+    <div class="bs-info">
+      <p class="bs-eyebrow">Box Set</p>
+      <h1>{{ product.title | escape }}</h1>
+      <p class="bs-info__sub">Three 5ml vials in one gift box</p>
+
+      {{ scent_list }}
+
+      <div class="bs-buy">
+        <p class="bs-price">{{ variant.price | money_without_trailing_zeros }}</p>
+        <button type="button" class="bs-btn bs-add" data-add{% unless can_buy %} aria-disabled="true"{% endunless %}>{% if can_buy %}Add to cart{% else %}Currently unavailable{% endif %}</button>
+        <p class="bs-status" data-status role="status" aria-live="polite">{% unless can_buy %}{% if scents_ok == false %}One of the three fragrances in this set is unavailable right now.{% endif %}{% endunless %}</p>
+      </div>
+
+      <section class="bs-included" aria-labelledby="BsIncluded">
+        <h2 id="BsIncluded">What's included</h2>
+        <ul>
+          <li>3 &times; 5ml glass spray atomizers</li>
+          <li>Decanted from the original bottles</li>
+          <li>Packed in one gift box</li>
+        </ul>
+      </section>
+
+      {%- if byo_url != blank -%}
+        <div class="bs-build">
+          <p>Want a different three?</p>
+          <a class="bs-btn bs-btn--outline" href="{{ byo_url }}">Or build your own box set</a>
+        </div>
+      {%- endif -%}
+    </div>
+  </article>
+</div>
+<script src="{{ 'box-sets.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Box set product",
+  "settings": []
+}
+{% endschema %}

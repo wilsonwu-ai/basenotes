@@ -46,9 +46,13 @@
       endcomment
       if page_title != blank and page_title != product.title
         assign seo_title = page_title
+      elsif product.type == 'Box Set'
+        assign seo_title = product.title | append: ' — Gift Box of Three 5ml Fragrances'
       else
         assign seo_title = product.title | append: ' — 5ml Sample'
       endif
+    elsif template.name == 'collection' and collection and collection.handle == 'box-sets'
+      assign seo_title = 'Curated Box Sets — Hand-Paired 5ml Fragrance Gift Sets'
     elsif template.name == 'collection' and collection
       assign seo_title = collection.title | append: ' — Designer & Niche Fragrance Samples'
     elsif template.name == 'index'
@@ -76,6 +80,10 @@
       assign meta_description = 'Try authentic designer and niche fragrance in a 5ml vial. Start at $20, explore Monthly Rotation, or find your full bottle.'
     elsif template.name == 'collection' and collection.handle == 'fragrances' or template.name == 'collection' and collection.handle == 'all'
       assign meta_description = 'Explore authentic designer and niche fragrance in 5ml travel atomizers. Choose your first scent for $20 and additional vials for $18.'
+    elsif template.name == 'collection' and collection.handle == 'box-sets'
+      assign meta_description = page_description | default: 'Hand-paired gift boxes of three authentic 5ml fragrance vials for $56. Pick a ready-made rotation or build your own.'
+    elsif template.name == 'product' and product.type == 'Box Set'
+      assign meta_description = page_description | default: product.description | default: 'A hand-paired gift box of three authentic 5ml fragrance vials, decanted from the original bottles.'
     elsif template.name == 'page' and page.handle == 'faq'
       assign meta_description = page_description | default: 'Answers about one-time fragrance vials, the optional Monthly Rotation subscription, full-bottle availability, shipping, authenticity and your Base Note account.'
     endif

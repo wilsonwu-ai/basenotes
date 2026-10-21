@@ -1,0 +1,42 @@
+{%- comment -%}
+  One muted notes line for a fragrance: "Top: a · Heart: b · Base: c". Prefers the custom.top_notes /
+  heart_notes / base_notes metafields; otherwise parses the description (strip_html FIRST, then cut at the
+  next label; same approach as sections/main-product.liquid). Renders nothing when no notes exist.
+  @param {product} product
+{%- endcomment -%}
+{%- liquid
+  assign tn = product.metafields.custom.top_notes.value
+  assign hn = product.metafields.custom.heart_notes.value
+  assign bn = product.metafields.custom.base_notes.value
+  assign src = product.description | replace: 'Top Note:', 'Top Notes:' | replace: 'Heart Note:', 'Heart Notes:' | replace: 'Base Note:', 'Base Notes:' | strip_html
+  if tn == blank and src contains 'Top Notes:'
+    assign tn = src | split: 'Top Notes:' | last | split: 'Heart Notes:' | first | split: 'Base Notes:' | first | strip
+  endif
+  if hn == blank and src contains 'Heart Notes:'
+    assign hn = src | split: 'Heart Notes:' | last | split: 'Base Notes:' | first | strip
+  endif
+  if bn == blank and src contains 'Base Notes:'
+    assign bn = src | split: 'Base Notes:' | last | strip
+  endif
+  assign parts = ''
+  if tn != blank
+    assign parts = 'Top: ' | append: tn | truncate: 60
+  endif
+  if hn != blank
+    assign hpart = 'Heart: ' | append: hn | truncate: 60
+    if parts == ''
+      assign parts = hpart
+    else
+      assign parts = parts | append: ' · ' | append: hpart
+    endif
+  endif
+  if bn != blank
+    assign bpart = 'Base: ' | append: bn | truncate: 60
+    if parts == ''
+      assign parts = bpart
+    else
+      assign parts = parts | append: ' · ' | append: bpart
+    endif
+  endif
+-%}
+{%- if parts != '' -%}<span class="bs-scent__notes">{{ parts | escape }}</span>{%- endif -%}

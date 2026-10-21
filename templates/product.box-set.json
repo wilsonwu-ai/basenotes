@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "box-set-product",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

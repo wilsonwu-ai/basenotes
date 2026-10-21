@@ -17,6 +17,10 @@
       assign box_set_url = box_set_url | append: '?view=box-builder'
     endunless
   endif
+  assign curated_ok = false
+  if collections['box-sets'].products_count > 0
+    assign curated_ok = true
+  endif
 -%}
 
 {% comment %} Announcement Bar {% endcomment %}
@@ -34,6 +38,36 @@
 <style>
   .header__nav-link--soon { cursor: default; opacity: .6; }
   .header__nav-link--soon small { margin-inline-start: .35em; padding: .1em .45em; border: 1px solid currentColor; border-radius: 99rem; font-size: .62em; letter-spacing: .08em; text-transform: uppercase; vertical-align: .15em; }
+  /* Box Sets dropdown (snippets/nav-box-sets.liquid). Disclosure pattern: real parent link + sibling toggle. */
+  .bsnav { display: flex; align-items: center; }
+  .bsnav__toggle { display: inline-flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; margin-inline-start: -.5rem; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; }
+  .header--artifact .bsnav__toggle { color: #f4efe3; }
+  .bsnav__toggle svg { transition: transform .18s ease-out; }
+  .bsnav__toggle:focus-visible { outline: 2px solid #d5bc82; outline-offset: -2px; }
+  .bsnav__panel { position: absolute; top: 100%; left: 0; z-index: 5; min-width: 15rem; padding-top: .5rem; opacity: 0; visibility: hidden; transition: opacity .18s ease-out, visibility 0s linear .12s; }
+  .bsnav.is-open .bsnav__panel,
+  .bsnav:not([data-dismissed]):focus-within .bsnav__panel { opacity: 1; visibility: visible; transition-delay: 0s; }
+  @media (hover: hover) and (pointer: fine) {
+    .bsnav:not([data-dismissed]):hover .bsnav__panel { opacity: 1; visibility: visible; transition-delay: 0s; }
+    .bsnav:not([data-dismissed]):hover .bsnav__toggle svg { transform: rotate(180deg); }
+  }
+  .bsnav.is-open .bsnav__toggle svg { transform: rotate(180deg); }
+  .bsnav__list { list-style: none; margin: 0; padding: .35rem 0; background: #faf7f0; border: 1px solid rgb(34 57 43 / 12%); border-radius: 2px; box-shadow: 0 8px 24px rgb(34 57 43 / 12%); }
+  .bsnav__link { display: block; padding: .75rem 1.25rem; border-inline-start: 2px solid transparent; font: 500 .8rem/1.4 'Jost', sans-serif; letter-spacing: .04em; text-transform: none; text-decoration: none; white-space: nowrap; color: #22392b; }
+  .bsnav__link:hover { background: #f4efe3; color: #22392b; }
+  .bsnav__link:focus-visible { outline: 2px solid #22392b; outline-offset: -2px; }
+  .bsnav__link.is-current { border-inline-start-color: #ac9159; }
+  .header--artifact .bsnav__link:hover, .header--artifact .bsnav__link:focus-visible { color: #22392b; }
+  .bsnav-m__toggle svg { transition: transform .2s; }
+  .bsnav-m.is-open .bsnav-m__toggle svg { transform: rotate(180deg); }
+  .bsnav-m__panel { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows .2s ease-out, visibility 0s linear .2s; }
+  .bsnav-m.is-open .bsnav-m__panel { grid-template-rows: 1fr; visibility: visible; transition-delay: 0s; }
+  .bsnav-m__list { list-style: none; margin: 0; padding: 0; min-height: 0; overflow: hidden; background: var(--color-background-secondary); }
+  .bsnav-m__link { min-height: 48px; padding-inline-start: var(--spacing-2xl); font-size: var(--font-size-sm); }
+  .bsnav-m__link[aria-current="page"] { font-weight: 600; box-shadow: inset 3px 0 0 #ac9159; }
+  @media (prefers-reduced-motion: reduce) {
+    .bsnav__panel, .bsnav__toggle svg, .bsnav-m__panel, .bsnav-m__toggle svg { transition: none; }
+  }
 </style>
 {%- unless template.suffix == 'giveaway' or artifact_surface -%}
 {%- if section.settings.announcement_enabled and section.settings.announcement_text != blank -%}
@@ -89,16 +123,16 @@
       <ul class="header__nav-list">
         {%- if artifact_surface -%}
           <li class="header__nav-item"><a href="/collections/fragrances" class="header__nav-link">Fragrances</a></li>
-          {%- if box_set_url != blank -%}
-          <li class="header__nav-item"><a href="{{ box_set_url }}" class="header__nav-link">Box Sets</a></li>
-          {%- else -%}
-          <li class="header__nav-item"><span class="header__nav-link header__nav-link--soon" aria-disabled="true">Box Sets <small>Soon</small></span></li>
-          {%- endif -%}
+          {% render 'nav-box-sets', layout: 'desktop', byo_url: box_set_url, curated_ok: curated_ok %}
           <li class="header__nav-item"><a href="/pages/monthly-rotation" class="header__nav-link">Subscription</a></li>
           {%- comment -%} Full bottles menu link removed 2026-09-11 (Jeff: full bottles are offered on the product page only){%- endcomment -%}
           {%- if section.settings.journal_label != blank -%}<li class="header__nav-item"><a href="{{ section.settings.journal_url | default: '/blogs/hub' }}" class="header__nav-link">{{ section.settings.journal_label | escape }}</a></li>{%- endif -%}
         {%- else -%}
         {%- for link in section.settings.menu.links -%}
+          {%- if link.title == 'Box Sets' and link.links.size == 0 -%}
+            {% render 'nav-box-sets', layout: 'desktop', byo_url: box_set_url, curated_ok: curated_ok %}
+            {%- continue -%}
+          {%- endif -%}
           <li class="header__nav-item{% if link.links.size > 0 %} has-dropdown{% endif %}">
             <a href="{{ link.url }}" class="header__nav-link{% if link.active %} is-active{% endif %}">
               {{ link.title }}
@@ -290,16 +324,16 @@
   <ul class="mobile-nav__list">
     {%- if artifact_surface -%}
       <li class="mobile-nav__item"><a href="/collections/fragrances" class="mobile-nav__link">Fragrances</a></li>
-      {%- if box_set_url != blank -%}
-      <li class="mobile-nav__item"><a href="{{ box_set_url }}" class="mobile-nav__link">Box Sets</a></li>
-      {%- else -%}
-      <li class="mobile-nav__item"><span class="mobile-nav__link header__nav-link--soon" aria-disabled="true">Box Sets <small>Soon</small></span></li>
-      {%- endif -%}
+      {% render 'nav-box-sets', layout: 'mobile', byo_url: box_set_url, curated_ok: curated_ok %}
       <li class="mobile-nav__item"><a href="/pages/monthly-rotation" class="mobile-nav__link">Subscription</a></li>
       {%- comment -%} Full bottles menu link removed 2026-09-11 {%- endcomment -%}
       {%- if section.settings.journal_label != blank -%}<li class="mobile-nav__item"><a href="{{ section.settings.journal_url | default: '/blogs/hub' }}" class="mobile-nav__link">{{ section.settings.journal_label | escape }}</a></li>{%- endif -%}
     {%- else -%}
     {%- for link in section.settings.menu.links -%}
+      {%- if link.title == 'Box Sets' and link.links.size == 0 -%}
+        {% render 'nav-box-sets', layout: 'mobile', byo_url: box_set_url, curated_ok: curated_ok %}
+        {%- continue -%}
+      {%- endif -%}
       <li class="mobile-nav__item{% if link.links.size > 0 %} has-children{% endif %}">
         {%- if link.links.size > 0 -%}
           <button class="mobile-nav__link mobile-nav__toggle" data-mobile-submenu-toggle>
@@ -1248,6 +1282,36 @@
     }
   }
 </style>
+
+<script>
+  (function () {
+    var desk = document.querySelectorAll('[data-bsnav]');
+    desk.forEach(function (nav) {
+      var toggle = nav.querySelector('[data-bsnav-toggle]');
+      function setOpen(open) { nav.classList.toggle('is-open', open); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+      toggle.addEventListener('click', function () { nav.removeAttribute('data-dismissed'); setOpen(!nav.classList.contains('is-open')); });
+      nav.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        var wasOpen = nav.classList.contains('is-open') || nav.matches(':hover, :focus-within');
+        if (!wasOpen) return;
+        setOpen(false);
+        nav.setAttribute('data-dismissed', '');
+        if (nav.contains(document.activeElement)) toggle.focus();
+      });
+      nav.addEventListener('mouseleave', function () { nav.removeAttribute('data-dismissed'); });
+      nav.addEventListener('focusout', function (e) { if (!nav.contains(e.relatedTarget)) { setOpen(false); nav.removeAttribute('data-dismissed'); } });
+      document.addEventListener('click', function (e) { if (!nav.contains(e.target)) setOpen(false); });
+    });
+    document.querySelectorAll('[data-bsnav-m]').forEach(function (item) {
+      var toggle = item.querySelector('[data-bsnav-m-toggle]');
+      toggle.addEventListener('click', function () {
+        var open = !item.classList.contains('is-open');
+        item.classList.toggle('is-open', open);
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    });
+  })();
+</script>
 
 <script>
   (function() {

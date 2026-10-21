@@ -1,0 +1,71 @@
+{%- comment -%}
+  "Box Sets" nav entry. Used by every header branch (artifact_surface or menu-driven, desktop and mobile).
+  Both destinations live  -> dropdown: "Curated Box Sets" + "Build Your Own Box Set"
+                              (desktop: real parent link + separate toggle button, disclosure list, not role=menu;
+                               mobile: accordion button)
+  Only one exists         -> a plain link to it (never a dead link)
+  Neither exists          -> the "Soon" placeholder
+  Behaviour + CSS: sections/header.liquid (look for bsnav).
+  @param {string} layout - 'desktop' or 'mobile'
+  @param {string} byo_url - Build Your Own url, blank when unavailable
+  @param {boolean} curated_ok - true when /collections/box-sets has products
+{%- endcomment -%}
+{%- liquid
+  assign cur_current = false
+  assign byo_current = false
+  if request.page_type == 'collection' and collection.handle == 'box-sets'
+    assign cur_current = true
+  elsif request.page_type == 'product' and product.type == 'Box Set'
+    assign cur_current = true
+  endif
+  if request.page_type == 'product' and product.handle == 'build-your-own-box-set'
+    assign byo_current = true
+  endif
+  assign any_current = false
+  if cur_current or byo_current
+    assign any_current = true
+  endif
+-%}
+{%- if byo_url != blank and curated_ok -%}
+  {%- if layout == 'desktop' -%}
+    <li class="header__nav-item bsnav" data-bsnav>
+      <a href="/collections/box-sets" class="header__nav-link{% if any_current %} is-active{% endif %}"{% if any_current %} aria-current="true"{% endif %}>Box Sets</a>
+      <button type="button" class="bsnav__toggle" aria-expanded="false" aria-controls="BsNavPanel" aria-label="Box Sets menu" data-bsnav-toggle>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="bsnav__panel" id="BsNavPanel">
+        <ul class="bsnav__list">
+          <li><a href="/collections/box-sets" class="bsnav__link{% if cur_current %} is-current{% endif %}"{% if cur_current %} aria-current="page"{% endif %}>Curated Box Sets</a></li>
+          <li><a href="{{ byo_url }}" class="bsnav__link{% if byo_current %} is-current{% endif %}"{% if byo_current %} aria-current="page"{% endif %}>Build Your Own Box Set</a></li>
+        </ul>
+      </div>
+    </li>
+  {%- else -%}
+    <li class="mobile-nav__item bsnav-m" data-bsnav-m>
+      <button type="button" class="mobile-nav__link bsnav-m__toggle" aria-expanded="false" aria-controls="BsNavMobilePanel" data-bsnav-m-toggle>
+        <span>Box Sets</span>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="bsnav-m__panel" id="BsNavMobilePanel">
+        <ul class="bsnav-m__list">
+          <li><a href="/collections/box-sets" class="mobile-nav__link bsnav-m__link"{% if cur_current %} aria-current="page"{% endif %}>Curated Box Sets</a></li>
+          <li><a href="{{ byo_url }}" class="mobile-nav__link bsnav-m__link"{% if byo_current %} aria-current="page"{% endif %}>Build Your Own Box Set</a></li>
+        </ul>
+      </div>
+    </li>
+  {%- endif -%}
+{%- elsif byo_url != blank or curated_ok -%}
+  {%- assign only_url = byo_url -%}
+  {%- if byo_url == blank -%}{%- assign only_url = '/collections/box-sets' -%}{%- endif -%}
+  {%- if layout == 'desktop' -%}
+    <li class="header__nav-item"><a href="{{ only_url }}" class="header__nav-link{% if any_current %} is-active{% endif %}">Box Sets</a></li>
+  {%- else -%}
+    <li class="mobile-nav__item"><a href="{{ only_url }}" class="mobile-nav__link">Box Sets</a></li>
+  {%- endif -%}
+{%- else -%}
+  {%- if layout == 'desktop' -%}
+    <li class="header__nav-item"><span class="header__nav-link header__nav-link--soon" aria-disabled="true">Box Sets <small>Soon</small></span></li>
+  {%- else -%}
+    <li class="mobile-nav__item"><span class="mobile-nav__link header__nav-link--soon" aria-disabled="true">Box Sets <small>Soon</small></span></li>
+  {%- endif -%}
+{%- endif -%}
