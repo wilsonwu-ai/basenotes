@@ -89,23 +89,23 @@
         {%- if rel_vial != blank -%}
           {%- assign rel_name = rel.title | remove_first: rel.vendor | remove: 'EDP' | remove: 'Eau de Parfum' | strip -%}
           <article class="artifact-product__related-card">
-            <a href="{{ rel.url }}" class="artifact-product__related-media">
-              {%- capture rel_photo -%}{%- if rel.featured_image -%}{% render 'grid-photo', handle: rel.handle, image_id: rel.featured_image.id %}{%- endif -%}{%- endcapture -%}
-              {%- if rel_photo != blank -%}
-                <img src="{{ rel_photo | strip }}" width="300" height="300" loading="lazy" alt="{{ rel.title | escape }}">
-              {%- elsif rel.featured_image -%}
-                {{ rel.featured_image | image_url: width: 300 | image_tag: loading: 'lazy', widths: '150, 220, 300', sizes: '150px', alt: rel.title }}
-              {%- endif -%}
-            </a>
-            <h3><a href="{{ rel.url }}">{{ rel_name | default: rel.title }}</a></h3>
-            <p class="artifact-product__related-brand">{{ rel.vendor }}</p>
-            <p class="artifact-product__related-price">{{ rel_vial.price | money_without_trailing_zeros }}</p>
-            <form method="post" action="{{ routes.cart_add_url }}">
-              <input type="hidden" name="id" value="{{ rel_vial.id }}">
-              <input type="hidden" name="quantity" value="1">
-              <button type="submit">Add to cart</button>
-            </form>
-          </article>
+  <a href="{{ rel.url }}" class="artifact-product__related-media">
+    {%- capture rel_photo -%}{%- if rel.featured_image -%}{% render 'grid-photo', handle: rel.handle, image_id: rel.featured_image.id %}{%- endif -%}{%- endcapture -%}
+    {%- if rel_photo != blank -%}
+      <img src="{{ rel_photo | strip }}" width="600" height="600" loading="lazy" alt="{{ rel.title | escape }}">
+    {%- elsif rel.featured_image -%}
+      {{ rel.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', widths: '300, 450, 600', sizes: '(min-width: 750px) 300px, 50vw', alt: rel.title }}
+    {%- endif -%}
+  </a>
+  <h3><a href="{{ rel.url }}">{{ rel_name | default: rel.title }}</a></h3>
+  <p class="artifact-product__related-brand">{{ rel.vendor }}</p>
+  <p class="artifact-product__related-price">{{ rel_vial.price | money_without_trailing_zeros }}</p>
+  <form method="post" action="{{ routes.cart_add_url }}">
+    <input type="hidden" name="id" value="{{ rel_vial.id }}">
+    <input type="hidden" name="quantity" value="1">
+    <button type="submit">Add to cart</button>
+  </form>
+</article>
         {%- endif -%}
       {%- endif -%}
     {%- endfor -%}

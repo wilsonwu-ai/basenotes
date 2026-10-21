@@ -19,8 +19,6 @@
 
 <div
   data-product-recommendations
-  <div
-  data-product-recommendations
   data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=3&intent=complementary">
   {%- if recommendations.performed? -%}
     {%- if recommendations.products_count > 0 -%}
@@ -41,9 +39,9 @@
                 <a href="{{ rec.url }}" class="artifact-product__related-media">
                   {%- capture rec_photo -%}{%- if rec.featured_image -%}{% render 'grid-photo', handle: rec.handle, image_id: rec.featured_image.id %}{%- endif -%}{%- endcapture -%}
                   {%- if rec_photo != blank -%}
-                    <img src="{{ rec_photo | strip }}" width="300" height="300" loading="lazy" alt="{{ rec.title | escape }}">
+                    <img src="{{ rec_photo | strip }}" width="600" height="600" loading="lazy" alt="{{ rec.title | escape }}">
                   {%- elsif rec.featured_image -%}
-                    {{ rec.featured_image | image_url: width: 300 | image_tag: loading: 'lazy', widths: '150, 220, 300', sizes: '150px', alt: rec.title }}
+                    {{ rec.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', widths: '300, 450, 600', sizes: '(min-width: 750px) 300px, 50vw', alt: rec.title }}
                   {%- endif -%}
                 </a>
                 <h3><a href="{{ rec.url }}">{{ rec_name | default: rec.title }}</a></h3>
@@ -97,10 +95,33 @@
     }
   })();
 </script>
+
 {% stylesheet %}
-.artifact-product__related-card button {width: 100%;min-height: 2.75rem;border: 0.0625rem solid #22392b;background: #22392b;color: #fff;font: 500 0.7rem/1.4 'Jost', sans-serif;letter-spacing: 0.08em;text-transform: uppercase;cursor: pointer;}
-.artifact-product__related-card button:hover {background: #2d4a38;color: #fff;}
+  .artifact-product__related-card button {
+    width: 100%;
+    min-height: 2.75rem;
+    border: 0.0625rem solid #22392b;
+    background: #22392b;
+    color: #fff;
+    font: 500 0.7rem/1.4 'Jost', sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .artifact-product__related-card button:hover {
+    background: #2d4a38;
+    color: #fff;
+  }
 {% endstylesheet %}
+
 {% schema %}
-{"name":"Product recommendations","settings":[],"presets":[{"name":"Product recommendations"}]}
+{
+  "name": "Product recommendations",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Product recommendations"
+    }
+  ]
+}
 {% endschema %}
