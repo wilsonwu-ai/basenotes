@@ -1,14 +1,36 @@
 /*
  * ------------------------------------------------------------
  * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
 {
   "sections": {
     "jeff-storefront": {
       "type": "scent-studio-home",
+      "blocks": {
+        "visual_hero_xekAYf": {
+          "type": "visual_hero",
+          "settings": {
+            "image": "shopify://shop_images/UDPG2.jpg",
+            "eyebrow": "",
+            "headline": "",
+            "subtext": "",
+            "button_label": "",
+            "button_link": "shopify://collections/fragrances",
+            "alignment": "right"
+          }
+        }
+      },
+      "block_order": [
+        "visual_hero_xekAYf"
+      ],
       "settings": {
-        "collection": "fragrances",
+        "collection": "box-set",
+        "featured_count": 8,
         "campaign_image": "shopify://shop_images/gLmqu.jpg"
       }
     }

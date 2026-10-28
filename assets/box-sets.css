@@ -106,3 +106,100 @@
 /* Single column per the design council (max 40rem); on desktop the square photo is capped by viewport height so the title, price and Add to cart start above the fold. */
 .bs-detail { max-width: 40rem; margin-inline: auto; }
 @media (min-width: 700px) { .bs-photo { width: min(100%, 58vh); margin-inline: auto; } }
+.bs-product-gallery {
+  width: 100%;
+  min-width: 0;
+}
+
+.bs-product-gallery__slides {
+  position: relative;
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.bs-product-gallery__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.bs-photo .bs-product-gallery__slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+
+.bs-product-gallery__thumbs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 12px 2px;
+}
+
+.bs-product-gallery__thumb {
+  flex: 0 0 64px;
+  padding: 0;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.bs-photo .bs-product-gallery__thumb img {
+  display: block;
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+}
+
+.bs-product-gallery__thumb:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bs-product-gallery__slides {
+    scroll-behavior: auto;
+  }
+}
+.bs-info .bs-scent__notes {
+  display: block;
+  margin-top: 0.65rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--scent-ink, #22392b);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.bs-scent__notes-line {
+  display: block;
+  margin-top: 0.2rem;
+}
+
+.bs-scent__notes-line strong {
+  font-weight: 600;
+}
+.bs-scent__notes .bs-scent__notes-line {
+  display: block;
+  margin-top: 0.3rem;
+}
+.bs-info .bs-scent__thumb {
+  width: 6rem;
+  height: 6rem;
+  flex: 0 0 6rem;
+}
+
+.bs-info .bs-scent__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.bs-info .bs-scent__notes {
+  margin-left: 6.9rem;
+}

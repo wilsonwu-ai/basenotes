@@ -1,15 +1,17 @@
 {%- comment -%}
   Homepage, rebuilt 2026-09-13 from Jeff's "Homepage edits/updates" brief.
   2026-09-27: hero now has View our collection + Take the quiz.
+  2026-10-22: hardened against wrong collection setting (hardcoded fragrances URL + $20 first-vial price).
+  2026-10-27: added editable visual hero block.
 {%- endcomment -%}
 {%- liquid
-  assign scent_collection = section.settings.collection | default: collections.fragrances
+  assign scent_collection = collections.fragrances
   assign featured_count = section.settings.featured_count | default: 8
   assign first_product = scent_collection.products | first
   assign first_variant = first_product.variants | first
   assign first_plan = first_variant.selling_plan_allocations | first
   assign renewal_price = first_plan.price_adjustments.last.price | default: first_variant.price
-  assign collection_url = scent_collection.url | default: '/collections/fragrances'
+  assign collection_url = '/collections/fragrances'
   assign rotation_modal_id = 'rotationModal-' | append: section.id
   assign rotation_opener_id = 'openRotation-' | append: section.id
   assign box_set = all_products['build-your-own-box-set']
@@ -25,6 +27,40 @@
 {{ 'fragrance-reference.css' | asset_url | stylesheet_tag }}
 
 <div class="scent-home bn-home">
+  {%- for block in section.blocks -%}
+    {%- if block.type == 'visual_hero' -%}
+      <section class="bn-visual-hero" {{ block.shopify_attributes }}>
+        <div class="bn-visual-hero__media">
+          {%- if block.settings.image != blank -%}
+            {%- if block.settings.button_link != blank -%}
+              <a href="{{ block.settings.button_link }}">
+                {{ block.settings.image | image_url: width: 1600 | image_tag: loading: 'eager', widths: '800, 1200, 1600', sizes: '100vw', alt: block.settings.image.alt | default: block.settings.headline }}
+              </a>
+            {%- else -%}
+              {{ block.settings.image | image_url: width: 1600 | image_tag: loading: 'eager', widths: '800, 1200, 1600', sizes: '100vw', alt: block.settings.image.alt | default: block.settings.headline }}
+            {%- endif -%}
+          {%- else -%}
+            <div class="bn-visual-hero__placeholder">Upload a hero image</div>
+          {%- endif -%}
+        </div>
+        <div class="bn-visual-hero__content bn-visual-hero__content--{{ block.settings.alignment }}">
+          {%- if block.settings.eyebrow != blank -%}
+            <p class="bn-visual-hero__eyebrow">{{ block.settings.eyebrow }}</p>
+          {%- endif -%}
+          {%- if block.settings.headline != blank -%}
+            <h2 class="bn-visual-hero__headline">{{ block.settings.headline }}</h2>
+          {%- endif -%}
+          {%- if block.settings.subtext != blank -%}
+            <p class="bn-visual-hero__subtext">{{ block.settings.subtext }}</p>
+          {%- endif -%}
+          {%- if block.settings.button_label != blank and block.settings.button_link != blank -%}
+            <a class="scent-button bn-visual-hero__btn" href="{{ block.settings.button_link }}">{{ block.settings.button_label }}</a>
+          {%- endif -%}
+        </div>
+      </section>
+    {%- endif -%}
+  {%- endfor -%}
+
   <section class="bn-hero" aria-labelledby="ScentHomeTitle">
     <div class="bn-hero__copy">
       <p class="scent-eyebrow">Exceptional fragrances. Your way.</p>
@@ -34,12 +70,6 @@
         <a class="scent-button bn-hero__cta" href="{{ collection_url }}">View our collection</a>
         <a class="scent-button scent-button--light bn-hero__cta" href="/pages/find-your-scent">Take the scent quiz</a>
       </div>
-    </div>
-    <div class="bn-hero__photo">
-      <img
-        src="{{ 'homepage-vial-photo.jpg' | asset_url }}"
-        alt="A filled Base Note 5ml glass spray atomizer labelled Your Choice"
-        width="480" height="640" loading="eager" fetchpriority="high">
     </div>
   </section>
 
@@ -76,28 +106,28 @@
       <article class="bn-way">
         <span class="bn-way__num">01</span>
         <h3>One-Time Vial</h3>
-        <p>{{ first_variant.price | money_without_trailing_zeros }} first. $18 each extra in the same cart. No recurring charge.</p>
+        <p>{{ 2000 | money_without_trailing_zeros }} first. $18 each extra in the same cart. No recurring charge.</p>
         <a href="{{ collection_url }}">Shop 5ml vials</a>
       </article>
       <article class="bn-way bn-way--action" id="{{ rotation_opener_id }}" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="{{ rotation_modal_id }}">
         <span class="bn-way__num">02</span>
         <h3>Monthly Rotation</h3>
-        <p>{% if first_plan %}{{ first_plan.price | money_without_trailing_zeros }} first shipment, then {{ renewal_price | money_without_trailing_zeros }}/month.{% endif %} Swap, pause, or cancel.</p>
+        <p>{% if first_plan %}{{ first_plan.price | money_without_trailing_zeros }} first shipment, then {{ renewal_price | money_without_trailing_zeros }}/month.{% else %}$15 first shipment, then $20/month.{% endif %} Swap, pause, or cancel.</p>
         <span class="bn-way__link">See how Rotation works</span>
       </article>
       {%- if box_set_url != blank -%}
-      <article class="bn-way" id="box-sets">
-        <span class="bn-way__num">03</span>
-        <h3>Box Sets</h3>
-        <p>Any three 5ml vials in one gift box, {{ box_set.price | money_without_trailing_zeros }}. For gifting and comparing side by side.</p>
-        <a href="{{ box_set_url }}">Build your box</a>
-      </article>
+        <article class="bn-way" id="box-sets">
+          <span class="bn-way__num">03</span>
+          <h3>Box Sets</h3>
+          <p>Any three 5ml vials in one gift box, {{ box_set.price | money_without_trailing_zeros }}. For gifting and comparing side by side.</p>
+          <a href="{{ box_set_url }}">Build your box</a>
+        </article>
       {%- else -%}
-      <article class="bn-way" id="box-sets">
-        <span class="bn-way__num">03 &mdash; Coming Soon</span>
-        <h3>Box Sets</h3>
-        <p>A few vials in one box. For gifting and comparing side by side.</p>
-      </article>
+        <article class="bn-way" id="box-sets">
+          <span class="bn-way__num">03 &mdash; Coming Soon</span>
+          <h3>Box Sets</h3>
+          <p>A few vials in one box. For gifting and comparing side by side.</p>
+        </article>
       {%- endif -%}
     </div>
   </section>
@@ -116,11 +146,11 @@
     </details>
     <details>
       <summary>How does $18 after work?</summary>
-      <p>First 5ml in the cart is {{ first_variant.price | money_without_trailing_zeros }}. Every extra vial in that same order is $18.</p>
+      <p>First 5ml in the cart is {{ 2000 | money_without_trailing_zeros }}. Every extra vial in that same order is $18.</p>
     </details>
     <details>
       <summary>Can I buy the full bottle?</summary>
-      <p>When we have it, the 50ml or 100ml is on that scent&rsquo;s page. If it isn&rsquo;t listed, use Notify us.</p>
+      <p>When we have it, the 50ml or 100ml is on that scent’s page. If it isn’t listed, use Notify us.</p>
     </details>
   </section>
 </div>
@@ -130,7 +160,7 @@
 {% stylesheet %}
 .bn-home { --bn-max: 71rem; }
 .bn-home h1, .bn-home h2, .bn-home h3 { font-family: 'Playfair Display', Georgia, serif; }
-.bn-hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr); gap: 2.5rem; align-items: center; width: min(100% - 3rem, var(--bn-max)); margin-inline: auto; padding-block: 3rem 1.75rem; }
+.bn-hero { display: block; width: min(100% - 3rem, var(--bn-max)); margin-inline: auto; padding-block: 3rem 1.75rem; }
 .bn-hero__copy { min-width: 0; }
 .bn-home .bn-hero h1 { margin: 0; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1.04; font-weight: 500; letter-spacing: -.03em; }
 .bn-home .bn-hero h1 br, .bn-home .bn-hero h1 br:last-of-type { display: inline !important; }
@@ -139,8 +169,6 @@
 .bn-hero__cta { min-height: 3.25rem; }
 .bn-hero__offer { margin: .9rem 0 0; color: var(--scent-muted); font: .84rem/1.6 'Jost', sans-serif; }
 .bn-hero__offer span { margin-inline: .35rem; color: var(--scent-gold); }
-.bn-hero__photo { min-width: 0; }
-.bn-hero__photo img { display: block; width: 100%; max-width: 17rem; height: auto; margin-inline: auto; mix-blend-mode: multiply; }
 .bn-hero__actions .scent-button {
   box-sizing: border-box;
   height: 56px;
@@ -181,9 +209,7 @@
   .bn-ways__grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 46rem) {
-  .bn-hero { grid-template-columns: 1fr; gap: 1.25rem; padding-block: 1.75rem 1.25rem; }
-  .bn-hero__photo { order: -1; }
-  .bn-hero__photo img { max-width: 10.5rem; }
+  .bn-hero { padding-block: 1.75rem 1.25rem; }
   .bn-steps__row { grid-template-columns: 1fr; gap: .8rem; }
   .bn-featured__head { align-items: start; flex-direction: column; gap: .4rem; }
 }
@@ -198,15 +224,91 @@
   background: var(--scent-green) !important;
   color: var(--scent-cream) !important;
 }
+
+.bn-visual-hero {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  min-height: 32rem;
+  display: grid;
+  align-items: center;
+  background: #f7f4ef;
+  overflow: hidden;
+}
+.bn-visual-hero__media {
+  position: absolute;
+  inset: 0;
+}
+.bn-visual-hero__media img,
+.bn-visual-hero__media a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.bn-visual-hero__media img {
+  object-fit: contain;
+  object-position: center;
+}
+.bn-visual-hero__content {
+  position: relative;
+  z-index: 1;
+  width: min(100% - 3rem, var(--bn-max));
+  margin-inline: auto;
+  padding: 3rem 0;
+  color: #22392b;
+  pointer-events: none;
+}
+.bn-visual-hero__content a {
+  pointer-events: auto;
+}
+.bn-visual-hero__content--right { text-align: right; margin-left: auto; max-width: 32rem; }
+.bn-visual-hero__content--left  { text-align: left; max-width: 32rem; }
+.bn-visual-hero__content--center { text-align: center; margin-inline: auto; max-width: 36rem; }
+.bn-visual-hero__eyebrow { margin: 0 0 .5rem; font: .75rem/1.4 'Jost', sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+.bn-visual-hero__headline { margin: 0 0 .75rem; font-family: 'Playfair Display', Georgia, serif; font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 500; line-height: 1.05; }
+.bn-visual-hero__subtext { margin: 0 0 1.25rem; font: .95rem/1.6 'Jost', sans-serif; color: var(--scent-muted); }
+.bn-visual-hero__btn { display: inline-flex; }
+.bn-visual-hero__placeholder { display: flex; align-items: center; justify-content: center; height: 100%; color: #888; }
+@media (max-width: 46rem) {
+  .bn-visual-hero { min-height: 24rem; }
+  .bn-visual-hero__content--right,
+  .bn-visual-hero__content--left { text-align: center; margin-inline: auto; }
+}
 {% endstylesheet %}
 
 {% schema %}
 {
   "name": "Scent studio homepage",
   "settings": [
-    { "type": "collection", "id": "collection", "label": "Fragrance collection" },
+    { "type": "collection", "id": "collection", "label": "Fragrance collection (unused — hardcoded to fragrances)" },
     { "type": "range", "id": "featured_count", "min": 4, "max": 12, "step": 2, "default": 8, "label": "Featured products on the homepage" },
     { "type": "image_picker", "id": "campaign_image", "label": "Campaign image (unused since 2026-09-13)" }
+  ],
+  "blocks": [
+    {
+      "type": "visual_hero",
+      "name": "Visual hero",
+      "limit": 1,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Hero image" },
+        { "type": "text", "id": "eyebrow", "label": "Eyebrow (optional)", "default": "Welcome to Base Note" },
+        { "type": "text", "id": "headline", "label": "Headline", "default": "Shop our selection of niche & designer fragrances" },
+        { "type": "textarea", "id": "subtext", "label": "Subtext", "default": "100% authentic. Hand decanted from the original bottle." },
+        { "type": "text", "id": "button_label", "label": "Button label" },
+        { "type": "url", "id": "button_link", "label": "Button link" },
+        {
+          "type": "select",
+          "id": "alignment",
+          "label": "Text alignment",
+          "options": [
+            { "value": "right", "label": "Right" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" }
+          ],
+          "default": "right"
+        }
+      ]
+    }
   ],
   "presets": [{ "name": "Scent studio homepage" }]
 }

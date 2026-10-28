@@ -39,34 +39,62 @@
             {%- assign item_is_giveaway = true -%}
           {%- endif -%}
           <div class="cart-drawer-item" data-cart-item="{{ item.key }}">
-            <a href="{{ item.url }}" class="cart-drawer-item__image">
-              {%- if item.image != blank -%}
-                <img
-                  src="{{ item.image | image_url: width: 200 }}"
-                  alt="{{ item.title }}"
-                  loading="lazy"
-                  width="{{ item.image.width }}"
-                  height="{{ item.image.height }}"
-                >
-              {%- else -%}
-                <div class="cart-drawer-item__placeholder">
-                  <svg viewBox="0 0 80 120" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <rect x="20" y="30" width="40" height="80" rx="4"/>
-                    <rect x="30" y="10" width="20" height="20"/>
-                    <rect x="35" y="0" width="10" height="10" rx="2"/>
-                  </svg>
-                </div>
-              {%- endif -%}
-            </a>
+{%- liquid
+  assign line_url = item.url
+  assign line_title = item.product.title
+  assign line_vendor = item.product.vendor
 
-            <div class="cart-drawer-item__details">
-              <div class="cart-drawer-item__info">
-                {%- if item.product.vendor -%}
-                  <span class="cart-drawer-item__vendor">{{ item.product.vendor }}</span>
-                {%- endif -%}
-                <h4 class="cart-drawer-item__title">
-                  <a href="{{ item.url }}">{{ item.product.title }}</a>
-                </h4>
+  if item.product.handle == 'extra-5ml-vial-add-on'
+    assign scent_handle = item.properties['_Base Note scent handle']
+    assign scent_variant = item.properties['_Base Note scent variant']
+    assign scent_title = item.properties['Selected scent']
+
+    if scent_handle != blank
+      assign line_url = '/products/' | append: scent_handle
+      if scent_variant != blank
+        assign line_url = line_url | append: '?variant=' | append: scent_variant
+      endif
+    endif
+
+    if scent_title != blank
+      assign line_title = scent_title
+    endif
+  endif
+-%}
+
+<a href="{{ line_url }}" class="cart-drawer-item__image">
+  {%- if item.image != blank -%}
+    <img
+      src="{{ item.image | image_url: width: 200 }}"
+      alt="{{ line_title }}"
+      loading="lazy"
+      width="{{ item.image.width }}"
+      height="{{ item.image.height }}"
+    >
+  {%- else -%}
+    <div class="cart-drawer-item__placeholder">
+      <svg viewBox="0 0 80 120" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="20" y="30" width="40" height="80" rx="4"/>
+        <rect x="30" y="10" width="20" height="20"/>
+        <rect x="35" y="0" width="10" height="10" rx="2"/>
+      </svg>
+    </div>
+  {%- endif -%}
+</a>
+
+<div class="cart-drawer-item__details">
+  <div class="cart-drawer-item__info">
+    {%- if line_vendor != blank -%}
+      <span class="cart-drawer-item__vendor">{{ line_vendor }}</span>
+    {%- endif -%}
+    <h4 class="cart-drawer-item__title">
+      <a href="{{ line_url }}">{{ line_title }}</a>
+    </h4>
+    {%- if item.product.handle == 'extra-5ml-vial-add-on' -%}
+  <p class="cart-drawer-item__variant">5ml atomizer · additional vial</p>
+{%- elsif item.variant.title != 'Default Title' -%}
+  <p class="cart-drawer-item__variant">{{ item.variant.title }}</p>
+{%- endif -%}
                 {%- if item.variant.title != 'Default Title' -%}
                   <p class="cart-drawer-item__variant">{{ item.variant.title }}</p>
                 {%- endif -%}

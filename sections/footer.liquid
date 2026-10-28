@@ -194,10 +194,12 @@
     <div class="container">
       <div class="footer__bottom-inner">
         <div class="footer__copyright">
-          <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</p>
+          <p>&copy; {{ 'now' | date: '%Y' }} Base Note LLC · Park Ridge, Illinois. All rights reserved.</p>
         </div>
 
         <div class="footer__legal">
+          <a href="/pages/about">About</a>
+          <a href="/pages/contact">Contact</a>
           <a href="{{ section.settings.privacy_link | default: shop.privacy_policy.url | default: '/policies/privacy-policy' }}">Privacy Policy</a>
           <a href="{{ section.settings.terms_link | default: shop.terms_of_service.url | default: '/policies/terms-of-service' }}">Terms of Service</a>
           <a href="{{ section.settings.refund_link | default: shop.refund_policy.url | default: '/policies/refund-policy' }}">Refund Policy</a>

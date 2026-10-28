@@ -45,13 +45,13 @@
     >
   {% endif %}
 
-  <header class="article__header">
-    <h1 class="article__title">{{ article.title }}</h1>
-    <p class="article__meta">
-      <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: '%B %-d, %Y' }}</time>
-      {% if article.author %} · by {{ article.author }}{% endif %}
-    </p>
-  </header>
+ <header class="article__header">
+  <h1 class="article__title">{{ article.title }}</h1>
+  <p class="article__meta">
+    <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: '%B %-d, %Y' }}</time>
+    {% if article.author %} · by {{ article.author | replace: 'Jeffrey Theefs', 'Jeff' | replace: 'Jeff Theefs', 'Jeff' | escape }}{% endif %}
+  </p>
+</header>
 
   <div class="article__body rte">
     {{ article.content }}

@@ -38,7 +38,7 @@
               <h2 class="blog-card__title"><a href="{{ article.url }}">{{ article.title }}</a></h2>
               <p class="blog-card__meta">
                 <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: '%b %-d, %Y' }}</time>
-                {% if article.author %} · {{ article.author }}{% endif %}
+                {% if article.author %} · {{ article.author | replace: 'Jeffrey Theefs', 'Jeff' | replace: 'Jeff Theefs', 'Jeff' | escape }}{% endif %}
               </p>
               <div class="blog-card__excerpt">
                 {% if article.excerpt != blank %}{{ article.excerpt }}{% else %}{{ article.content | strip_html | truncatewords: 35 }}{% endif %}

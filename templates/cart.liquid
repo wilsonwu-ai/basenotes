@@ -39,9 +39,10 @@ endfor
   comment
     Hoisted out of the summary aside so the order-mode fieldset can read it too. Both the
     "standard US rate applies" sentence and the progress line must agree about whether THIS
-    order clears the $35.00 (3500 cent) free-shipping threshold.
+    order clears the $33.00 (3300 cent) free-shipping threshold. Checkout uses the same number:
+    the US Domestic rate table is free from $33 and the automatic 'Free Shipping' discount starts at $32.99.
   endcomment
-assign ship_remaining = 3500 | minus: cart.total_price
+assign ship_remaining = 3300 | minus: cart.total_price
 
   comment
     Active subscriber detection via Appstle customer tag.
@@ -135,7 +136,7 @@ endif
 </label>
 {%- comment -%}
                 Active subscribers always get free shipping (subscription or one-time).
-                Pure Monthly Rotation carts also get free shipping. Everyone else uses the $35 threshold.
+                Pure Monthly Rotation carts also get free shipping. Everyone else uses the $33 threshold.
               {%- endcomment -%}
 {%- unless has_subscription and cart_all_plan -%}
 {%- unless is_active_subscriber -%}
@@ -163,10 +164,10 @@ endif
 {%- if cart_savings > 0 -%}<div class="artifact-cart__savings"><span>You’re saving</span><strong>{{ cart_savings | money_without_trailing_zeros }}</strong></div>{%- endif -%}
 {%- comment -%}
               Free-shipping progress. Active subscribers always qualify. Pure subscription carts always qualify.
-              Everyone else uses the $35 (3500 cent) threshold from the US Domestic profile.
+              Everyone else uses the $33 (3300 cent) threshold from the US Domestic profile.
             {%- endcomment -%}
 {%- liquid
-assign ship_pct = cart.total_price | times: 100 | divided_by: 3500
+assign ship_pct = cart.total_price | times: 100 | divided_by: 3300
 if ship_pct > 100
 assign ship_pct = 100
 endif

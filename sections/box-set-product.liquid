@@ -1,10 +1,14 @@
 {{ 'scent-storefront.css' | asset_url | stylesheet_tag }}
 {{ 'box-sets.css' | asset_url | stylesheet_tag }}
+
 {%- comment -%}
-  A real curated box set product (templates/product.box-set.json), used once Jeff creates the products.
-  Same detail view as the curated page. Scents: metafield custom.fragrances, else tags bx1:/bx2:/bx3:<handle>.
-  Add to cart adds this product's own first variant, one-time, with Fragrance 1-3 properties.
+  Product template for a real curated box set
+  (assign this template to products with type "Box Set").
+
+  Uses the same box-set-detail snippet as the curated listing page.
+  Add to cart adds this product's own first variant.
 {%- endcomment -%}
+
 {%- liquid
   assign byo = all_products['build-your-own-box-set']
   assign byo_url = blank
@@ -14,20 +18,36 @@
       assign byo_url = byo_url | append: '?view=box-builder'
     endunless
   endif
+
   assign back_url = '/collections/box-sets'
   assign curated_count = collections['box-sets'].products_count | default: 0
   if curated_count == 0 and byo.available
     assign back_url = byo.url | append: '?view=box-sets'
   endif
+
   assign set_lede = product.description | strip_html | truncatewords: 30
 -%}
+
 <div class="scent-route bs">
   <div class="bs-wrap">
     <div class="bs-product">
-      {% render 'box-set-detail', slug: product.handle, title: product.title, lede: set_lede, image: product.featured_media, asset_name: blank, set: product, mode: 'product', add_product: product, byo_url: byo_url, back_url: back_url, routed: false %}
+      {% render 'box-set-detail',
+        slug: product.handle,
+        title: product.title,
+        lede: set_lede,
+        image: product.featured_media,
+        asset_name: blank,
+        set: product,
+        mode: 'product',
+        add_product: product,
+        byo_url: byo_url,
+        back_url: back_url,
+        routed: false
+      %}
     </div>
   </div>
 </div>
+
 <script src="{{ 'box-sets.js' | asset_url }}" defer></script>
 
 {% schema %}
