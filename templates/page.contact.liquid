@@ -25,7 +25,7 @@
             <h3 style="font-size: var(--font-size-lg); font-weight: 600;">Email Us</h3>
           </div>
           <p style="color: var(--color-text-light); margin-bottom: var(--spacing-sm);">For general inquiries and support</p>
-          <a href="mailto:{{ settings.contact_email | default: 'hello@basenotescent.com' }}" style="color: var(--color-secondary); font-weight: 500; font-size: var(--font-size-lg);">{{ settings.contact_email | default: 'hello@basenotes.com' }}</a>
+          <a href="mailto:{{ settings.contact_email | default: 'hello@basenotescent.com' }}" style="color: var(--color-secondary); font-weight: 500; font-size: var(--font-size-lg);">{{ settings.contact_email | default: 'hello@basenotescent.com' }}</a>
         </div>
 
         <div class="contact-block" style="margin-bottom: var(--spacing-2xl);">
@@ -44,6 +44,26 @@
           </p>
         </div>
 
+        <div class="contact-block" style="margin-bottom: var(--spacing-2xl);">
+          <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+            <div style="width: 48px; height: 48px; background: var(--color-background-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="1.5">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <h3 style="font-size: var(--font-size-lg); font-weight: 600;">Business Details</h3>
+          </div>
+          <address style="font-style: normal; color: var(--color-text-light); line-height: 1.7;">
+            Base Note LLC<br>
+            112 N Lincoln Ave<br>
+            Park Ridge, IL 60068<br>
+            United States<br>
+            Phone: <a href="tel:+18475710074" style="color: var(--color-secondary);">(847) 571-0074</a>
+          </address>
+        </div>
+
+        {%- if settings.social_instagram != blank or settings.social_tiktok != blank or settings.social_youtube != blank or settings.social_facebook != blank or settings.social_twitter != blank -%}
         <div class="contact-social" style="padding-top: var(--spacing-xl); border-top: 1px solid var(--color-border);">
           <h3 style="font-size: var(--font-size-sm); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-md);">Follow Us</h3>
           <div style="display: flex; gap: var(--spacing-md);">
@@ -87,6 +107,7 @@
             {%- endif -%}
           </div>
         </div>
+        {%- endif -%}
 
       </div>
 
@@ -190,7 +211,7 @@
           </button>
 
           <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); text-align: center; margin-top: var(--spacing-md);">
-            By submitting this form, you agree to our <a href="/pages/privacy" style="color: var(--color-secondary);">Privacy Policy</a>.
+            By submitting this form, you agree to our <a href="{{ shop.privacy_policy.url | default: '/policies/privacy-policy' }}" style="color: var(--color-secondary);">Privacy Policy</a>.
           </p>
         {%- endform -%}
       </div>

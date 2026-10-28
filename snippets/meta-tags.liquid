@@ -97,9 +97,10 @@
           "price": {{ schema_variant.price | divided_by: 100.0 | json }},
           "itemCondition": "https://schema.org/NewCondition",
           "seller": { "@type": "Organization", "name": {{ shop.name | json }} },
-          {%- if refund_policy_text == 'All sales are final. Due to the nature of fragrance, we cannot accept returns on opened or used products. If you receive a defective item, please email us at hello@basenotescent.com and we’ll make it right.' or refund_policy_text == 'All sales are final. Due to the nature of fragrance, we cannot accept returns on opened or used products. If you receive a defective item, please email us at hello@basenotescent.com and we’ll make it right.' %}
+          {%- if refund_policy_text contains 'all sales are final' %}
           "hasMerchantReturnPolicy": {
             "@type": "MerchantReturnPolicy",
+            "applicableCountry": "US",
             "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted",
             "merchantReturnLink": {{ shop.refund_policy.url | prepend: shop.url | json }}
           },

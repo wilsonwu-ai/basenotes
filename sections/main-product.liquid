@@ -199,7 +199,7 @@
             </div>
             <div class="artifact-product__rotation-note" data-artifact-rotation-note hidden>
               <p><strong>This is a recurring monthly subscription.</strong> First shipment <span data-plan-first>{{ current_allocation.price | money_without_trailing_zeros }}</span>, then <span data-plan-renewal>{{ current_allocation.price_adjustments.last.price | default: current_variant.price | money_without_trailing_zeros }}</span> every month until cancelled. Skip, swap, or cancel in your account.</p>
-              <label class="artifact-product__consent"><input type="checkbox" data-artifact-consent disabled> <span>I agree to the recurring charges and <a href="/pages/subscription-terms">subscription terms</a>.</span></label>
+              <label class="artifact-product__consent"><input type="checkbox" data-artifact-consent disabled> <span>I agree to the recurring charges and <a href="{{ shop.subscription_policy.url | default: '/policies/subscription-policy' }}">subscription terms</a>.</span></label>
             </div>
 
             <div

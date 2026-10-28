@@ -136,7 +136,7 @@
         "type": "text",
         "id": "contact_email",
         "label": "Contact email",
-        "default": "hello@basenotes.com"
+        "default": "hello@basenotescent.com"
       },
       {
         "type": "header",

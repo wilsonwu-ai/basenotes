@@ -25,8 +25,9 @@
       </div>
       <div class="artifact-footer__base">
         <p>© {{ 'now' | date: '%Y' }} Base Note</p>
-        <nav aria-label="Footer"><a href="/collections/fragrances">Fragrances</a><a href="/pages/about">About</a><a href="/blogs/hub">Journal</a><a href="/pages/faq">FAQ</a><a href="/pages/contact">Contact</a><a href="{{ shop.privacy_policy.url | default: '/policies/privacy-policy' }}">Privacy</a><a href="{{ shop.terms_of_service.url | default: '/policies/terms-of-service' }}">Terms</a><a href="{{ shop.refund_policy.url | default: '/policies/refund-policy' }}">Returns</a></nav>
+        <nav aria-label="Footer"><a href="/collections/fragrances">Fragrances</a><a href="/pages/about">About</a><a href="/blogs/hub">Journal</a><a href="/pages/faq">FAQ</a><a href="/pages/contact">Contact</a><a href="{{ shop.privacy_policy.url | default: '/policies/privacy-policy' }}">Privacy</a><a href="{{ shop.terms_of_service.url | default: '/policies/terms-of-service' }}">Terms</a><a href="{{ shop.refund_policy.url | default: '/policies/refund-policy' }}">Returns</a><a href="{{ shop.shipping_policy.url | default: '/policies/shipping-policy' }}">Shipping</a><a href="{{ shop.subscription_policy.url | default: '/policies/subscription-policy' }}">Subscriptions</a></nav>
       </div>
+      <p class="artifact-footer__disclaimer artifact-footer__business">Base Note LLC · Park Ridge, Illinois · <a href="mailto:hello@basenotescent.com">hello@basenotescent.com</a> · <a href="tel:+18475710074">(847) 571-0074</a></p>
       {% if section.settings.tagline != blank %}<p class="artifact-footer__disclaimer">{{ section.settings.tagline | escape }}</p>{% endif %}
     </div>
   {%- endif -%}
@@ -197,11 +198,11 @@
         </div>
 
         <div class="footer__legal">
-          <a href="{{ section.settings.privacy_link | default: policies.privacy_policy.url }}">Privacy Policy</a>
-          <a href="{{ section.settings.terms_link | default: policies.terms_of_service.url }}">Terms of Service</a>
-          <a href="{{ section.settings.refund_link | default: policies.refund_policy.url }}">Refund Policy</a>
-          <a href="{{ section.settings.shipping_link | default: policies.shipping_policy.url }}">Shipping Policy</a>
-          <a href="/policies/refund-policy">Cancellations</a>
+          <a href="{{ section.settings.privacy_link | default: shop.privacy_policy.url | default: '/policies/privacy-policy' }}">Privacy Policy</a>
+          <a href="{{ section.settings.terms_link | default: shop.terms_of_service.url | default: '/policies/terms-of-service' }}">Terms of Service</a>
+          <a href="{{ section.settings.refund_link | default: shop.refund_policy.url | default: '/policies/refund-policy' }}">Refund Policy</a>
+          <a href="{{ section.settings.shipping_link | default: shop.shipping_policy.url | default: '/policies/shipping-policy' }}">Shipping Policy</a>
+          <a href="{{ shop.subscription_policy.url | default: '/policies/subscription-policy' }}">Subscription Policy</a>
         </div>
 
         {% comment %} Payment Icons {% endcomment %}
@@ -693,6 +694,8 @@
   .artifact-footer__base nav { display: flex; flex-wrap: wrap; gap: 1.4rem; }
   .artifact-footer__base a { color: inherit; }
   .artifact-footer__disclaimer { max-width:48rem;margin:1.2rem 0 0;color:#b7bfb1;font:.7rem/1.6 'Jost',sans-serif; }
+  .artifact-footer__business a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+  .artifact-footer__business + .artifact-footer__disclaimer { margin-top: .35rem; }
 
   @media (max-width: 46rem) {
     .artifact-footer { width: min(100% - 2rem, 72rem); padding-block-start: 3rem; }
@@ -787,7 +790,7 @@
       "type": "text",
       "id": "email",
       "label": "Email address",
-      "default": "hello@basenotes.com"
+      "default": "hello@basenotescent.com"
     },
     {
       "type": "text",

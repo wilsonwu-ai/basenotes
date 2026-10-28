@@ -145,7 +145,7 @@ endif
 {%- if is_active_subscriber -%}
 <p class="artifact-cart__ship-perk">As an active subscriber, you get free US shipping on subscription and one-time purchases.</p>
 {%- endif -%}
-<a id="CartRotationExplainerOpener" href="/pages/subscription-terms" aria-haspopup="dialog" aria-controls="cartRotationModal">What does the subscription actually include?</a>
+<a id="CartRotationExplainerOpener" href="{{ shop.subscription_policy.url | default: '/policies/subscription-policy' }}" aria-haspopup="dialog" aria-controls="cartRotationModal">What does the subscription actually include?</a>
 <noscript><p>To change your purchase option, visit the <a href="/pages/monthly-rotation">Monthly Rotation page</a>.</p></noscript>
 </fieldset>
 {%- comment -%} Shared explainer dialog: the snippet owns its own markup, style and script, scoped to modal_id/opener_id. The anchor above keeps its href as the no-JS fallback. {%- endcomment -%}
@@ -183,7 +183,7 @@ endif
 </div>
 {%- if has_subscription -%}
 <div class="artifact-cart__disclosure"><strong>This is a recurring subscription.</strong>{% for item in cart.items %}{% if item.selling_plan_allocation %}<p>{{ item.selling_plan_allocation.price | times: item.quantity | money_without_trailing_zeros }} for this shipment, then {{ item.selling_plan_allocation.price_adjustments.last.price | default: item.variant.price | times: item.quantity | money_without_trailing_zeros }}. Free US Shipping.</p>{% endif %}{% endfor %}<p>Skip, swap, or cancel in your account. Any one-time extras do not renew.</p></div>
-<label class="artifact-cart__consent"><input type="checkbox" required data-cart-consent> <span>I agree to the recurring subscription and <a href="/pages/subscription-terms">subscription terms</a>.</span></label>
+<label class="artifact-cart__consent"><input type="checkbox" required data-cart-consent> <span>I agree to the recurring subscription and <a href="{{ shop.subscription_policy.url | default: '/policies/subscription-policy' }}">subscription terms</a>.</span></label>
 {%- else -%}
 <p class="artifact-cart__disclosure">One-time purchase. No subscription, no recurring charges.</p>
 {%- endif -%}

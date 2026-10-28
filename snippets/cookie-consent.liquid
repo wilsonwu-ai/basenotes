@@ -8,8 +8,8 @@
     <p class="cookie-consent__message">
       We use cookies and pixels to enhance your shopping experience,
       ensure site functionality, and deliver relevant ads.
-      <a href="/pages/privacy">Privacy Policy</a> |
-      <a href="/pages/terms">Terms &amp; Conditions</a>
+      <a href="{{ shop.privacy_policy.url | default: '/policies/privacy-policy' }}">Privacy Policy</a> |
+      <a href="{{ shop.terms_of_service.url | default: '/policies/terms-of-service' }}">Terms of Service</a>
     </p>
     <div class="cookie-consent__actions">
       <button type="button" class="cookie-consent__btn cookie-consent__btn--accept" data-cookie-accept>Accept</button>
