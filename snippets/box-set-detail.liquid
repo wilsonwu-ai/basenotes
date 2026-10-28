@@ -29,8 +29,63 @@
 
 <article class="bs-detail" id="set-{{ slug }}" data-set="{{ slug }}" data-title="{{ title | escape }}" data-mode="{{ mode }}" data-variant-id="{{ dvariant.id }}" data-handle="{{ add_product.handle }}" data-can-buy="{{ can_buy }}"{% if routed %} hidden{% endif %}>
   <a class="bs-back" href="{{ back_url }}" aria-label="Back to all curated box sets">&larr; All box sets</a>
+  {%- liquid
+    assign gallery_product = set
+    if gallery_product == blank and mode == 'product'
+      assign gallery_product = add_product
+    endif
+    assign gallery_images = gallery_product.media | where: 'media_type', 'image'
+  -%}
+
   <div class="bs-photo">
-    {%- if image != blank -%}
+    {%- if gallery_images.size > 0 -%}
+      <div class="bs-product-gallery">
+        <div class="bs-product-gallery__slides">
+          {%- for media in gallery_images -%}
+            {%- assign media_alt = media.alt | default: alt_text -%}
+            <div
+              class="bs-product-gallery__slide"
+              id="BsPhoto-{{ slug }}-{{ forloop.index }}"
+            >
+              {{ media.preview_image
+                | image_url: width: 1200
+                | image_tag:
+                  sizes: '(min-width: 700px) 40rem, 100vw',
+                  widths: '600, 900, 1200',
+                  loading: 'lazy',
+                  alt: media_alt
+              }}
+            </div>
+          {%- endfor -%}
+        </div>
+
+        {%- if gallery_images.size > 1 -%}
+          <nav
+            class="bs-product-gallery__thumbs"
+            aria-label="{{ title | escape }} photos"
+          >
+            {%- for media in gallery_images -%}
+              <button
+                type="button"
+                class="bs-product-gallery__thumb"
+                aria-label="Show photo {{ forloop.index }} of {{ gallery_images.size }}"
+                aria-controls="BsPhoto-{{ slug }}-{{ forloop.index }}"
+                onclick="var gallery = this.closest('.bs-product-gallery'); var track = gallery.querySelector('.bs-product-gallery__slides'); var slide = gallery.querySelectorAll('.bs-product-gallery__slide')[{{ forloop.index0 }}]; track.scrollTo({ left: slide.offsetLeft, behavior: 'smooth' });"
+              >
+                {{ media.preview_image
+                  | image_url: width: 160
+                  | image_tag:
+                    width: 80,
+                    height: 80,
+                    loading: 'lazy',
+                    alt: ''
+                }}
+              </button>
+            {%- endfor -%}
+          </nav>
+        {%- endif -%}
+      </div>
+    {%- elsif image != blank -%}
       {{ image | image_url: width: 1200 | image_tag: width: 1200, height: 1200, sizes: '(min-width: 700px) 40rem, 100vw', widths: '600, 900, 1200', loading: 'lazy', alt: alt_text }}
     {%- elsif asset_name != blank -%}
       <img src="{{ asset_name | asset_url }}" width="1200" height="1200" loading="lazy" alt="{{ alt_text | escape }}">

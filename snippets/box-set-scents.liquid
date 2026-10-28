@@ -70,7 +70,7 @@
     <li class="bs-scent" data-label="{{ slabel | escape }}"{% unless sp.available %} data-unavailable{% endunless %}>
       <a class="bs-scent__link" href="{{ sp.url }}">
         {%- if sp.featured_image -%}
-          <span class="bs-scent__thumb">{{ sp.featured_image | image_url: width: 160 | image_tag: loading: 'lazy', width: 64, height: 64, alt: '' }}</span>
+          <span class="bs-scent__thumb">{{ sp.featured_image | image_url: width: 320 | image_tag: loading: 'lazy', width: 96, height: 96, alt: '' }}</span>
         {%- endif -%}
         <span class="bs-scent__text">
           <span class="bs-scent__vendor">{{ sp.vendor }}</span>

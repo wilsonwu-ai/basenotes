@@ -1,330 +1,319 @@
 <script>
   window.__bnScentMeta = {
-    {%- assign bn_meta_first = true -%}
-    {%- for product in collections['fragrances'].products limit: 80 -%}
-      {%- if product.handle == 'extra-5ml-vial-add-on' -%}{%- continue -%}{%- endif -%}
-      {%- unless bn_meta_first -%},{%- endunless -%}
-      "{{ product.handle }}": {{ product.tags | json }}
-      {%- assign bn_meta_first = false -%}
-    {%- endfor -%}
+{%- assign bn_meta_first = true -%}
+{%- for product in collections['fragrances'].products limit: 80 -%}
+{%- if product.handle == 'extra-5ml-vial-add-on' -%}{%- continue -%}{%- endif -%}
+{%- unless bn_meta_first -%},{%- endunless -%}
+"{{ product.handle }}": {{ product.tags | json }}
+{%- assign bn_meta_first = false -%}
+{%- endfor -%}
   };
 </script>
 
 <section class="quiz-section">
-  <div class="quiz-intro" id="quizIntro">
-    <div class="quiz-intro__content">
-      <span class="quiz-intro__eyebrow">Personalized recommendations</span>
-      <h1 class="quiz-intro__title">Find Your Ideal Scents</h1>
-      <p class="quiz-intro__description">Four short questions. We match you to scents by wearer, occasion, season, and family.</p>
-      <button class="btn btn--primary btn--large" id="startQuizBtn" type="button">Start the Quiz</button>
-      <p class="quiz-intro__note">No account required.</p>
-    </div>
-  </div>
+<div class="quiz-intro" id="quizIntro">
+<div class="quiz-intro__content">
+<span class="quiz-intro__eyebrow">Personalized recommendations</span>
+<h1 class="quiz-intro__title">Find Your Ideal Scents</h1>
+<p class="quiz-intro__description">Four short questions. We match you to scents by wearer, occasion, season, and family.</p>
+<button class="btn btn--primary btn--large" id="startQuizBtn" type="button">Start the Quiz</button>
+<p class="quiz-intro__note">No account required.</p>
+</div>
+</div>
 
-  <div class="quiz-container" id="quizContainer" style="display:none;">
-    <div class="quiz" id="scentQuiz">
-      <div class="quiz__progress">
-        <div class="quiz__progress-bar"><div class="quiz__progress-fill" id="progressFill"></div></div>
-        <span class="quiz__progress-text" id="progressText">Question 1 of 4</span>
-      </div>
+<div class="quiz-container" id="quizContainer" style="display:none;">
+<div class="quiz" id="scentQuiz">
+<div class="quiz__progress">
+<div class="quiz__progress-bar"><div class="quiz__progress-fill" id="progressFill"></div></div>
+<span class="quiz__progress-text" id="progressText">Question 1 of 4</span>
+</div>
 
-      <div class="quiz__slide" data-question="1">
-        <div class="quiz__question"><h2 class="quiz__question-text">Who is this scent for?</h2></div>
-        <div class="quiz__options quiz__options--grid quiz__options--three">
-          <button class="quiz__option" type="button" data-value="him"><span class="quiz__option-label">For him</span></button>
-          <button class="quiz__option" type="button" data-value="her"><span class="quiz__option-label">For her</span></button>
-          <button class="quiz__option" type="button" data-value="unisex"><span class="quiz__option-label">Unisex</span></button>
-        </div>
-      </div>
+<div class="quiz__slide" data-question="1">
+<div class="quiz__question"><h2 class="quiz__question-text">Who is this scent for?</h2></div>
+<div class="quiz__options quiz__options--grid quiz__options--three">
+<button class="quiz__option" type="button" data-value="him"><span class="quiz__option-label">For him</span></button>
+<button class="quiz__option" type="button" data-value="her"><span class="quiz__option-label">For her</span></button>
+<button class="quiz__option" type="button" data-value="unisex"><span class="quiz__option-label">Unisex</span></button>
+</div>
+</div>
 
-      <div class="quiz__slide" data-question="2" style="display:none;">
-        <div class="quiz__question"><h2 class="quiz__question-text">Where will you wear this most?</h2></div>
-        <div class="quiz__options quiz__options--grid">
-          <button class="quiz__option" type="button" data-value="office"><span class="quiz__option-label">Office</span></button>
-          <button class="quiz__option" type="button" data-value="everyday"><span class="quiz__option-label">Everyday</span></button>
-          <button class="quiz__option" type="button" data-value="evening"><span class="quiz__option-label">Evening</span></button>
-          <button class="quiz__option" type="button" data-value="date"><span class="quiz__option-label">Date night</span></button>
-        </div>
-      </div>
+<div class="quiz__slide" data-question="2" style="display:none;">
+<div class="quiz__question"><h2 class="quiz__question-text">Where will you wear this most?</h2></div>
+<div class="quiz__options quiz__options--grid">
+<button class="quiz__option" type="button" data-value="office"><span class="quiz__option-label">Office</span></button>
+<button class="quiz__option" type="button" data-value="everyday"><span class="quiz__option-label">Everyday</span></button>
+<button class="quiz__option" type="button" data-value="evening"><span class="quiz__option-label">Evening</span></button>
+<button class="quiz__option" type="button" data-value="date"><span class="quiz__option-label">Date night</span></button>
+</div>
+</div>
 
-      <div class="quiz__slide" data-question="3" style="display:none;">
-        <div class="quiz__question"><h2 class="quiz__question-text">Which season first?</h2></div>
-        <div class="quiz__options quiz__options--grid">
-          <button class="quiz__option" type="button" data-value="spring"><span class="quiz__option-label">Spring</span></button>
-          <button class="quiz__option" type="button" data-value="summer"><span class="quiz__option-label">Summer</span></button>
-          <button class="quiz__option" type="button" data-value="fall"><span class="quiz__option-label">Fall</span></button>
-          <button class="quiz__option" type="button" data-value="winter"><span class="quiz__option-label">Winter</span></button>
-          <button class="quiz__option" type="button" data-value="tropical"><span class="quiz__option-label">Hot &amp; humid (year-round)</span></button>
-        </div>
-      </div>
+<div class="quiz__slide" data-question="3" style="display:none;">
+<div class="quiz__question"><h2 class="quiz__question-text">Which season first?</h2></div>
+<div class="quiz__options quiz__options--grid">
+<button class="quiz__option" type="button" data-value="spring"><span class="quiz__option-label">Spring</span></button>
+<button class="quiz__option" type="button" data-value="summer"><span class="quiz__option-label">Summer</span></button>
+<button class="quiz__option" type="button" data-value="fall"><span class="quiz__option-label">Fall</span></button>
+<button class="quiz__option" type="button" data-value="winter"><span class="quiz__option-label">Winter</span></button>
+<button class="quiz__option" type="button" data-value="tropical"><span class="quiz__option-label">Hot &amp; humid (year-round)</span></button>
+</div>
+</div>
 
-      <div class="quiz__slide" data-question="4" style="display:none;">
-        <div class="quiz__question"><h2 class="quiz__question-text">Which family first?</h2></div>
-        <div class="quiz__options quiz__options--grid">
-          <button class="quiz__option" type="button" data-value="fresh"><span class="quiz__option-label">Fresh</span><span class="quiz__option-desc">Citrus, clean, green</span></button>
-          <button class="quiz__option" type="button" data-value="woody"><span class="quiz__option-label">Woody</span><span class="quiz__option-desc">Cedar, sandalwood, oud</span></button>
-          <button class="quiz__option" type="button" data-value="sweet"><span class="quiz__option-label">Sweet</span><span class="quiz__option-desc">Vanilla, fruit, floral</span></button>
-          <button class="quiz__option" type="button" data-value="spicy"><span class="quiz__option-label">Spicy</span><span class="quiz__option-desc">Amber, incense, spice</span></button>
-        </div>
-      </div>
+<div class="quiz__slide" data-question="4" style="display:none;">
+<div class="quiz__question"><h2 class="quiz__question-text">Which family first?</h2></div>
+<div class="quiz__options quiz__options--grid">
+<button class="quiz__option" type="button" data-value="fresh"><span class="quiz__option-label">Fresh</span><span class="quiz__option-desc">Citrus, clean, green</span></button>
+<button class="quiz__option" type="button" data-value="woody"><span class="quiz__option-label">Woody</span><span class="quiz__option-desc">Cedar, sandalwood, oud</span></button>
+<button class="quiz__option" type="button" data-value="sweet"><span class="quiz__option-label">Sweet</span><span class="quiz__option-desc">Vanilla, fruit, floral</span></button>
+<button class="quiz__option" type="button" data-value="spicy"><span class="quiz__option-label">Spicy</span><span class="quiz__option-desc">Amber, incense, spice</span></button>
+</div>
+</div>
 
-      <div class="quiz__slide quiz__email-gate" data-question="email-gate" style="display:none;">
-        <span class="quiz__results-eyebrow">Your matches are ready</span>
-        <h2 class="quiz-email-gate__title">See your ideal scents</h2>
-        <p class="quiz-email-gate__subtitle">Email unlocks the three picks and 25% off the first Monthly Rotation.</p>
-        <form class="quiz-email-gate__form" id="quizEmailForm" novalidate>
-          <input type="email" required name="email" class="quiz-email-gate__input" placeholder="you@example.com" autocomplete="email">
-          <button type="submit" class="btn btn--primary btn--large">See my matches</button>
-        </form>
-        <button type="button" class="quiz-email-gate__skip" id="quizEmailSkip">See results without email</button>
-      </div>
+<div class="quiz__slide quiz__email-gate" data-question="email-gate" style="display:none;">
+<span class="quiz__results-eyebrow">Your matches are ready</span>
+<h2 class="quiz-email-gate__title">See your ideal scents</h2>
+<p class="quiz-email-gate__subtitle">Email unlocks the three picks and 25% off the first Monthly Rotation.</p>
+<form class="quiz-email-gate__form" id="quizEmailForm" novalidate>
+<input type="email" required name="email" class="quiz-email-gate__input" placeholder="you@example.com" autocomplete="email">
+<button type="submit" class="btn btn--primary btn--large">See my matches</button>
+</form>
+<button type="button" class="quiz-email-gate__skip" id="quizEmailSkip">See results without email</button>
+</div>
 
-      <div class="quiz__slide quiz__results" data-question="results" style="display:none;">
-        <p class="quiz__results-eyebrow">Your matches</p>
-        <h2 id="quizResultTitle"></h2>
-        <p id="quizResultDescription"></p>
-        <p class="quiz__matchline" id="quizMatchLine"></p>
-        <div id="quizRecommendations" class="quiz__recommendations"></div>
-        <div class="quiz__results-actions">
-          <a href="/collections/fragrances">View the collection</a>
-          <span aria-hidden="true">|</span>
-          <button type="button" id="retakeQuizBtn">Retake</button>
-        </div>
-      </div>
+<div class="quiz__slide quiz__results" data-question="results" style="display:none;">
+<p class="quiz__results-eyebrow">Your matches</p>
+<h2 id="quizResultTitle"></h2>
+<p id="quizResultDescription"></p>
+<p class="quiz__matchline" id="quizMatchLine"></p>
+<div id="quizRecommendations" class="quiz__recommendations"></div>
+<div class="quiz__results-actions">
+<a href="/collections/fragrances">View the collection</a>
+<span aria-hidden="true">|</span>
+<button type="button" id="retakeQuizBtn">Retake</button>
+</div>
+</div>
 
-      <button type="button" id="quizBackBtn" class="quiz__back" style="display:none;">Back</button>
-    </div>
-  </div>
+<button type="button" id="quizBackBtn" class="quiz__back" style="display:none;">Back</button>
+</div>
+</div>
 </section>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  var quiz = document.getElementById('scentQuiz');
-  var quizIntro = document.getElementById('quizIntro');
-  var quizContainer = document.getElementById('quizContainer');
-  var startBtn = document.getElementById('startQuizBtn');
-  var backBtn = document.getElementById('quizBackBtn');
-  var retakeBtn = document.getElementById('retakeQuizBtn');
-  var progressFill = document.getElementById('progressFill');
-  var progressText = document.getElementById('progressText');
-  var currentQuestion = 1;
-  var totalQuestions = 4;
-  var answers = {};
-  var slides = quiz.querySelectorAll('.quiz__slide');
+var quiz = document.getElementById('scentQuiz');
+var quizIntro = document.getElementById('quizIntro');
+var quizContainer = document.getElementById('quizContainer');
+var startBtn = document.getElementById('startQuizBtn');
+var backBtn = document.getElementById('quizBackBtn');
+var retakeBtn = document.getElementById('retakeQuizBtn');
+var progressFill = document.getElementById('progressFill');
+var progressText = document.getElementById('progressText');
+var currentQuestion = 1;
+var totalQuestions = 4;
+var answers = {};
+var slides = quiz.querySelectorAll('.quiz__slide');
 
-  var scoringMatrix = {
-    him: { classic: 2, fresh: 2, sophisticated: 2, bold: 2 },
-    her: { classic: 2, fresh: 2, sophisticated: 2, bold: 1 },
-    unisex: { classic: 2, fresh: 2, sophisticated: 2, bold: 1 },
-    office: { classic: 3, fresh: 2, sophisticated: 2, bold: 0 },
-    everyday: { classic: 2, fresh: 3, sophisticated: 1, bold: 0 },
-    evening: { classic: 1, fresh: 0, sophisticated: 2, bold: 3 },
-    date: { classic: 1, fresh: 0, sophisticated: 3, bold: 2 },
-    spring: { classic: 2, fresh: 3, sophisticated: 1, bold: 0 },
-    summer: { classic: 1, fresh: 3, sophisticated: 1, bold: 0 },
-    fall: { classic: 2, fresh: 1, sophisticated: 2, bold: 2 },
-    winter: { classic: 2, fresh: 0, sophisticated: 2, bold: 3 },
-    tropical: { classic: 1, fresh: 3, sophisticated: 1, bold: 0 },
-    woody: { classic: 2, fresh: 1, sophisticated: 3, bold: 2 },
-    fresh: { classic: 2, fresh: 3, sophisticated: 1, bold: 0 },
-    sweet: { classic: 1, fresh: 1, sophisticated: 2, bold: 2 },
-    spicy: { classic: 1, fresh: 0, sophisticated: 2, bold: 3 }
-  };
+function tagsFor(p) {
+var raw = (window.__bnScentMeta && window.__bnScentMeta[p.handle]) || p.tags || [];
+return raw.map(function (t) { return String(t).toLowerCase(); }).join('|');
+}
 
-  var profiles = {
-    classic: { name: 'Clean and easy', description: 'Crowd-pleasing bottles for most days.', keywords: ['clean','fresh','citrus','cedar','musk'], families: ['fresh','woody'] },
-    fresh: { name: 'Light and airy', description: 'Citrus, green, aquatic.', keywords: ['fresh','aquatic','citrus','green'], families: ['fresh'] },
-    sophisticated: { name: 'Woody and considered', description: 'Wood, amber, slower dry-down.', keywords: ['woody','amber','sandalwood','vetiver','oud'], families: ['woody','spicy'] },
-    bold: { name: 'Warm and loud', description: 'Oud, leather, spice, vanilla.', keywords: ['oud','leather','tobacco','spicy','vanilla'], families: ['spicy','sweet','woody'] }
-  };
+startBtn.addEventListener('click', function () {
+quizIntro.style.display = 'none';
+quizContainer.style.display = 'block';
+});
 
-  function tagsFor(p) {
-    var raw = (window.__bnScentMeta && window.__bnScentMeta[p.handle]) || p.tags || [];
-    return raw.map(function (t) { return String(t).toLowerCase(); }).join('|');
-  }
+function showQuestion(num) {
+slides.forEach(function (s) { s.style.display = 'none'; });
+var current = quiz.querySelector('[data-question="' + num + '"]');
+var bar = document.querySelector('.quiz__progress');
+if (bar) bar.style.display = (num === 'results' || num === 'email-gate') ? 'none' : '';
+if (current) current.style.display = 'block';
+if (num === 'results' || num === 'email-gate') {
+backBtn.style.display = 'none';
+} else {
+progressFill.style.width = (num / totalQuestions) * 100 + '%';
+progressText.textContent = 'Question ' + num + ' of ' + totalQuestions;
+backBtn.style.display = num > 1 ? 'inline-block' : 'none';
+}
+}
 
-  startBtn.addEventListener('click', function () {
-    quizIntro.style.display = 'none';
-    quizContainer.style.display = 'block';
-  });
+quiz.querySelectorAll('.quiz__option').forEach(function (option) {
+option.addEventListener('click', function () {
+var num = parseInt(this.closest('.quiz__slide').dataset.question, 10);
+if (!num) return;
+answers[num] = this.dataset.value;
+this.closest('.quiz__slide').querySelectorAll('.quiz__option').forEach(function (o) { o.classList.remove('is-selected'); });
+this.classList.add('is-selected');
+setTimeout(function () {
+if (num < totalQuestions) { currentQuestion = num + 1; showQuestion(currentQuestion); }
+else { showQuestion('email-gate'); bindEmailGate(); }
+}, 300);
+});
+});
 
-  function showQuestion(num) {
-    slides.forEach(function (s) { s.style.display = 'none'; });
-    var current = quiz.querySelector('[data-question="' + num + '"]');
-    var bar = document.querySelector('.quiz__progress');
-    if (bar) bar.style.display = (num === 'results' || num === 'email-gate') ? 'none' : '';
-    if (current) current.style.display = 'block';
-    if (num === 'results' || num === 'email-gate') {
-      backBtn.style.display = 'none';
-    } else {
-      progressFill.style.width = (num / totalQuestions) * 100 + '%';
-      progressText.textContent = 'Question ' + num + ' of ' + totalQuestions;
-      backBtn.style.display = num > 1 ? 'inline-block' : 'none';
-    }
-  }
+function bindEmailGate() {
+var form = document.getElementById('quizEmailForm');
+var skipBtn = document.getElementById('quizEmailSkip');
+if (!form || form.dataset.bound === 'true') return;
+form.dataset.bound = 'true';
+form.addEventListener('submit', function (e) {
+e.preventDefault();
+var email = (form.elements.email.value || '').trim();
+if (!email || email.indexOf('@') === -1) return;
+submitKlaviyo(email).finally(revealResults);
+});
+if (skipBtn) skipBtn.addEventListener('click', revealResults);
+}
 
-  function calculateProfile() {
-    var scores = { classic: 0, fresh: 0, sophisticated: 0, bold: 0 };
-    Object.keys(answers).forEach(function (k) {
-      var row = scoringMatrix[answers[k]];
-      if (!row) return;
-      Object.keys(scores).forEach(function (p) { scores[p] += row[p] || 0; });
-    });
-    var win = 'classic', max = -1;
-    Object.keys(scores).forEach(function (p) { if (scores[p] > max) { max = scores[p]; win = p; } });
-    return win;
-  }
+function submitKlaviyo(email) {
+return fetch('https://a.klaviyo.com/client/events/?company_id=VbjRT8', {
+method: 'POST', mode: 'cors',
+headers: { 'Content-Type': 'application/json', revision: '2024-10-15' },
+body: JSON.stringify({ data: { type: 'event', attributes: {
+profile: { data: { type: 'profile', attributes: { email: email, properties: { quiz_completed: true } } } },
+metric: { data: { type: 'metric', attributes: { name: 'Completed Scent Quiz' } } },
+properties: { q1: answers[1] || '', q2: answers[2] || '', q3: answers[3] || '', q4: answers[4] || '' }
+} } })
+}).catch(function () {});
+}
 
-  quiz.querySelectorAll('.quiz__option').forEach(function (option) {
-    option.addEventListener('click', function () {
-      var num = parseInt(this.closest('.quiz__slide').dataset.question, 10);
-      if (!num) return;
-      answers[num] = this.dataset.value;
-      this.closest('.quiz__slide').querySelectorAll('.quiz__option').forEach(function (o) { o.classList.remove('is-selected'); });
-      this.classList.add('is-selected');
-      setTimeout(function () {
-        if (num < totalQuestions) { currentQuestion = num + 1; showQuestion(currentQuestion); }
-        else { showQuestion('email-gate'); bindEmailGate(); }
-      }, 300);
-    });
-  });
+function revealResults() {
+showQuestion('results');
 
-  function bindEmailGate() {
-    var form = document.getElementById('quizEmailForm');
-    var skipBtn = document.getElementById('quizEmailSkip');
-    if (!form || form.dataset.bound === 'true') return;
-    form.dataset.bound = 'true';
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var email = (form.elements.email.value || '').trim();
-      if (!email || email.indexOf('@') === -1) return;
-      submitKlaviyo(email).finally(revealResults);
-    });
-    if (skipBtn) skipBtn.addEventListener('click', revealResults);
-  }
+var who = { him: 'For him', her: 'For her', unisex: 'Unisex' }[answers[1]] || '';
+var occ = { office: 'Office', everyday: 'Everyday', evening: 'Evening', date: 'Date night' }[answers[2]] || '';
+var seasonLabel = answers[3] === 'tropical'
+? 'Hot & humid (year-round)'
+: ({ spring: 'Spring', summer: 'Summer', fall: 'Fall', winter: 'Winter' }[answers[3]] || '');
+var familyLabel = { fresh: 'Fresh', woody: 'Woody', sweet: 'Sweet', spicy: 'Spicy' }[answers[4]] || '';
 
-  function submitKlaviyo(email) {
-    var profileKey = calculateProfile();
-    return fetch('https://a.klaviyo.com/client/events/?company_id=VbjRT8', {
-      method: 'POST', mode: 'cors',
-      headers: { 'Content-Type': 'application/json', revision: '2024-10-15' },
-      body: JSON.stringify({ data: { type: 'event', attributes: {
-        profile: { data: { type: 'profile', attributes: { email: email, properties: { quiz_completed: true, scent_profile: profileKey } } } },
-        metric: { data: { type: 'metric', attributes: { name: 'Completed Scent Quiz' } } },
-        properties: { scent_profile: profileKey, q1: answers[1] || '', q2: answers[2] || '', q3: answers[3] || '', q4: answers[4] || '' }
-      } } })
-    }).catch(function () {});
-  }
+document.getElementById('quizResultTitle').textContent = [familyLabel, occ, 'scents'].filter(Boolean).join(' ') || 'Your matches';
+document.getElementById('quizResultDescription').textContent = 'Matched by wearer, occasion, season, and family.';
+document.getElementById('quizMatchLine').textContent = [who, occ, seasonLabel].filter(Boolean).join('  ·  ');
 
-  function revealResults() {
-    showQuestion('results');
-    var key = calculateProfile();
-    var profile = profiles[key];
-    document.getElementById('quizResultTitle').textContent = profile.name;
-    document.getElementById('quizResultDescription').textContent = profile.description;
-    var who = { him: 'For him', her: 'For her', unisex: 'Unisex' }[answers[1]] || '';
-    var occ = { office: 'Office', everyday: 'Everyday', evening: 'Evening', date: 'Date night' }[answers[2]] || '';
-    var season = answers[3] === 'tropical'
-      ? 'Hot & humid (year-round)'
-      : ({ spring: 'Spring', summer: 'Summer', fall: 'Fall', winter: 'Winter' }[answers[3]] || '');
-    document.getElementById('quizMatchLine').textContent = [who, occ, season].filter(Boolean).join('  ·  ');
-    localStorage.setItem('basenotes_scent_profile', key);
-    localStorage.setItem('basenotes_quiz_answers', JSON.stringify(answers));
-    loadRecommendations(profile);
-  }
+localStorage.setItem('basenotes_quiz_answers', JSON.stringify(answers));
+loadRecommendations();
+}
 
-  function vialOf(p) {
-    var list = p.variants || [];
-    for (var i = 0; i < list.length; i++) {
-      var t = String(list[i].title || '').toLowerCase().replace(/\s/g, '');
-      if (t.indexOf('5ml') !== -1) return list[i];
-    }
-    return list[0];
-  }
+function vialOf(p) {
+var list = p.variants || [];
+for (var i = 0; i < list.length; i++) {
+var t = String(list[i].title || '').toLowerCase().replace(/\s/g, '');
+if (t.indexOf('5ml') !== -1) return list[i];
+}
+return list[0];
+}
 
-  function loadRecommendations(profile) {
-    var box = document.getElementById('quizRecommendations');
-    box.innerHTML = '<p>Finding matches…</p>';
-    fetch('/collections/fragrances/products.json?limit=50')
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        var gender = answers[1] || '';
-        var list = (data.products || []).filter(function (p) {
-          if (p.handle === 'extra-5ml-vial-add-on') return false;
-          var v = vialOf(p);
-          return v && parseFloat(v.price) > 0;
-        }).map(function (p) {
-          var tags = tagsFor(p);
-          var score = 0;
-          (profile.keywords || []).forEach(function (k) {
-            if (tags.indexOf(k) !== -1 || (p.title || '').toLowerCase().indexOf(k) !== -1) score += 2;
-          });
-          (profile.families || []).forEach(function (f) { if (tags.indexOf(f) !== -1) score += 4; });
-          if (gender === 'him' && /him|masculine|gender_him/.test(tags)) score += 8;
-          if (gender === 'her' && /her|feminine|gender_her/.test(tags)) score += 8;
-          if ((gender === 'her' || gender === 'him' || gender === 'unisex') && /unisex|gender_unisex/.test(tags)) score += 6;
-          var occ = answers[2] || '';
-          if (occ && tags.indexOf(occ) !== -1) score += 5;
-          if (occ === 'everyday' && tags.indexOf('daytime') !== -1) score += 5;
-          var seasonAns = answers[3] || '';
-          var seasons = seasonAns === 'tropical' ? ['spring', 'summer'] : [seasonAns];
-          seasons.forEach(function (s) { if (s && tags.indexOf(s) !== -1) score += 5; });
-          return Object.assign({}, p, { matchScore: score });
-        });
-        list.sort(function (a, b) { return b.matchScore - a.matchScore; });
-        box.innerHTML = list.slice(0, 3).map(function (p) {
-          var img = (p.images && p.images[0] && p.images[0].src) || '';
-          var vial = vialOf(p);
-          var vid = vial && vial.id;
-          var name = (p.title || '').replace(new RegExp(p.vendor || '', 'i'), '').replace(/EDP/gi, '').replace(/Eau de Parfum/gi, '').trim();
-          return '<article class="quiz-product-card">' +
-            '<a class="quiz-product-card__media" href="/products/' + p.handle + '">' +
-              (img ? '<img src="' + img + '" alt="" loading="lazy">' : '') +
-            '</a>' +
-            '<p class="quiz-product-card__brand">' + (p.vendor || '') + '</p>' +
-            '<h4><a href="/products/' + p.handle + '">' + name + '</a></h4>' +
-            '<p class="quiz-product-card__price">$20</p>' +
-            '<button type="button" class="quiz-product-card__add" data-variant-id="' + vid + '">Add to cart</button>' +
-          '</article>';
-        }).join('') || '<p><a href="/collections/fragrances">Browse the collection</a></p>';
-      })
-      .catch(function () {
-        box.innerHTML = '<p><a href="/collections/fragrances">Browse the collection</a></p>';
-      });
-  }
+function loadRecommendations() {
+var box = document.getElementById('quizRecommendations');
+box.innerHTML = '<p>Finding matches…</p>';
 
-  document.addEventListener('click', function (e) {
-    var btn = e.target.closest('.quiz-product-card__add');
-    if (!btn) return;
-    var id = btn.dataset.variantId;
-    if (!id) return;
-    btn.disabled = true;
-    var send = window.__bnFetch || window.fetch;
-    send('/cart/add.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ id: parseInt(id, 10), quantity: 1 })
-    })
-      .then(function (r) { if (!r.ok) throw new Error('fail'); return r.json(); })
-      .then(function () {
-        btn.textContent = 'Added';
-        document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
-        document.dispatchEvent(new CustomEvent('cart:updated', { bubbles: true }));
-        if (window.refreshAndOpenCartDrawer) window.refreshAndOpenCartDrawer();
-      })
-      .catch(function () { btn.textContent = 'Try again'; btn.disabled = false; });
-  });
+var gender = answers[1] || '';
+var occasion = answers[2] || '';
+var season = answers[3] || '';
+var family = answers[4] || '';
 
-  backBtn.addEventListener('click', function () {
-    if (currentQuestion > 1) { currentQuestion--; showQuestion(currentQuestion); }
-  });
-  if (retakeBtn) retakeBtn.addEventListener('click', function () {
-    currentQuestion = 1; answers = {};
-    quiz.querySelectorAll('.quiz__option').forEach(function (o) { o.classList.remove('is-selected'); });
-    showQuestion(1);
-  });
+var familyMap = {
+fresh: ['family_fresh', 'family_citrus', 'family_aquatic', 'family_green', 'family_clean', 'family_aromatic'],
+woody: ['family_woody', 'family_smoky', 'family_amber'],
+sweet: ['family_sweet', 'family_fruity', 'family_vanilla', 'family_floral'],
+spicy: ['family_spicy', 'family_oriental', 'family_amber']
+};
 
-  showQuestion(1);
+var wantedFamilies = familyMap[family] || [];
+var seasons = season === 'tropical' ? ['spring', 'summer'] : [season];
+
+fetch('/collections/fragrances/products.json?limit=50')
+.then(function (r) { return r.json(); })
+.then(function (data) {
+var list = (data.products || []).filter(function (p) {
+if (p.handle === 'extra-5ml-vial-add-on') return false;
+var v = vialOf(p);
+return v && parseFloat(v.price) > 0;
+}).map(function (p) {
+var tags = tagsFor(p);
+var score = 0;
+
+if (gender === 'him' && tags.indexOf('gender_him') !== -1) score += 12;
+else if (gender === 'her' && tags.indexOf('gender_her') !== -1) score += 12;
+else if (gender === 'unisex' && tags.indexOf('gender_unisex') !== -1) score += 10;
+else if (tags.indexOf('gender_unisex') !== -1) score += 6;
+
+wantedFamilies.forEach(function (f) {
+if (tags.indexOf(f) !== -1) score += 8;
+});
+
+var occTag = 'occasion_' + (occasion === 'date' ? 'datenight' : occasion);
+if (tags.indexOf(occTag) !== -1) score += 7;
+if (occasion === 'everyday' && tags.indexOf('occasion_office') !== -1) score += 2;
+
+seasons.forEach(function (s) {
+if (s && tags.indexOf('season_' + s) !== -1) score += 6;
+});
+
+return Object.assign({}, p, { matchScore: score });
+});
+
+list.sort(function (a, b) { return b.matchScore - a.matchScore; });
+var top = list.filter(function (p) { return p.matchScore > 0; });
+if (!top.length) top = list;
+
+box.innerHTML = top.slice(0, 3).map(function (p) {
+var img = (p.images && p.images[0] && p.images[0].src) || '';
+if (img && img.indexOf('cdn.shopify.com') !== -1 && img.indexOf('width=') === -1) {
+img = img + (img.indexOf('?') === -1 ? '?' : '&') + 'width=600';
+}
+var vial = vialOf(p);
+var vid = vial && vial.id;
+var name = (p.title || '').replace(new RegExp(p.vendor || '', 'i'), '').replace(/EDP/gi, '').replace(/Eau de Parfum/gi, '').trim();
+return '<article class="quiz-product-card">' +
+'<a class="quiz-product-card__media" href="/products/' + p.handle + '">' +
+(img ? '<img src="' + img + '" alt="" loading="lazy">' : '') +
+'</a>' +
+'<p class="quiz-product-card__brand">' + (p.vendor || '') + '</p>' +
+'<h4><a href="/products/' + p.handle + '">' + name + '</a></h4>' +
+'<p class="quiz-product-card__price">$20</p>' +
+'<button type="button" class="quiz-product-card__add" data-variant-id="' + vid + '">Add to cart</button>' +
+'</article>';
+}).join('') || '<p><a href="/collections/fragrances">Browse the collection</a></p>';
+})
+.catch(function () {
+box.innerHTML = '<p><a href="/collections/fragrances">Browse the collection</a></p>';
+});
+}
+
+document.addEventListener('click', function (e) {
+var btn = e.target.closest('.quiz-product-card__add');
+if (!btn) return;
+var id = btn.dataset.variantId;
+if (!id) return;
+btn.disabled = true;
+var send = window.__bnFetch || window.fetch;
+send('/cart/add.js', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+body: JSON.stringify({ id: parseInt(id, 10), quantity: 1 })
+})
+.then(function (r) { if (!r.ok) throw new Error('fail'); return r.json(); })
+.then(function () {
+btn.textContent = 'Added';
+document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+document.dispatchEvent(new CustomEvent('cart:updated', { bubbles: true }));
+if (window.refreshAndOpenCartDrawer) window.refreshAndOpenCartDrawer();
+})
+.catch(function () { btn.textContent = 'Try again'; btn.disabled = false; });
+});
+
+backBtn.addEventListener('click', function () {
+if (currentQuestion > 1) { currentQuestion--; showQuestion(currentQuestion); }
+});
+if (retakeBtn) retakeBtn.addEventListener('click', function () {
+currentQuestion = 1; answers = {};
+quiz.querySelectorAll('.quiz__option').forEach(function (o) { o.classList.remove('is-selected'); });
+showQuestion(1);
+});
+
+showQuestion(1);
 });
 </script>
 
@@ -370,8 +359,19 @@ document.addEventListener('DOMContentLoaded', function () {
 .quiz__results-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.9rem; margin-top: 1.75rem; }
 .quiz__results-actions a, .quiz__results-actions button { border: 0; background: none; padding: 0; min-height: 0; color: #24372b; font: 400 0.88rem/1.4 "EB Garamond", Georgia, serif; letter-spacing: 0; text-transform: none; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
 .quiz__results-actions span { color: #d9d4c8; }
-@media (max-width: 52rem) { #quizRecommendations { grid-template-columns: 1fr 1fr; } .quiz__options--three { grid-template-columns: 1fr; } }
-@media (max-width: 40rem) { .quiz__options--grid { grid-template-columns: 1fr; } #quizRecommendations { grid-template-columns: 1fr; } }
+
+@media (max-width: 52rem) {
+  #quizRecommendations { grid-template-columns: 1fr 1fr; }
+  .quiz__options--three { grid-template-columns: 1fr; }
+  .quiz-product-card__media { height: 280px; }
+}
+
+@media (max-width: 40rem) {
+  .quiz__options--grid { grid-template-columns: 1fr; }
+  #quizRecommendations { grid-template-columns: 1fr; }
+  .quiz-product-card__media { height: 320px; padding: 1rem; }
+  .quiz-product-card__media img { max-height: 100%; }
+}
 {% endstylesheet %}
 
 {% schema %}
