@@ -66,11 +66,9 @@
       Prefer not to subscribe?
       <a href="{{ rotation_url }}">Shop one-time vials</a>
       {%- if rotation_variant -%}
-        &mdash; {{ rotation_variant.price | money_without_trailing_zeros }} first{% if all_products['extra-5ml-vial-add-on'].variants.first.available %}, {{ all_products['extra-5ml-vial-add-on'].variants.first.price | money_without_trailing_zeros }} each extra{% endif %}.
+        : {{ rotation_variant.price | money_without_trailing_zeros }} first{% if all_products['extra-5ml-vial-add-on'].variants.first.available %}, {{ all_products['extra-5ml-vial-add-on'].variants.first.price | money_without_trailing_zeros }} each extra{% endif %}.
       {%- endif -%}
-      {%- if section.settings.one_time_shipping_note != blank -%}
-        {{ section.settings.one_time_shipping_note }}
-      {%- endif -%}
+      {%- if section.settings.one_time_shipping_note != blank %} {{ section.settings.one_time_shipping_note }}{%- endif -%}
     </p>
   </header>
 
@@ -382,7 +380,7 @@
       "type": "text",
       "id": "one_time_shipping_note",
       "label": "One-time shipping note",
-      "default": "Shipping $4.99, free at 3 vials.",
+      "default": "Shipping $4.99, free on orders of $33 or more.",
       "info": "Not derived from the selling plan. Clear this field to hide the clause."
     },
     {
