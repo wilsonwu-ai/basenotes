@@ -1,0 +1,29 @@
+{%- comment -%}
+  One line telling the shopper what the next vial costs under the bundle discounts.
+  The discounts are three automatic "Amount off products" discounts on the Fragrances
+  collection (Shopify Admin > Discounts): 2 units $2 off the order, 3 units $4 off,
+  4 or more $2 off each. Units are counted the way Shopify counts them: every line whose
+  product is a Fragrance (vials, full bottles and the Monthly Rotation box). Box sets are
+  not in that collection, so they do not count. assets/basenote-commerce.js mirrors the
+  same rule in tierSaving() and bundleUnits().
+
+  Usage: {% render 'vial-bundle-nudge', surface: 'drawer' %} or surface: 'cart'
+{%- endcomment -%}
+{%- liquid
+  assign bundle_units = 0
+  for item in cart.items
+    if item.product.type == 'Fragrance' or item.product.handle == 'extra-5ml-vial-add-on'
+      assign bundle_units = bundle_units | plus: item.quantity
+    endif
+  endfor
+-%}
+{%- if cart.currency.iso_code == 'USD' and bundle_units > 0 -%}
+  <p class="vial-bundle-nudge vial-bundle-nudge--{{ surface | default: 'cart' }}" data-bundle-units="{{ bundle_units }}">
+    {%- case bundle_units -%}
+      {%- when 1 -%}Add a second vial for $18.
+      {%- when 2 -%}Add a third vial for $18.
+      {%- when 3 -%}Add a fourth vial and every vial is $2 off.
+      {%- else -%}Bundle pricing: every vial in this order is $2 off.
+    {%- endcase -%}
+  </p>
+{%- endif -%}

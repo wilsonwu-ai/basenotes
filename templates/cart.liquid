@@ -2,7 +2,6 @@
 {% comment %} CART_ADDON_CONFIGURATION_GUARD: the internal $18 helper is never exposed as a standalone cart upsell. {% endcomment %}
 {%- liquid
 assign has_subscription = false
-assign has_base_vial = false
 assign has_helper = false
 assign cart_configuration_issue = false
 assign rotation_variant = nil
@@ -18,7 +17,6 @@ if item.properties['Selected scent'] == blank or item.selling_plan_allocation
 assign cart_configuration_issue = true
 endif
 elsif compact_title == '5ml' and item.variant.price == 2000
-assign has_base_vial = true
 if rotation_variant == blank and item.variant.selling_plan_allocations.size > 0
 assign rotation_variant = item.variant
 assign rotation_product = item.product
@@ -29,9 +27,13 @@ assign has_subscription = true
 else
 assign cart_all_plan = false
 endif
-if item.variant.compare_at_price > item.final_price
+comment
+  Retail (compare-at) savings only. Bundle discounts are listed by title in the summary, so
+  this uses the pre-discount line price to avoid counting the same dollars twice.
+endcomment
+if item.variant.compare_at_price > item.original_price
 assign compare_line = item.variant.compare_at_price | times: item.quantity
-assign line_savings = compare_line | minus: item.final_line_price
+assign line_savings = compare_line | minus: item.original_line_price
 assign cart_savings = cart_savings | plus: line_savings
 endif
 endfor
@@ -63,7 +65,7 @@ endif
 <a class="artifact-cart__back" href="/collections/fragrances">← Continue shopping</a>
 {%- if cart.item_count > 0 -%}
 <h1>Your Cart</h1>
-<p class="artifact-cart__status" data-cart-status role="status" aria-live="polite">{% if cart_configuration_issue %}An additional vial needs a valid one-time scent selection. Remove it and choose the fragrance again before checkout.{% elsif has_helper and has_base_vial == false %}An additional vial needs a first fragrance in the cart. Choose a fragrance below or remove the additional vial before continuing.{% endif %}</p>
+<p class="artifact-cart__status" data-cart-status role="status" aria-live="polite">{% if cart_configuration_issue %}An additional vial needs a valid one-time scent selection. Remove it and choose the fragrance again before checkout.{% endif %}</p>
 <form action="{{ routes.cart_url }}" method="post" class="artifact-cart__form">
 <div class="artifact-cart__layout">
 <div class="artifact-cart__main">
@@ -117,7 +119,7 @@ endif
 <button type="button" data-cart-step="1" aria-label="Increase {{ item_label | escape }} quantity" hidden>+</button>
 {%- endif -%}
 </div>
-<strong class="artifact-cart__line-price" aria-label="Line total {{ item.final_line_price | money_without_trailing_zeros }}">{{ item.final_line_price | money_without_trailing_zeros }}</strong>
+<strong class="artifact-cart__line-price" aria-label="Line total {{ item.final_line_price | money_without_trailing_zeros }}">{%- if item.original_line_price != item.final_line_price -%}<s>{{ item.original_line_price | money_without_trailing_zeros }}</s> {% endif -%}{{ item.final_line_price | money_without_trailing_zeros }}</strong>
 </article>
 {%- endfor -%}
 </div>
@@ -157,11 +159,14 @@ endif
 <aside class="artifact-cart__summary" aria-labelledby="ArtifactSummaryTitle">
 <h2 id="ArtifactSummaryTitle">Order summary</h2>
 <dl class="artifact-cart__summary-lines">
-{%- for item in cart.items -%}<div><dt>{% if item.product.handle == 'extra-5ml-vial-add-on' %}{{ item.properties['Selected scent'] | default: 'Additional vial' | escape }}{% else %}{{ item.product.title | escape }}{% endif %}{% if item.quantity > 1 %} × {{ item.quantity }}{% endif %}</dt><dd>{{ item.final_line_price | money_without_trailing_zeros }}</dd></div>{%- endfor -%}
+{%- for item in cart.items -%}<div><dt>{% if item.product.handle == 'extra-5ml-vial-add-on' %}{{ item.properties['Selected scent'] | default: 'Additional vial' | escape }}{% else %}{{ item.product.title | escape }}{% endif %}{% if item.quantity > 1 %} × {{ item.quantity }}{% endif %}</dt><dd>{{ item.original_line_price | money_without_trailing_zeros }}</dd></div>{%- endfor -%}
+{%- comment -%} Bundle and code discounts by title, so the lines above minus these equal the subtotal. {%- endcomment -%}
+{%- for application in cart.discount_applications -%}{%- if application.target_type == 'line_item' and application.total_allocated_amount > 0 -%}<div class="artifact-cart__discount"><dt>{{ application.title | escape }}</dt><dd>&minus;{{ application.total_allocated_amount | money_without_trailing_zeros }}</dd></div>{%- endif -%}{%- endfor -%}
 <div><dt>Shipping &amp; taxes</dt><dd>Calculated at checkout</dd></div>
 </dl>
 <div class="artifact-cart__total"><span>Subtotal today</span><strong>{{ cart.total_price | money_without_trailing_zeros }}</strong></div>
 {%- if cart_savings > 0 -%}<div class="artifact-cart__savings"><span>You’re saving</span><strong>{{ cart_savings | money_without_trailing_zeros }}</strong></div>{%- endif -%}
+{% render 'vial-bundle-nudge', surface: 'cart' %}
 {%- comment -%}
               Free-shipping progress. Active subscribers always qualify. Pure subscription carts always qualify.
               Everyone else uses the $33 (3300 cent) threshold from the US Domestic profile.
@@ -188,8 +193,8 @@ endif
 {%- else -%}
 <p class="artifact-cart__disclosure">One-time purchase. No subscription, no recurring charges.</p>
 {%- endif -%}
-<button class="artifact-cart__checkout" type="submit" name="checkout" data-cart-checkout {% if cart_configuration_issue or has_helper and has_base_vial == false %}disabled{% endif %}>Continue to payment</button>
-{% if has_helper and has_base_vial == false %}<a class="artifact-cart__back" href="/collections/fragrances">Choose a first fragrance</a>{% endif %}
+{%- comment -%} A leftover helper line is swapped back to its scent by the script on load; never check it out as-is. {%- endcomment -%}
+<button class="artifact-cart__checkout" type="submit" name="checkout" data-cart-checkout {% if cart_configuration_issue or has_helper %}disabled{% endif %}>Continue to payment</button>
 </aside>
 </div>
 </form>
@@ -240,6 +245,9 @@ endif
 .artifact-cart__summary-lines dd { margin:0; text-align:end; }
 .artifact-cart__total { margin-block-start:.6rem; padding-block:1.15rem; border-block:.0625rem solid var(--ac-line); font-size:1rem; }
 .artifact-cart__savings { color:var(--ac-green); }
+.artifact-cart__summary-lines .artifact-cart__discount dt,.artifact-cart__summary-lines .artifact-cart__discount dd { color:var(--ac-green); font-weight:600; }
+.artifact-cart__line-price s { margin-inline-end:.35rem; color:var(--ac-muted); font-weight:400; }
+.vial-bundle-nudge--cart { margin:.4rem 0 0; padding:.7rem .85rem; border-inline-start:.15rem solid var(--ac-gold); background:rgb(255 255 255 / 55%); color:var(--ac-green); font:.78rem/1.45 'Jost',sans-serif; text-wrap:pretty; }
 .artifact-cart__disclosure { margin:1rem 0; color:var(--ac-muted); font:.72rem/1.5 'Jost',sans-serif; }
 .artifact-cart__consent { display:flex; gap:.6rem; margin-block:1rem; color:var(--ac-muted); font:.68rem/1.45 'Jost',sans-serif; }
 .artifact-cart__consent input { margin-block-start:.15rem; accent-color:var(--ac-green); }

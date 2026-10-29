@@ -222,7 +222,17 @@
         {%- endcomment -%}
         {%- assign drawer_has_subscription = drawer_has_plan_line -%}
 
+        {% render 'vial-bundle-nudge', surface: 'drawer' %}
         <div class="cart-drawer__summary">
+          {%- comment -%} Bundle and code discounts, by title, as checkout will show them. {%- endcomment -%}
+          {%- for application in cart.discount_applications -%}
+            {%- if application.target_type == 'line_item' and application.total_allocated_amount > 0 -%}
+              <div class="cart-drawer__summary-line cart-drawer__summary-line--saving">
+                <span>{{ application.title | escape }}</span>
+                <span>&minus;{{ application.total_allocated_amount | money_without_trailing_zeros }}</span>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
           <div class="cart-drawer__summary-line">
             <span>Subtotal</span>
             <span class="cart-drawer__subtotal-price">{{ cart.total_price | money_without_trailing_zeros }}</span>
@@ -721,6 +731,20 @@
     color: var(--color-text-light);
   }
 
+  .cart-drawer__summary-line--saving {
+    color: var(--color-primary, #22392b);
+    font-weight: 600;
+  }
+
+  .vial-bundle-nudge--drawer {
+    margin: 0 0 var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-left: 3px solid var(--color-secondary);
+    background: rgb(172 145 89 / 10%);
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+  }
+
   .cart-drawer__summary-line--total {
     border-top: 1px solid var(--color-border);
     margin-top: var(--spacing-xs);
@@ -891,6 +915,7 @@
           if (!cart || seq !== refreshSeq) return;
           updateCartCount(cart.item_count);
           openDrawer();
+          fixLegacyHelpers(cart);
         })
         .catch(function(err) {
           console.error('Cart drawer refresh error:', err);
@@ -916,7 +941,20 @@
         .then(function(cart) {
           if (!cart || seq !== refreshSeq) return;
           updateCartCount(cart.item_count);
+          fixLegacyHelpers(cart);
         });
+    }
+
+    // A cart started before the bundle discounts may still hold the old $18 helper line.
+    // Hand it to BaseNoteCommerce once to turn it back into its scent, then redraw.
+    var helperFixRunning = false;
+    function fixLegacyHelpers(cart) {
+      if (helperFixRunning || !cart || !window.BaseNoteCommerce || !window.BaseNoteCommerce.prepareCart) return;
+      if (!cart.items.some(function(item) { return item.handle === 'extra-5ml-vial-add-on'; })) return;
+      helperFixRunning = true;
+      window.BaseNoteCommerce.prepareCart()
+        .then(function() { helperFixRunning = false; refreshCartDrawer(); })
+        .catch(function(err) { helperFixRunning = false; console.error('Cart update error:', err); });
     }
 
     function changeCartItem(key, quantity) {
