@@ -185,7 +185,7 @@
     if (!variant) throw new Error('This size is unavailable. Choose another size.');
     const regular = Number(variant.price);
     const before = bundleUnits(cart);
-    const units = before + count;
+    const units = before + (product.type === BUNDLE_TYPE ? count : 0); // box sets are not in Fragrances, so they never count
     let unitPrice = regular;
     let totalPrice = regular * count;
     if (cart.currency === 'USD' && product.type === BUNDLE_TYPE && isVial(variant) && count) {
