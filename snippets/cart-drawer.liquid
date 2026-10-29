@@ -159,10 +159,8 @@
                 {%- endif -%}
 
                 <div class="cart-drawer-item__price">
-                  {%- if item.original_line_price != item.final_line_price -%}
-                    <span class="cart-drawer-item__price-original">{{ item.original_line_price | money_without_trailing_zeros }}</span>
-                  {%- endif -%}
-                  <span class="cart-drawer-item__price-current">{{ item.final_line_price | money_without_trailing_zeros }}</span>
+                  {%- comment -%} Full line price; discounts are listed once in the summary below (same as the cart page). {%- endcomment -%}
+                  <span class="cart-drawer-item__price-current">{{ item.original_line_price | money_without_trailing_zeros }}</span>
                 </div>
               </div>
             </div>
@@ -199,6 +197,8 @@
         {%- assign drawer_has_plan_line = false -%}
         {%- assign drawer_has_giveaway = false -%}
         {%- assign drawer_all_plan = true -%}
+        {%- assign drawer_has_helper = false -%}
+        {%- assign drawer_items_total = 0 -%}
         {%- for item in cart.items -%}
           {%- if item.selling_plan_allocation -%}
             {%- assign drawer_has_plan_line = true -%}
@@ -208,6 +208,10 @@
           {%- if item.properties['_bn_offer'] == 'free-5ml' -%}
             {%- assign drawer_has_giveaway = true -%}
           {%- endif -%}
+          {%- if item.product.handle == 'extra-5ml-vial-add-on' -%}
+            {%- assign drawer_has_helper = true -%}
+          {%- endif -%}
+          {%- assign drawer_items_total = drawer_items_total | plus: item.original_line_price -%}
         {%- endfor -%}
 
         {%- comment -%}
@@ -224,7 +228,13 @@
 
         {% render 'vial-bundle-nudge', surface: 'drawer' %}
         <div class="cart-drawer__summary">
-          {%- comment -%} Bundle and code discounts, by title, as checkout will show them. {%- endcomment -%}
+          {%- comment -%} Bundle and code discounts, by title, as checkout will show them. Items (full prices) minus these rows = Subtotal. {%- endcomment -%}
+          {%- if drawer_items_total > cart.total_price -%}
+            <div class="cart-drawer__summary-line">
+              <span>Items</span>
+              <span>{{ drawer_items_total | money_without_trailing_zeros }}</span>
+            </div>
+          {%- endif -%}
           {%- for application in cart.discount_applications -%}
             {%- if application.target_type == 'line_item' and application.total_allocated_amount > 0 -%}
               <div class="cart-drawer__summary-line cart-drawer__summary-line--saving">
@@ -281,7 +291,8 @@
               "Review Subscription" branch above, where Appstle and the ROSCA cancel path still
               require the customer record.
             {%- endcomment -%}
-            <a href="/checkout" class="btn btn--primary btn--full" data-checkout-btn>
+            {%- comment -%} A leftover $18 helper line is converted on the cart page; send that cart there instead of straight to checkout. {%- endcomment -%}
+            <a href="{% if drawer_has_helper %}{{ routes.cart_url }}{% else %}/checkout{% endif %}" class="btn btn--primary btn--full" data-checkout-btn>
               Checkout
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="5" y1="12" x2="19" y2="12"/>

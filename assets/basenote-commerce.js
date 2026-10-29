@@ -268,8 +268,21 @@
             if (source?.quantity === base.item.quantity + 1) await request('cart/change.js', { id: source.key, quantity: base.item.quantity });
             throw new Error('The subscription option was not applied. Review your cart before trying again.');
           }
-          if (!source) throw new Error('Your cart changed while updating. Review its current items before trying again.');
-          cart = await request('cart/change.js', { id: source.key, quantity: base.item.quantity - 1 });
+          try {
+            if (!source) throw new Error('Your cart changed while updating. Review its current items before trying again.');
+            cart = await request('cart/change.js', { id: source.key, quantity: base.item.quantity - 1 });
+          } catch (error) {
+            // The one-time line was not lowered, so the new subscription unit would duplicate a vial.
+            // Re-read the cart: keep it if the change landed anyway, otherwise take the unit back out.
+            const observed = await getCart();
+            const remaining = currentLine(observed, base.item)?.quantity || 0;
+            const planLine = observed.items.find((item) => sameLine(item, { id: base.variant.id, selling_plan: planId, properties: base.item.properties || {} }));
+            if (remaining === base.item.quantity - 1 && planLine) cart = observed;
+            else {
+              if (planLine && remaining === base.item.quantity) await request('cart/change.js', { id: planLine.key, quantity: planLine.quantity - 1 });
+              throw error;
+            }
+          }
         }
         if (!subscribed(cart)) throw new Error('The subscription option was not applied. Review your cart before trying again.');
       } else {

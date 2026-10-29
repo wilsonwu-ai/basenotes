@@ -119,7 +119,8 @@ endif
 <button type="button" data-cart-step="1" aria-label="Increase {{ item_label | escape }} quantity" hidden>+</button>
 {%- endif -%}
 </div>
-<strong class="artifact-cart__line-price" aria-label="Line total {{ item.final_line_price | money_without_trailing_zeros }}">{%- if item.original_line_price != item.final_line_price -%}<s>{{ item.original_line_price | money_without_trailing_zeros }}</s> {% endif -%}{{ item.final_line_price | money_without_trailing_zeros }}</strong>
+{%- comment -%} Full line price here; bundle discounts are listed once in the order summary. A once-per-order discount is spread across lines, so per-line amounts would show odd cents ($18.67, $14.14). {%- endcomment -%}
+<strong class="artifact-cart__line-price" aria-label="Line total {{ item.original_line_price | money_without_trailing_zeros }}">{{ item.original_line_price | money_without_trailing_zeros }}</strong>
 </article>
 {%- endfor -%}
 </div>
@@ -188,7 +189,7 @@ endif
 {%- endif -%}
 </div>
 {%- if has_subscription -%}
-<div class="artifact-cart__disclosure"><strong>This is a recurring subscription.</strong>{% for item in cart.items %}{% if item.selling_plan_allocation %}<p>{{ item.selling_plan_allocation.price | times: item.quantity | money_without_trailing_zeros }} for this shipment, then {{ item.selling_plan_allocation.price_adjustments.last.price | default: item.variant.price | times: item.quantity | money_without_trailing_zeros }}. Free US Shipping.</p>{% endif %}{% endfor %}<p>Skip, swap, or cancel in your account. Any one-time extras do not renew.</p></div>
+<div class="artifact-cart__disclosure"><strong>This is a recurring subscription.</strong>{% for item in cart.items %}{% if item.selling_plan_allocation %}<p>{{ item.selling_plan_allocation.price | times: item.quantity | money_without_trailing_zeros }} for this shipment{% if item.final_line_price < item.original_line_price %} before the discount above{% endif %}, then {{ item.selling_plan_allocation.price_adjustments.last.price | default: item.variant.price | times: item.quantity | money_without_trailing_zeros }}. Free US Shipping.</p>{% endif %}{% endfor %}<p>Skip, swap, or cancel in your account. Any one-time extras do not renew.</p></div>
 <label class="artifact-cart__consent"><input type="checkbox" required data-cart-consent> <span>I agree to the recurring subscription and <a href="{{ shop.subscription_policy.url | default: '/policies/subscription-policy' }}">subscription terms</a>.</span></label>
 {%- else -%}
 <p class="artifact-cart__disclosure">One-time purchase. No subscription, no recurring charges.</p>
@@ -246,7 +247,6 @@ endif
 .artifact-cart__total { margin-block-start:.6rem; padding-block:1.15rem; border-block:.0625rem solid var(--ac-line); font-size:1rem; }
 .artifact-cart__savings { color:var(--ac-green); }
 .artifact-cart__summary-lines .artifact-cart__discount dt,.artifact-cart__summary-lines .artifact-cart__discount dd { color:var(--ac-green); font-weight:600; }
-.artifact-cart__line-price s { margin-inline-end:.35rem; color:var(--ac-muted); font-weight:400; }
 .vial-bundle-nudge--cart { margin:.4rem 0 0; padding:.7rem .85rem; border-inline-start:.15rem solid var(--ac-gold); background:rgb(255 255 255 / 55%); color:var(--ac-green); font:.78rem/1.45 'Jost',sans-serif; text-wrap:pretty; }
 .artifact-cart__disclosure { margin:1rem 0; color:var(--ac-muted); font:.72rem/1.5 'Jost',sans-serif; }
 .artifact-cart__consent { display:flex; gap:.6rem; margin-block:1rem; color:var(--ac-muted); font:.68rem/1.45 'Jost',sans-serif; }
