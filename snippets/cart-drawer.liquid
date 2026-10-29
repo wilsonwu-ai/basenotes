@@ -933,7 +933,11 @@
           if (seq !== refreshSeq) return;
           var html = data[SECTION_ID];
           if (html && sectionEl) {
+            // The fresh markup arrives closed. Keep the drawer open if the shopper had it open
+            // (the +/- buttons and the helper fix both refresh while it is showing).
+            var wasOpen = !!(getDrawer() && getDrawer().classList.contains('is-open'));
             sectionEl.innerHTML = html;
+            if (wasOpen) openDrawer();
           }
           return fetch('/cart.js');
         })
