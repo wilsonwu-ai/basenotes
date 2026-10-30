@@ -17,6 +17,14 @@
 {%- assign price = settings.subscription_price | default: '$20' -%}
 {%- assign first_price = settings.subscription_first_order_price | default: '$15' -%}
 
+{%- comment -%} A vial bundle discount can lower the first charge below first_price; say so when one applies to a subscription line. {%- endcomment -%}
+{%- assign sub_line_discounted = false -%}
+{%- for item in cart.items -%}
+  {%- if item.selling_plan_allocation and item.final_line_price < item.original_line_price -%}
+    {%- assign sub_line_discounted = true -%}
+  {%- endif -%}
+{%- endfor -%}
+
 <div class="sub-disclosure sub-disclosure--{{ surface | default: 'pdp' }}" role="note" aria-label="Subscription renewal disclosure">
   <svg class="sub-disclosure__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
     <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
@@ -24,7 +32,7 @@
   <div class="sub-disclosure__body">
     <p class="sub-disclosure__headline">This is a recurring monthly subscription.</p>
     <p class="sub-disclosure__detail">
-      Your card will be charged <strong>{{ first_price }} today</strong>, then <strong>{{ price }} each month</strong> automatically.
+      Your card will be charged <strong>{{ first_price }} today</strong>{% if sub_line_discounted %} before the discount shown in your cart{% endif %}, then <strong>{{ price }} each month</strong> automatically.
       You can cancel anytime in your account — no phone calls, no fees.
     </p>
     {%- if surface == 'pdp' -%}
