@@ -1,0 +1,21 @@
+{
+ "model": "gpt-image-2.5-flare",
+ "provider": "openai",
+ "prompt": "photoreal editorial still life, Base Note house style: soft warm natural light on a travertine surface, a single slim clear-glass 5 ml spray atomizer with a silver cap and blank white label standing upright, two whole vanilla pods, one lightly toasted marshmallow on a small brass tray, a few cocoa nibs and hazelnuts scattered on folded linen, deep green foliage shadow on the wall, shallow depth of field, no text, no logos, no branded bottles",
+ "size": "1536x1024",
+ "quality": "high",
+ "usage": {
+  "input_tokens": 104,
+  "input_tokens_details": {
+   "image_tokens": 0,
+   "text_tokens": 104
+  },
+  "output_tokens": 1462,
+  "output_tokens_details": {
+   "image_tokens": 1462,
+   "text_tokens": 0
+  },
+  "total_tokens": 1566
+ },
+ "seconds": 15.6
+}

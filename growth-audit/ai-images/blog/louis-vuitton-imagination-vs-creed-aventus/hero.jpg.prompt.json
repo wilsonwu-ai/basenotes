@@ -1,0 +1,21 @@
+{
+ "model": "gpt-image-2.5-flare",
+ "provider": "openai",
+ "prompt": "photoreal editorial still life, Base Note house style: bright warm natural light on a travertine ledge, a single slim clear-glass 5 ml spray atomizer with a silver cap and blank white label standing upright, beside it a halved citron, a small mound of loose black tea leaves in a brass dish, and a curl of pale birch bark, folded linen in the background, deep green foliage shadow on the wall, shallow depth of field, no text, no logos, no branded bottles",
+ "size": "1536x1024",
+ "quality": "high",
+ "usage": {
+  "input_tokens": 110,
+  "input_tokens_details": {
+   "image_tokens": 0,
+   "text_tokens": 110
+  },
+  "output_tokens": 1462,
+  "output_tokens_details": {
+   "image_tokens": 1462,
+   "text_tokens": 0
+  },
+  "total_tokens": 1572
+ },
+ "seconds": 18.2
+}
