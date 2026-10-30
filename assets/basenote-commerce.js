@@ -1,6 +1,11 @@
 /* Base Note storefront commerce. Prices and selling plans are verified against Shopify.
- * The $18 helper is a one-time fulfillment line, with the original scent recorded.
- * It must never receive the helper's discounted subscription selling plan.
+ * Every vial goes into the cart as its real scent, so reviews, order history and stock
+ * follow the fragrance. Multi-vial pricing comes from three automatic discounts in
+ * Shopify Admin on the Fragrances collection: 2 units $2 off the order, 3 units $4 off,
+ * 4 or more $2 off each. tierSaving() mirrors them for on-page quotes only; checkout
+ * always charges what Shopify's discounts compute.
+ * The old $18 helper product (extra-5ml-vial-add-on) is never added any more. A helper
+ * line left in a cart from before the switch is turned back into the scent it recorded.
  */
 (() => {
   'use strict';
@@ -19,6 +24,14 @@
   const url = (path) => new URL(`${root}${path}`, window.location.origin).href;
   const isHelper = (item) => item.handle === HELPER;
   const isVial = (variant) => /(?:^|\s|\/)5\s?ml(?:$|\s|\/)/i.test(variant.title || variant.variant_title || '');
+  // Every product in the Fragrances collection has this type; the tier discounts target
+  // that collection, so this is how the theme counts what Shopify counts.
+  const BUNDLE_TYPE = 'Fragrance';
+  const isBundleLine = (item) => isHelper(item) || item.product_type === BUNDLE_TYPE;
+  const bundleUnits = (cart) => cart.items.reduce((total, item) => total + (isBundleLine(item) ? item.quantity : 0), 0);
+  // Cents off the whole cart for a number of bundle units. Keep in step with the automatic
+  // discounts "2 vials: $2 off", "3 vials: $4 off" and "4+ vials: $2 off each".
+  const tierSaving = (units) => (units >= 4 ? 200 * units : units === 3 ? 400 : units === 2 ? 200 : 0);
   const quantityOf = (value) => {
     const quantity = Number(value);
     if (!Number.isSafeInteger(quantity) || quantity < 0 || quantity > 99) throw new Error('Choose a whole quantity from 1 to 99.');
@@ -79,13 +92,6 @@
     return result;
   }
 
-  async function helperVariant(cart) {
-    const product = await getProduct(HELPER);
-    const variant = product.variants.find((item) => item.available && Number(item.price) === 1800 && !item.requires_selling_plan);
-    if (cart.currency !== 'USD' || !variant) throw new Error('Additional-vial pricing is unavailable right now. Please review your cart before continuing.');
-    return variant;
-  }
-
   async function resolveScent(item) {
     if (!isHelper(item)) {
       const product = await getProduct(item.handle);
@@ -95,8 +101,9 @@
     const variantId = Number(item.properties?.[VARIANT]);
     if (handle && variantId) {
       const product = await getProduct(handle);
+      // No price check: a scent that went on sale after the helper was added still converts.
       const variant = product.variants.find((candidate) => Number(candidate.id) === variantId && isVial(candidate));
-      if (variant && Number(variant.price) === 2000) return { product, variant };
+      if (variant) return { product, variant };
     }
     // Recover earlier theme carts by an exact, unique merchant product title.
     // Never substitute a scent from a fuzzy match.
@@ -107,17 +114,14 @@
       const matches = catalog.products.filter((product) => product.title === selected && product.handle !== HELPER);
       if (matches.length === 1) {
         const product = await getProduct(matches[0].handle);
-        const variant = product.variants.find((candidate) => isVial(candidate) && Number(candidate.price) === 2000);
+        const variant = product.variants.find((candidate) => isVial(candidate));
         if (variant) return { product, variant };
       }
     }
     throw new Error('An additional vial needs a fragrance selection. Remove that item and choose its scent again before checkout.');
   }
 
-  function helperSpec(helper, scent, quantity, properties = {}, source = 'Fragrance shop') {
-    return { id: helper.id, quantity, properties: { ...cleanProperties(properties), 'Selected scent': scent.product.title, [HANDLE]: scent.product.handle, [VARIANT]: String(scent.variant.id), [SOURCE]: source } };
-  }
-
+  // Real $20 5ml vial lines: the ones that can become a Monthly Rotation.
   async function eligibleLines(cart) {
     const result = [];
     for (const item of cart.items) {
@@ -155,54 +159,40 @@
     }
   }
 
+  // Turns any helper line left from the old pricing back into the scent it recorded.
+  // Pricing itself needs no client work now: Shopify's discounts apply to the real lines.
   async function normalizeCart(cart) {
-    if (cart.currency !== 'USD') return cart;
     const helpers = cart.items.filter(isHelper);
+    if (!helpers.length) return cart;
     if (helpers.some((item) => item.selling_plan_allocation)) throw new Error('An older additional-vial subscription needs review. Remove that additional vial and add its scent again as a one-time vial.');
-    for (const item of helpers) await resolveScent(item);
-    let eligible = await eligibleLines(cart);
-    if (!eligible.length && !helpers.length) return cart;
-    // A helper with no real qualifying vial must be promoted back to its own
-    // original scent. This prevents a remaining first vial being charged $18.
-    if (!eligible.length && helpers.length) {
-      const first = helpers[0];
-      const scent = await resolveScent(first);
-      if (!scent.variant.available) throw new Error('The remaining fragrance is no longer available. Remove it or choose another scent before checkout.');
-      cart = await replaceUnits(cart, first, 1, { id: scent.variant.id, properties: cleanProperties(first.properties) });
-      eligible = await eligibleLines(cart);
-    }
-    const subscription = eligible.find(({ item }) => item.selling_plan_allocation);
-    const anchor = subscription || eligible[0];
-    const excess = eligible.filter(({ item }) => !item.selling_plan_allocation && (item.key !== anchor.item.key || item.quantity > 1));
-    if (excess.length) {
-      const helper = await helperVariant(cart);
-      for (const line of excess) {
-        const current = currentLine(cart, line.item);
-        if (!current) continue;
-        const count = current.quantity - (sameLine(current, specification(anchor.item)) ? 1 : 0);
-        cart = await replaceUnits(cart, current, count, helperSpec(helper, line, count, current.properties, 'Cart quantity pricing'));
-      }
+    for (const helper of helpers) {
+      const current = currentLine(cart, helper);
+      if (!current) continue;
+      const scent = await resolveScent(current);
+      if (!scent.variant?.available) throw new Error('A fragrance in your cart is no longer available. Remove it or choose another scent before checkout.');
+      cart = await replaceUnits(cart, current, current.quantity, { id: scent.variant.id, properties: cleanProperties(current.properties) });
     }
     return cart;
   }
 
+  // What adding `quantity` of this variant would cost, given the cart as it stands.
+  // unitPrice is the per-vial price at the tier the cart reaches ($20 alone, $18 with
+  // another vial); totalPrice is the exact change to the cart total.
   async function quoteVial({ variantId, handle, quantity = 1 }) {
     const count = quantityOf(quantity);
     const [product, cart] = await Promise.all([getProduct(handle), getCart()]);
     const variant = product.variants.find((candidate) => Number(candidate.id) === Number(variantId));
     if (!variant) throw new Error('This size is unavailable. Choose another size.');
-    const eligible = isVial(variant) && Number(variant.price) === 2000 && cart.currency === 'USD';
-    const anchor = eligible && (await eligibleLines(cart)).length > 0;
-    let unitPrice = Number(variant.price);
-    let totalPrice = unitPrice * count;
-    if (eligible) {
-      try {
-        const helper = await helperVariant(cart);
-        if (anchor) unitPrice = Number(helper.price);
-        totalPrice = anchor ? unitPrice * count : unitPrice + Number(helper.price) * Math.max(0, count - 1);
-      } catch (_) { /* Show the real regular price if the helper is unavailable. */ }
+    const regular = Number(variant.price);
+    const before = bundleUnits(cart);
+    const units = before + (product.type === BUNDLE_TYPE ? count : 0); // box sets are not in Fragrances, so they never count
+    let unitPrice = regular;
+    let totalPrice = regular * count;
+    if (cart.currency === 'USD' && product.type === BUNDLE_TYPE && isVial(variant) && count) {
+      totalPrice = Math.max(0, totalPrice - (tierSaving(units) - tierSaving(before)));
+      if (units >= 2) unitPrice = Math.max(0, regular - 200);
     }
-    return { unitPrice, totalPrice, currency: cart.currency, additional: unitPrice < Number(variant.price) };
+    return { unitPrice, totalPrice, saving: regular * count - totalPrice, units, currency: cart.currency, additional: unitPrice < regular };
   }
 
   async function addVial(options) {
@@ -214,12 +204,12 @@
       const variant = product.variants.find((candidate) => Number(candidate.id) === Number(options.variantId));
       if (!variant?.available) throw new Error('This size is sold out. Choose another fragrance or size.');
       let cart = await normalizeCart(await getCart());
-      const eligible = isVial(variant) && Number(variant.price) === 2000 && cart.currency === 'USD';
       if (options.sellingPlanId) {
         const planId = Number(options.sellingPlanId);
         const allocation = (variant.selling_plan_allocations || []).find((plan) => Number(plan.selling_plan_id) === planId);
+        const eligible = isVial(variant) && Number(variant.price) === 2000 && cart.currency === 'USD';
         if (!eligible || !allocation || quantity !== 1) throw new Error('Monthly Rotation starts with one eligible 5ml vial.');
-        if ((await eligibleLines(cart)).some(({ item }) => item.selling_plan_allocation)) throw new Error('A Monthly Rotation is already in your cart. Remove it to choose a different monthly scent, or add this vial as a one-time purchase.');
+        if (cart.items.some((item) => item.selling_plan_allocation)) throw new Error('A Monthly Rotation is already in your cart. Remove it to choose a different monthly scent, or add this vial as a one-time purchase.');
         const before = cart;
         cart = await addItems([{ id: variant.id, quantity: 1, selling_plan: planId, properties: options.properties || {} }]);
         if (!cart.items.some((item) => Number(item.variant_id) === Number(variant.id) && planIdOf(item) === planId)) {
@@ -229,16 +219,11 @@
           if (unintended?.quantity === (prior?.quantity || 0) + 1) await request('cart/change.js', { id: unintended.key, quantity: prior?.quantity || 0 });
           throw new Error('The subscription option was not applied. Review your cart before trying again.');
         }
-        return publish(await normalizeCart(cart));
+        return publish(cart);
       }
       if (variant.requires_selling_plan) throw new Error('This item requires a subscription. Choose Monthly Rotation to continue.');
-      if (!eligible) return publish(await addItems([{ id: variant.id, quantity, properties: options.properties || {} }]));
-      const hasAnchor = (await eligibleLines(cart)).length > 0;
-      const items = [];
-      if (!hasAnchor) items.push({ id: variant.id, quantity: 1, properties: options.properties || {} });
-      const additional = quantity - (hasAnchor ? 0 : 1);
-      if (additional) items.push(helperSpec(await helperVariant(cart), { product, variant }, additional, options.properties, options.source));
-      return publish(await addItems(items));
+      // Always the real scent, whatever is already in the cart. The bundle discounts price it.
+      return publish(await addItems([{ id: variant.id, quantity, properties: options.properties || {} }]));
     });
   }
 
@@ -249,19 +234,6 @@
       const original = cart.items.find((item) => item.key === key);
       if (!original) throw new Error('Your cart changed in another window. Refresh it before trying again.');
       if (quantity === original.quantity) return cart;
-      if (quantity === 0 && !isHelper(original)) {
-        const remaining = (await eligibleLines(cart)).filter(({ item }) => item.key !== original.key);
-        const helper = cart.items.find(isHelper);
-        if (!remaining.length && helper) {
-          const scent = await resolveScent(helper);
-          cart = await replaceUnits(cart, helper, 1, { id: scent.variant.id, properties: cleanProperties(helper.properties) });
-          // Same-scent promotion can merge with the item the customer removed.
-          const target = currentLine(cart, original);
-          if (!target) throw new Error('Your cart changed while updating. Review its current items before trying again.');
-          cart = await request('cart/change.js', { id: target.key, quantity: Math.max(0, target.quantity - original.quantity) });
-          return publish(await normalizeCart(cart));
-        }
-      }
       if (original.selling_plan_allocation && quantity > 1) throw new Error('Monthly Rotation includes one vial each month. Add extra scents as one-time vials from the fragrance page.');
       cart = await request('cart/change.js', { id: key, quantity });
       return publish(await normalizeCart(cart));
@@ -275,15 +247,44 @@
       if (!lines.length) throw new Error('Add a 5ml fragrance to choose Monthly Rotation. Full bottles remain one-time purchases.');
       if (mode === 'subscription') {
         if (lines.some(({ item }) => item.selling_plan_allocation)) return publish(cart);
-        const base = lines[0];
+        // Vials of one scent now share a line, so prefer a single-unit line to convert.
+        const base = lines.find(({ item }) => item.quantity === 1) || lines[0];
         const allocation = (base.variant.selling_plan_allocations || []).find((plan) => {
           const group = base.product.selling_plan_groups.find((candidate) => candidate.id === plan.selling_plan_group_id);
           return group?.selling_plans.some((candidate) => Number(candidate.id) === Number(plan.selling_plan_id) && candidate.recurring_deliveries && /month/i.test(candidate.name));
         });
         if (!allocation) throw new Error('Monthly Rotation is unavailable for this scent. Choose another 5ml fragrance.');
-        const index = cart.items.findIndex((item) => item.key === base.item.key);
-        cart = await request('cart/change.js', { line: index + 1, quantity: 1, selling_plan: allocation.selling_plan_id });
-        if (!cart.items.some((item) => Number(item.variant_id) === Number(base.variant.id) && planIdOf(item) === Number(allocation.selling_plan_id))) throw new Error('The subscription option was not applied. Review your cart before trying again.');
+        const planId = Number(allocation.selling_plan_id);
+        const subscribed = (state) => state.items.some((item) => Number(item.variant_id) === Number(base.variant.id) && planIdOf(item) === planId);
+        if (base.item.quantity === 1) {
+          const index = cart.items.findIndex((item) => item.key === base.item.key);
+          cart = await request('cart/change.js', { line: index + 1, quantity: 1, selling_plan: allocation.selling_plan_id });
+        } else {
+          // Move one unit to Monthly Rotation and keep the rest one-time. Add first; if the plan
+          // is dropped, the unit merges into the one-time line, so take it back out and stop.
+          const added = await addItems([{ id: base.variant.id, quantity: 1, selling_plan: planId, properties: base.item.properties || {} }]);
+          const source = currentLine(added, base.item);
+          if (!subscribed(added)) {
+            if (source?.quantity === base.item.quantity + 1) await request('cart/change.js', { id: source.key, quantity: base.item.quantity });
+            throw new Error('The subscription option was not applied. Review your cart before trying again.');
+          }
+          try {
+            if (!source) throw new Error('Your cart changed while updating. Review its current items before trying again.');
+            cart = await request('cart/change.js', { id: source.key, quantity: base.item.quantity - 1 });
+          } catch (error) {
+            // The one-time line was not lowered, so the new subscription unit would duplicate a vial.
+            // Re-read the cart: keep it if the change landed anyway, otherwise take the unit back out.
+            const observed = await getCart();
+            const remaining = currentLine(observed, base.item)?.quantity || 0;
+            const planLine = observed.items.find((item) => sameLine(item, { id: base.variant.id, selling_plan: planId, properties: base.item.properties || {} }));
+            if (remaining === base.item.quantity - 1 && planLine) cart = observed;
+            else {
+              if (planLine && remaining === base.item.quantity) await request('cart/change.js', { id: planLine.key, quantity: planLine.quantity - 1 });
+              throw error;
+            }
+          }
+        }
+        if (!subscribed(cart)) throw new Error('The subscription option was not applied. Review your cart before trying again.');
       } else {
         for (const { item } of lines) {
           if (!item.selling_plan_allocation) continue;
@@ -395,16 +396,25 @@
       const current = this.current;
       if (!current) return;
       const quantity = Math.max(1, Number(this.quantity.value) || 1);
-      let quote = { unitPrice: current.price, totalPrice: current.price * quantity };
-      if (this.plan?.value) quote = { unitPrice: current.planPrice, totalPrice: current.planPrice };
+      let quote = { unitPrice: current.price, totalPrice: current.price * quantity, saving: 0, units: quantity };
+      if (this.plan?.value) quote = { unitPrice: current.planPrice, totalPrice: current.planPrice, saving: 0, units: 1 };
       else {
         try { quote = await quoteVial({ variantId: current.id, handle: this.dataset.productHandle, quantity }); }
         catch (_) { /* Initial Shopify-rendered price remains a valid fallback. */ }
       }
       if (ticket !== this.priceTicket || current !== this.current) return;
-      this.price.textContent = money(quote.totalPrice, quote.currency);
+      // One item shows its per-vial price; several show the exact amount they add.
+      this.price.textContent = money(quantity > 1 ? quote.totalPrice : quote.unitPrice, quote.currency);
       this.price.setAttribute('aria-label', `${quantity > 1 ? `Total for ${quantity} items` : 'Price'} ${this.price.textContent}`);
-      this.querySelector('[data-artifact-price-note]').textContent = this.plan?.value ? 'First shipment. Recurring price below.' : quote.additional ? `${money(quote.unitPrice, quote.currency)} per additional vial in this order.` : quantity > 1 && current.isVial && current.price === 2000 ? 'First vial at regular price; additional 5ml vials are $18 each.' : current.isVial && current.price === 2000 ? `${money(current.price)} first vial · $18 each additional vial in your order.` : '';
+      this.querySelector('[data-artifact-price-note]').textContent = this.priceNote(quote, current, quantity);
+    }
+    priceNote(quote, current, quantity) {
+      if (this.plan?.value) return 'First shipment. Recurring price below.';
+      if (!current.isVial) return '';
+      if (current.price !== 2000) return quote.saving > 0 ? `Includes ${money(quote.saving, quote.currency)} in vial bundle savings.` : '';
+      if (quote.units >= 4 && quote.additional) return 'Four or more vials in one order: $18 each.';
+      if (quote.additional) return quantity > 1 && quote.units === quantity ? 'First vial at regular price; additional 5ml vials are $18 each.' : `${money(quote.unitPrice, quote.currency)} per additional vial in this order.`;
+      return `${money(current.price)} first vial · $18 each additional vial in your order.`;
     }
     async add(event) {
       event.preventDefault();
