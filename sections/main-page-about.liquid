@@ -1,7 +1,7 @@
 {% comment %}
   About / Founder section. Bound to templates/page.about.json (OS 2.0).
   Renders the hero + body (page.content from admin) + closing CTA.
-  The AboutPage schema (Jeff + Alex as founders) is emitted once, from layout/theme.liquid.
+  The AboutPage schema (Jeff, Alex and Wilson Wu as founders) is emitted once, from layout/theme.liquid.
 {% endcomment %}
 
 <article class="about-page">
@@ -14,15 +14,15 @@
             src="{{ page.metafields.founder.headshot | image_url: width: 900 }}"
             srcset="{{ page.metafields.founder.headshot | image_url: width: 600 }} 600w, {{ page.metafields.founder.headshot | image_url: width: 900 }} 900w, {{ page.metafields.founder.headshot | image_url: width: 1200 }} 1200w"
             sizes="(max-width: 860px) 100vw, 480px"
-            alt="Jeff and Alex, the founders of Base Note"
+            alt="The founders of Base Note"
             class="about-hero__image"
             width="900" height="1125">
       </div>
       {%- endif -%}
       <div class="about-hero__copy">
         <span class="about-hero__eyebrow">About the founders</span>
-        <h1 class="about-hero__title">Jeff &amp; Alex</h1>
-        <p class="about-hero__kicker">Founder &amp; cofounder, Base Note</p>
+        <h1 class="about-hero__title">Jeff, Alex &amp; Wilson</h1>
+        <p class="about-hero__kicker">Founder &amp; cofounders, Base Note</p>
       </div>
     </div>
   </section>
@@ -51,7 +51,7 @@
 
 {%- comment -%}
   No schema here on purpose. layout/theme.liquid already emits the AboutPage schema for
-  page.handle 'about', naming Jeff and Alex. A second copy here named a
+  page.handle 'about' and 'founder', naming Jeff, Alex and Wilson Wu. A second copy here named a
   different founder and contradicted it.
 {%- endcomment -%}
 

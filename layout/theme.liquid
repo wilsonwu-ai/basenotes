@@ -175,7 +175,7 @@
     }
   </script>
 
-  {% comment %} AboutPage schema with both founders on the About / Founder page (E-E-A-T signal) {% endcomment %}
+  {% comment %} AboutPage schema with all three founders on the About / Founder page (E-E-A-T signal). Wilson Wu's @id is the author @id in templates/article.liquid. {% endcomment %}
   {%- if page.handle == 'about' or page.handle == 'founder' -%}
   <script type="application/ld+json">
     {
@@ -205,6 +205,16 @@
             "email": "alex@basenotescent.com",
             "worksFor": { "@type": "Organization", "name": {{ shop.name | json }}, "url": {{ shop.url | json }} },
             "knowsAbout": ["fragrance", "brand", "growth", "direct-to-consumer commerce"]
+          },
+          {
+            "@type": "Person",
+            "@id": "{{ shop.url }}/pages/founder#wilson-wu",
+            "name": "Wilson Wu",
+            "jobTitle": "Cofounder",
+            "email": "wilson@basenotescent.com",
+            "url": "{{ shop.url }}/pages/founder#wilson-wu",
+            "worksFor": { "@type": "Organization", "name": {{ shop.name | json }}, "url": {{ shop.url | json }} },
+            "knowsAbout": ["fragrance", "fragrance buying guides", "subscription commerce"]
           }
         ]
       }
