@@ -1,0 +1,111 @@
+[
+ {
+  "handle": "base-note-scent-catalogue",
+  "file": "growth-audit/blog-post-61-base-note-scent-catalogue.html",
+  "title": "Base Note Scent Catalogue: Pick Your Scent in 5 Minutes",
+  "summary": "A free 158-page phone catalogue of 55 fragrances. Learn to read a scent page, build a five-slot wardrobe and pick your next scent in five minutes.",
+  "tags": [
+   "fragrance catalogue",
+   "scent catalogue",
+   "how to choose a perfume",
+   "fragrance wardrobe",
+   "how to read fragrance notes",
+   "5 ml decant",
+   "perfume guide"
+  ],
+  "author": "Wilson Wu",
+  "image_url": "https://raw.githubusercontent.com/wilsonwu-ai/basenotes/content/journal-batch-2026-11-15/growth-audit/ai-images/blog/base-note-scent-catalogue/hero.jpg",
+  "image_alt": "The cover, bestseller list and scent finder pages of the Base Note scent catalogue, shown side by side",
+  "inline": {
+   "fig-01": {
+    "url": "https://raw.githubusercontent.com/wilsonwu-ai/basenotes/content/journal-batch-2026-11-15/growth-audit/ai-images/blog/base-note-scent-catalogue/fig-01.jpg",
+    "alt": "Three pages of the Base Note scent catalogue showing the Build Your Scent Wardrobe slots and the scents listed under each",
+    "w": 1800,
+    "h": 1277
+   },
+   "fig-02": {
+    "url": "https://raw.githubusercontent.com/wilsonwu-ai/basenotes/content/journal-batch-2026-11-15/growth-audit/ai-images/blog/base-note-scent-catalogue/fig-02.jpg",
+    "alt": "Four catalogue pages side by side: the notes and details pages for Louis Vuitton Imagination and Tom Ford Tobacco Vanille",
+    "w": 1800,
+    "h": 961
+   }
+  },
+  "draft": true,
+  "post_no": 61
+ },
+ {
+  "handle": "fragrance-box-sets-corporate-gifts",
+  "file": "growth-audit/blog-post-62-fragrance-box-sets-corporate-gifts.html",
+  "title": "Fragrance Box Sets as Corporate Gifts: A Team Buyer's Guide",
+  "summary": "Three 5 ml vials for $56 a person, a budget table for 5 to 50 people, which set fits whom, and what Base Note does and does not offer teams.",
+  "tags": [
+   "corporate gift fragrance",
+   "team gift ideas",
+   "employee gift ideas",
+   "fragrance box set",
+   "perfume gift set",
+   "client gift ideas",
+   "build your own fragrance set"
+  ],
+  "author": "Wilson Wu",
+  "image_url": "https://raw.githubusercontent.com/wilsonwu-ai/basenotes/content/journal-batch-2026-11-15/growth-audit/ai-images/blog/fragrance-box-sets-corporate-gifts/hero.jpg",
+  "image_alt": "Three slim clear glass 5 ml atomizers with silver caps in an open green gift box on a linen runner",
+  "inline": {
+   "fig-01": {
+    "url": "https://raw.githubusercontent.com/wilsonwu-ai/basenotes/content/journal-batch-2026-11-15/growth-audit/ai-images/blog/fragrance-box-sets-corporate-gifts/fig-01.jpg",
+    "alt": "A Base Note box set: three 5 ml glass atomizers in an open gift box",
+    "w": 1536,
+    "h": 1536
+   },
+   "fig-02": {
+    "url": "https://raw.githubusercontent.com/wilsonwu-ai/basenotes/content/journal-batch-2026-11-15/growth-audit/ai-images/blog/fragrance-box-sets-corporate-gifts/fig-02.jpg",
+    "alt": "Three pages of the Base Note scent catalogue covering box sets and the Build Your Own Box Set",
+    "w": 1800,
+    "h": 1277
+   }
+  },
+  "draft": true,
+  "post_no": 62
+ },
+ {
+  "handle": "why-louis-vuitton-imagination-went-viral",
+  "file": "growth-audit/blog-post-63-why-louis-vuitton-imagination-went-viral.html",
+  "title": "Why Louis Vuitton Imagination Went Viral, Explained Simply",
+  "summary": "Why Louis Vuitton Imagination became so popular: notes, ambroxan, order evidence, honest downsides, and bottle versus 5 ml vial math. No view counts claimed.",
+  "tags": [
+   "louis vuitton imagination",
+   "louis vuitton imagination review",
+   "ambroxan",
+   "mens fragrance",
+   "fragrance notes explained",
+   "fragrance decants",
+   "best selling fragrance"
+  ],
+  "author": "Wilson Wu",
+  "image_url": "https://raw.githubusercontent.com/wilsonwu-ai/basenotes/content/journal-batch-2026-11-15/growth-audit/ai-images/blog/why-louis-vuitton-imagination-went-viral/hero.jpg",
+  "image_alt": "Cream Imagination lettering with Louis Vuitton above it on a deep green background",
+  "inline": {
+   "fig-01": {
+    "url": "https://raw.githubusercontent.com/wilsonwu-ai/basenotes/content/journal-batch-2026-11-15/growth-audit/ai-images/blog/why-louis-vuitton-imagination-went-viral/eli5.jpg",
+    "alt": "Three-step picture comparing Louis Vuitton Imagination to a cup of lemon tea: the lemon is smelled first, the spice shows up in the middle, and the tea is what stays",
+    "w": 1600,
+    "h": 3066
+   },
+   "fig-02": {
+    "url": "https://raw.githubusercontent.com/wilsonwu-ai/basenotes/content/journal-batch-2026-11-15/growth-audit/ai-images/blog/why-louis-vuitton-imagination-went-viral/diagram.jpg",
+    "alt": "Side-by-side choice: a 100 ml bottle at about $320 to $360 as read in October 2026, or a 5 ml vial for $20 with about 60 sprays",
+    "w": 1600,
+    "h": 2551
+   }
+  },
+  "videos": {
+   "vid-01": {
+    "url": "https://raw.githubusercontent.com/wilsonwu-ai/basenotes/content/journal-batch-2026-11-15/growth-audit/ai-images/blog/why-louis-vuitton-imagination-went-viral/motion.mp4",
+    "poster": "https://raw.githubusercontent.com/wilsonwu-ai/basenotes/content/journal-batch-2026-11-15/growth-audit/ai-images/blog/why-louis-vuitton-imagination-went-viral/motion-poster.jpg",
+    "alt": "A 12-second clip: our most-ordered scent, Louis Vuitton Imagination, its three note layers, then 5 ml, about 60 sprays, $20"
+   }
+  },
+  "draft": true,
+  "post_no": 63
+ }
+]

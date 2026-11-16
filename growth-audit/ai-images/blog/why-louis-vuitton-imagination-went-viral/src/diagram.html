@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Try it before the bottle</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root{--green:#21382a;--cream:#f9f8f4;--gold:#c9a86c;--gold-d:#8f7340;--line:#d9d1bd;}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1600px;background:var(--cream);font-family:"EB Garamond",Georgia,serif;color:var(--green)}
+.head{background:var(--green);color:var(--cream);padding:100px 100px 90px;text-align:center;position:relative}
+.head:before{content:"";position:absolute;inset:28px;border:2px solid rgba(201,168,108,.55)}
+.eyebrow{font-family:Jost,sans-serif;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-size:44px}
+h1{font-weight:400;font-size:136px;line-height:1.05;margin:30px 0 20px}
+.sub{font-family:Jost,sans-serif;font-size:56px;color:#e9e4d6}
+.body{padding:70px 80px 0}
+.q{font-style:italic;font-size:84px;line-height:1.1;text-align:center;margin-bottom:56px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:stretch}
+.col{display:flex;flex-direction:column;align-items:stretch}
+.opt{min-height:600px;display:flex;flex-direction:column;justify-content:center;border:3px solid var(--line);background:#fff;border-radius:6px;padding:44px 40px 48px;text-align:center;position:relative}
+.opt.a{border-color:var(--green)}
+.opt.b{border:6px solid var(--gold);background:#fffdf7}
+.lab{font-family:Jost,sans-serif;letter-spacing:.22em;text-transform:uppercase;font-size:48px;font-weight:500;color:var(--gold-d)}
+.size{font-weight:500;font-size:132px;line-height:1.05;margin:10px 0 0}
+.price{font-weight:500;font-size:112px;line-height:1.1;margin:6px 0 0}
+.price.hero{font-size:180px;font-weight:500;line-height:1}
+.note{font-family:Jost,sans-serif;font-size:52px;line-height:1.25;color:#3d5246;margin-top:14px}
+.note.i{font-style:normal}
+.down{height:96px;display:flex;align-items:center;justify-content:center}
+.down svg{width:60px;height:80px}
+.step{background:var(--green);color:var(--cream);border-radius:6px;padding:32px 36px;text-align:center;font-size:68px;line-height:1.12}
+.step small{display:block;font-family:Jost,sans-serif;font-size:50px;color:var(--gold);letter-spacing:.04em;margin-top:8px}
+.step.light{background:#fff;color:var(--green);border:3px solid var(--line)}
+.step.light small{color:#3d5246}.grow{font-size:84px!important}.grow small{font-size:56px!important;margin-top:14px!important}
+.fork{display:flex;flex-direction:column;gap:24px}
+.fork .step{padding:26px 22px;font-size:64px}
+.fork .step b{display:block;font-family:Jost,sans-serif;font-weight:500;font-size:48px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.grow{flex:1;display:flex;flex-direction:column;justify-content:center}
+.foot{text-align:center;padding:70px 100px 100px}
+.foot .big{font-style:italic;font-size:80px;line-height:1.1}
+.foot .url{font-family:Jost,sans-serif;letter-spacing:.06em;color:var(--gold-d);font-size:52px;margin-top:30px}
+</style></head><body>
+<div class="head">
+  <div class="eyebrow">Louis Vuitton Imagination</div>
+  <h1>Try it before the bottle</h1>
+  <div class="sub">Two ways to find out if you like it</div>
+</div>
+<div class="body">
+  <div class="q">Which one do you pay for first?</div>
+  <div class="cols">
+    <div class="col">
+      <div class="opt a">
+        <div class="lab">Buy the bottle</div>
+        <div class="size">100 ml</div>
+        <div class="note" style="margin:6px 0 0">about</div>
+        <div class="price">$320 to $360</div>
+        <div class="note">as read in October 2026</div>
+      </div>
+      <div class="down"><svg viewBox="0 0 60 80"><path d="M30 4 V62 M10 44 L30 68 L50 44" fill="none" stroke="#21382a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="step light grow">You pay first<small>Then you find out if it suits you</small></div>
+          </div>
+    <div class="col">
+      <div class="opt b">
+        <div class="lab">Try a vial</div>
+        <div class="size">5 ml</div>
+        <div class="price hero">$20</div>
+        <div class="note">about 60 sprays</div>
+      </div>
+      <div class="down"><svg viewBox="0 0 60 80"><path d="M30 4 V62 M10 44 L30 68 L50 44" fill="none" stroke="#21382a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="step">Wear it for a while<small>Real days, real skin</small></div>
+      <div class="down"><svg viewBox="0 0 60 80"><path d="M30 4 V62 M10 44 L30 68 L50 44" fill="none" stroke="#21382a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="fork">
+        <div class="step light"><b>Love it</b>Now buy the bottle</div>
+        <div class="step light"><b>Not for you</b>You spent $20</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="foot">
+  <div class="big">Wear it before you commit to the bottle.</div>
+  <div class="url">Base Note &middot; basenotescent.com</div>
+</div>
+<script>document.documentElement.setAttribute("data-h",document.body.offsetHeight)</script>
+</body></html>
