@@ -1,0 +1,1355 @@
+{
+ "aventus|aromatick.com|creed-aventus-decant": {
+  "url": "https://aromatick.com/products/creed-aventus-decant.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:17-0500",
+  "title": "Aventus Decant",
+  "vendor": "Creed",
+  "type": "Decant",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 44323143712883,
+    "title": "5ML",
+    "price": 19.99,
+    "compare_at": 39.99,
+    "available": true
+   },
+   {
+    "id": 44323143745651,
+    "title": "10ML",
+    "price": 33.99,
+    "compare_at": 69.99,
+    "available": true
+   },
+   {
+    "id": 44800160759923,
+    "title": "20ML",
+    "price": 59.99,
+    "compare_at": 99.99,
+    "available": true
+   },
+   {
+    "id": 67139141369971,
+    "title": "30ML",
+    "price": 102.99,
+    "compare_at": 149.99,
+    "available": true
+   }
+  ]
+ },
+ "aventus|scentpocket.com|creed-aventus-sample-decant": {
+  "url": "https://scentpocket.com/products/creed-aventus-sample-decant.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:20-0500",
+  "title": "Aventus (Decant)",
+  "vendor": "ScentPocket",
+  "type": "",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 47535812444378,
+    "title": "1ML",
+    "price": 7.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47042490171610,
+    "title": "2ML",
+    "price": 13.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47042490138842,
+    "title": "5ML",
+    "price": 26.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47042490106074,
+    "title": "10ML",
+    "price": 46.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47042490204378,
+    "title": "10ML Travel",
+    "price": 48.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47322289995994,
+    "title": "5ML Pressurized",
+    "price": 28.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47236059201754,
+    "title": "10ML Pressurized",
+    "price": 48.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47551577325786,
+    "title": "30ML Pressurized",
+    "price": 107.0,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "aventus|fragmentumco.com|aventus": {
+  "url": "https://fragmentumco.com/products/aventus.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:23-0500",
+  "title": "Aventus",
+  "vendor": "Creed",
+  "type": "Unisex",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 54275438477615,
+    "title": "1ML (0.03oz)",
+    "price": 14.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 54241121861935,
+    "title": "3ML (0,10 Oz)",
+    "price": 28.0,
+    "compare_at": 36.0,
+    "available": true
+   },
+   {
+    "id": 54241121894703,
+    "title": "5ML (0,17Oz)",
+    "price": 37.0,
+    "compare_at": 60.0,
+    "available": true
+   },
+   {
+    "id": 54241121927471,
+    "title": "8ML (0,27Oz)",
+    "price": 48.0,
+    "compare_at": 82.0,
+    "available": true
+   }
+  ]
+ },
+ "aventus|microperfumes.com|aventus-travel-spray": {
+  "url": "https://microperfumes.com/products/aventus-travel-spray.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:26-0500",
+  "title": "Aventus EDP - Travel Spray",
+  "vendor": "Creed",
+  "type": "Eau de Parfum",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 47140026482939,
+    "title": "Travel Spray - 5.0 ml (0.17 fl oz)",
+    "price": 37.97,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "aventus|microperfumes.com|aventus-sample-spray": {
+  "url": "https://microperfumes.com/products/aventus-sample-spray.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:28-0500",
+  "title": "Aventus EDP - Sample Spray",
+  "vendor": "Creed",
+  "type": "Eau de Parfum",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 47140026450171,
+    "title": "Sample Spray - 1.50 ml (0.05 fl oz)",
+    "price": 15.97,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "aventus|microperfumes.com|aventus-travel-spray-xl": {
+  "url": "https://microperfumes.com/products/aventus-travel-spray-xl.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:31-0500",
+  "title": "Aventus EDP - Travel Spray XL",
+  "vendor": "Creed",
+  "type": "Eau de Parfum",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 47140026515707,
+    "title": "Travel Spray XL - 10.0 ml (0.34 fl oz)",
+    "price": 68.97,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "aventus|decantx.com|creed-aventus-eau-de-parfum-for-men": {
+  "url": "https://decantx.com/products/creed-aventus-eau-de-parfum-for-men.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:34-0500",
+  "title": "Creed Aventus Eau de Parfum for Men",
+  "vendor": "Creed",
+  "type": "Fragrance Decant",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 32066816376970,
+    "title": "2ml",
+    "price": 13.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 32066816409738,
+    "title": "3ml",
+    "price": 18.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 32066816442506,
+    "title": "5ml",
+    "price": 26.99,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 32066816475274,
+    "title": "10ml",
+    "price": 45.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 42688030441685,
+    "title": "5ml Black Atomizer",
+    "price": 29.99,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 52042734960853,
+    "title": "5ml Dark Gray Atomizer",
+    "price": 29.99,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 42688030474453,
+    "title": "5ml Silver Atomizer",
+    "price": 29.99,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42688030539989,
+    "title": "5ml Navy Atomizer",
+    "price": 29.99,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42688030572757,
+    "title": "5ml Gold Atomizer",
+    "price": 29.99,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 42979683500245,
+    "title": "5ml Red Atomizer",
+    "price": 29.99,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 52042734993621,
+    "title": "5ml Magenta Atomizer",
+    "price": 29.99,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42688030507221,
+    "title": "5ml Pink Atomizer",
+    "price": 29.99,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42979683533013,
+    "title": "5ml Light Blue Atomizer",
+    "price": 29.99,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42979683565781,
+    "title": "5ml Purple Atomizer",
+    "price": 29.99,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42979683598549,
+    "title": "5ml Green Atomizer",
+    "price": 29.99,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42688030605525,
+    "title": "5ml Refillable",
+    "price": 27.99,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 39812810342566,
+    "title": "10ml Black Atomizer",
+    "price": 48.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 52042735026389,
+    "title": "10ml Dark Gray Atomizer",
+    "price": 48.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39812810375334,
+    "title": "10ml Silver Atomizer",
+    "price": 48.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39812810440870,
+    "title": "10ml Navy Atomizer",
+    "price": 48.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39812810473638,
+    "title": "10ml Gold Atomizer",
+    "price": 48.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42979683631317,
+    "title": "10ml Red Atomizer",
+    "price": 48.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 52042735059157,
+    "title": "10ml Magenta Atomizer",
+    "price": 48.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 39812810408102,
+    "title": "10ml Pink Atomizer",
+    "price": 48.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 42979683664085,
+    "title": "10ml Light Blue Atomizer",
+    "price": 48.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42979683696853,
+    "title": "10ml Purple Atomizer",
+    "price": 48.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 42979683729621,
+    "title": "10ml Green Atomizer",
+    "price": 48.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39812810506406,
+    "title": "10ml Refillable",
+    "price": 46.79,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "layton|scentpocket.com|parfums-de-marly-layton-sample-decant": {
+  "url": "https://scentpocket.com/products/parfums-de-marly-layton-sample-decant.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:37-0500",
+  "title": "Layton (Decant)",
+  "vendor": "ScentPocket",
+  "type": "",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 47535853633754,
+    "title": "1ML",
+    "price": 6.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 46870979576026,
+    "title": "2ML",
+    "price": 9.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 46870979543258,
+    "title": "5ML",
+    "price": 20.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 46870979510490,
+    "title": "10ML",
+    "price": 32.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 46870979608794,
+    "title": "10ML Travel",
+    "price": 34.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47322267648218,
+    "title": "5ML Pressurized",
+    "price": 22.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47218184716506,
+    "title": "10ML Pressurized",
+    "price": 34.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47552914096346,
+    "title": "30ML Pressurized",
+    "price": 75.0,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "layton|fragmentumco.com|layton": {
+  "url": "https://fragmentumco.com/products/layton.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:39-0500",
+  "title": "LAYTON",
+  "vendor": "Parfums de Marly",
+  "type": "Unisex",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 55152109322543,
+    "title": "1ML (0.03oz)",
+    "price": 12.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 55152109355311,
+    "title": "3ML (0,10 Oz)",
+    "price": 19.0,
+    "compare_at": 27.0,
+    "available": true
+   },
+   {
+    "id": 55152109388079,
+    "title": "5ML (0,17Oz)",
+    "price": 26.0,
+    "compare_at": 40.0,
+    "available": true
+   },
+   {
+    "id": 55152109420847,
+    "title": "8ML (0,27Oz)",
+    "price": 32.0,
+    "compare_at": 53.0,
+    "available": true
+   }
+  ]
+ },
+ "layton|microperfumes.com|layton-travel-spray": {
+  "url": "https://microperfumes.com/products/layton-travel-spray.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:42-0500",
+  "title": "Layton EDP - Travel Spray",
+  "vendor": "Parfums de Marly",
+  "type": "Eau de Parfum",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 47140050534651,
+    "title": "Travel Spray - 5.0 ml (0.17 fl oz)",
+    "price": 18.97,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "layton|microperfumes.com|layton-sample-spray": {
+  "url": "https://microperfumes.com/products/layton-sample-spray.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:45-0500",
+  "title": "Layton EDP - Sample Spray",
+  "vendor": "Parfums de Marly",
+  "type": "Eau de Parfum",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 47161557090555,
+    "title": "Sample Spray - 1.50 ml (0.05 fl oz)",
+    "price": 7.97,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "layton|decantx.com|parfums-de-marly-layton-eau-de-parfum-for-men": {
+  "url": "https://decantx.com/products/parfums-de-marly-layton-eau-de-parfum-for-men.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:48-0500",
+  "title": "Parfums de Marly Layton Eau de Parfum for Men",
+  "vendor": "Parfums de Marly",
+  "type": "Fragrance Decant",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 32069182750858,
+    "title": "2ml",
+    "price": 10.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 32069182816394,
+    "title": "3ml",
+    "price": 13.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 32069182849162,
+    "title": "5ml",
+    "price": 20.49,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 32069182881930,
+    "title": "10ml",
+    "price": 31.49,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 42697164914901,
+    "title": "5ml Black Atomizer",
+    "price": 23.49,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 52051692454101,
+    "title": "5ml Dark Gray Atomizer",
+    "price": 23.49,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 42697164947669,
+    "title": "5ml Silver Atomizer",
+    "price": 23.49,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42697165045973,
+    "title": "5ml Navy Atomizer",
+    "price": 23.49,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42697165078741,
+    "title": "5ml Gold Atomizer",
+    "price": 23.49,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 42979960062165,
+    "title": "5ml Red Atomizer",
+    "price": 23.49,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 52051692486869,
+    "title": "5ml Magenta Atomizer",
+    "price": 23.49,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42697165013205,
+    "title": "5ml Pink Atomizer",
+    "price": 23.49,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42979960094933,
+    "title": "5ml Light Blue Atomizer",
+    "price": 23.49,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42979960127701,
+    "title": "5ml Purple Atomizer",
+    "price": 23.49,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42979960160469,
+    "title": "5ml Green Atomizer",
+    "price": 23.49,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42697165111509,
+    "title": "5ml Refillable",
+    "price": 21.49,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 39812854775974,
+    "title": "10ml Black Atomizer",
+    "price": 34.49,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 52051692519637,
+    "title": "10ml Dark Gray Atomizer",
+    "price": 34.49,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39812854808742,
+    "title": "10ml Silver Atomizer",
+    "price": 34.49,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39812854874278,
+    "title": "10ml Navy Atomizer",
+    "price": 34.49,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39812854907046,
+    "title": "10ml Gold Atomizer",
+    "price": 34.49,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42979960193237,
+    "title": "10ml Red Atomizer",
+    "price": 34.49,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 52051692552405,
+    "title": "10ml Magenta Atomizer",
+    "price": 34.49,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 39812854841510,
+    "title": "10ml Pink Atomizer",
+    "price": 34.49,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 42979960226005,
+    "title": "10ml Light Blue Atomizer",
+    "price": 34.49,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42979960258773,
+    "title": "10ml Purple Atomizer",
+    "price": 34.49,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 42979960291541,
+    "title": "10ml Green Atomizer",
+    "price": 34.49,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39812854939814,
+    "title": "10ml Refillable",
+    "price": 32.49,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "oud-wood|aromatick.com|oud-wood-decant": {
+  "url": "https://aromatick.com/products/oud-wood-decant.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:51-0500",
+  "title": "Oud Wood Decant",
+  "vendor": "Tom Ford",
+  "type": "Decant",
+  "desc_mentions_edp": true,
+  "variants": [
+   {
+    "id": 44401436721267,
+    "title": "5ML",
+    "price": 23.49,
+    "compare_at": 35.0,
+    "available": true
+   },
+   {
+    "id": 44401436754035,
+    "title": "10ML",
+    "price": 35.49,
+    "compare_at": 70.0,
+    "available": true
+   },
+   {
+    "id": 44800511639667,
+    "title": "20ML",
+    "price": 55.49,
+    "compare_at": 85.99,
+    "available": true
+   },
+   {
+    "id": 67139141566579,
+    "title": "30ML",
+    "price": 96.49,
+    "compare_at": 139.99,
+    "available": true
+   }
+  ]
+ },
+ "oud-wood|scentpocket.com|tom-ford-oud-wood-sample-decant": {
+  "url": "https://scentpocket.com/products/tom-ford-oud-wood-sample-decant.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:53-0500",
+  "title": "Oud Wood (Decant)",
+  "vendor": "ScentPocket",
+  "type": "",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 47959226548442,
+    "title": "1ML",
+    "price": 9.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47959226581210,
+    "title": "2ML",
+    "price": 15.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47959226613978,
+    "title": "5ML",
+    "price": 30.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47959226646746,
+    "title": "10ML",
+    "price": 50.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47959226679514,
+    "title": "10ML Travel",
+    "price": 52.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47959226712282,
+    "title": "5ML Pressurized",
+    "price": 32.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47959226745050,
+    "title": "10ML Pressurized",
+    "price": 52.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47959226777818,
+    "title": "30ML Pressurized",
+    "price": 120.0,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "oud-wood|fragmentumco.com|oud-wood": {
+  "url": "https://fragmentumco.com/products/oud-wood.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:56-0500",
+  "title": "Oud Wood",
+  "vendor": "TOM FORD",
+  "type": "Unisex",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 58272587940143,
+    "title": "1ML (0.03oz)",
+    "price": 20.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 58272587972911,
+    "title": "3ML (0,10 Oz)",
+    "price": 38.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 58272588005679,
+    "title": "5ML (0,17Oz)",
+    "price": 52.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 58272588038447,
+    "title": "8ML (0,27Oz)",
+    "price": 66.0,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "oud-wood|microperfumes.com|oud-wood-travel-spray": {
+  "url": "https://microperfumes.com/products/oud-wood-travel-spray.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:39:59-0500",
+  "title": "Oud Wood EDP - Travel Spray",
+  "vendor": "Tom Ford",
+  "type": "Eau de Parfum",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 47140075798779,
+    "title": "Travel Spray - 5.0 ml (0.17 fl oz)",
+    "price": 29.97,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "oud-wood|microperfumes.com|oud-wood-sample-spray": {
+  "url": "https://microperfumes.com/products/oud-wood-sample-spray.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:40:02-0500",
+  "title": "Oud Wood EDP - Sample Spray",
+  "vendor": "Tom Ford",
+  "type": "Eau de Parfum",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 47140075766011,
+    "title": "Sample Spray - 1.50 ml (0.05 fl oz)",
+    "price": 12.97,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "oud-wood|microperfumes.com|oud-wood-travel-spray-xl": {
+  "url": "https://microperfumes.com/products/oud-wood-travel-spray-xl.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:40:04-0500",
+  "title": "Oud Wood EDP - Travel Spray XL",
+  "vendor": "Tom Ford",
+  "type": "Eau de Parfum",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 47511331602683,
+    "title": "Travel Spray XL - 10.0 ml (0.34 fl oz)",
+    "price": 49.97,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "oud-wood|decantx.com|tom-ford-oud-wood-eau-de-parfum-unisex": {
+  "url": "https://decantx.com/products/tom-ford-oud-wood-eau-de-parfum-unisex.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:40:07-0500",
+  "title": "Tom Ford Oud Wood Eau de Parfum Unisex",
+  "vendor": "Tom Ford",
+  "type": "Fragrance Decant",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 43835084177621,
+    "title": "1ml",
+    "price": 9.29,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 39367277772966,
+    "title": "2ml",
+    "price": 12.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 32076867207306,
+    "title": "3ml",
+    "price": 16.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39367291109542,
+    "title": "5ml",
+    "price": 24.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 39833803522214,
+    "title": "5ml Black Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 52051716735189,
+    "title": "5ml Dark Gray Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 39833803554982,
+    "title": "5ml Silver Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39833803620518,
+    "title": "5ml Navy Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39833803653286,
+    "title": "5ml Gold Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 42980146184405,
+    "title": "5ml Red Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 52051716767957,
+    "title": "5ml Magenta Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39833803587750,
+    "title": "5ml Pink Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42980146217173,
+    "title": "5ml Light Blue Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42980146249941,
+    "title": "5ml Purple Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42980146282709,
+    "title": "5ml Green Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39833803686054,
+    "title": "5ml Refillable",
+    "price": 25.79,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "side-effect|aromatick.com|initio-side-effect-edp-seductive-unisex-perfume": {
+  "url": "https://aromatick.com/products/initio-side-effect-edp-seductive-unisex-perfume.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:40:10-0500",
+  "title": "Side Effect",
+  "vendor": "Initio Parfums Prives",
+  "type": "Initio Parfums Prives",
+  "desc_mentions_edp": true,
+  "variants": [
+   {
+    "id": 44050953666675,
+    "title": "3.0 oz / 90 ml",
+    "price": 373.99,
+    "compare_at": 440.0,
+    "available": true
+   }
+  ]
+ },
+ "side-effect|scentpocket.com|initio-side-effect-sample-decant": {
+  "url": "https://scentpocket.com/products/initio-side-effect-sample-decant.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:40:13-0500",
+  "title": "Side Effect (Decant)",
+  "vendor": "My Store",
+  "type": "",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 47535828992218,
+    "title": "1ML",
+    "price": 7.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 46225979244762,
+    "title": "2ML",
+    "price": 12.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 46225979211994,
+    "title": "5ML",
+    "price": 25.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 46225979179226,
+    "title": "10ML",
+    "price": 47.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 46237156966618,
+    "title": "10ML Travel",
+    "price": 49.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47322242089178,
+    "title": "5ML Pressurized",
+    "price": 27.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47218012553434,
+    "title": "10ML Pressurized",
+    "price": 49.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 47552860553434,
+    "title": "30ML Pressurized",
+    "price": 115.0,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "side-effect|fragmentumco.com|side-effect": {
+  "url": "https://fragmentumco.com/products/side-effect.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:40:16-0500",
+  "title": "Side Effect",
+  "vendor": "Initio Parfums",
+  "type": "Unisex",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 55154437816623,
+    "title": "1ML (0.03oz)",
+    "price": 18.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 55154437849391,
+    "title": "3ML (0,10 Oz)",
+    "price": 33.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 55154437882159,
+    "title": "5ML (0,17Oz)",
+    "price": 45.0,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 55154437914927,
+    "title": "8ML (0,27Oz)",
+    "price": 57.0,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "side-effect|microperfumes.com|side-effect-travel-spray": {
+  "url": "https://microperfumes.com/products/side-effect-travel-spray.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:40:18-0500",
+  "title": "Side Effect EDP - Travel Spray",
+  "vendor": "Initio Parfums Prives",
+  "type": "Eau de Parfum",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 47140039131387,
+    "title": "Travel Spray - 5.0 ml (0.17 fl oz)",
+    "price": 27.97,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "side-effect|microperfumes.com|side-effect-sample-spray": {
+  "url": "https://microperfumes.com/products/side-effect-sample-spray.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:40:21-0500",
+  "title": "Side Effect EDP - Sample Spray",
+  "vendor": "Initio Parfums Prives",
+  "type": "Eau de Parfum",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 47363679420667,
+    "title": "Sample Spray - 1.50 ml (0.05 fl oz)",
+    "price": 11.97,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ },
+ "side-effect|decantx.com|initio-parfums-side-effect-eau-de-parfum-unisex": {
+  "url": "https://decantx.com/products/initio-parfums-side-effect-eau-de-parfum-unisex.js",
+  "status": 200,
+  "read_at": "2026-11-19T08:40:25-0500",
+  "title": "Initio Parfums Side Effect Eau de Parfum Unisex",
+  "vendor": "Initio Parfums",
+  "type": "Fragrance Decant",
+  "desc_mentions_edp": false,
+  "variants": [
+   {
+    "id": 32067893428362,
+    "title": "2ml",
+    "price": 12.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 32067893461130,
+    "title": "3ml",
+    "price": 16.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 32067893493898,
+    "title": "5ml",
+    "price": 24.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 39833782943910,
+    "title": "5ml Black Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 52042749771989,
+    "title": "5ml Dark Gray Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 39833782976678,
+    "title": "5ml Silver Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39833783042214,
+    "title": "5ml Navy Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39833783074982,
+    "title": "5ml Gold Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": true
+   },
+   {
+    "id": 42979829285077,
+    "title": "5ml Red Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 52042749804757,
+    "title": "5ml Magenta Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39833783009446,
+    "title": "5ml Pink Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42979829317845,
+    "title": "5ml Light Blue Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42979829350613,
+    "title": "5ml Purple Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 42979829383381,
+    "title": "5ml Green Atomizer",
+    "price": 27.79,
+    "compare_at": 0.0,
+    "available": false
+   },
+   {
+    "id": 39833783107750,
+    "title": "5ml Refillable",
+    "price": 25.79,
+    "compare_at": 0.0,
+    "available": true
+   }
+  ]
+ }
+}
