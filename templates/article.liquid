@@ -28,7 +28,97 @@
   .article__cta h3 { font-size: 1.35rem; margin: 0 0 8px; }
   .article__cta p { color: #555; margin: 0 0 18px; }
   .article__cta a { display: inline-block; padding: 14px 28px; background: #1a1a1a; color: #fff; text-decoration: none; border-radius: 4px; font-weight: 600; }
+  .bn-sale { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 0 0 32px; padding: 14px 18px; background: #1a1a1a; color: #fff; border-radius: 6px; font-size: 0.95rem; line-height: 1.45; }
+  .bn-sale__label { color: #c9a86c; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.74rem; }
+  .bn-sale__text { flex: 1 1 260px; margin: 0; }
+  .bn-sale__link { color: #1a1a1a; background: #fff; padding: 9px 16px; border-radius: 4px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .article__body .bn-shop { margin: 2em 0 2.2em; padding: 22px 20px 20px; background: #f8f8f6; border-radius: 6px; }
+  .article__body .bn-shop__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; margin-bottom: 14px; }
+  .article__body .bn-shop__title { font-size: 1.15rem; font-weight: 700; margin: 0; color: #1a1a1a; }
+  .article__body .bn-shop__note { font-size: 0.86rem; color: #666; margin: 0; }
+  .article__body .bn-shop__row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; list-style: none; margin: 0; padding: 0; }
+  .article__body .bn-shop__row li { margin: 0; }
+  .article__body .bn-shop__card { display: block; box-sizing: border-box; height: 100%; background: #fff; border: 1px solid #e5e5e5; border-radius: 6px; padding: 10px; color: #1a1a1a; text-decoration: none; }
+  .article__body .bn-shop p { margin: 0; }
+  .article__body .bn-shop__card:hover { border-color: #1a1a1a; }
+  .article__body .bn-shop__img { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 4px; margin: 0 0 8px; background: #f1f1ee; }
+  .article__body .bn-shop__name { display: block; font-size: 0.86rem; font-weight: 600; line-height: 1.3; margin-bottom: 4px; }
+  .article__body .bn-shop__price { display: block; font-size: 0.86rem; color: #1a1a1a; }
+  .article__body .bn-shop__price s { color: #888; margin-left: 4px; }
+  .article__body .bn-shop__cta { display: block; margin-top: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+  .article__body .bn-shop__all { display: inline-block; margin-top: 14px; font-size: 0.9rem; font-weight: 600; color: #1a1a1a; text-decoration: underline; text-underline-offset: 3px; }
+  @media (max-width: 640px) {
+    .article__body .bn-shop { padding: 18px 0 16px 16px; }
+    .article__body .bn-shop__head { padding-right: 16px; }
+    .article__body .bn-shop__row { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; padding: 0 16px 6px 0; }
+    .article__body .bn-shop__row li { flex: 0 0 136px; scroll-snap-align: start; }
+    .bn-sale__link { width: 100%; text-align: center; }
+  }
 </style>
+
+{%- comment -%}
+  Blog shop block (Nov 2026). Two parts, both built from live product data, nothing hardcoded per post:
+  1. Sale strip: shows only while the Build Your Own Box Set has a compare-at price above its price,
+     so it disappears on its own when the sale prices are removed.
+  2. "Shop the scents in this guide": the first 8 distinct products the post links to, as cards with
+     the current price, placed after the intro (before the first h2).
+{%- endcomment -%}
+{%- liquid
+  assign bn_box = all_products['build-your-own-box-set']
+  assign bn_sale_on = false
+  if bn_box.compare_at_price and bn_box.compare_at_price > bn_box.price
+    assign bn_sale_on = true
+  endif
+
+  assign bn_seen = '|'
+  assign bn_handles = ''
+  assign bn_count = 0
+  assign bn_chunks = article.content | split: '/products/'
+  for bn_chunk in bn_chunks offset: 1
+    if bn_count >= 8
+      break
+    endif
+    assign bn_h = bn_chunk | split: '"' | first | split: '?' | first | split: '#' | first | split: '/' | first | strip
+    assign bn_key = bn_h | prepend: '|' | append: '|'
+    if bn_h == blank or bn_seen contains bn_key
+      continue
+    endif
+    assign bn_seen = bn_seen | append: bn_h | append: '|'
+    assign bn_handles = bn_handles | append: bn_h | append: ','
+    assign bn_count = bn_count | plus: 1
+  endfor
+  assign bn_handles = bn_handles | split: ','
+-%}
+
+{%- capture bn_shop_block -%}
+  {%- capture bn_cards -%}
+    {%- for bn_h in bn_handles -%}
+      {%- assign bn_p = all_products[bn_h] -%}
+      {%- if bn_p.available != true -%}{%- continue -%}{%- endif -%}
+      <li>
+        <a class="bn-shop__card" href="{{ bn_p.url }}">
+          {%- if bn_p.featured_image -%}
+            <img class="bn-shop__img" src="{{ bn_p.featured_image | image_url: width: 360 }}" alt="{{ bn_p.featured_image.alt | default: bn_p.title | escape }}" width="360" height="360" loading="lazy" decoding="async">
+          {%- endif -%}
+          <span class="bn-shop__name">{{ bn_p.title | escape }}</span>
+          <span class="bn-shop__price">{{ bn_p.price | money_without_trailing_zeros }}{% if bn_p.compare_at_price and bn_p.compare_at_price > bn_p.price %}<s>{{ bn_p.compare_at_price | money_without_trailing_zeros }}</s>{% endif %}</span>
+          <span class="bn-shop__cta">View</span>
+        </a>
+      </li>
+    {%- endfor -%}
+  {%- endcapture -%}
+  {%- assign bn_cards_trim = bn_cards | strip -%}
+  {%- if bn_cards_trim != blank -%}
+    <aside class="bn-shop" aria-label="Shop the scents in this guide">
+      <div class="bn-shop__head">
+        <p class="bn-shop__title">Shop the scents in this guide</p>
+        <p class="bn-shop__note">Genuine fragrance in 5 ml vials{% if bn_sale_on %}. Sale prices shown.{% endif %}</p>
+      </div>
+      <ul class="bn-shop__row">{{ bn_cards }}</ul>
+      <a class="bn-shop__all" href="/collections/fragrances">See all fragrances</a>
+    </aside>
+  {%- endif -%}
+{%- endcapture -%}
 
 <article class="article">
   <nav class="article__breadcrumb" aria-label="Breadcrumb">
@@ -55,8 +145,23 @@
   </p>
 </header>
 
+  {% if bn_sale_on %}
+    <aside class="bn-sale" aria-label="Early Black Friday Sale">
+      <p class="bn-sale__text"><span class="bn-sale__label">Early Black Friday Sale</span><br>Box sets now {{ bn_box.price | money_without_trailing_zeros }} (reg. {{ bn_box.compare_at_price | money_without_trailing_zeros }}), plus up to 25% off select 5 ml vials.</p>
+      <a class="bn-sale__link" href="/collections/fragrances">View the deals</a>
+    </aside>
+  {% endif %}
+
   <div class="article__body rte">
-    {{ article.content }}
+    {%- assign bn_parts = article.content | split: '<h2' -%}
+    {%- if bn_parts.size > 1 -%}
+      {{ bn_parts[0] }}
+      {{ bn_shop_block }}
+      {%- for bn_part in bn_parts offset: 1 -%}{{ '<h2' | append: bn_part }}{%- endfor -%}
+    {%- else -%}
+      {{ article.content }}
+      {{ bn_shop_block }}
+    {%- endif -%}
   </div>
 
   {% if article.tags.size > 0 %}
@@ -68,9 +173,15 @@
   {% endif %}
 
   <aside class="article__cta">
-    <h3>Ready to try a luxury fragrance?</h3>
-    <p>$20/month. 5ml atomizer. Creed, Tom Ford, Parfums de Marly, Xerjoff, and more. No surcharges, cancel anytime.</p>
-    <a href="/collections/fragrances">Shop One-Time Vials</a>
+    {% if bn_sale_on %}
+      <h3>Early Black Friday Sale</h3>
+      <p>Box sets now {{ bn_box.price | money_without_trailing_zeros }} (reg. {{ bn_box.compare_at_price | money_without_trailing_zeros }}), plus up to 25% off select 5 ml vials. Creed, Tom Ford, Parfums de Marly, Xerjoff, and more.</p>
+      <a href="/collections/fragrances">View the deals</a>
+    {% else %}
+      <h3>Ready to try a luxury fragrance?</h3>
+      <p>$20/month. 5ml atomizer. Creed, Tom Ford, Parfums de Marly, Xerjoff, and more. No surcharges, cancel anytime.</p>
+      <a href="/collections/fragrances">Shop One-Time Vials</a>
+    {% endif %}
   </aside>
 </article>
 
